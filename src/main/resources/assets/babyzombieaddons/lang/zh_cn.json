@@ -1,5 +1,32 @@
 {
+  "key.babyzombieaddons.category": "BabyzombieAddons",
   "key.babyzombieaddons.cancel_key_release": "取消按键释放",
+  "key.babyzombieaddons.popup_yes": "弹出通知 - 确认",
+  "key.babyzombieaddons.popup_no": "弹出通知 - 取消",
+
+  "config.babyzombieaddons.option.popupPartyInvite": "组队邀请",
+  "config.babyzombieaddons.option.popupGuildPartyInvite": "公会组队邀请",
+  "config.babyzombieaddons.option.popupFriendRequest": "好友请求",
+  "config.babyzombieaddons.option.popupDuelsRequest": "决斗邀请",
+  "config.babyzombieaddons.option.popupSkyblockTrade": "SkyBlock 交易请求",
+  "config.babyzombieaddons.option.popupDungeonRestart": "地牢/Kuudra 重开请求",
+
+  "popup.title.party_invite": "组队邀请",
+  "popup.title.guild_party_invite": "公会组队邀请",
+  "popup.title.friend_request": "好友请求",
+  "popup.title.trade_request": "交易请求",
+  "popup.title.position_swap": "位置交换",
+  "popup.title.duel_request": "决斗邀请",
+  "popup.title.restart_request": "重开请求",
+  "popup.body.party_invite": "{0} 邀请你加入 {1} 组队",
+  "popup.body.guild_party_invite": "{0} 邀请公会成员加入 {1} 组队",
+  "popup.body.friend_request": "{0} 请求添加你为好友",
+  "popup.body.trade_request": "{0} 想要和你交易",
+  "popup.body.position_swap": "{0} 想要和你交换位置",
+  "popup.body.duel_request": "{0} 邀请你进行 {1} 决斗",
+  "popup.body.restart_request": "{0} 想要重新开始",
+  "popup.accept": "[{0}] 接受",
+  "popup.ignore": "[{0}] 忽略",
 
   "babyzombieaddons.contact.lore.call": "左键呼叫联系人",
   "babyzombieaddons.contact.lore.auto_answer": "右键开启/关闭自动接听",
@@ -18,9 +45,11 @@
   "config.babyzombieaddons.category.fishing": "钓鱼",
   "config.babyzombieaddons.category.garden": "花园",
   "config.babyzombieaddons.category.party": "队伍",
+  "config.babyzombieaddons.category.popup": "弹出通知",
   "config.babyzombieaddons.category.misc": "杂项",
   "config.babyzombieaddons.category.debug": "调试",
 
+  "config.babyzombieaddons.option.autois": "自动回岛",
   "config.babyzombieaddons.option.autoUpdateCheck": "自动更新检查",
   "config.babyzombieaddons.option.noFog": "移除迷雾",
   "config.babyzombieaddons.option.doubleLobby": "双击/lobby",
@@ -112,7 +141,15 @@
 
   "config.babyzombieaddons.option.autoAccept": "自动接受队伍",
   "config.babyzombieaddons.option.doublePWarpConfirm": "双重P Warp确认",
-  "config.babyzombieaddons.option.partyCommands": "队伍指令",
+  "config.babyzombieaddons.group.partyChatCommands": "队伍聊天指令",
+  "config.babyzombieaddons.option.partyAllinvite": "!allinv 切换全员邀请",
+  "config.babyzombieaddons.option.partyInvite": "!p <玩家> 邀请玩家",
+  "config.babyzombieaddons.option.partyWarp": "!warp 传送",
+  "config.babyzombieaddons.option.partyWarpDelay": "!warp 延迟传送",
+  "config.babyzombieaddons.option.partyWarpDelaySeconds": "传送延迟(秒)",
+  "config.babyzombieaddons.option.partyJoinInstance": "!join 加入地牢",
+  "config.babyzombieaddons.option.partySendCoords": "!sc 发送坐标",
+  "config.babyzombieaddons.option.dmPartyInvite": "私信 !p 邀请",
 
   "config.babyzombieaddons.option.killComboHUD": "击杀连击HUD",
   "config.babyzombieaddons.option.betterPerspective": "优化视角切换",
@@ -138,6 +175,10 @@
   "config.babyzombieaddons.option.configBackend": "配置界面后端",
 
   "config.babyzombieaddons.option.hudEdit": "编辑 HUD 位置",
+
+  "babyzombieaddons.party.accepted": "§6§l§b已自动接受队伍邀请",
+  "babyzombieaddons.party.executed": "§6§l§b正在执行指令§7: §a{0}",
+  "babyzombieaddons.party.dm_invited": "§6§l§b已邀请 {0} 加入队伍",
 
   "config.babyzombieaddons.option.debugMode": "调试模式"
 }

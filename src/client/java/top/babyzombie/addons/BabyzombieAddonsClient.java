@@ -1,10 +1,7 @@
 package top.babyzombie.addons;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -28,10 +25,11 @@ import top.babyzombie.addons.module.skywars.SkywarsModule;
 import top.babyzombie.addons.module.slayer.SlayerModule;
 import top.babyzombie.addons.module.withercloak.WitherCloakModule;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.KeyBindingUtil;
 
 public class BabyzombieAddonsClient implements ClientModInitializer {
 
-    public static KeyMapping cancelKeyBindingRelease;
+    public static net.minecraft.client.KeyMapping cancelKeyBindingRelease;
 
     @Override
     public void onInitializeClient() {
@@ -39,12 +37,8 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         HudManager.init();
         registerHudElements();
 
-        cancelKeyBindingRelease = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-                "key.babyzombieaddons.cancel_key_release",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_LEFT_ALT,
-                KeyMapping.Category.MISC
-        ));
+        cancelKeyBindingRelease = KeyBindingUtil.register(
+                "key.babyzombieaddons.cancel_key_release", GLFW.GLFW_KEY_LEFT_ALT);
 
         HypixelLocationTracker.getInstance().init();
         AbiphoneTracker.getInstance().init();

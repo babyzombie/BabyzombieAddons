@@ -34,7 +34,7 @@ public final class HeavyPearlsModule {
                 if (collected != null && collected >= today) return;
 
                 shownToday.put(profileId, true);
-                ChatUtils.sendCommand("pc [BZA] Time to collect today's Heavy Pearls!");
+                ChatUtils.sendCommand("pc Time to collect today's Heavy Pearls!");
                 var player = Minecraft.getInstance().player;
                 if (player != null)
                     player.displayClientMessage(

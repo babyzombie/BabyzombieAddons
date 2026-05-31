@@ -55,6 +55,7 @@ public final class ModConfigManager {
                 .category(FishingCategory.create(defaults, config))
                 .category(GardenCategory.create(defaults, config))
                 .category(PartyCategory.create(defaults, config))
+                .category(PopupCategory.create(defaults, config))
                 .category(MiscCategory.create(defaults, config))
                 .categoryIf(config.debug.debugMode, DebugCategory.create(defaults, config))
                 .search(search)

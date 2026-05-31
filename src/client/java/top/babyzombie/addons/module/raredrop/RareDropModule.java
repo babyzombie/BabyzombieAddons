@@ -123,7 +123,7 @@ public final class RareDropModule {
         Minecraft.getInstance().keyboardHandler.setClipboard(text);
         var p = Minecraft.getInstance().player;
         if (p != null) p.displayClientMessage(
-                net.minecraft.network.chat.Component.literal("§6§l[BZA] §aCopied to clipboard"), false);
+                net.minecraft.network.chat.Component.literal("§6§l§aCopied to clipboard"), false);
     }
 
     public record ShareMode(boolean copy, boolean ac, boolean pc, boolean gc, boolean cc) {}

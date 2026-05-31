@@ -13,6 +13,8 @@ public final class GeneralCategory {
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
                 .name(Component.translatable("config.babyzombieaddons.category.general"))
+                .option(createBool("autois", defaults.general.autois,
+                        () -> config.general.autois, v -> config.general.autois = v))
                 .option(createBool("autoUpdateCheck", defaults.general.autoUpdateCheck,
                         () -> config.general.autoUpdateCheck, v -> config.general.autoUpdateCheck = v))
                 .option(createBool("noFog", defaults.general.noFog,

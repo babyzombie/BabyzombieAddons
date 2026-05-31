@@ -24,18 +24,18 @@ public final class BabyzombieAddonsCommand {
                     .then(literal("s").executes(BabyzombieAddonsCommand::settings))
                     .then(literal("settings").executes(BabyzombieAddonsCommand::settings))
                     .then(literal("play").executes(BabyzombieAddonsCommand::play))
-                    .then(literal("sc").executes(ctx -> sendcoords(ctx, "Self", null))
-                            .then(argument("channel", StringArgumentType.word())
-                                    .executes(ctx -> sendcoords(ctx, "Self", StringArgumentType.getString(ctx, "channel")))))
-                    .then(literal("sendcoords").executes(ctx -> sendcoords(ctx, "Self", null))
-                            .then(argument("channel", StringArgumentType.word())
-                                    .executes(ctx -> sendcoords(ctx, "Self", StringArgumentType.getString(ctx, "channel")))))
-                    .then(literal("la").executes(ctx -> sendcoords(ctx, "LookingAt", null))
-                            .then(argument("channel", StringArgumentType.word())
-                                    .executes(ctx -> sendcoords(ctx, "LookingAt", StringArgumentType.getString(ctx, "channel")))))
-                    .then(literal("lookingat").executes(ctx -> sendcoords(ctx, "LookingAt", null))
-                            .then(argument("channel", StringArgumentType.word())
-                                    .executes(ctx -> sendcoords(ctx, "LookingAt", StringArgumentType.getString(ctx, "channel")))))
+                    .then(literal("sc").executes(ctx -> sendcoords(ctx, "Self", null, null))
+                            .then(argument("extra", StringArgumentType.greedyString())
+                                    .executes(ctx -> parseSendcoordsArgs(ctx, "Self"))))
+                    .then(literal("sendcoords").executes(ctx -> sendcoords(ctx, "Self", null, null))
+                            .then(argument("extra", StringArgumentType.greedyString())
+                                    .executes(ctx -> parseSendcoordsArgs(ctx, "Self"))))
+                    .then(literal("la").executes(ctx -> sendcoords(ctx, "LookingAt", null, null))
+                            .then(argument("extra", StringArgumentType.greedyString())
+                                    .executes(ctx -> parseSendcoordsArgs(ctx, "LookingAt"))))
+                    .then(literal("lookingat").executes(ctx -> sendcoords(ctx, "LookingAt", null, null))
+                            .then(argument("extra", StringArgumentType.greedyString())
+                                    .executes(ctx -> parseSendcoordsArgs(ctx, "LookingAt"))))
                     .then(literal("location").executes(BabyzombieAddonsCommand::location))
                     .then(literal("yaw").then(argument("yaw", StringArgumentType.word())
                             .then(argument("pitch", StringArgumentType.word())
@@ -66,7 +66,20 @@ public final class BabyzombieAddonsCommand {
         return 1;
     }
 
-    private static int sendcoords(CommandContext<FabricClientCommandSource> ctx, String mode, String channel) {
+    private static int parseSendcoordsArgs(CommandContext<FabricClientCommandSource> ctx, String mode) {
+        String raw = StringArgumentType.getString(ctx, "extra");
+        String channel = null, suffix = null;
+        String[] parts = raw.trim().split(" ", 2);
+        if (channelToPrefix(parts[0]).isEmpty()) {
+            suffix = raw.trim();
+        } else {
+            channel = parts[0].toLowerCase();
+            if (parts.length > 1) suffix = parts[1];
+        }
+        return sendcoords(ctx, mode, channel, suffix);
+    }
+
+    private static int sendcoords(CommandContext<FabricClientCommandSource> ctx, String mode, String channel, String suffix) {
         var player = Minecraft.getInstance().player;
         if (player == null) return 1;
         var pos = player.blockPosition();
@@ -77,8 +90,9 @@ public final class BabyzombieAddonsCommand {
                 pos = bhit.getBlockPos();
         }
         String msg = String.format("x: %d, y: %d, z: %d", pos.getX(), pos.getY(), pos.getZ());
+        if (suffix != null && !suffix.isEmpty()) msg += ", " + suffix;
         String prefix = channelToPrefix(channel);
-        ctx.getSource().sendFeedback(Component.literal("§6§l[BZA] §b" + mode + (channel != null ? " " + prefix : "") + " §7: §a" + msg));
+        ctx.getSource().sendFeedback(Component.literal("§6§l§b" + mode + (channel != null ? " " + prefix : "") + " §7: §a" + msg));
         if (channel != null) ChatUtils.sendCommand(prefix + " " + msg);
         else ChatUtils.sendMessage(msg);
         return 1;
@@ -98,7 +112,7 @@ public final class BabyzombieAddonsCommand {
     private static int location(CommandContext<FabricClientCommandSource> ctx) {
         var loc = HypixelLocationTracker.getInstance().getCurrentLocation();
         ctx.getSource().sendFeedback(Component.literal(
-                String.format("§6§l[BZA] §bLocation: §aserver=%s type=%s lobby=%s mode=%s map=%s",
+                String.format("§6§l§bLocation: §aserver=%s type=%s lobby=%s mode=%s map=%s",
                         loc.serverName(), loc.serverType(), loc.lobbyName(), loc.mode(), loc.map())));
         return 1;
     }
@@ -112,7 +126,7 @@ public final class BabyzombieAddonsCommand {
                 player.setYRot(yaw % 360);
                 player.setXRot(Mth.clamp(pitch, -90, 90));
                 ctx.getSource().sendFeedback(Component.literal(
-                        String.format("§6§l[BZA] §aRotation: §by=%.1f p=%.1f", player.getYRot(), player.getXRot())));
+                        String.format("§6§l§aRotation: §by=%.1f p=%.1f", player.getYRot(), player.getXRot())));
             }
         } catch (NumberFormatException e) {
             ctx.getSource().sendError(Component.literal("§cInvalid yaw/pitch"));

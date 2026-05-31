@@ -1,53 +1,180 @@
 package top.babyzombie.addons.module.popup;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import org.lwjgl.glfw.GLFW;
+import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.KeyBindingUtil;
+
+import java.util.regex.Pattern;
 
 /**
- * On-screen popup notifications for party invites, friend requests,
- * trade requests, and dungeon/kuudra restart prompts.
+ * On-screen popup notifications with translatable strings.
  */
 public final class PopupEventsModule {
+
+    private static final Pattern PARTY_INVITE = Pattern.compile(
+            ".*(\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})( has invited you to join | has invited all members of .+ to |邀请你加入|已邀请.+中的所有成员加入)(.+)( party!|组队！).*",
+            Pattern.DOTALL);
+    private static final Pattern FRIEND_REQUEST = Pattern.compile(
+            ".*(Friend request from |好友请求：)(\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24}).*",
+            Pattern.DOTALL);
+    private static final Pattern SKYBLOCK_TRADE = Pattern.compile(
+            "([0-9a-zA-Z_]{2,24}) has sent you a trade request\\. Click here to accept!.*");
+    private static final Pattern DUELS_REQUEST = Pattern.compile(
+            ".*(\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})( has invited you to |邀请你参与)(.+)[!！].*",
+            Pattern.DOTALL);
+    private static final Pattern DUNGEON_RESTART = Pattern.compile(
+            "(?:组队|組隊|Party) > (?:\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]+)(?: [♲Ⓑ☀⚒ቾ]+)?: rs",
+            Pattern.CASE_INSENSITIVE);
+
+    private enum EventType {
+        PARTY("party_invite"), GUILD_PARTY("guild_party_invite"),
+        FRIEND("friend_request"), TRADE("trade_request"),
+        POSITION_SWAP("position_swap"), DUEL("duel_request"), RESTART("restart_request");
+
+        final String key;
+        EventType(String k) { this.key = k; }
+    }
+
+    private static Component title = Component.empty();
+    private static Component body = Component.empty();
+    private static String command = "";
+    private static long expireTime;
+    private static long totalTime;
+    private static KeyMapping keyYes;
+    private static KeyMapping keyNo;
+
     private PopupEventsModule() {}
 
     public static void init() {
+        keyYes = KeyBindingUtil.register("key.babyzombieaddons.popup_yes", GLFW.GLFW_KEY_Y);
+        keyNo  = KeyBindingUtil.register("key.babyzombieaddons.popup_no",  GLFW.GLFW_KEY_N);
+
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
+            if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
+            var cfg = ModConfigManager.get().popup;
             String text = message.getString();
 
-            // Party invite detection
-            if (text.contains("has invited you to join their party")) {
-                handlePartyInvite(text);
+            if (cfg.popupPartyInvite || cfg.popupGuildPartyInvite) {
+                var m = PARTY_INVITE.matcher(text);
+                if (m.find()) {
+                    String player = m.group(2);
+                    String what = m.group(4);
+                    boolean guild = m.group(3) != null && (m.group(3).contains("all members") || m.group(3).contains("所有成员"));
+                    if (guild && cfg.popupGuildPartyInvite)
+                        notify(EventType.GUILD_PARTY, player, what);
+                    else if (!guild && cfg.popupPartyInvite)
+                        notify(EventType.PARTY, player, what);
+                    return;
+                }
             }
-            // Friend request detection
-            if (text.contains("has sent you a friend request")) {
-                handleFriendRequest(text);
+
+            if (cfg.popupFriendRequest) {
+                var m = FRIEND_REQUEST.matcher(text);
+                if (m.find()) { notify(EventType.FRIEND, m.group(3), null); return; }
             }
-            // Dungeon/kuudra restart
-            if (text.contains("Restart") && (text.contains("Dungeon") || text.contains("Kuudra"))) {
-                handleRestartPrompt(text);
+
+            if (cfg.popupSkyblockTrade && HypixelLocationTracker.getInstance().isInSkyblock()) {
+                var m = SKYBLOCK_TRADE.matcher(text);
+                if (m.find()) {
+                    var loc = HypixelLocationTracker.getInstance();
+                    EventType t = loc.getMode() != null && loc.getMode().contains("Rift")
+                            ? EventType.POSITION_SWAP : EventType.TRADE;
+                    notify(t, m.group(1), null);
+                    return;
+                }
             }
+
+            if (cfg.popupDuelsRequest) {
+                var m = DUELS_REQUEST.matcher(text);
+                if (m.find()) { notify(EventType.DUEL, m.group(2), m.group(4)); return; }
+            }
+
+            if (cfg.popupDungeonRestart && HypixelLocationTracker.getInstance().isInSkyblock()) {
+                var m = DUNGEON_RESTART.matcher(text);
+                if (m.find()) { notify(EventType.RESTART, m.group(1), null); return; }
+            }
+        });
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (expireTime == 0) return;
+            while (keyYes.consumeClick()) accept();
+            while (keyNo.consumeClick()) close();
+        });
+
+        HudRenderCallback.EVENT.register((gui, delta) -> {
+            if (expireTime <= System.currentTimeMillis()) { close(); return; }
+            renderHUD(gui);
         });
     }
 
-    private static void handlePartyInvite(String text) {
-        var player = Minecraft.getInstance().player;
-        if (player != null) {
-            player.displayClientMessage(
-                net.minecraft.network.chat.Component.literal("§b[BZA] §eParty invite received!"), true);
-        }
+    private static void notify(EventType type, String player, String extra) {
+        String pre = "popup.";
+        title = Component.translatable(pre + "title." + type.key);
+        if (extra != null)
+            body = Component.translatable(pre + "body." + type.key, player, extra);
+        else
+            body = Component.translatable(pre + "body." + type.key, player);
+        command = type == EventType.PARTY || type == EventType.GUILD_PARTY ? "party accept " + player
+                : type == EventType.FRIEND ? "friend accept " + player
+                : type == EventType.TRADE || type == EventType.POSITION_SWAP ? "trade " + player
+                : type == EventType.DUEL ? "duels accept " + player
+                : "";
+        totalTime = 10000;
+        expireTime = System.currentTimeMillis() + totalTime;
+        playBell();
     }
 
-    private static void handleFriendRequest(String text) {
+    private static void playBell() {
         var player = Minecraft.getInstance().player;
-        if (player != null) {
-            player.displayClientMessage(
-                net.minecraft.network.chat.Component.literal("§b[BZA] §eFriend request received!"), true);
-        }
+        if (player == null) return;
+        player.level().playSound(player, player.blockPosition(),
+                SoundEvents.BELL_BLOCK, SoundSource.MASTER, 1f, 1f);
     }
 
-    private static void handleRestartPrompt(String text) {
-        // Auto-accept by pressing the restart button could be added here
+    private static void accept() {
+        if (!command.isEmpty() && expireTime > System.currentTimeMillis())
+            ChatUtils.sendCommand(command);
+        close();
+    }
+
+    private static void close() {
+        title = Component.empty(); body = Component.empty();
+        command = ""; expireTime = 0; totalTime = 0;
+    }
+
+    private static void renderHUD(GuiGraphics gui) {
+        long remaining = expireTime - System.currentTimeMillis();
+        if (remaining <= 0) { close(); return; }
+        var font = Minecraft.getInstance().font;
+        int scrW = gui.guiWidth();
+        int x = scrW / 2;
+        int y = gui.guiHeight() / 8;
+
+        gui.fill(x - 76, y - 1, x + 76, y + 51, 0x96000000);
+        gui.drawCenteredString(font, title.getString(), x, y, 0xFFFFFFFF);
+        gui.drawString(font, body.getString(), x - 75, y + 16, 0xFFFFFFFF, false);
+
+        float progress = 1f - (float) remaining / totalTime;
+        gui.fill(x - 76, y + 45, x - 76 + (int)(150 * progress), y + 51, 0x46FFFFFF);
+
+        String kbYes = keyYes.getTranslatedKeyMessage().getString();
+        String kbNo  = keyNo.getTranslatedKeyMessage().getString();
+        Component accept = Component.translatable("popup.accept", kbYes);
+        Component ignore = Component.translatable("popup.ignore", kbNo);
+        String hint = "§a" + accept.getString() + "   §e" + ignore.getString();
+        gui.drawString(font, hint, x + 75 - font.width(hint), y + 32, 0xFFFFFFFF, false);
+        gui.drawCenteredString(font, "§7" + (remaining / 1000 + 1) + "s", x, y + 32, 0xFFFFFFFF);
     }
 }

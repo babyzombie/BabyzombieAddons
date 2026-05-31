@@ -1,6 +1,7 @@
 package top.babyzombie.addons.module.autois;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.Scheduler;
@@ -13,6 +14,7 @@ public final class AutoISModule {
 
     public static void init() {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            if (!ModConfigManager.get().general.autois) return;
             Scheduler.schedule(60, () -> {
                 var tracker = HypixelLocationTracker.getInstance();
                 if (!tracker.isInSkyblock()) return;

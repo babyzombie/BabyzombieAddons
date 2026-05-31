@@ -13,47 +13,49 @@ public class ModConfig {
     public FishingConfig fishing = new FishingConfig();
     public GardenConfig garden = new GardenConfig();
     public PartyConfig party = new PartyConfig();
+    public PopupConfig popup = new PopupConfig();
     public MiscConfig misc = new MiscConfig();
     public DebugConfig debug = new DebugConfig();
 
     // ---- General ----
 
     public static class GeneralConfig {
-        public boolean autoUpdateCheck = true;
-        public boolean noFog = true;
-        public boolean doubleLobby = true;
+        public boolean autois = false;
+        public boolean autoUpdateCheck = false;
+        public boolean noFog = false;
+        public boolean doubleLobby = false;
         public boolean autoEnglish = false;
-        public boolean hideBlockMessages = true;
+        public boolean hideBlockMessages = false;
         public boolean crimsonArmorMute = false;
-        public boolean cancelEnderPearl = true;
-        public boolean cakeBuffTracker = true;
+        public boolean cancelEnderPearl = false;
+        public boolean cakeBuffTracker = false;
         public boolean itemTimestamp = false;
-        public boolean betterSignEditing = true;
-        public boolean quickAuction = true;
+        public boolean betterSignEditing = false;
+        public boolean quickAuction = false;
         public int witherShieldTimerMode = 1;
         public boolean hideClosePlayers = false;
         public int closePlayerRadius = 5;
-        public boolean vanquisherAlert = true;
-        public boolean autoAbiphoneAnswer = true;
-        public boolean jerryBoxHelper = true;
-        public boolean dailyChineseTranslation = true;
+        public boolean vanquisherAlert = false;
+        public boolean autoAbiphoneAnswer = false;
+        public boolean jerryBoxHelper = false;
+        public boolean dailyChineseTranslation = false;
     }
 
     // ---- Dungeon ----
 
     public static class DungeonConfig {
-        public boolean welcomeTitle = true;
-        public boolean bloodReadyAlert = true;
-        public boolean witherKeyMarkers = true;
-        public boolean dupeArcherDetection = true;
-        public boolean boxStarMobs = true;
-        public boolean boxFels = true;
-        public boolean f4CrowdHiding = true;
-        public boolean stormThunderMuting = true;
-        public boolean autoChestClose = true;
-        public boolean noAligned = true;
-        public boolean dailyCounter = true;
-        public boolean autoRequeue = true;
+        public boolean welcomeTitle = false;
+        public boolean bloodReadyAlert = false;
+        public boolean witherKeyMarkers = false;
+        public boolean dupeArcherDetection = false;
+        public boolean boxStarMobs = false;
+        public boolean boxFels = false;
+        public boolean f4CrowdHiding = false;
+        public boolean stormThunderMuting = false;
+        public boolean autoChestClose = false;
+        public boolean noAligned = false;
+        public boolean dailyCounter = false;
+        public boolean autoRequeue = false;
         public boolean instanceWarp = false;
         public int readyCheckDelay = 10;
     }
@@ -61,114 +63,132 @@ public class ModConfig {
     // ---- Kuudra ----
 
     public static class KuudraConfig {
-        public boolean welcomeTitle = true;
-        public boolean hpDisplay = true;
-        public boolean phaseTimer = true;
-        public boolean dropshipWarning = true;
-        public boolean wanderingBlazesWarning = true;
-        public boolean stunTimer = true;
-        public boolean waypoints = true;
-        public boolean energyDisplay = true;
-        public boolean directionIndicator = true;
-        public boolean boxKuudra = true;
-        public boolean enderPearlRefill = true;
-        public boolean perkShopBlacklist = true;
-        public boolean extremeFocusWarning = true;
-        public boolean followerHelmetPrice = true;
+        public boolean welcomeTitle = false;
+        public boolean hpDisplay = false;
+        public boolean phaseTimer = false;
+        public boolean dropshipWarning = false;
+        public boolean wanderingBlazesWarning = false;
+        public boolean stunTimer = false;
+        public boolean waypoints = false;
+        public boolean energyDisplay = false;
+        public boolean directionIndicator = false;
+        public boolean boxKuudra = false;
+        public boolean enderPearlRefill = false;
+        public boolean perkShopBlacklist = false;
+        public boolean extremeFocusWarning = false;
+        public boolean followerHelmetPrice = false;
     }
 
     // ---- Slayer ----
 
     public static class SlayerConfig {
-        public boolean noQuestReminder = true;
-        public boolean pigmanSwordTimer = true;
-        public boolean ragnarockAxeTimer = true;
-        public boolean reaperArmorTimer = true;
-        public boolean endStoneSwordTimer = true;
-        public boolean bossInfoHUD = true;
-        public boolean bossBoundingBox = true;
-        public boolean lowHPBloodfiend = true;
-        public boolean riftEffigyDisplay = true;
-        public boolean gummyBearTimer = true;
+        public boolean noQuestReminder = false;
+        public boolean pigmanSwordTimer = false;
+        public boolean ragnarockAxeTimer = false;
+        public boolean reaperArmorTimer = false;
+        public boolean endStoneSwordTimer = false;
+        public boolean bossInfoHUD = false;
+        public boolean bossBoundingBox = false;
+        public boolean lowHPBloodfiend = false;
+        public boolean riftEffigyDisplay = false;
+        public boolean gummyBearTimer = false;
     }
 
     // ---- Wither Cloak ----
 
     public static class WitherCloakConfig {
-        public boolean witherCloakTimer = true;
-        public boolean soulwardTimer = true;
-        public boolean alignedTimer = true;
-        public boolean gravityStormTimer = true;
+        public boolean witherCloakTimer = false;
+        public boolean soulwardTimer = false;
+        public boolean alignedTimer = false;
+        public boolean gravityStormTimer = false;
     }
 
     // ---- Mining ----
 
     public static class MiningConfig {
-        public boolean nucleusAutoWarp = true;
-        public boolean miningAbilityAlerts = true;
-        public boolean crystalHollowsPassAutoRenew = true;
-        public boolean chestMarkers = true;
-        public boolean getFromSacks = true;
-        public boolean scathaCooldown = true;
-        public boolean armadilloEnergy = true;
-        public boolean compassSolver = true;
-        public boolean darkMonolithFinder = true;
-        public boolean drillSwingSuppression = true;
-        public boolean powderMiningSounds = true;
-        public boolean noPickobulus = true;
-        public boolean glaciteWaypoints = true;
-        public boolean mineshaftWaypoints = true;
-        public boolean suspiciousScrapCounter = true;
-        public boolean baseCampQuickWarp = true;
+        public boolean nucleusAutoWarp = false;
+        public boolean miningAbilityAlerts = false;
+        public boolean crystalHollowsPassAutoRenew = false;
+        public boolean chestMarkers = false;
+        public boolean getFromSacks = false;
+        public boolean scathaCooldown = false;
+        public boolean armadilloEnergy = false;
+        public boolean compassSolver = false;
+        public boolean darkMonolithFinder = false;
+        public boolean drillSwingSuppression = false;
+        public boolean powderMiningSounds = false;
+        public boolean noPickobulus = false;
+        public boolean glaciteWaypoints = false;
+        public boolean mineshaftWaypoints = false;
+        public boolean suspiciousScrapCounter = false;
+        public boolean baseCampQuickWarp = false;
     }
 
     // ---- Fishing ----
 
     public static class FishingConfig {
-        public boolean legendaryAlerts = true;
-        public boolean volcanoSteamReduction = true;
-        public boolean slugfishHookLock = true;
-        public boolean killInvisibleGoldenFish = true;
-        public boolean reindrakeHP = true;
+        public boolean legendaryAlerts = false;
+        public boolean volcanoSteamReduction = false;
+        public boolean slugfishHookLock = false;
+        public boolean killInvisibleGoldenFish = false;
+        public boolean reindrakeHP = false;
     }
 
     // ---- Garden ----
 
     public static class GardenConfig {
-        public boolean pestDisplay = true;
-        public boolean xpOrbSoundRemoval = true;
-        public boolean signAutoRotate = true;
+        public boolean pestDisplay = false;
+        public boolean xpOrbSoundRemoval = false;
+        public boolean signAutoRotate = false;
     }
 
     // ---- Party ----
 
     public static class PartyConfig {
-        public boolean autoAccept = true;
-        public boolean doublePWarpConfirm = true;
-        public boolean partyCommands = true;
+        public boolean autoAccept = false;
+        public boolean doublePWarpConfirm = false;
+        public boolean partyAllinvite = false;
+        public boolean partyInvite = false;
+        public boolean partyWarp = false;
+        public boolean partyWarpDelay = false;
+        public int partyWarpDelaySeconds = 3;
+        public boolean partyJoinInstance = false;
+        public boolean partySendCoords = false;
+        public boolean dmPartyInvite = false;
+    }
+
+    // ---- Popup Events ----
+
+    public static class PopupConfig {
+        public boolean popupPartyInvite = false;
+        public boolean popupGuildPartyInvite = false;
+        public boolean popupFriendRequest = false;
+        public boolean popupDuelsRequest = false;
+        public boolean popupSkyblockTrade = false;
+        public boolean popupDungeonRestart = false;
     }
 
     // ---- Misc ----
 
     public static class MiscConfig {
-        public boolean killComboHUD = true;
-        public boolean betterPerspective = true;
-        public boolean dukeWaypoint = true;
-        public boolean creeperVisibility = true;
-        public boolean fruitDiggingHelper = true;
-        public boolean bazaarSackExtraction = true;
-        public boolean personalCompactorPreview = true;
+        public boolean killComboHUD = false;
+        public boolean betterPerspective = false;
+        public boolean dukeWaypoint = false;
+        public boolean creeperVisibility = false;
+        public boolean fruitDiggingHelper = false;
+        public boolean bazaarSackExtraction = false;
+        public boolean personalCompactorPreview = false;
         public boolean hideHyperionExplosion = false;
         public boolean witherImpactVolume = false;
-        public boolean dyedArmorSBID = true;
+        public boolean dyedArmorSBID = false;
         public boolean sackItemHUD = false;
         public boolean periodicEntityCleanup = false;
-        public boolean stonksPrice = true;
-        public boolean bitsShopPrice = true;
-        public boolean attributeDisplay = true;
+        public boolean stonksPrice = false;
+        public boolean bitsShopPrice = false;
+        public boolean attributeDisplay = false;
         public boolean timeChime = false;
-        public boolean abiphoneGui = true;
-        public boolean playCmd = true;
+        public boolean abiphoneGui = false;
+        public boolean playCmd = false;
     }
 
     // ---- Debug ----
