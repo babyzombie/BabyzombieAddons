@@ -18,6 +18,7 @@ public final class DebugCategory {
                 .name(Component.translatable("config.babyzombieaddons.category.debug"))
                 .option(ButtonOption.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.option.hudEdit"))
+                        .description(Component.translatable("config.babyzombieaddons.option.hudEdit.desc"))
                         .action(screen -> HudManager.toggleEditMode())
                         .build())
                 .group(OptionGroup.createBuilder()
@@ -25,6 +26,7 @@ public final class DebugCategory {
                         .collapsed(true)
                         .option(Option.<ConfigBackend>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.configBackend"))
+                                .description(Component.translatable("config.babyzombieaddons.option.configBackend.desc"))
                                 .binding(defaults.debug.configBackend,
                                         () -> config.debug.configBackend,
                                         v -> config.debug.configBackend = v)
@@ -36,6 +38,7 @@ public final class DebugCategory {
                         .build())
                 .option(Option.<Boolean>createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.option.debugMode"))
+                        .description(Component.translatable("config.babyzombieaddons.option.debugMode.desc"))
                         .binding(defaults.debug.debugMode,
                                 () -> config.debug.debugMode,
                                 v -> config.debug.debugMode = v)

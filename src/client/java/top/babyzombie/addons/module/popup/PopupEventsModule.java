@@ -120,7 +120,7 @@ public final class PopupEventsModule {
     }
 
     private static void notify(EventType type, String player, String extra) {
-        String pre = "popup.";
+        String pre = "babyzombieaddons.popup.";
         title = Component.translatable(pre + "title." + type.key);
         if (extra != null)
             body = Component.translatable(pre + "body." + type.key, player, extra);
@@ -171,8 +171,8 @@ public final class PopupEventsModule {
 
         String kbYes = keyYes.getTranslatedKeyMessage().getString();
         String kbNo  = keyNo.getTranslatedKeyMessage().getString();
-        Component accept = Component.translatable("popup.accept", kbYes);
-        Component ignore = Component.translatable("popup.ignore", kbNo);
+        Component accept = Component.translatable("babyzombieaddons.popup.accept", kbYes);
+        Component ignore = Component.translatable("babyzombieaddons.popup.ignore", kbNo);
         String hint = "§a" + accept.getString() + "   §e" + ignore.getString();
         gui.drawString(font, hint, x + 75 - font.width(hint), y + 32, 0xFFFFFFFF, false);
         gui.drawCenteredString(font, "§7" + (remaining / 1000 + 1) + "s", x, y + 32, 0xFFFFFFFF);

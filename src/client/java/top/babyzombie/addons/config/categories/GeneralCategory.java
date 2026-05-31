@@ -15,10 +15,6 @@ public final class GeneralCategory {
                 .name(Component.translatable("config.babyzombieaddons.category.general"))
                 .option(createBool("autois", defaults.general.autois,
                         () -> config.general.autois, v -> config.general.autois = v))
-                .option(createBool("autoUpdateCheck", defaults.general.autoUpdateCheck,
-                        () -> config.general.autoUpdateCheck, v -> config.general.autoUpdateCheck = v))
-                .option(createBool("noFog", defaults.general.noFog,
-                        () -> config.general.noFog, v -> config.general.noFog = v))
                 .option(createBool("doubleLobby", defaults.general.doubleLobby,
                         () -> config.general.doubleLobby, v -> config.general.doubleLobby = v))
                 .option(createBool("autoEnglish", defaults.general.autoEnglish,
@@ -53,6 +49,7 @@ public final class GeneralCategory {
     private static Option<Boolean> createBool(String key, boolean def, java.util.function.Supplier<Boolean> getter, java.util.function.Consumer<Boolean> setter) {
         return Option.<Boolean>createBuilder()
                 .name(Component.translatable("config.babyzombieaddons.option." + key))
+                .description(Component.translatable("config.babyzombieaddons.option." + key + ".desc"))
                 .binding(def, getter, setter)
                 .controller(ConfigUtils.createBooleanController())
                 .build();

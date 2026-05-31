@@ -7,6 +7,8 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -15,9 +17,9 @@ import java.util.regex.Pattern;
  */
 public final class PartyModule {
 
-    // Party invite detection — multi-line message with accept button
-    private static final Pattern INVITE_PATTERN = Pattern.compile(
-            ".*has invited you to join.*party.*",
+    // Same multi-line party invite regex used by PopupEventsModule
+    private static final Pattern PARTY_INVITE = Pattern.compile(
+            ".*(\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})( has invited you to join | has invited all members of .+ to |邀请你加入|已邀请.+中的所有成员加入)(.+)( party!|组队！).*",
             Pattern.DOTALL);
 
     // Party chat line: "Party > [RANK] PlayerName: message"
@@ -39,26 +41,30 @@ public final class PartyModule {
     private static boolean partyDisbanded;
     private static long warpDelayUntil;
     private static String nextCommand;
+    private static final Map<String, Long> dmInvitePending = new HashMap<>();
 
     private PartyModule() {}
 
     public static void init() {
-        var config = ModConfigManager.get().party;
 
-        // Auto-accept party invite (from clickable invite message or chat)
-        if (config.autoAccept) {
-            ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-                if (overlay) return;
-                String text = ChatUtils.stripColor(message.getString());
+        // Auto-accept party invite
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+            if (overlay) return;
+            String text = message.getString();
+            long now = System.currentTimeMillis();
+            dmInvitePending.values().removeIf(t -> t < now);
 
-                // Direct invite detection
-                if (text.contains("has invited you to join") && text.contains("party")) {
-                    // Wait a tick then accept
-                    ChatUtils.sendCommand("party accept");
-                    showMsg("party.accepted");
-                }
-            });
-        }
+            var m = PARTY_INVITE.matcher(text);
+            if (!m.find()) return;
+
+            // Only auto-accept if inviter was recently sent DM !p by us
+            String inviter = m.group(2);
+            if (inviter != null && dmInvitePending.containsKey(inviter.toLowerCase())) {
+                dmInvitePending.remove(inviter.toLowerCase());
+                ChatUtils.sendCommand("party accept");
+                showMsg("party.accepted");
+            }
+        });
 
         // Detect party disband for reparty context
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
@@ -73,16 +79,15 @@ public final class PartyModule {
         });
 
         // Double P-warp confirm
-        if (config.doublePWarpConfirm) {
-            ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-                if (overlay) return;
-                String text = ChatUtils.stripColor(message.getString());
-                if (text.contains("run the command again to confirm warp") || text.contains("再次输入指令以确认传送")) {
-                    try { Thread.sleep(500); } catch (Exception ignored) {}
-                    ChatUtils.sendCommand("party warp");
-                }
-            });
-        }
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+            if (overlay) return;
+            if (!ModConfigManager.get().party.doublePWarpConfirm) return;
+            String text = ChatUtils.stripColor(message.getString());
+            if (text.contains("run the command again to confirm warp") || text.contains("再次输入指令以确认传送")) {
+                try { Thread.sleep(500); } catch (Exception ignored) {}
+                ChatUtils.sendCommand("party warp");
+            }
+        });
 
         // Party chat commands
             ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
@@ -156,6 +161,7 @@ public final class PartyModule {
             var matcher = DM_INVITE.matcher(message.getString());
             if (matcher.find()) {
                 String player = ChatUtils.stripColor(matcher.group(1));
+                dmInvitePending.put(player.toLowerCase(), System.currentTimeMillis() + 2000);
                 ChatUtils.sendCommand("party invite " + player);
                 showMsg("party.dm_invited", player);
             }

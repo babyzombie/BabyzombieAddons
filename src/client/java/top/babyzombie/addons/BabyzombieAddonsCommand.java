@@ -104,8 +104,9 @@ public final class BabyzombieAddonsCommand {
             case "ac" -> "ac";
             case "pc" -> "pc";
             case "gc" -> "gc";
-            case "cc", "oc" -> "oc";
-            default -> "";
+            case "oc" -> "oc";
+            case "cc" -> "cc";
+                default -> "";
         };
     }
 

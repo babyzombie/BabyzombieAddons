@@ -21,8 +21,6 @@ public class ModConfig {
 
     public static class GeneralConfig {
         public boolean autois = false;
-        public boolean autoUpdateCheck = false;
-        public boolean noFog = false;
         public boolean doubleLobby = false;
         public boolean autoEnglish = false;
         public boolean hideBlockMessages = false;
@@ -145,7 +143,6 @@ public class ModConfig {
     // ---- Party ----
 
     public static class PartyConfig {
-        public boolean autoAccept = false;
         public boolean doublePWarpConfirm = false;
         public boolean partyAllinvite = false;
         public boolean partyInvite = false;

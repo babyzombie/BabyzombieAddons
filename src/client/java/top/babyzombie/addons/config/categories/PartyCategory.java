@@ -17,8 +17,6 @@ public final class PartyCategory {
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
                 .name(Component.translatable("config.babyzombieaddons.category.party"))
-                .option(bool("autoAccept", defaults.party.autoAccept,
-                        () -> config.party.autoAccept, v -> config.party.autoAccept = v))
                 .option(bool("doublePWarpConfirm", defaults.party.doublePWarpConfirm,
                         () -> config.party.doublePWarpConfirm, v -> config.party.doublePWarpConfirm = v))
                 .group(OptionGroup.createBuilder()
@@ -34,6 +32,7 @@ public final class PartyCategory {
                                 () -> config.party.partyWarpDelay, v -> config.party.partyWarpDelay = v))
                         .option(Option.<Integer>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.partyWarpDelaySeconds"))
+                                .description(Component.translatable("config.babyzombieaddons.option.partyWarpDelaySeconds.desc"))
                                 .binding(defaults.party.partyWarpDelaySeconds,
                                         () -> config.party.partyWarpDelaySeconds,
                                         v -> config.party.partyWarpDelaySeconds = v)
@@ -52,6 +51,7 @@ public final class PartyCategory {
     private static Option<Boolean> bool(String key, boolean def, Supplier<Boolean> getter, Consumer<Boolean> setter) {
         return Option.<Boolean>createBuilder()
                 .name(Component.translatable("config.babyzombieaddons.option." + key))
+                .description(Component.translatable("config.babyzombieaddons.option." + key + ".desc"))
                 .binding(def, getter, setter)
                 .controller(ConfigUtils.createBooleanController())
                 .build();

@@ -41,6 +41,7 @@ public final class DungeonCategory {
                         () -> config.dungeon.instanceWarp, v -> config.dungeon.instanceWarp = v))
                 .option(Option.<Integer>createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.option.readyCheckDelay"))
+                        .description(Component.translatable("config.babyzombieaddons.option.readyCheckDelay.desc"))
                         .binding(defaults.dungeon.readyCheckDelay,
                                 () -> config.dungeon.readyCheckDelay,
                                 v -> config.dungeon.readyCheckDelay = v)
@@ -52,6 +53,7 @@ public final class DungeonCategory {
     private static Option<Boolean> bool(String key, boolean def, java.util.function.Supplier<Boolean> getter, java.util.function.Consumer<Boolean> setter) {
         return Option.<Boolean>createBuilder()
                 .name(Component.translatable("config.babyzombieaddons.option." + key))
+                .description(Component.translatable("config.babyzombieaddons.option." + key + ".desc"))
                 .binding(def, getter, setter)
                 .controller(ConfigUtils.createBooleanController())
                 .build();
