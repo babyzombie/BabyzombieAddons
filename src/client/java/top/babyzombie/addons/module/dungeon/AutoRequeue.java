@@ -1,40 +1,57 @@
 package top.babyzombie.addons.module.dungeon;
 
-import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.Scheduler;
 
 /**
- * Auto-instancerequeue on dungeon win or loss.
+ * Auto requeue after dungeon/kuudra end with configurable delay and mode.
  */
 public final class AutoRequeue {
-    static boolean inDungeon;
-    static int dailyRuns;
+    static boolean cancelAutoJoin;
+    static boolean ended;
+    private static boolean counting;
 
     private AutoRequeue() {}
 
-    public static void init() {
-        if (!ModConfigManager.get().dungeon.autoRequeue) return;
+    static void init() {}
 
-        // Track dungeon entry
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay) return;
-            String text = ChatUtils.stripColor(message.getString());
-            if (text.contains("The Catacombs")) inDungeon = true;
-        });
+    static void schedule(boolean win) {
+        var cfg = ModConfigManager.get().dungeon;
+        ModConfig.RequeueMode mode = cfg.autoRequeue;
+        if (mode == ModConfig.RequeueMode.OFF) return;
+        if (ended) return;
+        if (mode == ModConfig.RequeueMode.ON_FAIL && win) return;
+        if (mode == ModConfig.RequeueMode.ON_WIN && !win) return;
 
-        // Auto requeue on completion
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay || !inDungeon) return;
-            String text = ChatUtils.stripColor(message.getString());
-            if (text.contains("Dungeon cleared") || text.contains("Defeat")) {
-                dailyRuns++;
-                Scheduler.schedule(100, () -> {
-                    ChatUtils.sendCommand("instancerequeue");
-                    inDungeon = false;
-                });
-            }
-        });
+        ended = true;
+        counting = true;
+        int delay = cfg.requeueDelay;
+        String msg = cfg.requeueMessage.replace("%delay%", String.valueOf(delay));
+        ChatUtils.sendCommand("pc " + msg);
+
+        if (delay > 0) {
+            Scheduler.schedule(delay * 20, () -> {
+                counting = false;
+                if (cancelAutoJoin) return;
+                var t = HypixelLocationTracker.getInstance();
+                if (!t.isInSkyblock() || (!t.isInDungeon() && !t.isInKuudra())) return;
+                ended = false;
+                ChatUtils.sendCommand("instancerequeue");
+            });
+        } else {
+            counting = false;
+            ended = false;
+            ChatUtils.sendCommand("instancerequeue");
+        }
+    }
+
+    static void cancel() {
+        if (!ended && !counting) return;
+        cancelAutoJoin = true;
+        String cancelMsg = ModConfigManager.get().dungeon.requeueCancelMessage;
+        ChatUtils.sendCommand("pc " + cancelMsg);
     }
 }

@@ -27,11 +27,7 @@ public final class KuudraWelcomeTitle {
             else if (text.contains("T5")) subtitle = "§e§lInfernal Tier (T5)";
             else return;
 
-            var player = Minecraft.getInstance().player;
-            if (player != null) {
-                player.displayClientMessage(net.minecraft.network.chat.Component.literal("§b§lKuudra"), true);
-                player.displayClientMessage(net.minecraft.network.chat.Component.literal(subtitle), true);
-            }
+            ChatUtils.showTitle("§b§lKuudra", subtitle);
         });
     }
 }

@@ -52,7 +52,6 @@ public final class ModConfigManager {
                 .category(SlayerCategory.create(defaults, config))
                 .category(WitherCloakCategory.create(defaults, config))
                 .category(MiningCategory.create(defaults, config))
-                .category(FishingCategory.create(defaults, config))
                 .category(GardenCategory.create(defaults, config))
                 .category(PartyCategory.create(defaults, config))
                 .category(PopupCategory.create(defaults, config))

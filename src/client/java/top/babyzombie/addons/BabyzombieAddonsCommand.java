@@ -112,9 +112,7 @@ public final class BabyzombieAddonsCommand {
 
     private static int location(CommandContext<FabricClientCommandSource> ctx) {
         var loc = HypixelLocationTracker.getInstance().getCurrentLocation();
-        ctx.getSource().sendFeedback(Component.literal(
-                String.format("§6§l§bLocation: §aserver=%s type=%s lobby=%s mode=%s map=%s",
-                        loc.serverName(), loc.serverType(), loc.lobbyName(), loc.mode(), loc.map())));
+        ctx.getSource().sendFeedback(Component.literal("§b" + loc.toString()));
         return 1;
     }
 

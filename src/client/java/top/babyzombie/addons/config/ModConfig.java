@@ -3,6 +3,9 @@ package top.babyzombie.addons.config;
 public class ModConfig {
 
     public enum ConfigBackend { YACL, MOUL_CONFIG }
+    public enum AutoISDest { ISLAND, GARDEN }
+    public enum KickRecovery { OFF, LOBBY_ONLY, LOBBY_AND_SKYBLOCK }
+    public enum RequeueMode { OFF, ON_FAIL, ON_WIN, ALWAYS }
 
     public GeneralConfig general = new GeneralConfig();
     public DungeonConfig dungeon = new DungeonConfig();
@@ -10,7 +13,6 @@ public class ModConfig {
     public SlayerConfig slayer = new SlayerConfig();
     public WitherCloakConfig witherCloak = new WitherCloakConfig();
     public MiningConfig mining = new MiningConfig();
-    public FishingConfig fishing = new FishingConfig();
     public GardenConfig garden = new GardenConfig();
     public PartyConfig party = new PartyConfig();
     public PopupConfig popup = new PopupConfig();
@@ -21,6 +23,9 @@ public class ModConfig {
 
     public static class GeneralConfig {
         public boolean autois = false;
+        public int autoisDelay = 5;
+        public AutoISDest autoisDest = AutoISDest.GARDEN;
+        public KickRecovery autoBackToSkyblock = KickRecovery.LOBBY_ONLY;
         public boolean doubleLobby = false;
         public boolean autoEnglish = false;
         public boolean hideBlockMessages = false;
@@ -42,20 +47,14 @@ public class ModConfig {
     // ---- Dungeon ----
 
     public static class DungeonConfig {
-        public boolean welcomeTitle = false;
-        public boolean bloodReadyAlert = false;
-        public boolean witherKeyMarkers = false;
-        public boolean dupeArcherDetection = false;
-        public boolean boxStarMobs = false;
-        public boolean boxFels = false;
         public boolean f4CrowdHiding = false;
-        public boolean stormThunderMuting = false;
+        public RequeueMode autoRequeue = RequeueMode.OFF;
+        public int requeueDelay = 0;
+        public String requeueMessage = "going in %delay%";
+        public String requeueCancelMessage = "ok";
+        public String requeueCancelKeywords = "c|cancel|n|nr|wait|stop|dt|don't|gtg|tyfr|tyfrs|gtg tyfr|gtg tyfrs|no key|别急|等会|等下|先别开";
         public boolean autoChestClose = false;
-        public boolean noAligned = false;
         public boolean dailyCounter = false;
-        public boolean autoRequeue = false;
-        public boolean instanceWarp = false;
-        public int readyCheckDelay = 10;
     }
 
     // ---- Kuudra ----
@@ -120,16 +119,6 @@ public class ModConfig {
         public boolean mineshaftWaypoints = false;
         public boolean suspiciousScrapCounter = false;
         public boolean baseCampQuickWarp = false;
-    }
-
-    // ---- Fishing ----
-
-    public static class FishingConfig {
-        public boolean legendaryAlerts = false;
-        public boolean volcanoSteamReduction = false;
-        public boolean slugfishHookLock = false;
-        public boolean killInvisibleGoldenFish = false;
-        public boolean reindrakeHP = false;
     }
 
     // ---- Garden ----

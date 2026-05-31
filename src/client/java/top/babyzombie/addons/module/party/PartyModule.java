@@ -22,9 +22,9 @@ public final class PartyModule {
             ".*(\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})( has invited you to join | has invited all members of .+ to |邀请你加入|已邀请.+中的所有成员加入)(.+)( party!|组队！).*",
             Pattern.DOTALL);
 
-    // Party chat line: "Party > [RANK] PlayerName: message"
-    private static final Pattern PARTY_CHAT = Pattern.compile(
-            "(?:组队|組隊|Party) > (?:\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]+)(?: [♲Ⓑ☀⚒ቾ]+)?: (.+)");
+    // Party chat line: "Party > [RANK] PlayerName: message" (5 capture groups matching original JS)
+    public static final Pattern PARTY_CHAT = Pattern.compile(
+            "(组队|組隊|Party) > (\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]+)( [♲Ⓑ☀⚒ቾ]+)?: (.+)");
 
     // DM message: "From PlayerName: !p"
     private static final Pattern DM_INVITE = Pattern.compile(
@@ -96,8 +96,8 @@ public final class PartyModule {
                 var matcher = PARTY_CHAT.matcher(text);
                 if (!matcher.find()) return;
 
-                String player = matcher.group(1);
-                String msg = ChatUtils.stripColor(matcher.group(2)).trim();
+                String player = matcher.group(3);
+                String msg = ChatUtils.stripColor(matcher.group(5)).trim();
 
                 // Don't respond to self
                 var self = Minecraft.getInstance().player;

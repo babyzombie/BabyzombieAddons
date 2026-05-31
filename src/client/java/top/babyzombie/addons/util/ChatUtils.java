@@ -53,6 +53,30 @@ public final class ChatUtils {
     }
 
     /**
+     * Shows a title on the HUD with timing control.
+     */
+    public static void showTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        var gui = Minecraft.getInstance().gui;
+        gui.setTimes(fadeIn, stay, fadeOut);
+        gui.setTitle(title != null ? Component.literal(title) : Component.empty());
+        gui.setSubtitle(subtitle != null ? Component.literal(subtitle) : Component.empty());
+    }
+
+    /**
+     * Shows a title on the HUD with default timing (0 fadeIn, 40 stay, 20 fadeOut).
+     */
+    public static void showTitle(String title, String subtitle) {
+        showTitle(title, subtitle, 0, 40, 20);
+    }
+
+    /**
+     * Shows a title on the HUD with no subtitle.
+     */
+    public static void showTitle(String title) {
+        showTitle(title, null);
+    }
+
+    /**
      * Extracts a regex group from a Component message string.
      */
     public static String extractPattern(Component message, java.util.regex.Pattern pattern, int group) {
