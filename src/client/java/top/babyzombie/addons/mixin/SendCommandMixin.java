@@ -1,0 +1,42 @@
+package top.babyzombie.addons.mixin;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.module.abiphone.AbiphoneContactScreen;
+import top.babyzombie.addons.module.abiphone.AbiphoneTracker;
+import top.babyzombie.addons.module.playcmd.PlayCmdModule;
+import top.babyzombie.addons.util.HypixelLocationTracker;
+
+@Mixin(ClientPacketListener.class)
+public class SendCommandMixin {
+
+    @Inject(method = "sendCommand", at = @At("HEAD"), cancellable = true)
+    private void onSendCommand(String command, CallbackInfo ci) {
+        if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
+        String cmd = command.trim();
+
+        // /call → Abiphone contact screen
+        if (cmd.equals("call") && ModConfigManager.get().misc.abiphoneGui) {
+            ci.cancel();
+            var client = Minecraft.getInstance();
+            var tracker = HypixelLocationTracker.getInstance();
+            var contacts = AbiphoneTracker.getInstance()
+                .loadItems(tracker.getUuid(), tracker.getProfileId());
+            client.execute(() -> client.setScreen(new AbiphoneContactScreen(contacts)));
+            return;
+        }
+
+        // /play → Play command GUI
+        if (cmd.equals("play") || cmd.startsWith("play ")) {
+            if (ModConfigManager.get().misc.playCmd) {
+                ci.cancel();
+                PlayCmdModule.openGUI();
+            }
+        }
+    }
+}

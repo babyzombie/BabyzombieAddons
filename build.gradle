@@ -1,0 +1,120 @@
+plugins {
+    id 'fabric-loom' version '1.15-SNAPSHOT'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        "babyzombieaddons" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
+repositories {
+    maven { url 'https://repo.hypixel.net/repository/Hypixel/' }
+
+    // Dandelion
+    maven {
+        url = 'https://maven.azureaaron.net/releases'
+        content { includeGroup 'net.azureaaron' }
+    }
+    maven {
+        url = 'https://maven.azureaaron.net/snapshots'
+        content { includeGroup 'net.azureaaron' }
+    }
+
+    // ModMenu
+    maven {
+        url = 'https://maven.terraformersmc.com/releases'
+        content { includeGroup 'com.terraformersmc' }
+    }
+
+    // YACL
+    maven {
+        url = 'https://maven.isxander.dev/releases'
+        content { includeGroup 'dev.isxander'; includeGroup 'org.quiltmc.parsers' }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    implementation 'net.hypixel:mod-api:1.0.2'
+
+    // Dandelion (bundled)
+    include modImplementation("net.azureaaron:dandelion:${project.dandelion_version}")
+
+    // YACL (Dandelion rendering backend)
+    modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric"
+
+    // ModMenu
+    modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
+
+    // Fabric Language Kotlin (required by Dandelion/MoulConfig)
+    modImplementation "net.fabricmc:fabric-language-kotlin:${project.flk_version}"
+
+    // Gson (config persistence)
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "loader_version", project.loader_version
+    filteringCharset "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+                "minecraft_version": project.minecraft_version,
+                "loader_version": project.loader_version
+    }
+}
+
+def targetJavaVersion = 21
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release.set(targetJavaVersion)
+    }
+}
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archives_base_name}" }
+    }
+}
+
+publishing {
+    publications {
+        create("mavenJava", MavenPublication) {
+            artifactId = project.archives_base_name
+            from components.java
+        }
+    }
+
+    repositories {
+    }
+}

@@ -1,0 +1,132 @@
+package top.babyzombie.addons.module.raredrop;
+
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.minecraft.client.Minecraft;
+import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.DataPersistence;
+import top.babyzombie.addons.util.HypixelLocationTracker;
+
+import java.util.*;
+
+/**
+ * Rare drop filtering and auto-sharing.
+ * Blacklist and share list (with per-item ac/pc/gc toggles) persisted to disk.
+ */
+public final class RareDropModule {
+
+    private static final String DATA_FILE = "raredrop.json";
+    private static final Set<String> blacklist = new LinkedHashSet<>();
+    private static final Map<String, ShareMode> shareList = new LinkedHashMap<>();
+
+    // Exact defaults from original ChatTriggers JS
+    static {
+        blacklist.add("potato");
+        blacklist.add("carrot");
+        blacklist.add("cropie");
+        blacklist.add("squash");
+        blacklist.add("compost");
+        blacklist.add("tasty cheese");
+        blacklist.add("enchanted bone");
+        blacklist.add("enchanted ender pearl");
+
+        shareList.put("phoenix", new ShareMode(false, false, false, false, true));
+        shareList.put("warden heart", new ShareMode(false, false, false, false, true));
+        shareList.put("overflux capacitor", new ShareMode(false, false, false, false, true));
+        shareList.put("judgement core", new ShareMode(false, false, false, false, true));
+    }
+
+    private RareDropModule() {}
+
+    public static void init() {
+        loadLists();
+
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+            if (overlay || !HypixelLocationTracker.getInstance().isInSkyblock()) return;
+            String text = ChatUtils.stripColor(message.getString());
+
+            // Match: "RARE DROP! ...", "CRAZY RARE DROP! ...", "PET DROP! ..."
+            if (!text.matches(".*(RARE|VERY RARE|CRAZY RARE|INSANE|PET) (DROP|CROP)!.*"))
+                return;
+
+            String itemName = extractName(text);
+            if (itemName == null) return;
+
+            // Check blacklist → suppress
+            if (blacklist.contains(itemName.toLowerCase())) return;
+
+            // Check share list → auto-send
+            ShareMode mode = shareList.get(itemName.toLowerCase());
+            if (mode != null) {
+                String original = message.getString();
+                if (mode.copy()) copyToClipboard(original);
+                if (mode.ac()) ChatUtils.sendMessage(original);
+                if (mode.pc()) ChatUtils.sendCommand("pc " + original);
+                if (mode.gc()) ChatUtils.sendCommand("gc " + original);
+                if (mode.cc()) ChatUtils.sendCommand("cc " + original);
+            }
+        });
+    }
+
+    // ---- accessors ----
+
+    public static Set<String> getBlacklist() { return blacklist; }
+    public static Map<String, ShareMode> getShareList() { return shareList; }
+
+    public static void addToBlacklist(String item) { blacklist.add(item.toLowerCase()); }
+    public static void removeFromBlacklist(String item) { blacklist.remove(item.toLowerCase()); }
+
+    public static void addToShareList(String item) {
+        shareList.putIfAbsent(item.toLowerCase(), new ShareMode(false, false, false, false, false));
+    }
+    public static void removeFromShareList(String item) { shareList.remove(item.toLowerCase()); }
+    public static void toggleShareMode(String item, char mode) {
+        ShareMode sm = shareList.get(item);
+        if (sm == null) return;
+        shareList.put(item, switch (mode) {
+            case 'a' -> new ShareMode(!sm.copy, sm.ac, sm.pc, sm.gc, sm.cc);
+            case 'c' -> new ShareMode(sm.copy, !sm.ac, sm.pc, sm.gc, sm.cc);
+            case 'p' -> new ShareMode(sm.copy, sm.ac, !sm.pc, sm.gc, sm.cc);
+            case 'g' -> new ShareMode(sm.copy, sm.ac, sm.pc, !sm.gc, sm.cc);
+            case 'o' -> new ShareMode(sm.copy, sm.ac, sm.pc, sm.gc, !sm.cc);
+            default -> sm;
+        });
+    }
+
+    // ---- persistence ----
+
+    @SuppressWarnings("unchecked")
+    private static void loadLists() {
+        var saved = DataPersistence.load(DATA_FILE, RareDropData.class);
+        if (saved != null) {
+            if (saved.blacklist != null) { blacklist.clear(); blacklist.addAll(saved.blacklist); }
+            if (saved.share != null) { shareList.clear(); shareList.putAll(saved.share); }
+        }
+    }
+
+    public static void saveLists() {
+        DataPersistence.save(DATA_FILE, new RareDropData(
+                new LinkedHashSet<>(blacklist), new LinkedHashMap<>(shareList)));
+    }
+
+    // ---- helpers ----
+
+    private static String extractName(String text) {
+        text = text.replaceAll(".*?(RARE|VERY RARE|CRAZY RARE|INSANE|PET) (DROP|CROP)!", "").trim();
+        // Remove magic find suffix
+        text = text.replaceAll("\\(.*Magic Find.*\\)", "").trim();
+        // Remove ( +XXX% ✯ Magic Find !) patterns
+        text = text.replaceAll("\\(.*[✯✦].*\\)", "").trim();
+        return text.isEmpty() ? null : text;
+    }
+
+    private static void copyToClipboard(String text) {
+        Minecraft.getInstance().keyboardHandler.setClipboard(text);
+        var p = Minecraft.getInstance().player;
+        if (p != null) p.displayClientMessage(
+                net.minecraft.network.chat.Component.literal("§6§l[BZA] §aCopied to clipboard"), false);
+    }
+
+    public record ShareMode(boolean copy, boolean ac, boolean pc, boolean gc, boolean cc) {}
+
+    private record RareDropData(Set<String> blacklist, Map<String, ShareMode> share) {}
+}

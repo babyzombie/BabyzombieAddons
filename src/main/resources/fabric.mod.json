@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "babyzombieaddons",
+  "version": "${version}",
+
+  "name": "BabyzombieAddons",
+  "description": "Hypixel SkyBlock QoL utilities",
+  "authors": ["babyzombie"],
+  "contact": {},
+
+  "license": "All-Rights-Reserved",
+  "icon": "assets/babyzombieaddons/icon.png",
+
+  "environment": "client",
+  "entrypoints": {
+    "client": ["top.babyzombie.addons.BabyzombieAddonsClient"],
+    "modmenu": ["top.babyzombie.addons.compatibility.modmenu.ModMenuEntry"]
+  },
+
+  "mixins": [
+    {
+      "config": "babyzombieaddons.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}",
+    "hypixel-mod-api": ">=1.0"
+  }
+}
