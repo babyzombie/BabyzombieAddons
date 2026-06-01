@@ -1,0 +1,90 @@
+package top.babyzombie.addons.module.kuudra;
+
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.MagmaCube;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.phys.AABB;
+import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.HypixelLocationTracker;
+
+public final class KuudraLocationTracker {
+    private KuudraLocationTracker() {}
+
+    public static String area = "p1&p2";
+    public static LivingEntity kuudraEntity;
+    public static float hp;
+    public static boolean p4;
+    public static boolean inKuudra;
+
+    public static void init() {
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!HypixelLocationTracker.getInstance().isInKuudra()) {
+                if (inKuudra) reset();
+                return;
+            }
+            if (!inKuudra) inKuudra = true;
+
+            if (client.player != null && client.player.tickCount % 20 == 0)
+                checkPlayerLocation(client);
+
+            findKuudra(client);
+        });
+    }
+
+    private static void checkPlayerLocation(Minecraft client) {
+        var p = client.player;
+        if (p == null) return;
+        double x = p.getX(), y = p.getY(), z = p.getZ();
+
+        if (x > -200 && y > 64 && z > -200 && x < -14 && y < 173 && z < -17) area = "p1&p2";
+        else if (x > -186 && y > 14 && z > -197 && x < -130 && y < 63 && z < -134) area = "p3";
+        else if (x > -133 && y > 0 && z > -137 && x < -74 && y < 63 && z < -76) area = "p4";
+    }
+
+    private static void findKuudra(Minecraft client) {
+        if (kuudraEntity != null && kuudraEntity.isDeadOrDying()) {
+            kuudraEntity.removeEffect(MobEffects.GLOWING);
+            kuudraEntity = null;
+        }
+
+        if (client.player == null) return;
+
+        // Kuudra本体是大岩浆怪
+        if (kuudraEntity == null) {
+            var cubes = client.player.level().getEntitiesOfClass(MagmaCube.class,
+                    new AABB(client.player.blockPosition()).inflate(64),
+                    e -> e.getBoundingBox().getSize() > 10 && e.getMaxHealth() >= 100000);
+            if (!cubes.isEmpty()) kuudraEntity = cubes.get(0);
+        }
+
+        // HP优先从岩浆怪取；岩浆怪死了则从凋零BossBar反算
+        if (kuudraEntity != null) {
+            hp = kuudraEntity.getHealth();
+        } else {
+            var withers = client.player.level().getEntitiesOfClass(WitherBoss.class,
+                    new AABB(client.player.blockPosition()).inflate(128),
+                    e -> {
+                        String name = ChatUtils.stripColor(e.getName().getString());
+                        return name.contains("\uDCC0 Kuudra \uDCFF");
+                    });
+            if (!withers.isEmpty())
+                hp = withers.get(0).getHealth() / 300f * 100000f;
+            else
+                hp = 0;
+        }
+    }
+
+    public static void reset() {
+        if (kuudraEntity != null) {
+            kuudraEntity.removeEffect(MobEffects.GLOWING);
+        }
+        inKuudra = false;
+        kuudraEntity = null;
+        hp = 0;
+        p4 = false;
+        area = "p1&p2";
+    }
+}

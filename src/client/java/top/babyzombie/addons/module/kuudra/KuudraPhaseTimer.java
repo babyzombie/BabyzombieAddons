@@ -1,46 +1,68 @@
 package top.babyzombie.addons.module.kuudra;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.minecraft.client.Minecraft;
-import top.babyzombie.addons.config.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
-
-/**
- * Tracks and displays current Kuudra phase and elapsed time.
- */
+import top.babyzombie.addons.util.HypixelLocationTracker;
 
 public final class KuudraPhaseTimer {
-    static String currentPhase = "";
-    static long phaseStartTime;
-
     private KuudraPhaseTimer() {}
 
+    private static long startTime;
+    private static long p1, p2, p3, p4;
+
     public static void init() {
-        if (!ModConfigManager.get().kuudra.phaseTimer) return;
-
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay || !KuudraHPDisplay.inKuudra) return;
+            if (!ModConfigManager.get().kuudra.phaseTimer) return;
+            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
             String text = ChatUtils.stripColor(message.getString());
-            if (text.contains("Supplies")) { currentPhase = "Supplies"; phaseStartTime = now(); }
-            if (text.contains("Ballista")) { currentPhase = "Ballista"; phaseStartTime = now(); }
-            if (text.contains("Stun")) { currentPhase = "Stun"; phaseStartTime = now(); }
-            if (text.contains("True Lair") || text.contains("Final Phase")) {
-                currentPhase = "True Lair"; phaseStartTime = now();
-            }
-        });
+            String raw = message.getString();
 
-        HudRenderCallback.EVENT.register((gui, delta) -> {
-            if (currentPhase.isEmpty() || !KuudraHPDisplay.inKuudra) return;
-            long elapsed = now() - phaseStartTime;
-            long s = elapsed / 1000 % 60, m = elapsed / 60000;
-            var font = Minecraft.getInstance().font;
-            int x = HudManager.x("KuudraHP"), y = HudManager.y("KuudraHP") + 12;
-            gui.drawString(font, String.format("§ePhase: §a%s §7(%d:%02d)", currentPhase, m, s),
-                    x, y, 0xFFFFFFFF, true);
+            if (!raw.contains("[NPC] Elle:")) return;
+
+            if (text.contains("Okay adventurers, I will go and fish up Kuudra")) {
+                startTime = System.currentTimeMillis();
+                p1 = p2 = p3 = p4 = 0;
+            } else if (text.contains("OMG! Great work collecting my supplies")) {
+                p1 = System.currentTimeMillis() - startTime;
+                show("kuudra.phase.p1", p1);
+            } else if (text.contains("Phew! The Ballista is finally ready")) {
+                p2 = System.currentTimeMillis() - startTime - p1;
+                show("kuudra.phase.p2", p2);
+            } else if (text.contains("POW! SURELY THAT'S IT")) {
+                p3 = System.currentTimeMillis() - startTime - p1 - p2;
+                if (isT5()) show("kuudra.phase.p3", p3);
+            } else if (text.contains("Good job everyone")) {
+                p4 = System.currentTimeMillis() - startTime - p1 - p2 - p3;
+                printSummary(isT5());
+            }
         });
     }
 
-    private static long now() { return System.currentTimeMillis(); }
+    private static boolean isT5() {
+        var loc = HypixelLocationTracker.getInstance().getLocation();
+        return loc != null && loc.contains("T5");
+    }
+
+    private static void show(String phaseKey, long time) {
+        String phase = ChatUtils.translate(phaseKey);
+        ChatUtils.showMessage(ChatUtils.translate("kuudra.phase.time", phase, formatTime(time)));
+    }
+
+    private static void printSummary(boolean isT5) {
+        show("kuudra.phase.p1", p1);
+        show("kuudra.phase.p2", p2);
+        if (isT5) {
+            show("kuudra.phase.p3", p3);
+            show("kuudra.phase.p4", p4);
+        } else {
+            show("kuudra.phase.p3_short", p3 + p4);
+        }
+    }
+
+    private static String formatTime(long ms) {
+        long s = ms / 1000, m = s / 60;
+        s %= 60;
+        return String.format("%d:%02d", m, s);
+    }
 }

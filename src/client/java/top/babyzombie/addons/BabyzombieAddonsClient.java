@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.api.ClientModInitializer;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.HudManager;
+import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.abiphone.AbiphoneTracker;
 import top.babyzombie.addons.module.abiphone.IncomingCallHandler;
@@ -82,7 +83,13 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         HudManager.register("SlayerBoss", 190, 100, 1.5f, 100, 9,
                 () -> cfg.slayer.bossInfoHUD);
         HudManager.register("KuudraHP", 200, 20, 2.0f, 35, 9,
-                () -> cfg.kuudra.hpDisplay);
+                () -> cfg.kuudra.hpDisplay != ModConfig.HpDisplayMode.OFF);
+        HudManager.register("EnergyCharge", 400, 120, 1.0f, 60, 9,
+                () -> cfg.kuudra.energyDisplay);
+        HudManager.register("KuudraStun", 400, 130, 1.0f, 80, 9,
+                () -> cfg.kuudra.stunTimer);
+        HudManager.register("InKuudraStun", 400, 140, 0.7f, 60, 30,
+                () -> cfg.kuudra.stunTimer);
         HudManager.register("SuspiciousScrap", 400, 110, 1.0f, 34, 16,
                 () -> cfg.mining.suspiciousScrapCounter);
         HudManager.register("SackItems", 200, 100, 1.0f, 80, 27,

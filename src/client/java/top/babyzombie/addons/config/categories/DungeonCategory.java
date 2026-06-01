@@ -30,18 +30,18 @@ public final class DungeonCategory {
                         .controller(ConfigUtils.createEnumController(m ->
                                 Component.translatable("config.babyzombieaddons.option.f4CrowdHiding." + m.name())))
                         .build())
-                .option(Option.<RequeueMode>createBuilder()
-                        .name(Component.translatable("config.babyzombieaddons.option.autoRequeue"))
-                        .description(Component.translatable("config.babyzombieaddons.option.autoRequeue.desc"))
-                        .binding(defaults.dungeon.autoRequeue,
-                                () -> config.dungeon.autoRequeue,
-                                v -> config.dungeon.autoRequeue = v)
-                        .controller(ConfigUtils.createEnumController(m ->
-                                Component.translatable("config.babyzombieaddons.option.autoRequeue." + m.name())))
-                        .build())
                 .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.requeue"))
                         .collapsed(true)
+                        .option(Option.<RequeueMode>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.autoRequeue"))
+                                .description(Component.translatable("config.babyzombieaddons.option.autoRequeue.desc"))
+                                .binding(defaults.dungeon.autoRequeue,
+                                        () -> config.dungeon.autoRequeue,
+                                        v -> config.dungeon.autoRequeue = v)
+                                .controller(ConfigUtils.createEnumController(m ->
+                                        Component.translatable("config.babyzombieaddons.option.autoRequeue." + m.name())))
+                                .build())
                         .option(Option.<Integer>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.requeueDelay"))
                                 .description(Component.translatable("config.babyzombieaddons.option.requeueDelay.desc"))
@@ -74,6 +74,18 @@ public final class DungeonCategory {
                                         v -> config.dungeon.requeueCancelKeywords = v)
                                 .controller(StringController.createBuilder().build())
                                 .build())
+                        .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.witherCloak"))
+                        .collapsed(true)
+                        .option(bool("witherCloakTimer", defaults.witherCloak.witherCloakTimer,
+                                () -> config.witherCloak.witherCloakTimer, v -> config.witherCloak.witherCloakTimer = v))
+                        .option(bool("soulwardTimer", defaults.witherCloak.soulwardTimer,
+                                () -> config.witherCloak.soulwardTimer, v -> config.witherCloak.soulwardTimer = v))
+                        .option(bool("alignedTimer", defaults.witherCloak.alignedTimer,
+                                () -> config.witherCloak.alignedTimer, v -> config.witherCloak.alignedTimer = v))
+                        .option(bool("gravityStormTimer", defaults.witherCloak.gravityStormTimer,
+                                () -> config.witherCloak.gravityStormTimer, v -> config.witherCloak.gravityStormTimer = v))
                         .build())
                 .option(bool("autoChestClose", defaults.dungeon.autoChestClose,
                         () -> config.dungeon.autoChestClose, v -> config.dungeon.autoChestClose = v))

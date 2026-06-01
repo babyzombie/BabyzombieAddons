@@ -9,7 +9,7 @@
     "EntityRenderMixin",
     "PlaySoundMixin",
     "BeaconBeamMixin",
-    "BeaconBeamMixin"
+    "PerkShopMixin"
   ],
   "injectors": {
     "defaultRequire": 1

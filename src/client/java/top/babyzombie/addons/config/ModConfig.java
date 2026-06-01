@@ -7,6 +7,7 @@ public class ModConfig {
     public enum KickRecovery { OFF, LOBBY_ONLY, LOBBY_AND_SKYBLOCK }
     public enum RequeueMode { OFF, ON_FAIL, ON_WIN, ALWAYS }
     public enum CrowdHideMode { OFF, HIDE, REMOVE }
+    public enum HpDisplayMode { OFF, HUD, BOSSBAR }
 
     public GeneralConfig general = new GeneralConfig();
     public DungeonConfig dungeon = new DungeonConfig();
@@ -61,11 +62,8 @@ public class ModConfig {
     // ---- Kuudra ----
 
     public static class KuudraConfig {
-        public boolean welcomeTitle = false;
-        public boolean hpDisplay = false;
+        public HpDisplayMode hpDisplay = HpDisplayMode.OFF;
         public boolean phaseTimer = false;
-        public boolean dropshipWarning = false;
-        public boolean wanderingBlazesWarning = false;
         public boolean stunTimer = false;
         public boolean waypoints = false;
         public boolean energyDisplay = false;
@@ -73,7 +71,7 @@ public class ModConfig {
         public boolean boxKuudra = false;
         public boolean enderPearlRefill = false;
         public boolean perkShopBlacklist = false;
-        public boolean extremeFocusWarning = false;
+        public String perkShopBlacklistItems = "Elle's Pickaxe,Elle's Lava Rod,Auto Revive,Support Route,Mining Frenzy I";
         public boolean followerHelmetPrice = false;
     }
 

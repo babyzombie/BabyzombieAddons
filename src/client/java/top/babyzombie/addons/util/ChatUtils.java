@@ -27,12 +27,22 @@ public final class ChatUtils {
     }
 
     /**
-     * Sends a regular chat message.
+     * Sends a regular chat message to the server.
      */
     public static void sendMessage(String message) {
         var conn = Minecraft.getInstance().getConnection();
         if (conn != null) {
             conn.sendChat(message);
+        }
+    }
+
+    /**
+     * Displays a message in the client's chat HUD (not sent to server).
+     */
+    public static void showMessage(String message) {
+        var player = Minecraft.getInstance().player;
+        if (player != null) {
+            player.displayClientMessage(Component.literal(message), false);
         }
     }
 
@@ -74,6 +84,20 @@ public final class ChatUtils {
      */
     public static void showTitle(String title) {
         showTitle(title, null);
+    }
+
+    /**
+     * Translates a key with args through the Minecraft i18n system.
+     */
+    public static String translate(String key, Object... args) {
+        return net.minecraft.network.chat.Component.translatable(key, args).getString();
+    }
+
+    /**
+     * Copies text to the system clipboard.
+     */
+    public static void copyToClipboard(String text) {
+        Minecraft.getInstance().keyboardHandler.setClipboard(text);
     }
 
     /**

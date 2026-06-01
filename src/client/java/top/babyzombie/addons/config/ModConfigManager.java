@@ -50,7 +50,6 @@ public final class ModConfigManager {
                 .category(DungeonCategory.create(defaults, config))
                 .category(KuudraCategory.create(defaults, config))
                 .category(SlayerCategory.create(defaults, config))
-                .category(WitherCloakCategory.create(defaults, config))
                 .category(MiningCategory.create(defaults, config))
                 .category(GardenCategory.create(defaults, config))
                 .category(PartyCategory.create(defaults, config))
