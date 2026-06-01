@@ -124,7 +124,7 @@ public class ModConfig {
 
     public static class GardenConfig {
         public boolean pestDisplay = false;
-        public boolean xpOrbSoundRemoval = false;
+        public int xpOrbSoundRemoval = 100;
         public boolean signAutoRotate = false;
     }
 

@@ -2,19 +2,27 @@ package top.babyzombie.addons.module.garden;
 
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.HoeItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Reads yaw/pitch from garden signs and sets player rotation.
- * Triggered by right-clicking a sign in the Garden.
+ * Uses regex to match values from sign text lines.
  */
 public final class SignAutoRotate {
+
+    private static final Pattern YAW_PATTERN = Pattern.compile("yaw[:\\s]*([\\d.\\-]+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PITCH_PATTERN = Pattern.compile("pitch[:\\s]*([\\d.\\-]+)", Pattern.CASE_INSENSITIVE);
+
     private SignAutoRotate() {}
 
     public static void init() {
@@ -24,60 +32,33 @@ public final class SignAutoRotate {
             if (world.isClientSide() || !HypixelLocationTracker.getInstance().isInSkyblock())
                 return InteractionResult.PASS;
 
-            BlockPos pos = hitResult.getBlockPos();
-            if (!world.getBlockState(pos).is(Blocks.OAK_WALL_SIGN)
-                && !world.getBlockState(pos).is(Blocks.OAK_SIGN)
-                && !world.getBlockState(pos).is(Blocks.BIRCH_WALL_SIGN)
-                && !world.getBlockState(pos).is(Blocks.BIRCH_SIGN)
-                && !world.getBlockState(pos).is(Blocks.SPRUCE_WALL_SIGN)
-                && !world.getBlockState(pos).is(Blocks.SPRUCE_SIGN)
-                && !world.getBlockState(pos).is(Blocks.JUNGLE_WALL_SIGN)
-                && !world.getBlockState(pos).is(Blocks.JUNGLE_SIGN)
-                && !world.getBlockState(pos).is(Blocks.ACACIA_WALL_SIGN)
-                && !world.getBlockState(pos).is(Blocks.ACACIA_SIGN)
-                && !world.getBlockState(pos).is(Blocks.DARK_OAK_WALL_SIGN)
-                && !world.getBlockState(pos).is(Blocks.DARK_OAK_SIGN)
-                && !world.getBlockState(pos).is(Blocks.MANGROVE_WALL_SIGN)
-                && !world.getBlockState(pos).is(Blocks.MANGROVE_SIGN)
-                && !world.getBlockState(pos).is(Blocks.CHERRY_WALL_SIGN)
-                && !world.getBlockState(pos).is(Blocks.CHERRY_SIGN)
-                && !world.getBlockState(pos).is(Blocks.BAMBOO_WALL_SIGN)
-                && !world.getBlockState(pos).is(Blocks.BAMBOO_SIGN))
+            if (!(world.getBlockEntity(hitResult.getBlockPos()) instanceof SignBlockEntity sign))
                 return InteractionResult.PASS;
 
-            // Read sign text lines and parse yaw/pitch
-            BlockEntity be = world.getBlockEntity(pos);
-            if (!(be instanceof SignBlockEntity sign)) return InteractionResult.PASS;
-
             var frontText = sign.getFrontText();
-            String line1 = frontText.getMessage(0, false).getString().trim();
-            String line2 = frontText.getMessage(1, false).getString().trim();
-            try {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 4; i++)
+                sb.append(ChatUtils.stripColor(frontText.getMessage(i, false).getString())).append(' ');
+            String text = sb.toString();
 
-                // Parse yaw/pitch from sign lines (format: "yaw:XX pitch:YY")
-                float yaw = Float.NaN, pitch = Float.NaN;
-                if (line1.toLowerCase().contains("yaw")) {
-                    yaw = Float.parseFloat(line1.replaceAll("[^0-9.\\-]", ""));
-                }
-                if (line2.toLowerCase().contains("pitch")) {
-                    pitch = Float.parseFloat(line2.replaceAll("[^0-9.\\-]", ""));
-                }
-                // Try swapped lines
-                if (line2.toLowerCase().contains("yaw") && Float.isNaN(yaw)) {
-                    yaw = Float.parseFloat(line2.replaceAll("[^0-9.\\-]", ""));
-                }
-                if (line1.toLowerCase().contains("pitch") && Float.isNaN(pitch)) {
-                    pitch = Float.parseFloat(line1.replaceAll("[^0-9.\\-]", ""));
-                }
+            Matcher ym = YAW_PATTERN.matcher(text);
+            Matcher pm = PITCH_PATTERN.matcher(text);
 
-                if (!Float.isNaN(yaw) && !Float.isNaN(pitch)) {
-                    var clientPlayer = Minecraft.getInstance().player;
-                    if (clientPlayer != null) {
-                        clientPlayer.setYRot(yaw);
-                        clientPlayer.setXRot(pitch);
-                    }
+            if (ym.find() && pm.find()) {
+                ItemStack held = player.getItemInHand(hand);
+                if (held.getItem() instanceof HoeItem || held.getItem() instanceof AxeItem) {
+                    try {
+                        float yaw = Float.parseFloat(ym.group(1));
+                        float pitch = Float.parseFloat(pm.group(1));
+                        var p = Minecraft.getInstance().player;
+                        if (p != null) {
+                            p.setYRot(yaw);
+                            p.setXRot(pitch);
+                        }
+                    } catch (NumberFormatException ignored) {}
+                    return InteractionResult.FAIL;
                 }
-            } catch (NumberFormatException ignored) {}
+            }
 
             return InteractionResult.PASS;
         });

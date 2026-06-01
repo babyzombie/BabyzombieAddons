@@ -6,5 +6,6 @@ public final class GardenModule {
     public static void init() {
         PestDisplay.init();
         SignAutoRotate.init();
+        XpOrbSoundReducer.init();
     }
 }

@@ -189,10 +189,10 @@
 
   "config.babyzombieaddons.option.pestDisplay": "害虫显示",
   "config.babyzombieaddons.option.pestDisplay.desc": "在花园害虫上显示信标光束。",
-  "config.babyzombieaddons.option.xpOrbSoundRemoval": "经验球音效移除",
-  "config.babyzombieaddons.option.xpOrbSoundRemoval.desc": "破坏作物时压制经验球音效。",
+  "config.babyzombieaddons.option.xpOrbSoundRemoval": "经验球音效音量",
+  "config.babyzombieaddons.option.xpOrbSoundRemoval.desc": "在花园手持斧头或锄头破坏作物时经验球音效的音量大小。0 = 完全静音, 100 = 不变。",
   "config.babyzombieaddons.option.signAutoRotate": "告示牌自动转向",
-  "config.babyzombieaddons.option.signAutoRotate.desc": "从告示牌读取 yaw/pitch 并旋转玩家。",
+  "config.babyzombieaddons.option.signAutoRotate.desc": "手持锄头或斧头右键告示牌自动转向并取消交互。告示牌任意一行写 \"yaw: 角度值\" 和 \"pitch: 角度值\" 即可识别，大小写无关。",
 
   "config.babyzombieaddons.group.partyChatCommands": "队伍聊天指令",
   "config.babyzombieaddons.option.partyAllinvite": "!allinv - 全员邀请",

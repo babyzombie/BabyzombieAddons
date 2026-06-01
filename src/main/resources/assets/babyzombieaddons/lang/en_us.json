@@ -189,10 +189,10 @@
 
   "config.babyzombieaddons.option.pestDisplay": "Pest Display",
   "config.babyzombieaddons.option.pestDisplay.desc": "Show beacon beams on garden pests.",
-  "config.babyzombieaddons.option.xpOrbSoundRemoval": "XP Orb Sound Removal",
-  "config.babyzombieaddons.option.xpOrbSoundRemoval.desc": "Suppress XP orb sounds when breaking crops.",
+  "config.babyzombieaddons.option.xpOrbSoundRemoval": "XP Orb Sound Volume",
+  "config.babyzombieaddons.option.xpOrbSoundRemoval.desc": "XP orb sound volume when breaking crops while holding an axe or hoe in the Garden. 0 = fully muted, 100 = unchanged.",
   "config.babyzombieaddons.option.signAutoRotate": "Sign Auto Rotate",
-  "config.babyzombieaddons.option.signAutoRotate.desc": "Read yaw/pitch from signs and rotate player accordingly.",
+  "config.babyzombieaddons.option.signAutoRotate.desc": "Right-click a sign while holding a hoe or axe to auto-rotate and cancel interaction. Write "yaw: value" and "pitch: value" on any sign line (case-insensitive).",
 
   "config.babyzombieaddons.group.partyChatCommands": "Party Chat Commands",
   "config.babyzombieaddons.option.partyAllinvite": "!allinv - Toggle All Invite",
