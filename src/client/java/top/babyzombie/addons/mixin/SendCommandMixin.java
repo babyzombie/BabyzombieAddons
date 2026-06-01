@@ -17,7 +17,7 @@ public class SendCommandMixin {
 
     @Inject(method = "sendCommand", at = @At("HEAD"), cancellable = true)
     private void onSendCommand(String command, CallbackInfo ci) {
-//        if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
+        if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
         String cmd = command.trim();
 
         // /call → Abiphone contact screen
