@@ -6,6 +6,7 @@ public class ModConfig {
     public enum AutoISDest { ISLAND, GARDEN }
     public enum KickRecovery { OFF, LOBBY_ONLY, LOBBY_AND_SKYBLOCK }
     public enum RequeueMode { OFF, ON_FAIL, ON_WIN, ALWAYS }
+    public enum CrowdHideMode { OFF, HIDE, REMOVE }
 
     public GeneralConfig general = new GeneralConfig();
     public DungeonConfig dungeon = new DungeonConfig();
@@ -47,7 +48,7 @@ public class ModConfig {
     // ---- Dungeon ----
 
     public static class DungeonConfig {
-        public boolean f4CrowdHiding = false;
+        public CrowdHideMode f4CrowdHiding = CrowdHideMode.OFF;
         public RequeueMode autoRequeue = RequeueMode.OFF;
         public int requeueDelay = 0;
         public String requeueMessage = "going in %delay%";
@@ -91,8 +92,6 @@ public class ModConfig {
         public boolean gummyBearTimer = false;
     }
 
-    // ---- Wither Cloak ----
-
     public static class WitherCloakConfig {
         public boolean witherCloakTimer = false;
         public boolean soulwardTimer = false;
@@ -132,7 +131,6 @@ public class ModConfig {
     // ---- Party ----
 
     public static class PartyConfig {
-        public boolean doublePWarpConfirm = false;
         public boolean partyAllinvite = false;
         public boolean partyInvite = false;
         public boolean partyWarp = false;

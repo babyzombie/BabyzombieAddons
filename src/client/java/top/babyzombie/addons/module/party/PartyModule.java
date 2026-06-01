@@ -78,17 +78,6 @@ public final class PartyModule {
             }
         });
 
-        // Double P-warp confirm
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay) return;
-            if (!ModConfigManager.get().party.doublePWarpConfirm) return;
-            String text = ChatUtils.stripColor(message.getString());
-            if (text.contains("run the command again to confirm warp") || text.contains("再次输入指令以确认传送")) {
-                try { Thread.sleep(500); } catch (Exception ignored) {}
-                ChatUtils.sendCommand("party warp");
-            }
-        });
-
         // Party chat commands
             ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
                 if (overlay) return;

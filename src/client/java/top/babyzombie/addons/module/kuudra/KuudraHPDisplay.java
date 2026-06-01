@@ -11,6 +11,7 @@ import top.babyzombie.addons.util.HypixelLocationTracker;
 /**
  * Displays Kuudra's HP on the HUD.
  */
+
 public final class KuudraHPDisplay {
     static LivingEntity kuudraEntity;
     static float hp;

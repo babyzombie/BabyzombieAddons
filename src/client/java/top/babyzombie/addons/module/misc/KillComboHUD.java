@@ -1,7 +1,7 @@
 package top.babyzombie.addons.module.misc;
 
-import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -10,6 +10,7 @@ import top.babyzombie.addons.util.ChatUtils;
 /**
  * Moves kill combo from chat to a customizable HUD display.
  */
+
 public final class KillComboHUD {
     static int combo;
     static long updateTime;

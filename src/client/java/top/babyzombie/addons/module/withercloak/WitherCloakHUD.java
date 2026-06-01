@@ -6,6 +6,7 @@ import top.babyzombie.addons.config.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 
+
 public final class WitherCloakHUD {
     private WitherCloakHUD() {}
 

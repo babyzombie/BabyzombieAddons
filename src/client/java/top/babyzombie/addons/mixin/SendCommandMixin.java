@@ -17,11 +17,11 @@ public class SendCommandMixin {
 
     @Inject(method = "sendCommand", at = @At("HEAD"), cancellable = true)
     private void onSendCommand(String command, CallbackInfo ci) {
-        if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
+//        if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
         String cmd = command.trim();
 
         // /call → Abiphone contact screen
-        if (cmd.equals("call") && ModConfigManager.get().misc.abiphoneGui) {
+        if (cmd.equals("call") && HypixelLocationTracker.getInstance().isInSkyblock() && ModConfigManager.get().misc.abiphoneGui) {
             ci.cancel();
             var client = Minecraft.getInstance();
             var tracker = HypixelLocationTracker.getInstance();
@@ -32,11 +32,9 @@ public class SendCommandMixin {
         }
 
         // /play → Play command GUI
-        if (cmd.equals("play") || cmd.startsWith("play ")) {
-            if (ModConfigManager.get().misc.playCmd) {
-                ci.cancel();
-                PlayCmdModule.openGUI();
-            }
+        if (cmd.equals("play") && ModConfigManager.get().misc.playCmd) {
+            ci.cancel();
+            PlayCmdModule.openGUI();
         }
     }
 }

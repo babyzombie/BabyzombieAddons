@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "KeyMappingMixin",
-    "SendCommandMixin"
+    "SendCommandMixin",
+    "EntityRenderMixin",
+    "PlaySoundMixin"
   ],
   "injectors": {
     "defaultRequire": 1

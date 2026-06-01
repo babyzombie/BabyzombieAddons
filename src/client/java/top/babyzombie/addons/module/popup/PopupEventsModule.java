@@ -1,8 +1,8 @@
 package top.babyzombie.addons.module.popup;
 
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 /**
  * On-screen popup notifications with translatable strings.
  */
+
 public final class PopupEventsModule {
 
     private static final Pattern PARTY_INVITE = Pattern.compile(

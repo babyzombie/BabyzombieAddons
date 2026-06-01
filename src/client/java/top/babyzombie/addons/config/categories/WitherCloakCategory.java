@@ -14,6 +14,7 @@ public final class WitherCloakCategory {
 
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
+                .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/withercloak"))
                 .name(Component.translatable("config.babyzombieaddons.category.witherCloak"))
                 .option(bool("witherCloakTimer", defaults.witherCloak.witherCloakTimer,
                         () -> config.witherCloak.witherCloakTimer, v -> config.witherCloak.witherCloakTimer = v))

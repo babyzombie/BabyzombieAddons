@@ -1,7 +1,7 @@
 package top.babyzombie.addons.module.sack;
 
-import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 /**
  * Sack item tracking with persisted HUD display.
  */
+
 public final class SackModule {
 
     private static final Pattern ADD = Pattern.compile("\\+(\\d+) (.+) \\(Sack\\)");

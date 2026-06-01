@@ -16,9 +16,8 @@ public final class PartyCategory {
 
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
+                .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/party"))
                 .name(Component.translatable("config.babyzombieaddons.category.party"))
-                .option(bool("doublePWarpConfirm", defaults.party.doublePWarpConfirm,
-                        () -> config.party.doublePWarpConfirm, v -> config.party.doublePWarpConfirm = v))
                 .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.partyChatCommands"))
                         .collapsed(true)

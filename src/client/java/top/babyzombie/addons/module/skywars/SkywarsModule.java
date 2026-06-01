@@ -1,7 +1,7 @@
 package top.babyzombie.addons.module.skywars;
 
-import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -11,6 +11,7 @@ import top.babyzombie.addons.util.ChatUtils;
  * Skywars Lucky Blocks features: fast devil's contract,
  * AOTE counter, compass display.
  */
+
 public final class SkywarsModule {
 
     private static long devilContractTime;

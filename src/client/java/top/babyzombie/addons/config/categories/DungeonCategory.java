@@ -8,6 +8,7 @@ import net.azureaaron.dandelion.api.controllers.StringController;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
+import top.babyzombie.addons.config.ModConfig.CrowdHideMode;
 import top.babyzombie.addons.config.ModConfig.RequeueMode;
 
 import java.util.function.Supplier;
@@ -18,9 +19,17 @@ public final class DungeonCategory {
 
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
+                .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/dungeon"))
                 .name(Component.translatable("config.babyzombieaddons.category.dungeon"))
-                .option(bool("f4CrowdHiding", defaults.dungeon.f4CrowdHiding,
-                        () -> config.dungeon.f4CrowdHiding, v -> config.dungeon.f4CrowdHiding = v))
+                .option(Option.<CrowdHideMode>createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.f4CrowdHiding"))
+                        .description(Component.translatable("config.babyzombieaddons.option.f4CrowdHiding.desc"))
+                        .binding(defaults.dungeon.f4CrowdHiding,
+                                () -> config.dungeon.f4CrowdHiding,
+                                v -> config.dungeon.f4CrowdHiding = v)
+                        .controller(ConfigUtils.createEnumController(m ->
+                                Component.translatable("config.babyzombieaddons.option.f4CrowdHiding." + m.name())))
+                        .build())
                 .option(Option.<RequeueMode>createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.option.autoRequeue"))
                         .description(Component.translatable("config.babyzombieaddons.option.autoRequeue.desc"))

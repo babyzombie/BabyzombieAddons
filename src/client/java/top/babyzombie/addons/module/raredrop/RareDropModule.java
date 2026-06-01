@@ -2,6 +2,7 @@ package top.babyzombie.addons.module.raredrop;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
+import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
 import top.babyzombie.addons.util.HypixelLocationTracker;
@@ -17,6 +18,7 @@ public final class RareDropModule {
     private static final String DATA_FILE = "raredrop.json";
     private static final Set<String> blacklist = new LinkedHashSet<>();
     private static final Map<String, ShareMode> shareList = new LinkedHashMap<>();
+    private static long ignoreSoundTime;
 
     // Exact defaults from original ChatTriggers JS
     static {
@@ -29,10 +31,10 @@ public final class RareDropModule {
         blacklist.add("enchanted bone");
         blacklist.add("enchanted ender pearl");
 
-        shareList.put("phoenix", new ShareMode(false, false, false, false, true));
-        shareList.put("warden heart", new ShareMode(false, false, false, false, true));
-        shareList.put("overflux capacitor", new ShareMode(false, false, false, false, true));
-        shareList.put("judgement core", new ShareMode(false, false, false, false, true));
+        shareList.put("phoenix", new ShareMode(false, false, false, false, false));
+        shareList.put("warden heart", new ShareMode(false, false, false, false, false));
+        shareList.put("overflux capacitor", new ShareMode(false, false, false, false, false));
+        shareList.put("judgement core", new ShareMode(false, false, false, false, false));
     }
 
     private RareDropModule() {}
@@ -51,8 +53,11 @@ public final class RareDropModule {
             String itemName = extractName(text);
             if (itemName == null) return;
 
-            // Check blacklist → suppress
-            if (blacklist.contains(itemName.toLowerCase())) return;
+            // Check blacklist → suppress sound + return
+            if (blacklist.contains(itemName.toLowerCase())) {
+                ignoreSoundTime = System.currentTimeMillis();
+                return;
+            }
 
             // Check share list → auto-send
             ShareMode mode = shareList.get(itemName.toLowerCase());
@@ -64,6 +69,18 @@ public final class RareDropModule {
                 if (mode.gc()) ChatUtils.sendCommand("gc " + original);
                 if (mode.cc()) ChatUtils.sendCommand("cc " + original);
             }
+        });
+
+        // Suppress rare drop sound within 1s of an ignored drop
+        PlaySoundEvents.BEFORE_PLAY.register(sound -> {
+            if (ignoreSoundTime == 0) return false;
+            if (System.currentTimeMillis() - ignoreSoundTime > 1000) {
+                ignoreSoundTime = 0;
+                return false;
+            }
+            // Cancel rare drop notification sounds
+            String id = sound.getSound().toString();
+            return id.contains("note.pling") || id.contains("random.orb");
         });
     }
 
@@ -83,8 +100,8 @@ public final class RareDropModule {
         ShareMode sm = shareList.get(item);
         if (sm == null) return;
         shareList.put(item, switch (mode) {
-            case 'a' -> new ShareMode(!sm.copy, sm.ac, sm.pc, sm.gc, sm.cc);
-            case 'c' -> new ShareMode(sm.copy, !sm.ac, sm.pc, sm.gc, sm.cc);
+            case 'a' -> new ShareMode(sm.copy, !sm.ac, sm.pc, sm.gc, sm.cc);
+            case 'c' -> new ShareMode(!sm.copy, sm.ac, sm.pc, sm.gc, sm.cc);
             case 'p' -> new ShareMode(sm.copy, sm.ac, !sm.pc, sm.gc, sm.cc);
             case 'g' -> new ShareMode(sm.copy, sm.ac, sm.pc, !sm.gc, sm.cc);
             case 'o' -> new ShareMode(sm.copy, sm.ac, sm.pc, sm.gc, !sm.cc);
@@ -94,7 +111,6 @@ public final class RareDropModule {
 
     // ---- persistence ----
 
-    @SuppressWarnings("unchecked")
     private static void loadLists() {
         var saved = DataPersistence.load(DATA_FILE, RareDropData.class);
         if (saved != null) {

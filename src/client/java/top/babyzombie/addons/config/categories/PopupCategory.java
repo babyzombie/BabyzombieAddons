@@ -14,6 +14,7 @@ public final class PopupCategory {
 
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
+                .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/popup"))
                 .name(Component.translatable("config.babyzombieaddons.category.popup"))
                 .option(bool("popupPartyInvite", defaults.popup.popupPartyInvite,
                         () -> config.popup.popupPartyInvite, v -> config.popup.popupPartyInvite = v))

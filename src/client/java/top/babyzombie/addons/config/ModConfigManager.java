@@ -56,7 +56,6 @@ public final class ModConfigManager {
                 .category(PartyCategory.create(defaults, config))
                 .category(PopupCategory.create(defaults, config))
                 .category(MiscCategory.create(defaults, config))
-                .categoryIf(config.debug.debugMode, DebugCategory.create(defaults, config))
                 .search(search)
         ).generateScreen(parent, get().debug.configBackend == ModConfig.ConfigBackend.YACL ? ConfigType.YACL : ConfigType.MOUL_CONFIG);
     }

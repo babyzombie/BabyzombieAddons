@@ -1,7 +1,7 @@
 package top.babyzombie.addons.module.kuudra;
 
-import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -10,6 +10,7 @@ import top.babyzombie.addons.util.ChatUtils;
 /**
  * Tracks and displays current Kuudra phase and elapsed time.
  */
+
 public final class KuudraPhaseTimer {
     static String currentPhase = "";
     static long phaseStartTime;

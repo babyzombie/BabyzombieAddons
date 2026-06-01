@@ -14,6 +14,7 @@ public final class KuudraCategory {
 
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
+                .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/kuudra"))
                 .name(Component.translatable("config.babyzombieaddons.category.kuudra"))
                 .option(bool("welcomeTitle", defaults.kuudra.welcomeTitle,
                         () -> config.kuudra.welcomeTitle, v -> config.kuudra.welcomeTitle = v))

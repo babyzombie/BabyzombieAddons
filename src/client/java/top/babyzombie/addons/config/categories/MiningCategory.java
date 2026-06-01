@@ -14,6 +14,7 @@ public final class MiningCategory {
 
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
+                .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/mining"))
                 .name(Component.translatable("config.babyzombieaddons.category.mining"))
                 .option(bool("nucleusAutoWarp", defaults.mining.nucleusAutoWarp,
                         () -> config.mining.nucleusAutoWarp, v -> config.mining.nucleusAutoWarp = v))

@@ -3,10 +3,13 @@ package top.babyzombie.addons.config.categories;
 import net.azureaaron.dandelion.api.ButtonOption;
 import net.azureaaron.dandelion.api.ConfigCategory;
 import net.azureaaron.dandelion.api.Option;
+import net.azureaaron.dandelion.api.OptionGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ConfigUtils;
+import top.babyzombie.addons.config.HudManager;
 import top.babyzombie.addons.config.ModConfig;
+import top.babyzombie.addons.config.ModConfig.ConfigBackend;
 import top.babyzombie.addons.module.raredrop.RareDropScreen;
 
 import java.util.function.Supplier;
@@ -17,7 +20,30 @@ public final class MiscCategory {
 
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
+                .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/misc"))
                 .name(Component.translatable("config.babyzombieaddons.category.misc"))
+                .option(ButtonOption.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.hudEdit"))
+                        .description(Component.translatable("config.babyzombieaddons.option.hudEdit.desc"))
+                        .action(screen -> HudManager.toggleEditMode())
+                        .build())
+                .option(bool("debugMode", defaults.debug.debugMode,
+                        () -> config.debug.debugMode, v -> config.debug.debugMode = v))
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.configBackend"))
+                        .collapsed(true)
+                        .option(Option.<ConfigBackend>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.configBackend"))
+                                .description(Component.translatable("config.babyzombieaddons.option.configBackend.desc"))
+                                .binding(defaults.debug.configBackend,
+                                        () -> config.debug.configBackend,
+                                        v -> config.debug.configBackend = v)
+                                .controller(ConfigUtils.createEnumController(b -> switch (b) {
+                                    case YACL -> Component.literal("YACL");
+                                    case MOUL_CONFIG -> Component.literal("MoulConfig");
+                                }))
+                                .build())
+                        .build())
                 .option(bool("killComboHUD", defaults.misc.killComboHUD,
                         () -> config.misc.killComboHUD, v -> config.misc.killComboHUD = v))
                 .option(bool("betterPerspective", defaults.misc.betterPerspective,

@@ -14,6 +14,7 @@ public final class SlayerCategory {
 
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
+                .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/slayer"))
                 .name(Component.translatable("config.babyzombieaddons.category.slayer"))
                 .option(bool("noQuestReminder", defaults.slayer.noQuestReminder,
                         () -> config.slayer.noQuestReminder, v -> config.slayer.noQuestReminder = v))

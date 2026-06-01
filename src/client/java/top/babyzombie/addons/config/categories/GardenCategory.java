@@ -14,6 +14,7 @@ public final class GardenCategory {
 
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
+                .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/garden"))
                 .name(Component.translatable("config.babyzombieaddons.category.garden"))
                 .option(bool("pestDisplay", defaults.garden.pestDisplay,
                         () -> config.garden.pestDisplay, v -> config.garden.pestDisplay = v))

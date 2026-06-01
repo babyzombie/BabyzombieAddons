@@ -5,6 +5,7 @@ import net.azureaaron.dandelion.api.Option;
 import net.azureaaron.dandelion.api.OptionGroup;
 import net.azureaaron.dandelion.api.controllers.IntegerController;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfig.AutoISDest;
@@ -18,6 +19,7 @@ public final class GeneralCategory {
 
     public static ConfigCategory create(ModConfig defaults, ModConfig config) {
         return ConfigCategory.createBuilder()
+                .id(Identifier.fromNamespaceAndPath("babyzombieaddons", "config/general"))
                 .name(Component.translatable("config.babyzombieaddons.category.general"))
                 .option(createBool("autois", defaults.general.autois,
                         () -> config.general.autois, v -> config.general.autois = v))

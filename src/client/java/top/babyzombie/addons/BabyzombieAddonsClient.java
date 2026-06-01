@@ -1,7 +1,7 @@
 package top.babyzombie.addons;
 
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.api.ClientModInitializer;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -43,7 +43,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         IncomingCallHandler.register();
 
         HudRenderCallback.EVENT.register((gui, delta) ->
-                HudManager.renderEditOverlay(gui, (int)gui.guiWidth()/2, (int)gui.guiHeight()/2));
+                HudManager.renderEditOverlay(gui, gui.guiWidth()/2, gui.guiHeight()/2));
 
         BabyzombieAddonsCommand.init();
 
