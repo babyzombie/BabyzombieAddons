@@ -6,10 +6,7 @@ import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
-
-/**
- * Counts suspicious scrap pickups and shows HUD.
- */
+import top.babyzombie.addons.util.HypixelLocationTracker;
 
 public final class SuspiciousScrapCounter {
     static int count;
@@ -17,19 +14,23 @@ public final class SuspiciousScrapCounter {
     private SuspiciousScrapCounter() {}
 
     public static void init() {
-        if (!ModConfigManager.get().mining.suspiciousScrapCounter) return;
-
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            String text = ChatUtils.stripColor(message.getString());
-            if (text.contains("Suspicious Scrap")) count++;
+            if (!ModConfigManager.get().mining.suspiciousScrapCounter) return;
+            var tracker = HypixelLocationTracker.getInstance();
+            if (!tracker.isInSkyblock() || !"Mineshaft".equals(tracker.getLocation())) return;
+            if (ChatUtils.stripColor(message.getString()).startsWith("EXCAVATOR! You found a Suspicious Scrap!")) {
+                count++;
+            }
         });
 
         HudRenderCallback.EVENT.register((gui, delta) -> {
+            if (!ModConfigManager.get().mining.suspiciousScrapCounter) return;
             if (count <= 0) return;
             var font = Minecraft.getInstance().font;
             int x = HudManager.x("SuspiciousScrap"), y = HudManager.y("SuspiciousScrap");
-            gui.drawString(font, "§6Scraps: §f" + count, x, y, 0xFFFFFFFF, true);
+            String color = count >= 5 ? "§a" : "§e";
+            gui.drawString(font, "§6Scraps: " + color + count + "/5", x, y, 0xFFFFFFFF, true);
         });
     }
 }

@@ -183,24 +183,22 @@
   "config.babyzombieaddons.option.scathaCooldown.desc": "30 秒刷新冷却界面。",
   "config.babyzombieaddons.option.armadilloEnergy": "犰狳能量",
   "config.babyzombieaddons.option.armadilloEnergy.desc": "显示当前/最大能量及颜色渐变。",
-  "config.babyzombieaddons.option.compassSolver": "指南针求解器",
-  "config.babyzombieaddons.option.compassSolver.desc": "基于粒子的许愿指南针三角定位。",
+
   "config.babyzombieaddons.option.darkMonolithFinder": "黑暗石碑查找器",
   "config.babyzombieaddons.option.darkMonolithFinder.desc": "标记全部 14 个可能的石碑位置。",
   "config.babyzombieaddons.option.drillSwingSuppression": "钻头挥动抑制",
   "config.babyzombieaddons.option.drillSwingSuppression.desc": "挖矿时防止手臂挥动动画。",
   "config.babyzombieaddons.option.powderMiningSounds": "粉末挖矿音效",
   "config.babyzombieaddons.option.powderMiningSounds.desc": "移除经验球音效并替换箱子音效。",
-  "config.babyzombieaddons.option.noPickobulus": "岛上禁用 Pickobulus",
-  "config.babyzombieaddons.option.noPickobulus.desc": "在私人岛屿上阻止 Pickobulus 爆炸。",
-  "config.babyzombieaddons.option.glaciteWaypoints": "冰洞路径点",
-  "config.babyzombieaddons.option.glaciteWaypoints.desc": "日常委托的宝石路径点。",
+
+
+  "config.babyzombieaddons.option.greatGlaciteWaypoints": "大块冰川路径点",
+  "config.babyzombieaddons.option.greatGlaciteWaypoints.desc": "在冰川区域标记大块冰川位置。",
   "config.babyzombieaddons.option.mineshaftWaypoints": "矿井路径点",
   "config.babyzombieaddons.option.mineshaftWaypoints.desc": "矿井中的尸体和出口路径点。",
   "config.babyzombieaddons.option.suspiciousScrapCounter": "可疑碎片计数",
   "config.babyzombieaddons.option.suspiciousScrapCounter.desc": "在 HUD 显示可疑碎片数量。",
-  "config.babyzombieaddons.option.baseCampQuickWarp": "营地快速传送",
-  "config.babyzombieaddons.option.baseCampQuickWarp.desc": "从冰洞区域快速返回营地。",
+
 
 
   "config.babyzombieaddons.option.pestDisplay": "害虫显示",
@@ -266,8 +264,7 @@
   "config.babyzombieaddons.option.witherImpactVolume.desc": "降低凋零冲击爆炸音效音量。",
   "config.babyzombieaddons.option.dyedArmorSBID": "染色装甲 SBID",
   "config.babyzombieaddons.option.dyedArmorSBID.desc": "染色装甲ID前加 DYED_ 前缀以适配材质包。",
-  "config.babyzombieaddons.option.sackItemHUD": "袋子物品 HUD",
-  "config.babyzombieaddons.option.sackItemHUD.desc": "在屏幕上显示选中的袋子物品数量。",
+
   "config.babyzombieaddons.option.periodicEntityCleanup": "定期实体清理",
   "config.babyzombieaddons.option.periodicEntityCleanup.desc": "移除无效玩家实体和隐身盔甲架。",
   "config.babyzombieaddons.option.stonksPrice": "Stonks 价格",

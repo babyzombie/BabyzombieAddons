@@ -30,24 +30,20 @@ public final class MiningCategory {
                         () -> config.mining.scathaCooldown, v -> config.mining.scathaCooldown = v))
                 .option(bool("armadilloEnergy", defaults.mining.armadilloEnergy,
                         () -> config.mining.armadilloEnergy, v -> config.mining.armadilloEnergy = v))
-                .option(bool("compassSolver", defaults.mining.compassSolver,
-                        () -> config.mining.compassSolver, v -> config.mining.compassSolver = v))
                 .option(bool("darkMonolithFinder", defaults.mining.darkMonolithFinder,
                         () -> config.mining.darkMonolithFinder, v -> config.mining.darkMonolithFinder = v))
                 .option(bool("drillSwingSuppression", defaults.mining.drillSwingSuppression,
                         () -> config.mining.drillSwingSuppression, v -> config.mining.drillSwingSuppression = v))
                 .option(bool("powderMiningSounds", defaults.mining.powderMiningSounds,
                         () -> config.mining.powderMiningSounds, v -> config.mining.powderMiningSounds = v))
-                .option(bool("noPickobulus", defaults.mining.noPickobulus,
-                        () -> config.mining.noPickobulus, v -> config.mining.noPickobulus = v))
-                .option(bool("glaciteWaypoints", defaults.mining.glaciteWaypoints,
-                        () -> config.mining.glaciteWaypoints, v -> config.mining.glaciteWaypoints = v))
+
+
                 .option(bool("mineshaftWaypoints", defaults.mining.mineshaftWaypoints,
                         () -> config.mining.mineshaftWaypoints, v -> config.mining.mineshaftWaypoints = v))
                 .option(bool("suspiciousScrapCounter", defaults.mining.suspiciousScrapCounter,
                         () -> config.mining.suspiciousScrapCounter, v -> config.mining.suspiciousScrapCounter = v))
-                .option(bool("baseCampQuickWarp", defaults.mining.baseCampQuickWarp,
-                        () -> config.mining.baseCampQuickWarp, v -> config.mining.baseCampQuickWarp = v))
+                .option(bool("greatGlaciteWaypoints", defaults.mining.greatGlaciteWaypoints,
+                        () -> config.mining.greatGlaciteWaypoints, v -> config.mining.greatGlaciteWaypoints = v))
                 .build();
     }
 

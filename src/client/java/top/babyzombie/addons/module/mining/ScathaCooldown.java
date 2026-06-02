@@ -1,26 +1,41 @@
 package top.babyzombie.addons.module.mining;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.HypixelLocationTracker;
 
-/**
- * Tracks 30-second Scatha/Worm spawn cooldown.
- */
 public final class ScathaCooldown {
     static long time;
 
     private ScathaCooldown() {}
 
     public static void init() {
-        if (!ModConfigManager.get().mining.scathaCooldown) return;
-
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            String text = ChatUtils.stripColor(message.getString());
-            if ((text.contains("Scatha") || text.contains("Worm")) && text.contains("spawn")) {
+            if (!ModConfigManager.get().mining.scathaCooldown) return;
+            var tracker = HypixelLocationTracker.getInstance();
+            if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getLocation())) return;
+            if (ChatUtils.stripColor(message.getString()).equals("You hear the sound of something approaching...")) {
                 time = System.currentTimeMillis();
             }
+        });
+
+        HudRenderCallback.EVENT.register((gui, delta) -> {
+            if (!ModConfigManager.get().mining.scathaCooldown) return;
+            var tracker = HypixelLocationTracker.getInstance();
+            if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getLocation())) return;
+            if (time == 0) return;
+
+            long elapsed = System.currentTimeMillis() - time;
+            if (elapsed > 30_000) return;
+
+            var font = Minecraft.getInstance().font;
+            long remaining = 30_000 - elapsed;
+            String text = String.format("§5§lScatha: §8§l%d.%03ds", remaining / 1000, remaining % 1000);
+            gui.drawString(font, text, gui.guiWidth() / 2 - 40, 30, 0xFFFFFFFF, true);
         });
     }
 }

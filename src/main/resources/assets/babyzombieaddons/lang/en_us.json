@@ -184,24 +184,22 @@
   "config.babyzombieaddons.option.scathaCooldown.desc": "30-second spawn cooldown GUI.",
   "config.babyzombieaddons.option.armadilloEnergy": "Armadillo Energy",
   "config.babyzombieaddons.option.armadilloEnergy.desc": "Show current/max energy with color transition.",
-  "config.babyzombieaddons.option.compassSolver": "Compass Solver",
-  "config.babyzombieaddons.option.compassSolver.desc": "Particle-based Wishing Compass triangulation.",
+
   "config.babyzombieaddons.option.darkMonolithFinder": "Dark Monolith Finder",
   "config.babyzombieaddons.option.darkMonolithFinder.desc": "Mark all 14 possible monolith locations.",
   "config.babyzombieaddons.option.drillSwingSuppression": "Drill Swing Suppression",
   "config.babyzombieaddons.option.drillSwingSuppression.desc": "Prevent arm swinging animation while mining.",
   "config.babyzombieaddons.option.powderMiningSounds": "Powder Mining Sounds",
   "config.babyzombieaddons.option.powderMiningSounds.desc": "Remove XP orb sounds and replace chest sounds.",
-  "config.babyzombieaddons.option.noPickobulus": "No Pickobulus on Island",
-  "config.babyzombieaddons.option.noPickobulus.desc": "Prevent Pickobulus explosion on Private Island.",
-  "config.babyzombieaddons.option.glaciteWaypoints": "Glacite Waypoints",
-  "config.babyzombieaddons.option.glaciteWaypoints.desc": "Gemstone waypoints for daily commissions.",
+
+
+  "config.babyzombieaddons.option.greatGlaciteWaypoints": "Great Glacite Waypoints",
+  "config.babyzombieaddons.option.greatGlaciteWaypoints.desc": "Mark Great Glacite locations in the Glacite area.",
   "config.babyzombieaddons.option.mineshaftWaypoints": "Mineshaft Waypoints",
   "config.babyzombieaddons.option.mineshaftWaypoints.desc": "Corpse and exit waypoints in mineshafts.",
   "config.babyzombieaddons.option.suspiciousScrapCounter": "Suspicious Scrap Counter",
   "config.babyzombieaddons.option.suspiciousScrapCounter.desc": "Show suspicious scrap count on HUD.",
-  "config.babyzombieaddons.option.baseCampQuickWarp": "Base Camp Quick Warp",
-  "config.babyzombieaddons.option.baseCampQuickWarp.desc": "Quick warp back to camp from Glacite areas.",
+
 
   "config.babyzombieaddons.option.pestDisplay": "Pest Display",
   "config.babyzombieaddons.option.pestDisplay.desc": "Show beacon beams on garden pests.",
@@ -266,8 +264,7 @@
   "config.babyzombieaddons.option.witherImpactVolume.desc": "Reduce Wither Impact explosion sound volume.",
   "config.babyzombieaddons.option.dyedArmorSBID": "Dyed Armor SBID",
   "config.babyzombieaddons.option.dyedArmorSBID.desc": "Prefix dyed armor IDs with DYED_ for texture pack compatibility.",
-  "config.babyzombieaddons.option.sackItemHUD": "Sack Item HUD",
-  "config.babyzombieaddons.option.sackItemHUD.desc": "Show selected sack item quantities on screen.",
+
   "config.babyzombieaddons.option.periodicEntityCleanup": "Periodic Entity Cleanup",
   "config.babyzombieaddons.option.periodicEntityCleanup.desc": "Remove dead/invalid player entities and invisible armor stands.",
   "config.babyzombieaddons.option.stonksPrice": "Stonks Price",

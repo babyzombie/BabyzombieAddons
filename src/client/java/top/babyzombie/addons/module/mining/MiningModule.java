@@ -8,9 +8,20 @@ public final class MiningModule {
 
     public static void init() {
         MiningAbilityAlerts.init();
+        NucleusAutoWarp.init();
         ScathaCooldown.init();
         SuspiciousScrapCounter.init();
         CrystalHollowsPassRenew.init();
+        ChGetFromSacks.init();
+        ChestMarkers.init();
+        DarkMonolithFinder.init();
+        ArmadilloEnergy.init();
+        GlaciteMineshaftWaypoints.init();
+
+        GreatGlaciteWaypoints.init();
+
+        PowderMiningSounds.init();
+        DrillSwingSuppression.init();
 
         ClientEntityEvents.ENTITY_LOAD.register((entity, world) -> {
             if (entity == Minecraft.getInstance().player) {

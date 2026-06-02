@@ -20,8 +20,8 @@ import top.babyzombie.addons.module.party.PartyModule;
 import top.babyzombie.addons.module.playcmd.PlayCmdModule;
 import top.babyzombie.addons.module.popup.PopupEventsModule;
 import top.babyzombie.addons.module.raredrop.RareDropModule;
-import top.babyzombie.addons.module.sack.SackModule;
-import top.babyzombie.addons.module.skywars.SkywarsModule;
+
+
 import top.babyzombie.addons.module.slayer.SlayerModule;
 import top.babyzombie.addons.module.withercloak.WitherCloakModule;
 import top.babyzombie.addons.util.HypixelLocationTracker;
@@ -61,8 +61,8 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         PlayCmdModule.init();
         PopupEventsModule.init();
         RareDropModule.init();
-        SackModule.init();
-        SkywarsModule.init();
+
+
         SlayerModule.init();
         WitherCloakModule.init();
     }
@@ -94,8 +94,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
                 () -> cfg.kuudra.stunTimer);
         HudManager.register("SuspiciousScrap", 400, 110, 1.0f, 34, 16,
                 () -> cfg.mining.suspiciousScrapCounter);
-        HudManager.register("SackItems", 200, 100, 1.0f, 80, 27,
-                () -> cfg.misc.sackItemHUD);
+
         HudManager.register("DevilsContract", 400, 350, 1.0f, 68, 9,
                 () -> true);
     }

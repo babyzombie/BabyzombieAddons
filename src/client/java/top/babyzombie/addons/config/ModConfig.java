@@ -108,15 +108,14 @@ public class ModConfig {
         public boolean getFromSacks = false;
         public boolean scathaCooldown = false;
         public boolean armadilloEnergy = false;
-        public boolean compassSolver = false;
         public boolean darkMonolithFinder = false;
         public boolean drillSwingSuppression = false;
         public boolean powderMiningSounds = false;
-        public boolean noPickobulus = false;
-        public boolean glaciteWaypoints = false;
+
+
         public boolean mineshaftWaypoints = false;
         public boolean suspiciousScrapCounter = false;
-        public boolean baseCampQuickWarp = false;
+        public boolean greatGlaciteWaypoints = false;
     }
 
     // ---- Garden ----
@@ -172,7 +171,7 @@ public class ModConfig {
         public boolean hideHyperionExplosion = false;
         public boolean witherImpactVolume = false;
         public boolean dyedArmorSBID = false;
-        public boolean sackItemHUD = false;
+
         public boolean periodicEntityCleanup = false;
         public boolean stonksPrice = false;
         public boolean bitsShopPrice = false;

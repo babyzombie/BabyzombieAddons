@@ -62,8 +62,7 @@ public final class MiscCategory {
                         () -> config.misc.witherImpactVolume, v -> config.misc.witherImpactVolume = v))
                 .option(bool("dyedArmorSBID", defaults.misc.dyedArmorSBID,
                         () -> config.misc.dyedArmorSBID, v -> config.misc.dyedArmorSBID = v))
-                .option(bool("sackItemHUD", defaults.misc.sackItemHUD,
-                        () -> config.misc.sackItemHUD, v -> config.misc.sackItemHUD = v))
+
                 .option(bool("periodicEntityCleanup", defaults.misc.periodicEntityCleanup,
                         () -> config.misc.periodicEntityCleanup, v -> config.misc.periodicEntityCleanup = v))
                 .option(bool("stonksPrice", defaults.misc.stonksPrice,
