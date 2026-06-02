@@ -271,6 +271,8 @@
   "babyzombieaddons.popup.body.restart_request": "{0} wants to restart",
   "babyzombieaddons.popup.accept": "[{0}] Accept",
   "babyzombieaddons.popup.ignore": "[{0}] Ignore",
+  "babyzombieaddons.cake.all_eaten": "§aYou have eaten all 16 cakes!",
+  "babyzombieaddons.ch.nucleus": "§bReady to /warp nucleus, click the crystal again",
 
   "babyzombieaddons.fruitdigging.treasure_nearby": "§eTreasure nearby",
   "babyzombieaddons.fruitdigging.no_fruit": "§eNo fruit nearby",

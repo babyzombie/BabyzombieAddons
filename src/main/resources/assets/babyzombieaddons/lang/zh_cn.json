@@ -150,7 +150,7 @@
   "config.babyzombieaddons.option.gravityStormTimer.desc": "追踪 30 秒重力风暴冷却。",
 
   "config.babyzombieaddons.option.nucleusAutoWarp": "水晶核自动传送",
-  "config.babyzombieaddons.option.nucleusAutoWarp.desc": "双击水晶传送到 /warp nucleus。",
+  "config.babyzombieaddons.option.nucleusAutoWarp.desc": "双击水晶直接传送到晶核。",
   "config.babyzombieaddons.option.miningAbilityAlerts": "挖矿能力提醒",
   "config.babyzombieaddons.option.miningAbilityAlerts.desc": "挖矿能力就绪或使用时标题/音效提醒。",
   "config.babyzombieaddons.option.crystalHollowsPassAutoRenew": "水晶洞穴通行证续期",
@@ -271,6 +271,8 @@
   "babyzombieaddons.popup.body.restart_request": "{0} 想要重新开始",
   "babyzombieaddons.popup.accept": "[{0}] 接受",
   "babyzombieaddons.popup.ignore": "[{0}] 忽略",
+  "babyzombieaddons.cake.all_eaten": "§a已吃完所有 16 种蛋糕！",
+  "babyzombieaddons.ch.nucleus": "§b准备传送到晶核，再点一下水晶进行传送",
 
   "babyzombieaddons.fruitdigging.treasure_nearby": "§e附近有宝藏",
   "babyzombieaddons.fruitdigging.no_fruit": "§e附近没有水果",
