@@ -40,6 +40,15 @@ public final class MiningCategory {
 
                 .option(bool("mineshaftWaypoints", defaults.mining.mineshaftWaypoints,
                         () -> config.mining.mineshaftWaypoints, v -> config.mining.mineshaftWaypoints = v))
+                .option(Option.<ModConfig.MineshaftWarpMode>createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.glaciteMineshaftWarp"))
+                        .description(Component.translatable("config.babyzombieaddons.option.glaciteMineshaftWarp.desc"))
+                        .binding(defaults.mining.glaciteMineshaftWarp,
+                                () -> config.mining.glaciteMineshaftWarp,
+                                v -> config.mining.glaciteMineshaftWarp = v)
+                        .controller(ConfigUtils.createEnumController(b ->
+                                Component.translatable("config.babyzombieaddons.option.glaciteMineshaftWarp." + b.name())))
+                        .build())
                 .option(bool("suspiciousScrapCounter", defaults.mining.suspiciousScrapCounter,
                         () -> config.mining.suspiciousScrapCounter, v -> config.mining.suspiciousScrapCounter = v))
                 .option(bool("creeperVisibility", defaults.mining.creeperVisibility,

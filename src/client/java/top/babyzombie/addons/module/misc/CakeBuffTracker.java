@@ -31,7 +31,7 @@ public final class CakeBuffTracker {
             if (overlay) return;
             if (!ModConfigManager.get().general.cakeBuffTracker) return;
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInSkyblock() || !"Private Island".equals(tracker.getLocation())) return;
+            if (!tracker.isInSkyblock() || !"Private Island".equals(tracker.getMap())) return;
 
             String text = ChatUtils.stripColor(message.getString());
             if (!text.endsWith(" for 48 hours!")) return;

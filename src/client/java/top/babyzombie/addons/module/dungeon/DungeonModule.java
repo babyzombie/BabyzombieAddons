@@ -9,6 +9,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.EntityRenderEvents;
 import top.babyzombie.addons.module.party.PartyModule;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.PartyTracker;
 import top.babyzombie.addons.util.DataPersistence;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.Scheduler;
@@ -79,8 +80,7 @@ public final class DungeonModule {
             String t = ChatUtils.stripColor(m.getString());
             if (t.equals("Starting in 1 second.")) {
                 instanceStarted = true;
-                AutoRequeue.cancelAutoJoin = false;
-                AutoRequeue.ended = false;
+                AutoRequeue.onInstanceStart();
             }
         });
 
@@ -116,13 +116,15 @@ public final class DungeonModule {
             }
         });
 
-        // Cancel keywords from party chat (verified by PARTY_CHAT regex)
+        // Cancel keywords from party chat (only by party leader)
         ClientReceiveMessageEvents.GAME.register((m, o) -> {
             if (o) return;
             if (ModConfigManager.get().dungeon.autoRequeue == ModConfig.RequeueMode.OFF) return;
-            // Only process party chat messages
             var pm = PartyModule.PARTY_CHAT.matcher(m.getString());
             if (!pm.find()) return;
+            String sender = pm.group(3);
+            if (!PartyTracker.getInstance().hasLeaderName(sender) && PartyTracker.getInstance().getLeaderName() != null)
+                return;
             String t = ChatUtils.stripColor(pm.group(5)).trim().toLowerCase();
             for (String kw : ModConfigManager.get().dungeon.requeueCancelKeywords.toLowerCase().split("\\|")) {
                 if (!kw.isEmpty() && t.equals(kw)) {

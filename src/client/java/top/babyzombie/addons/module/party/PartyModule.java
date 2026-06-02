@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.PartyTracker;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -164,8 +165,7 @@ public final class PartyModule {
 
     private static void runWhenLeader() {
         if (nextCommand == null) return;
-        // For now, just execute — in the JS, partylist API was used to verify leadership
-        // Simplified: execute immediately since we can't easily check party leader status
+        if (!PartyTracker.getInstance().isSelfLeader()) return;
         ChatUtils.sendCommand(nextCommand);
         showMsg("party.executed", "/" + nextCommand);
         nextCommand = null;

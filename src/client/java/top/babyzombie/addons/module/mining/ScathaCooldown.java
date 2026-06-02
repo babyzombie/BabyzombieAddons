@@ -19,7 +19,7 @@ public final class ScathaCooldown {
             if (overlay) return;
             if (!ModConfigManager.get().mining.scathaCooldown) return;
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getLocation())) return;
+            if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getMap())) return;
             if (ChatUtils.stripColor(message.getString()).equals("You hear the sound of something approaching...")) {
                 time = System.currentTimeMillis();
             }
@@ -28,7 +28,7 @@ public final class ScathaCooldown {
         HudRenderCallback.EVENT.register((gui, delta) -> {
             if (!ModConfigManager.get().mining.scathaCooldown) return;
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getLocation())) return;
+            if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getMap())) return;
             if (time == 0) return;
 
             long elapsed = System.currentTimeMillis() - time;

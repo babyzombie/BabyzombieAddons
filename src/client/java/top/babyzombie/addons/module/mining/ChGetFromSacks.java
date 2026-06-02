@@ -19,7 +19,7 @@ public final class ChGetFromSacks {
             if (overlay) return;
             if (!ModConfigManager.get().mining.getFromSacks) return;
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getLocation())) return;
+            if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getMap())) return;
 
             long now = System.currentTimeMillis();
             if (cooldown > now) return;

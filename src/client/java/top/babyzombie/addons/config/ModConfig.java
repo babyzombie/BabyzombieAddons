@@ -8,6 +8,7 @@ public class ModConfig {
     public enum RequeueMode { OFF, ON_FAIL, ON_WIN, ALWAYS }
     public enum CrowdHideMode { OFF, HIDE, REMOVE }
     public enum HpDisplayMode { OFF, HUD, BOSSBAR }
+    public enum MineshaftWarpMode { OFF, TITLE_ONLY, TITLE_AND_SOUND, SEND_PTME, PTME_AND_WARP }
 
     public GeneralConfig general = new GeneralConfig();
     public DungeonConfig dungeon = new DungeonConfig();
@@ -96,6 +97,7 @@ public class ModConfig {
 
 
         public boolean mineshaftWaypoints = false;
+        public MineshaftWarpMode glaciteMineshaftWarp = MineshaftWarpMode.OFF;
         public boolean suspiciousScrapCounter = false;
         public boolean creeperVisibility = false;
         public boolean greatGlaciteWaypoints = false;

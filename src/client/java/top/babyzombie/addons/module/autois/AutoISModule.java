@@ -18,6 +18,7 @@ public final class AutoISModule {
     public static void init() {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             if (!ModConfigManager.get().general.autois) return;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             int delayTicks = ModConfigManager.get().general.autoisDelay * 20;
             Scheduler.schedule(delayTicks, AutoISModule::doWarp);
         });

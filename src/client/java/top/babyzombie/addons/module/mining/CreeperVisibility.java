@@ -15,11 +15,10 @@ public final class CreeperVisibility {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             if (client.player == null || client.player.tickCount % 20 != 0) return;
 
-            var loc = HypixelLocationTracker.getInstance().getLocation();
-            boolean inGunpowder = "Deep Caverns".equals(HypixelLocationTracker.getInstance().getLocation())
-                    && "Gunpowder Mines".equals(loc);
-            boolean inMist = "Dwarven Mines".equals(HypixelLocationTracker.getInstance().getLocation())
-                    && "The Mist".equals(loc);
+            var t = HypixelLocationTracker.getInstance();
+            var loc = t.getLocation();
+            boolean inGunpowder = "Deep Caverns".equals(t.getMap()) && "Gunpowder Mines".equals(loc);
+            boolean inMist = "Dwarven Mines".equals(t.getMap()) && "The Mist".equals(loc);
 
             if (!inGunpowder && !inMist) return;
 

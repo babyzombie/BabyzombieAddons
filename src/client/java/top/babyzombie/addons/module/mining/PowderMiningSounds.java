@@ -34,6 +34,6 @@ public final class PowderMiningSounds {
 
     private static boolean isInCrystalHollows() {
         var t = HypixelLocationTracker.getInstance();
-        return t.isInSkyblock() && "Crystal Hollows".equals(t.getLocation());
+        return t.isInSkyblock() && "Crystal Hollows".equals(t.getMap());
     }
 }

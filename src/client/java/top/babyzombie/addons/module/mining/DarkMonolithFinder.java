@@ -113,6 +113,6 @@ public final class DarkMonolithFinder {
 
     private static boolean isInDwarvenMines() {
         var t = HypixelLocationTracker.getInstance();
-        return t.isInSkyblock() && "Dwarven Mines".equals(t.getLocation());
+        return t.isInSkyblock() && "Dwarven Mines".equals(t.getMap());
     }
 }
