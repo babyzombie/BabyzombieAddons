@@ -26,6 +26,9 @@
   "config.babyzombieaddons.category.party": "队伍",
   "config.babyzombieaddons.category.popup": "弹出通知",
   "config.babyzombieaddons.category.popup.desc": "接受和忽略的快捷键可以在游戏的「控制」设置中修改。",
+  "config.babyzombieaddons.category.events": "事件",
+  "config.babyzombieaddons.group.greatSpook": "大万圣节",
+  "config.babyzombieaddons.group.carnival": "嘉年华",
   "config.babyzombieaddons.category.misc": "杂项",
 
   "config.babyzombieaddons.group.autois": "AutoIS 设置",
@@ -245,6 +248,12 @@
   "config.babyzombieaddons.option.dukeWaypoint.desc": "在 The Dukedom 标记 Barbarian Duke X 位置。",
   "config.babyzombieaddons.option.creeperVisibility": "苦力怕可见性",
   "config.babyzombieaddons.option.creeperVisibility.desc": "在迷雾/火药矿洞显示隐身的苦力怕。",
+  "config.babyzombieaddons.option.greatSpook": "Great Spook 助手",
+  "config.babyzombieaddons.option.greatSpook.desc": "自动解答 QUICK MATHS、回复演讲恶魔并点击 HERE 按钮。",
+  "config.babyzombieaddons.option.greatSpookDelay": "加个半秒到一秒延迟",
+  "config.babyzombieaddons.option.greatSpookDelay.desc": "嗯，大概就是这样，然后就别说\"mod做的还没我自己做的快\"。",
+  "config.babyzombieaddons.option.publicSpeakingDemon": "Say something interesting 时的发言",
+  "config.babyzombieaddons.option.publicSpeakingDemon.desc": "演讲恶魔让你\"Say something interesting\"时自动发的消息，留空则随机生成。",
   "config.babyzombieaddons.option.fruitDiggingHelper": "挖水果助手",
   "config.babyzombieaddons.option.fruitDiggingHelper.desc": "标记已挖掘的水果位置和附近的宝藏。",
   "config.babyzombieaddons.option.bazaarSackExtraction": "Bazaar 袋子提取",
@@ -325,5 +334,9 @@
   "babyzombieaddons.popup.body.duel_request": "{0} 邀请你进行 {1} 决斗",
   "babyzombieaddons.popup.body.restart_request": "{0} 想要重新开始",
   "babyzombieaddons.popup.accept": "[{0}] 接受",
-  "babyzombieaddons.popup.ignore": "[{0}] 忽略"
+  "babyzombieaddons.popup.ignore": "[{0}] 忽略",
+
+  "babyzombieaddons.fruitdigging.treasure_nearby": "§e附近有宝藏",
+  "babyzombieaddons.fruitdigging.no_fruit": "§e附近没有水果",
+  "babyzombieaddons.fruitdigging.bombs_nearby": "§c附近有炸弹"
 }

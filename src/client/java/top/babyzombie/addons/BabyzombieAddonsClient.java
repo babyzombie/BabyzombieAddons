@@ -11,7 +11,8 @@ import top.babyzombie.addons.module.abiphone.IncomingCallHandler;
 import top.babyzombie.addons.module.autois.AutoISModule;
 import top.babyzombie.addons.module.dungeon.DungeonModule;
 import top.babyzombie.addons.module.garden.GardenModule;
-import top.babyzombie.addons.module.greatspook.GreatSpookModule;
+import top.babyzombie.addons.module.events.FruitDiggingModule;
+import top.babyzombie.addons.module.events.GreatSpookModule;
 import top.babyzombie.addons.module.kuudra.KuudraModule;
 import top.babyzombie.addons.module.mining.MiningModule;
 import top.babyzombie.addons.module.misc.MiscModule;
@@ -52,6 +53,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         DungeonModule.init();
         GardenModule.init();
         GreatSpookModule.init();
+        FruitDiggingModule.init();
         KuudraModule.init();
         MiningModule.init();
         MiscModule.init();

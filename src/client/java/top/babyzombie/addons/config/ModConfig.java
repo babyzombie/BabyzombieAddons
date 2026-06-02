@@ -18,6 +18,7 @@ public class ModConfig {
     public GardenConfig garden = new GardenConfig();
     public PartyConfig party = new PartyConfig();
     public PopupConfig popup = new PopupConfig();
+    public EventsConfig events = new EventsConfig();
     public MiscConfig misc = new MiscConfig();
     public DebugConfig debug = new DebugConfig();
 
@@ -150,6 +151,15 @@ public class ModConfig {
         public boolean popupDungeonRestart = false;
     }
 
+    // ---- Events ----
+
+    public static class EventsConfig {
+        public boolean greatSpook = false;
+        public boolean greatSpookDelay = false;
+        public String publicSpeakingDemon = "";
+        public boolean fruitDiggingHelper = false;
+    }
+
     // ---- Misc ----
 
     public static class MiscConfig {
@@ -157,7 +167,6 @@ public class ModConfig {
         public boolean betterPerspective = false;
         public boolean dukeWaypoint = false;
         public boolean creeperVisibility = false;
-        public boolean fruitDiggingHelper = false;
         public boolean bazaarSackExtraction = false;
         public boolean personalCompactorPreview = false;
         public boolean hideHyperionExplosion = false;

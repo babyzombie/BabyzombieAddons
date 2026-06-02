@@ -52,8 +52,6 @@ public final class MiscCategory {
                         () -> config.misc.dukeWaypoint, v -> config.misc.dukeWaypoint = v))
                 .option(bool("creeperVisibility", defaults.misc.creeperVisibility,
                         () -> config.misc.creeperVisibility, v -> config.misc.creeperVisibility = v))
-                .option(bool("fruitDiggingHelper", defaults.misc.fruitDiggingHelper,
-                        () -> config.misc.fruitDiggingHelper, v -> config.misc.fruitDiggingHelper = v))
                 .option(bool("bazaarSackExtraction", defaults.misc.bazaarSackExtraction,
                         () -> config.misc.bazaarSackExtraction, v -> config.misc.bazaarSackExtraction = v))
                 .option(bool("personalCompactorPreview", defaults.misc.personalCompactorPreview,

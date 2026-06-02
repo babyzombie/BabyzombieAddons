@@ -26,6 +26,9 @@
   "config.babyzombieaddons.category.party": "Party",
   "config.babyzombieaddons.category.popup": "Popup Events",
   "config.babyzombieaddons.category.popup.desc": "Accept and Ignore keybinds can be changed in the game's Controls settings.",
+  "config.babyzombieaddons.category.events": "Events",
+  "config.babyzombieaddons.group.greatSpook": "Great Spook",
+  "config.babyzombieaddons.group.carnival": "Carnival",
   "config.babyzombieaddons.category.misc": "Misc",
 
   "config.babyzombieaddons.group.autois": "AutoIS Settings",
@@ -245,6 +248,12 @@
   "config.babyzombieaddons.option.dukeWaypoint.desc": "Mark the Barbarian Duke X location in The Dukedom.",
   "config.babyzombieaddons.option.creeperVisibility": "Creeper Visibility",
   "config.babyzombieaddons.option.creeperVisibility.desc": "Reveal invisible creepers in The Mist / Gunpowder Mines.",
+  "config.babyzombieaddons.option.greatSpook": "Great Spook Helper",
+  "config.babyzombieaddons.option.greatSpook.desc": "Auto-solve QUICK MATHS, respond to Public Speaking Demon, and click HERE buttons.",
+  "config.babyzombieaddons.option.greatSpookDelay": "Add 0.5-1s Delay",
+  "config.babyzombieaddons.option.greatSpookDelay.desc": "Add a random half-to-one-second delay so it doesn't look too instant.",
+  "config.babyzombieaddons.option.publicSpeakingDemon": "Speaking Demon Text",
+  "config.babyzombieaddons.option.publicSpeakingDemon.desc": "Text to auto-send when the Speaking Demon asks to say something interesting. Leave empty for random text.",
   "config.babyzombieaddons.option.fruitDiggingHelper": "Fruit Digging Helper",
   "config.babyzombieaddons.option.fruitDiggingHelper.desc": "Mark dug fruit locations and nearby treasure at Carnival.",
   "config.babyzombieaddons.option.bazaarSackExtraction": "Bazaar Sack Extraction",
@@ -325,5 +334,9 @@
   "babyzombieaddons.popup.body.duel_request": "{0} invites you to {1} duel",
   "babyzombieaddons.popup.body.restart_request": "{0} wants to restart",
   "babyzombieaddons.popup.accept": "[{0}] Accept",
-  "babyzombieaddons.popup.ignore": "[{0}] Ignore"
+  "babyzombieaddons.popup.ignore": "[{0}] Ignore",
+
+  "babyzombieaddons.fruitdigging.treasure_nearby": "§eTreasure nearby",
+  "babyzombieaddons.fruitdigging.no_fruit": "§eNo fruit nearby",
+  "babyzombieaddons.fruitdigging.bombs_nearby": "§cBombs nearby"
 }
