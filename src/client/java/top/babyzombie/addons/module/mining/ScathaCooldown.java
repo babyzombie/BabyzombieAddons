@@ -3,7 +3,9 @@ package top.babyzombie.addons.module.mining;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
+
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 
@@ -33,9 +35,11 @@ public final class ScathaCooldown {
             if (elapsed > 30_000) return;
 
             var font = Minecraft.getInstance().font;
+            int x = HudManager.x("ScathaCooldown"), y = HudManager.y("ScathaCooldown");
+            float s = HudManager.scale("ScathaCooldown");
             long remaining = 30_000 - elapsed;
             String text = String.format("§5§lScatha: §8§l%d.%03ds", remaining / 1000, remaining % 1000);
-            gui.drawString(font, text, gui.guiWidth() / 2 - 40, 30, 0xFFFFFFFF, true);
+            HudManager.drawScaled(gui, font, text, x, y, s);
         });
     }
 }

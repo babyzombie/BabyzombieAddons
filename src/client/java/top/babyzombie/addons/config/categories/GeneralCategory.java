@@ -1,15 +1,19 @@
 package top.babyzombie.addons.config.categories;
 
+import net.azureaaron.dandelion.api.ButtonOption;
 import net.azureaaron.dandelion.api.ConfigCategory;
 import net.azureaaron.dandelion.api.Option;
 import net.azureaaron.dandelion.api.OptionGroup;
 import net.azureaaron.dandelion.api.controllers.IntegerController;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfig.AutoISDest;
 import top.babyzombie.addons.config.ModConfig.KickRecovery;
+import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.module.raredrop.RareDropScreen;
 
 import java.util.function.Supplier;
 import java.util.function.Consumer;
@@ -21,6 +25,22 @@ public final class GeneralCategory {
         return ConfigCategory.createBuilder()
                 .id(Identifier.fromNamespaceAndPath("babyzombieaddons", "config/general"))
                 .name(Component.translatable("config.babyzombieaddons.category.general"))
+                .option(ButtonOption.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.hudEdit"))
+                        .description(Component.translatable("config.babyzombieaddons.option.hudEdit.desc"))
+                        .prompt(Component.translatable("config.babyzombieaddons.prompt.open"))
+                        .action(HudManager::openEditScreen)
+                        .build())
+                .option(createBool("playCmd", defaults.misc.playCmd,
+                        () -> config.misc.playCmd, v -> config.misc.playCmd = v))
+                .option(ButtonOption.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.raredropManage"))
+                        .description(Component.translatable("config.babyzombieaddons.option.raredropManage.desc"))
+                        .prompt(Component.translatable("config.babyzombieaddons.prompt.open"))
+                        .action(screen -> Minecraft.getInstance().setScreen(new RareDropScreen(screen)))
+                        .build())
+                .option(createBool("abiphoneGui", defaults.misc.abiphoneGui,
+                        () -> config.misc.abiphoneGui, v -> config.misc.abiphoneGui = v))
                 .option(createBool("autois", defaults.general.autois,
                         () -> config.general.autois, v -> config.general.autois = v))
                 .group(OptionGroup.createBuilder()
@@ -53,34 +73,8 @@ public final class GeneralCategory {
                                         Component.translatable("config.babyzombieaddons.option.autoBackToSkyblock." + m.name())))
                                 .build())
                         .build())
-                .option(createBool("doubleLobby", defaults.general.doubleLobby,
-                        () -> config.general.doubleLobby, v -> config.general.doubleLobby = v))
-                .option(createBool("autoEnglish", defaults.general.autoEnglish,
-                        () -> config.general.autoEnglish, v -> config.general.autoEnglish = v))
-                .option(createBool("hideBlockMessages", defaults.general.hideBlockMessages,
-                        () -> config.general.hideBlockMessages, v -> config.general.hideBlockMessages = v))
-                .option(createBool("crimsonArmorMute", defaults.general.crimsonArmorMute,
-                        () -> config.general.crimsonArmorMute, v -> config.general.crimsonArmorMute = v))
-                .option(createBool("cancelEnderPearl", defaults.general.cancelEnderPearl,
-                        () -> config.general.cancelEnderPearl, v -> config.general.cancelEnderPearl = v))
                 .option(createBool("cakeBuffTracker", defaults.general.cakeBuffTracker,
                         () -> config.general.cakeBuffTracker, v -> config.general.cakeBuffTracker = v))
-                .option(createBool("itemTimestamp", defaults.general.itemTimestamp,
-                        () -> config.general.itemTimestamp, v -> config.general.itemTimestamp = v))
-                .option(createBool("betterSignEditing", defaults.general.betterSignEditing,
-                        () -> config.general.betterSignEditing, v -> config.general.betterSignEditing = v))
-                .option(createBool("quickAuction", defaults.general.quickAuction,
-                        () -> config.general.quickAuction, v -> config.general.quickAuction = v))
-                .option(createBool("hideClosePlayers", defaults.general.hideClosePlayers,
-                        () -> config.general.hideClosePlayers, v -> config.general.hideClosePlayers = v))
-                .option(createBool("vanquisherAlert", defaults.general.vanquisherAlert,
-                        () -> config.general.vanquisherAlert, v -> config.general.vanquisherAlert = v))
-                .option(createBool("autoAbiphoneAnswer", defaults.general.autoAbiphoneAnswer,
-                        () -> config.general.autoAbiphoneAnswer, v -> config.general.autoAbiphoneAnswer = v))
-                .option(createBool("jerryBoxHelper", defaults.general.jerryBoxHelper,
-                        () -> config.general.jerryBoxHelper, v -> config.general.jerryBoxHelper = v))
-                .option(createBool("dailyChineseTranslation", defaults.general.dailyChineseTranslation,
-                        () -> config.general.dailyChineseTranslation, v -> config.general.dailyChineseTranslation = v))
                 .build();
     }
 

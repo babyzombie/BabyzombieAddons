@@ -16,8 +16,6 @@ public final class SlayerCategory {
         return ConfigCategory.createBuilder()
                 .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/slayer"))
                 .name(Component.translatable("config.babyzombieaddons.category.slayer"))
-                .option(bool("noQuestReminder", defaults.slayer.noQuestReminder,
-                        () -> config.slayer.noQuestReminder, v -> config.slayer.noQuestReminder = v))
                 .option(bool("pigmanSwordTimer", defaults.slayer.pigmanSwordTimer,
                         () -> config.slayer.pigmanSwordTimer, v -> config.slayer.pigmanSwordTimer = v))
                 .option(bool("ragnarockAxeTimer", defaults.slayer.ragnarockAxeTimer,
@@ -28,14 +26,6 @@ public final class SlayerCategory {
                         () -> config.slayer.endStoneSwordTimer, v -> config.slayer.endStoneSwordTimer = v))
                 .option(bool("bossInfoHUD", defaults.slayer.bossInfoHUD,
                         () -> config.slayer.bossInfoHUD, v -> config.slayer.bossInfoHUD = v))
-                .option(bool("bossBoundingBox", defaults.slayer.bossBoundingBox,
-                        () -> config.slayer.bossBoundingBox, v -> config.slayer.bossBoundingBox = v))
-                .option(bool("lowHPBloodfiend", defaults.slayer.lowHPBloodfiend,
-                        () -> config.slayer.lowHPBloodfiend, v -> config.slayer.lowHPBloodfiend = v))
-                .option(bool("riftEffigyDisplay", defaults.slayer.riftEffigyDisplay,
-                        () -> config.slayer.riftEffigyDisplay, v -> config.slayer.riftEffigyDisplay = v))
-                .option(bool("gummyBearTimer", defaults.slayer.gummyBearTimer,
-                        () -> config.slayer.gummyBearTimer, v -> config.slayer.gummyBearTimer = v))
                 .build();
     }
 

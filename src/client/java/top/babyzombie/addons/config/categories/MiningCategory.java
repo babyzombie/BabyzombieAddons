@@ -42,6 +42,8 @@ public final class MiningCategory {
                         () -> config.mining.mineshaftWaypoints, v -> config.mining.mineshaftWaypoints = v))
                 .option(bool("suspiciousScrapCounter", defaults.mining.suspiciousScrapCounter,
                         () -> config.mining.suspiciousScrapCounter, v -> config.mining.suspiciousScrapCounter = v))
+                .option(bool("creeperVisibility", defaults.mining.creeperVisibility,
+                        () -> config.mining.creeperVisibility, v -> config.mining.creeperVisibility = v))
                 .option(bool("greatGlaciteWaypoints", defaults.mining.greatGlaciteWaypoints,
                         () -> config.mining.greatGlaciteWaypoints, v -> config.mining.greatGlaciteWaypoints = v))
                 .build();

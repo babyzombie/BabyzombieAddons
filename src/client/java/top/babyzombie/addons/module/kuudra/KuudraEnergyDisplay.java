@@ -3,7 +3,7 @@ package top.babyzombie.addons.module.kuudra;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
-import top.babyzombie.addons.config.HudManager;
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
@@ -33,7 +33,10 @@ public final class KuudraEnergyDisplay {
             if (fuel < 0 || "p4".equals(KuudraLocationTracker.area)) return;
             var font = Minecraft.getInstance().font;
             int x = HudManager.x("EnergyCharge"), y = HudManager.y("EnergyCharge");
-            gui.drawString(font, ChatUtils.translate("kuudra.energy", fuel), x, y, 0xFFFFFFFF, true);
+            float s = HudManager.scale("EnergyCharge");
+            String text = ChatUtils.translate("kuudra.energy", fuel);
+            HudManager.drawScaled(gui, font, text, x, y, s);
         });
     }
+
 }

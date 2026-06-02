@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.DisplaySlot;
-import top.babyzombie.addons.config.HudManager;
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
@@ -25,8 +25,9 @@ public final class KuudraHPDisplay {
 
             var font = Minecraft.getInstance().font;
             int x = HudManager.x("KuudraHP"), y = HudManager.y("KuudraHP");
+            float s = HudManager.scale("KuudraHP");
             String text = formatHP(h);
-            gui.drawString(font, text, x, y, 0xFFFFFFFF, true);
+            HudManager.drawScaled(gui, font, text, x, y, s);
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {

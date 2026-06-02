@@ -16,9 +16,9 @@ import top.babyzombie.addons.util.HypixelLocationTracker;
 public class SendCommandMixin {
 
     @Inject(method = "sendCommand", at = @At("HEAD"), cancellable = true)
-    private void onSendCommand(String command, CallbackInfo ci) {
+    private void onSendCommand(String string, CallbackInfo ci) {
         if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
-        String cmd = command.trim();
+        String cmd = string.trim();
 
         // /call → Abiphone contact screen
         if (cmd.equals("call") && HypixelLocationTracker.getInstance().isInSkyblock() && ModConfigManager.get().misc.abiphoneGui) {

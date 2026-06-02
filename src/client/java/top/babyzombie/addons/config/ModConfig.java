@@ -14,9 +14,9 @@ public class ModConfig {
     public KuudraConfig kuudra = new KuudraConfig();
     public SlayerConfig slayer = new SlayerConfig();
     public WitherCloakConfig witherCloak = new WitherCloakConfig();
+    public PartyConfig party = new PartyConfig();
     public MiningConfig mining = new MiningConfig();
     public GardenConfig garden = new GardenConfig();
-    public PartyConfig party = new PartyConfig();
     public PopupConfig popup = new PopupConfig();
     public EventsConfig events = new EventsConfig();
     public MiscConfig misc = new MiscConfig();
@@ -29,22 +29,9 @@ public class ModConfig {
         public int autoisDelay = 5;
         public AutoISDest autoisDest = AutoISDest.GARDEN;
         public KickRecovery autoBackToSkyblock = KickRecovery.LOBBY_ONLY;
-        public boolean doubleLobby = false;
-        public boolean autoEnglish = false;
-        public boolean hideBlockMessages = false;
-        public boolean crimsonArmorMute = false;
-        public boolean cancelEnderPearl = false;
         public boolean cakeBuffTracker = false;
-        public boolean itemTimestamp = false;
-        public boolean betterSignEditing = false;
-        public boolean quickAuction = false;
-        public int witherShieldTimerMode = 1;
-        public boolean hideClosePlayers = false;
-        public int closePlayerRadius = 5;
-        public boolean vanquisherAlert = false;
-        public boolean autoAbiphoneAnswer = false;
-        public boolean jerryBoxHelper = false;
-        public boolean dailyChineseTranslation = false;
+
+
     }
 
     // ---- Dungeon ----
@@ -79,16 +66,11 @@ public class ModConfig {
     // ---- Slayer ----
 
     public static class SlayerConfig {
-        public boolean noQuestReminder = false;
         public boolean pigmanSwordTimer = false;
         public boolean ragnarockAxeTimer = false;
         public boolean reaperArmorTimer = false;
         public boolean endStoneSwordTimer = false;
         public boolean bossInfoHUD = false;
-        public boolean bossBoundingBox = false;
-        public boolean lowHPBloodfiend = false;
-        public boolean riftEffigyDisplay = false;
-        public boolean gummyBearTimer = false;
     }
 
     public static class WitherCloakConfig {
@@ -115,6 +97,7 @@ public class ModConfig {
 
         public boolean mineshaftWaypoints = false;
         public boolean suspiciousScrapCounter = false;
+        public boolean creeperVisibility = false;
         public boolean greatGlaciteWaypoints = false;
     }
 
@@ -124,6 +107,17 @@ public class ModConfig {
         public boolean pestDisplay = false;
         public int xpOrbSoundRemoval = 100;
         public boolean signAutoRotate = false;
+    }
+
+    // ---- Popup Events ----
+
+    public static class PopupConfig {
+        public boolean popupPartyInvite = false;
+        public boolean popupGuildPartyInvite = false;
+        public boolean popupFriendRequest = false;
+        public boolean popupDuelsRequest = false;
+        public boolean popupSkyblockTrade = false;
+        public boolean popupDungeonRestart = false;
     }
 
     // ---- Party ----
@@ -139,17 +133,6 @@ public class ModConfig {
         public boolean dmPartyInvite = false;
     }
 
-    // ---- Popup Events ----
-
-    public static class PopupConfig {
-        public boolean popupPartyInvite = false;
-        public boolean popupGuildPartyInvite = false;
-        public boolean popupFriendRequest = false;
-        public boolean popupDuelsRequest = false;
-        public boolean popupSkyblockTrade = false;
-        public boolean popupDungeonRestart = false;
-    }
-
     // ---- Events ----
 
     public static class EventsConfig {
@@ -162,21 +145,7 @@ public class ModConfig {
     // ---- Misc ----
 
     public static class MiscConfig {
-        public boolean killComboHUD = false;
-        public boolean betterPerspective = false;
-        public boolean dukeWaypoint = false;
-        public boolean creeperVisibility = false;
-        public boolean bazaarSackExtraction = false;
-        public boolean personalCompactorPreview = false;
-        public boolean hideHyperionExplosion = false;
-        public boolean witherImpactVolume = false;
-        public boolean dyedArmorSBID = false;
 
-        public boolean periodicEntityCleanup = false;
-        public boolean stonksPrice = false;
-        public boolean bitsShopPrice = false;
-        public boolean attributeDisplay = false;
-        public boolean timeChime = false;
         public boolean abiphoneGui = false;
         public boolean playCmd = false;
     }

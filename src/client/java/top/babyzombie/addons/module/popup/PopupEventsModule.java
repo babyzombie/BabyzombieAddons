@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
@@ -159,23 +160,31 @@ public final class PopupEventsModule {
         long remaining = expireTime - System.currentTimeMillis();
         if (remaining <= 0) { close(); return; }
         var font = Minecraft.getInstance().font;
-        int scrW = gui.guiWidth();
-        int x = scrW / 2;
-        int y = gui.guiHeight() / 8;
+        int x = HudManager.x("Popup"), y = HudManager.y("Popup");
+        float s = HudManager.scale("Popup");
+        if (s != 1f) {
+            var ps = gui.pose();
+            ps.pushMatrix();
+            ps.translate((float) x, (float) y);
+            ps.scale(s, s);
+            x = 0; y = 0;
+        }
 
-        gui.fill(x - 76, y - 1, x + 76, y + 51, 0x96000000);
-        gui.drawCenteredString(font, title.getString(), x, y, 0xFFFFFFFF);
-        gui.drawString(font, body.getString(), x - 75, y + 16, 0xFFFFFFFF, false);
+        gui.fill(x, y, x + 152, y + 52, 0x96000000);
+        gui.drawCenteredString(font, title.getString(), x + 76, y, 0xFFFFFFFF);
+        gui.drawString(font, body.getString(), x + 1, y + 16, 0xFFFFFFFF, false);
 
         float progress = 1f - (float) remaining / totalTime;
-        gui.fill(x - 76, y + 45, x - 76 + (int)(150 * progress), y + 51, 0x46FFFFFF);
+        gui.fill(x, y + 46, x + (int)(152 * progress), y + 52, 0x46FFFFFF);
 
         String kbYes = keyYes.getTranslatedKeyMessage().getString();
         String kbNo  = keyNo.getTranslatedKeyMessage().getString();
         Component accept = Component.translatable("babyzombieaddons.popup.accept", kbYes);
         Component ignore = Component.translatable("babyzombieaddons.popup.ignore", kbNo);
         String hint = "§a" + accept.getString() + "   §e" + ignore.getString();
-        gui.drawString(font, hint, x + 75 - font.width(hint), y + 32, 0xFFFFFFFF, false);
-        gui.drawCenteredString(font, "§7" + (remaining / 1000 + 1) + "s", x, y + 32, 0xFFFFFFFF);
+        gui.drawString(font, hint, x + 150 - font.width(hint), y + 32, 0xFFFFFFFF, false);
+        gui.drawCenteredString(font, "§7" + (remaining / 1000 + 1) + "s", x + 76, y + 32, 0xFFFFFFFF);
+
+        if (s != 1f) gui.pose().popMatrix();
     }
 }

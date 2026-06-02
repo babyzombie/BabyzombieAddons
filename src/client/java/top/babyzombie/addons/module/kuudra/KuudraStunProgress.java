@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.AABB;
-import top.babyzombie.addons.config.HudManager;
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 
@@ -37,8 +37,9 @@ public final class KuudraStunProgress {
 
             var font = Minecraft.getInstance().font;
             int x = HudManager.x("InKuudraStun"), y = HudManager.y("InKuudraStun");
+            float s = HudManager.scale("InKuudraStun");
             String text = "      " + stun[0] + "\n  " + stun[1] + "  " + stun[2] + "\n" + stun[3];
-            gui.drawString(font, text, x, y, 0xFFFFFFFF, true);
+            HudManager.drawScaled(gui, font, text, x, y, s);
         });
     }
 

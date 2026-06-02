@@ -3,8 +3,9 @@ package top.babyzombie.addons.module.mining;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
-import top.babyzombie.addons.config.HudManager;
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
+
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 
@@ -29,8 +30,9 @@ public final class SuspiciousScrapCounter {
             if (count <= 0) return;
             var font = Minecraft.getInstance().font;
             int x = HudManager.x("SuspiciousScrap"), y = HudManager.y("SuspiciousScrap");
+            float s = HudManager.scale("SuspiciousScrap");
             String color = count >= 5 ? "§a" : "§e";
-            gui.drawString(font, "§6Scraps: " + color + count + "/5", x, y, 0xFFFFFFFF, true);
+            HudManager.drawScaled(gui, font, "§6Scraps: " + color + count + "/5", x, y, s);
         });
     }
 }

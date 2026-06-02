@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.config.hud.HudManager;
 
 public final class KuudraDirectionIndicator {
     private KuudraDirectionIndicator() {}
@@ -37,12 +38,11 @@ public final class KuudraDirectionIndicator {
                 else return;
             } else return;
 
-            var win = Minecraft.getInstance().getWindow();
-            double gs = win.getGuiScale();
-            int cx = win.getGuiScaledWidth() / 2, cy = win.getGuiScaledHeight() / 2;
-            int ox = (int) (-40.0 / gs * Math.sin(yawRad));
-            int oy = (int) (-40.0 / gs * Math.cos(yawRad));
-            int sz = Math.max(1, (int) (12.0 / gs));
+            int cx = HudManager.x("KuudraDir"), cy = HudManager.y("KuudraDir");
+            float dist = HudManager.scale("KuudraDir") * 40f;
+            int ox = (int) (-dist * Math.sin(yawRad));
+            int oy = (int) (-dist * Math.cos(yawRad));
+            int sz = Math.max(1, (int) (12 * HudManager.scale("KuudraDir")));
             gui.blit(ICON, cx + ox - sz / 2, cy + oy - sz / 2, 0, 0, sz, sz, sz, sz);
         });
     }

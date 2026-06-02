@@ -2,8 +2,9 @@ package top.babyzombie.addons.module.slayer;
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
-import top.babyzombie.addons.config.HudManager;
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
+
 import top.babyzombie.addons.util.HypixelLocationTracker;
 
 public final class SlayerHUD {
@@ -25,38 +26,47 @@ public final class SlayerHUD {
             BossDetector.updateHP();
             if (BossDetector.currentBoss != null && !BossDetector.currentBoss.isDeadOrDying() && BossDetector.bossMaxHP > 0) {
                 int pct = (int)(BossDetector.bossHP / BossDetector.bossMaxHP * 100);
-                gui.drawString(font, String.format("§4§l%s §c%d%% §7(%.0f/%.0f)",
-                        BossDetector.bossType.isEmpty() ? "Boss" : BossDetector.bossType, pct, BossDetector.bossHP, BossDetector.bossMaxHP),
-                        HudManager.x("SlayerBoss"), HudManager.y("SlayerBoss"), 0xFFFFFFFF, true);
+                String text = String.format("§4§l%s §c%d%% §7(%.0f/%.0f)",
+                        BossDetector.bossType.isEmpty() ? "Boss" : BossDetector.bossType, pct, BossDetector.bossHP, BossDetector.bossMaxHP);
+                int x = HudManager.x("SlayerBoss"), y = HudManager.y("SlayerBoss");
+                float s = HudManager.scale("SlayerBoss");
+                HudManager.drawScaled(gui, font, text, x, y, s);
             }
         }
 
         if (HudManager.shouldShow("PigmanSword") && PigmanSwordTimer.time > 0) {
             long rem = 5000 - (now - PigmanSwordTimer.time);
-            if (rem > 0) gui.drawString(font, "§6Pigman: " + fmt(rem), HudManager.x("PigmanSword"), HudManager.y("PigmanSword"), 0xFFFFFFFF, true);
+            if (rem > 0) drawHud(gui, font, "PigmanSword", "§6Pigman: " + fmt(rem));
             else PigmanSwordTimer.time = 0;
         }
 
         RagnarockAxeTimer.update();
         if (HudManager.shouldShow("RagnarockAxe")) {
-            int x = HudManager.x("RagnarockAxe"), y = HudManager.y("RagnarockAxe");
-            if (RagnarockAxeTimer.castTime > now) gui.drawString(font, "§5Ragnarock: §b" + fmt(RagnarockAxeTimer.castTime - now), x, y, 0xFFFFFFFF, true);
-            else if (RagnarockAxeTimer.duration > now) gui.drawString(font, "§5Ragnarock: §a" + fmt(RagnarockAxeTimer.duration - now), x, y, 0xFFFFFFFF, true);
+            if (RagnarockAxeTimer.castTime > now)
+                drawHud(gui, font, "RagnarockAxe", "§5Ragnarock: §b" + fmt(RagnarockAxeTimer.castTime - now));
+            else if (RagnarockAxeTimer.duration > now)
+                drawHud(gui, font, "RagnarockAxe", "§5Ragnarock: §a" + fmt(RagnarockAxeTimer.duration - now));
             else if (RagnarockAxeTimer.cooldown > now && RagnarockAxeTimer.castTime == 0 && RagnarockAxeTimer.duration == 0 && !RagnarockAxeTimer.cancelled)
-                gui.drawString(font, "§5Ragnarock: §c" + fmt(RagnarockAxeTimer.cooldown - now), x, y, 0xFFFFFFFF, true);
+                drawHud(gui, font, "RagnarockAxe", "§5Ragnarock: §c" + fmt(RagnarockAxeTimer.cooldown - now));
         }
 
         if (HudManager.shouldShow("EndStoneSword") && EndStoneSwordTimer.active) {
             long rem = 5000 - (now - EndStoneSwordTimer.time);
-            if (rem > 0) gui.drawString(font, "§eEnd Stone Sword: §a" + (int)(rem/50f) + "% §7DR", HudManager.x("EndStoneSword"), HudManager.y("EndStoneSword"), 0xFFFFFFFF, true);
+            if (rem > 0) drawHud(gui, font, "EndStoneSword", "§eEnd Stone Sword: §a" + (int)(rem/50f) + "% §7DR");
             else EndStoneSwordTimer.active = false;
         }
 
         if (HudManager.shouldShow("ReaperArmor") && ReaperArmorTimer.time > 0) {
             long rem = 15000 - (now - ReaperArmorTimer.time);
-            if (rem > 0) gui.drawString(font, "§8Reaper Armor: §a" + fmt(rem), HudManager.x("ReaperArmor"), HudManager.y("ReaperArmor"), 0xFFFFFFFF, true);
+            if (rem > 0) drawHud(gui, font, "ReaperArmor", "§8Reaper Armor: §a" + fmt(rem));
             else ReaperArmorTimer.time = 0;
         }
+    }
+
+    private static void drawHud(net.minecraft.client.gui.GuiGraphics gui, net.minecraft.client.gui.Font font, String key, String text) {
+        int x = HudManager.x(key), y = HudManager.y(key);
+        float s = HudManager.scale(key);
+        HudManager.drawScaled(gui, font, text, x, y, s);
     }
 
     private static String fmt(long ms) { long s = ms / 1000, m = (ms % 1000) / 10; return String.format("%d.%02ds", s, m); }

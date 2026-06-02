@@ -3,7 +3,7 @@ package top.babyzombie.addons.module.kuudra;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
-import top.babyzombie.addons.config.HudManager;
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
@@ -44,19 +44,23 @@ public final class KuudraStunTimer {
             if (!ModConfigManager.get().kuudra.stunTimer) return;
             long now = System.currentTimeMillis();
             var font = Minecraft.getInstance().font;
-            int x = HudManager.x("KuudraStun"), y = HudManager.y("KuudraStun");
 
             String text = null;
+            String key = "KuudraStun";
             if (stunEnd > now) {
                 text = ChatUtils.translate("kuudra.stun.stunned", formatTime(stunEnd - now));
             } else if (downEnd > now) {
                 text = ChatUtils.translate("kuudra.stun.down", formatTime(downEnd - now));
             } else if (p4End > now) {
                 text = ChatUtils.translate("kuudra.stun.p4");
+                key = "InKuudraStun";
             }
 
-            if (text != null)
-                gui.drawString(font, text, x, y, 0xFFFFFFFF, true);
+            if (text != null) {
+                int x = HudManager.x(key), y = HudManager.y(key);
+                float s = HudManager.scale(key);
+                HudManager.drawScaled(gui, font, text, x, y, s);
+            }
         });
     }
 

@@ -50,6 +50,7 @@ public final class PartyModule {
         // Auto-accept party invite
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
+            if (!ModConfigManager.get().party.dmPartyInvite) return;
             String text = message.getString();
             long now = System.currentTimeMillis();
             dmInvitePending.values().removeIf(t -> t < now);
@@ -81,6 +82,7 @@ public final class PartyModule {
         // Party chat commands
             ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
                 if (overlay) return;
+                var cfg = ModConfigManager.get().party;
                 String text = message.getString();
                 var matcher = PARTY_CHAT.matcher(text);
                 if (!matcher.find()) return;
@@ -93,14 +95,14 @@ public final class PartyModule {
                 if (self != null && player.equals(self.getName().getString())) return;
 
                 // !allinv → toggle allinvite
-                if (CMD_ALLINVITE.matcher(msg).matches()) {
+                if (cfg.partyAllinvite && CMD_ALLINVITE.matcher(msg).matches()) {
                     nextCommand = "party settings allinvite";
                     runWhenLeader();
                     return;
                 }
 
                 // !p <player> → invite
-                if (CMD_PINVITE.matcher(msg).matches()) {
+                if (cfg.partyInvite && CMD_PINVITE.matcher(msg).matches()) {
                     var pm = CMD_PINVITE.matcher(msg);
                     if (pm.find()) {
                         nextCommand = "party invite " + pm.group(1);
@@ -110,22 +112,24 @@ public final class PartyModule {
                 }
 
                 // !warp → warp
-                if (CMD_WARP.matcher(msg).matches()) {
+                if (cfg.partyWarp && CMD_WARP.matcher(msg).matches()) {
+                    if (cfg.partyWarpDelay) {
+                        warpDelayUntil = System.currentTimeMillis() + cfg.partyWarpDelaySeconds * 1000L;
+                        return;
+                    }
                     nextCommand = "party warp";
                     runWhenLeader();
                     return;
                 }
 
                 // !c / !warp cancel → cancel warp
-                if (CMD_WARP_CANCEL.matcher(msg).matches() && warpDelayUntil > System.currentTimeMillis()) {
+                if (cfg.partyWarp && CMD_WARP_CANCEL.matcher(msg).matches() && warpDelayUntil > System.currentTimeMillis()) {
                     warpDelayUntil = 0;
-                    nextCommand = "pc Warp cancelled.";
-                    runWhenLeader();
                     return;
                 }
 
                 // !join <f|m|t><e|0-7> → join instance
-                if (HypixelLocationTracker.getInstance().isInSkyblock() && CMD_JOIN.matcher(msg).matches()) {
+                if (cfg.partyJoinInstance && HypixelLocationTracker.getInstance().isInSkyblock() && CMD_JOIN.matcher(msg).matches()) {
                     var jm = CMD_JOIN.matcher(msg);
                     if (jm.find()) {
                         nextCommand = buildJoinCommand(jm.group(1), jm.group(2));
@@ -135,7 +139,7 @@ public final class PartyModule {
                 }
 
                 // !sc → send coordinates
-                if (HypixelLocationTracker.getInstance().isInSkyblock() && CMD_SENDCOORDS.matcher(msg).matches()) {
+                if (cfg.partySendCoords && HypixelLocationTracker.getInstance().isInSkyblock() && CMD_SENDCOORDS.matcher(msg).matches()) {
                     if (self != null) {
                         var pos = self.blockPosition();
                         ChatUtils.sendCommand("pc x: " + pos.getX() + ", y: " + pos.getY() + ", z: " + pos.getZ());
@@ -146,6 +150,7 @@ public final class PartyModule {
         // DM party invite (!p in private message)
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
+            if (!ModConfigManager.get().party.dmPartyInvite) return;
             if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
             var matcher = DM_INVITE.matcher(message.getString());
             if (matcher.find()) {

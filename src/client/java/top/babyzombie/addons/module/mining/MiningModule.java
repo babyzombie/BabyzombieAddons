@@ -19,6 +19,7 @@ public final class MiningModule {
         GlaciteMineshaftWaypoints.init();
 
         GreatGlaciteWaypoints.init();
+        CreeperVisibility.init();
 
         PowderMiningSounds.init();
         DrillSwingSuppression.init();

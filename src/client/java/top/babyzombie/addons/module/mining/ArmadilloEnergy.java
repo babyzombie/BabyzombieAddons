@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 
@@ -72,9 +73,11 @@ public final class ArmadilloEnergy {
             if (energyNow >= energyMax) return;
 
             var font = Minecraft.getInstance().font;
-            int mid = (int) ("Armadillo " + (int) energyNow + "/" + (int) energyMax).length() / 2;
             String text = "§eArmadillo §f" + (int) energyNow + "/" + (int) energyMax;
-            gui.drawString(font, text, gui.guiWidth() / 2 - mid * 3, 10, 0xFFFFFFFF, true);
+            int x = HudManager.x("ArmadilloEnergy");
+            int y = HudManager.y("ArmadilloEnergy");
+            float s = HudManager.scale("ArmadilloEnergy");
+            HudManager.drawScaled(gui, font, text, x, y, s);
         });
     }
 
