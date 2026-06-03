@@ -6,6 +6,7 @@ import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 import java.util.*;
 
@@ -55,7 +56,7 @@ public final class RareDropModule {
 
             // Check blacklist → suppress sound + return
             if (blacklist.contains(itemName.toLowerCase())) {
-                ignoreSoundTime = System.currentTimeMillis();
+                ignoreSoundTime = ServerTick.getTime();
                 return;
             }
 
@@ -74,7 +75,7 @@ public final class RareDropModule {
         // Suppress rare drop sound within 1s of an ignored drop
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {
             if (ignoreSoundTime == 0) return false;
-            if (System.currentTimeMillis() - ignoreSoundTime > 1000) {
+            if (ServerTick.getTime() - ignoreSoundTime > 1000) {
                 ignoreSoundTime = 0;
                 return false;
             }

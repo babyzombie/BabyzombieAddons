@@ -139,6 +139,8 @@
   "config.babyzombieaddons.option.bossInfoHUD": "Boss 信息 HUD",
   "config.babyzombieaddons.option.bossInfoHUD.desc": "显示全部 6 种猎手 Boss 的血量与状态。",
 
+  "config.babyzombieaddons.group.crystalHollows": "水晶矿洞",
+  "config.babyzombieaddons.group.glaciteTunnels": "冰川隧道",
   "config.babyzombieaddons.group.witherCloak": "Wither Cloak",
   "config.babyzombieaddons.option.witherCloakTimer": "Wither Cloak Timer",
   "config.babyzombieaddons.option.witherCloakTimer.desc": "追踪凋零斗篷的激活、停用和冷却。",
@@ -260,7 +262,7 @@
   "rareropscreen.sharelist.add": "+ 添加到分享列表",
   "rareropscreen.done": "完成",
   "config.babyzombieaddons.option.debugMode": "调试模式",
-  "config.babyzombieaddons.option.debugMode.desc": "启用调试输出和额外诊断功能。",
+  "config.babyzombieaddons.option.debugMode.desc": "启用后 HUD 编辑界面会显示全部元素（包括未开启的），方便调整布局。",
 
   "babyzombieaddons.popup.title.party_invite": "组队邀请",
   "babyzombieaddons.popup.title.guild_party_invite": "公会组队邀请",

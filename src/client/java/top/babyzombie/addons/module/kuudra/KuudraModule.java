@@ -1,7 +1,6 @@
 package top.babyzombie.addons.module.kuudra;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
-import net.minecraft.client.Minecraft;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 
 public final class KuudraModule {
     private KuudraModule() {}
@@ -20,9 +19,8 @@ public final class KuudraModule {
         EnderPearlRefill.init();
         KuudraFollowerHelmetPrice.init();
 
-        ClientEntityEvents.ENTITY_LOAD.register((entity, world) -> {
-            if (entity == Minecraft.getInstance().player)
-                KuudraLocationTracker.reset();
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
+            if (world != null) KuudraLocationTracker.reset();
         });
     }
 }

@@ -7,6 +7,7 @@ import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 public final class KuudraStunTimer {
     private KuudraStunTimer() {}
@@ -24,7 +25,7 @@ public final class KuudraStunTimer {
                 var loc = HypixelLocationTracker.getInstance().getLocation();
                 if (loc == null) return;
                 int duration = loc.contains("T5") ? 8000 : (loc.contains("T3") ? 12000 : 10000);
-                stunEnd = System.currentTimeMillis() + duration;
+                stunEnd = ServerTick.getTime() + duration;
             }
 
             String text = ChatUtils.stripColor(message.getString());
@@ -33,32 +34,30 @@ public final class KuudraStunTimer {
                 KuudraLocationTracker.p4 = true;
                 var loc = HypixelLocationTracker.getInstance().getLocation();
                 if (loc != null && loc.contains("T5")) {
-                    p4End = System.currentTimeMillis() + 3000;
+                    p4End = ServerTick.getTime() + 3000;
                 } else {
-                    downEnd = System.currentTimeMillis() + 15300;
+                    downEnd = ServerTick.getTime() + 15300;
                 }
             }
         });
 
         HudRenderCallback.EVENT.register((gui, delta) -> {
             if (!ModConfigManager.get().kuudra.stunTimer) return;
-            long now = System.currentTimeMillis();
+            long now = ServerTick.getTime();
             var font = Minecraft.getInstance().font;
 
             String text = null;
-            String key = "KuudraStun";
             if (stunEnd > now) {
                 text = ChatUtils.translate("kuudra.stun.stunned", formatTime(stunEnd - now));
             } else if (downEnd > now) {
                 text = ChatUtils.translate("kuudra.stun.down", formatTime(downEnd - now));
             } else if (p4End > now) {
                 text = ChatUtils.translate("kuudra.stun.p4");
-                key = "InKuudraStun";
             }
 
             if (text != null) {
-                int x = HudManager.x(key), y = HudManager.y(key);
-                float s = HudManager.scale(key);
+                int x = HudManager.x("KuudraStun"), y = HudManager.y("KuudraStun");
+                float s = HudManager.scale("KuudraStun");
                 HudManager.drawScaled(gui, font, text, x, y, s);
             }
         });

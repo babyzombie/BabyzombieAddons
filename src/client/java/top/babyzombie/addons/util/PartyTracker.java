@@ -46,7 +46,7 @@ public final class PartyTracker {
         HypixelModAPI.getInstance().createHandler(ClientboundPartyInfoPacket.class, packet -> {
             var members = packet.getMembers();
             lastInfo = new PartyInfo(members != null ? members : Set.of());
-            lastRequestTime = System.currentTimeMillis();
+            lastRequestTime = ServerTick.getTime();
             sendingRequest = false;
 
             List<Consumer<PartyInfo>> callbacks;
@@ -95,7 +95,7 @@ public final class PartyTracker {
     }
 
     public void request(Consumer<PartyInfo> callback) {
-        if (lastRequestTime + 30_000 > System.currentTimeMillis()) {
+        if (lastRequestTime + 30_000 > ServerTick.getTime()) {
             if (callback != null) callback.accept(lastInfo);
             return;
         }

@@ -140,6 +140,8 @@
   "config.babyzombieaddons.option.bossInfoHUD.desc": "Show boss HP and status for all 6 slayer types.",
 
 
+  "config.babyzombieaddons.group.crystalHollows": "Crystal Hollows",
+  "config.babyzombieaddons.group.glaciteTunnels": "Glacite Tunnels",
   "config.babyzombieaddons.group.witherCloak": "Wither Cloak",
   "config.babyzombieaddons.option.witherCloakTimer": "Wither Cloak Timer",
   "config.babyzombieaddons.option.witherCloakTimer.desc": "Track Wither Cloak activation, deactivation, and cooldown.",
@@ -260,7 +262,7 @@
   "rareropscreen.sharelist.add": "+ Add to Share List",
   "rareropscreen.done": "Done",
   "config.babyzombieaddons.option.debugMode": "Debug Mode",
-  "config.babyzombieaddons.option.debugMode.desc": "Enable debug output and extra diagnostic features.",
+  "config.babyzombieaddons.option.debugMode.desc": "Show all HUD elements in edit screen (including disabled ones) to help with layout.",
 
   "babyzombieaddons.popup.title.party_invite": "Party Invite",
   "babyzombieaddons.popup.title.guild_party_invite": "Guild Party Invite",

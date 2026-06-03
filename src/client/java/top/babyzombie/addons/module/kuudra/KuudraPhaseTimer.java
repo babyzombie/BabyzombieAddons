@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 public final class KuudraPhaseTimer {
     private KuudraPhaseTimer() {}
@@ -21,19 +22,19 @@ public final class KuudraPhaseTimer {
             if (!raw.contains("[NPC] Elle:")) return;
 
             if (text.contains("Okay adventurers, I will go and fish up Kuudra")) {
-                startTime = System.currentTimeMillis();
+                startTime = ServerTick.getTime();
                 p1 = p2 = p3 = p4 = 0;
             } else if (text.contains("OMG! Great work collecting my supplies")) {
-                p1 = System.currentTimeMillis() - startTime;
+                p1 = ServerTick.getTime() - startTime;
                 show("kuudra.phase.p1", p1);
             } else if (text.contains("Phew! The Ballista is finally ready")) {
-                p2 = System.currentTimeMillis() - startTime - p1;
+                p2 = ServerTick.getTime() - startTime - p1;
                 show("kuudra.phase.p2", p2);
             } else if (text.contains("POW! SURELY THAT'S IT")) {
-                p3 = System.currentTimeMillis() - startTime - p1 - p2;
+                p3 = ServerTick.getTime() - startTime - p1 - p2;
                 if (isT5()) show("kuudra.phase.p3", p3);
             } else if (text.contains("Good job everyone")) {
-                p4 = System.currentTimeMillis() - startTime - p1 - p2 - p3;
+                p4 = ServerTick.getTime() - startTime - p1 - p2 - p3;
                 printSummary(isT5());
             }
         });

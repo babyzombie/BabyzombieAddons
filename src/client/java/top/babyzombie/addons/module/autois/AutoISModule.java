@@ -7,6 +7,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.Scheduler;
+import top.babyzombie.addons.util.ServerTick;
 
 public final class AutoISModule {
 
@@ -27,7 +28,7 @@ public final class AutoISModule {
             if (overlay || !ModConfigManager.get().general.autois) return;
             if (message.getString().contains("You were kicked")
                     || message.getString().contains("Oops! You are not on SkyBlock")) {
-                kickTime = System.currentTimeMillis();
+                kickTime = ServerTick.getTime();
                 var mode = ModConfigManager.get().general.autoBackToSkyblock;
                 if (mode != ModConfig.KickRecovery.OFF) {
                     lobbyConfirmRegistered = true;
@@ -35,7 +36,7 @@ public final class AutoISModule {
                 }
                 if (mode == ModConfig.KickRecovery.LOBBY_AND_SKYBLOCK) {
                     Scheduler.schedule(1200, () -> {
-                        if (System.currentTimeMillis() - kickTime < 1300 * 50)
+                        if (ServerTick.getTime() - kickTime < 1300 * 50)
                             ChatUtils.sendCommand("play skyblock");
                     });
                 }

@@ -36,8 +36,8 @@ public final class KuudraStunProgress {
             if (stun[0].isEmpty() && stun[1].isEmpty() && stun[2].isEmpty()) return;
 
             var font = Minecraft.getInstance().font;
-            int x = HudManager.x("InKuudraStun"), y = HudManager.y("InKuudraStun");
-            float s = HudManager.scale("InKuudraStun");
+            int x = HudManager.x("KuudraStun"), y = HudManager.y("KuudraStun");
+            float s = HudManager.scale("KuudraStun");
             String text = "      " + stun[0] + "\n  " + stun[1] + "  " + stun[2] + "\n" + stun[3];
             HudManager.drawScaled(gui, font, text, x, y, s);
         });

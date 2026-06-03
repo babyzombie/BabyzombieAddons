@@ -1,7 +1,6 @@
 package top.babyzombie.addons.module.withercloak;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
-import net.minecraft.client.Minecraft;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 
 public final class WitherCloakModule {
     private WitherCloakModule() {}
@@ -14,17 +13,16 @@ public final class WitherCloakModule {
         WitherCloakHUD.init();
 
         // Reset on world load
-        ClientEntityEvents.ENTITY_LOAD.register((entity, world) -> {
-            if (entity == Minecraft.getInstance().player) {
-                WitherCloakTimer.duration = 0;
-                WitherCloakTimer.cooldown = 0;
-                WitherCloakTimer.active = false;
-                SoulwardTimer.duration = 0;
-                SoulwardTimer.cooldown = 0;
-                AlignedTimer.time = 0;
-                AlignedTimer.by = "";
-                GravityStormTimer.time = 0;
-            }
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
+            if (world == null) return;
+            WitherCloakTimer.duration = 0;
+            WitherCloakTimer.cooldown = 0;
+            WitherCloakTimer.active = false;
+            SoulwardTimer.duration = 0;
+            SoulwardTimer.cooldown = 0;
+            AlignedTimer.time = 0;
+            AlignedTimer.by = "";
+            GravityStormTimer.time = 0;
         });
     }
 }

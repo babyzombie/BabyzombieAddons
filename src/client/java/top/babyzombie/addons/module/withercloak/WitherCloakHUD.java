@@ -6,6 +6,7 @@ import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 public final class WitherCloakHUD {
     private WitherCloakHUD() {}
@@ -23,7 +24,7 @@ public final class WitherCloakHUD {
         int x = HudManager.x("WitherCloak");
         int y = HudManager.y("WitherCloak");
         float s = HudManager.scale("WitherCloak");
-        long now = WitherCloakTimer.now();
+        long now = ServerTick.getTime();
 
         if (ModConfigManager.get().witherCloak.witherCloakTimer) {
             if (now - WitherCloakTimer.cooldown < 10000 && !WitherCloakTimer.active) {

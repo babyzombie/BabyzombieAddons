@@ -3,6 +3,7 @@ package top.babyzombie.addons.module.mining;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ServerTick;
 
 public final class NucleusAutoWarp {
     private static long warpReady;
@@ -15,12 +16,12 @@ public final class NucleusAutoWarp {
             if (!ModConfigManager.get().mining.nucleusAutoWarp) return;
             if (!ChatUtils.stripColor(message.getString()).equals("You have already obtained this Crystal!")) return;
 
-            if (warpReady == 0 || System.currentTimeMillis() - warpReady > 10_000) {
+            if (warpReady == 0 || ServerTick.getTime() - warpReady > 10_000) {
                 ChatUtils.showMessage(net.minecraft.network.chat.Component.translatable("babyzombieaddons.ch.nucleus").getString());
-                warpReady = System.currentTimeMillis();
-            } else if (System.currentTimeMillis() - warpReady > 500) {
+                warpReady = ServerTick.getTime();
+            } else if (ServerTick.getTime() - warpReady > 500) {
                 ChatUtils.sendCommand("warp nucleus");
-                warpReady = System.currentTimeMillis() + 10_000;
+                warpReady = ServerTick.getTime() + 10_000;
             }
         });
     }

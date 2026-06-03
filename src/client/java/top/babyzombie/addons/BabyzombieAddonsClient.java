@@ -21,6 +21,7 @@ import top.babyzombie.addons.module.popup.PopupEventsModule;
 import top.babyzombie.addons.module.raredrop.RareDropModule;
 import top.babyzombie.addons.module.slayer.SlayerModule;
 import top.babyzombie.addons.module.withercloak.WitherCloakModule;
+import top.babyzombie.addons.util.DungeonCooldown;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.PartyTracker;
@@ -41,6 +42,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         HypixelLocationTracker.getInstance().init();
         AbiphoneTracker.getInstance().init();
         PartyTracker.getInstance().init();
+        DungeonCooldown.init();
         IncomingCallHandler.register();
 
         BabyzombieAddonsCommand.init();

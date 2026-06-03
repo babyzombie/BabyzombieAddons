@@ -23,7 +23,7 @@ public final class BeaconBeamRenderer {
     private BeaconBeamRenderer() {}
 
     public static void renderWorldBeams(SubmitNodeCollector collector, double camX, double camY, double camZ) {
-        long now = System.currentTimeMillis();
+        long now = ServerTick.getTime();
         PoseStack ps = new PoseStack();
         ps.translate(-camX, -camY, -camZ);
         Iterator<Beam> it = beams.iterator();
@@ -40,7 +40,7 @@ public final class BeaconBeamRenderer {
     }
 
     public static void addBeam(double x, double y, double z, Color color, float height, int dur) {
-        beams.add(new Beam(x, y, z, color, height, System.currentTimeMillis() + dur));
+        beams.add(new Beam(x, y, z, color, height, ServerTick.getTime() + dur));
     }
 
     public static void setBeam(String id, double x, double y, double z, Color color, float height) {

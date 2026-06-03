@@ -7,6 +7,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.PartyTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +54,7 @@ public final class PartyModule {
             if (overlay) return;
             if (!ModConfigManager.get().party.dmPartyInvite) return;
             String text = message.getString();
-            long now = System.currentTimeMillis();
+            long now = ServerTick.getTime();
             dmInvitePending.values().removeIf(t -> t < now);
 
             var m = PARTY_INVITE.matcher(text);
@@ -75,7 +76,7 @@ public final class PartyModule {
             if (text.contains("disbanded the party") || text.contains("解散了组队")) {
                 partyDisbanded = true;
                 // Reset after 2 minutes
-                long now = System.currentTimeMillis();
+                long now = ServerTick.getTime();
                 new Thread(() -> { try { Thread.sleep(120000); partyDisbanded = false; } catch (Exception ignored) {} }).start();
             }
         });
@@ -115,7 +116,7 @@ public final class PartyModule {
                 // !warp → warp
                 if (cfg.partyWarp && CMD_WARP.matcher(msg).matches()) {
                     if (cfg.partyWarpDelay) {
-                        warpDelayUntil = System.currentTimeMillis() + cfg.partyWarpDelaySeconds * 1000L;
+                        warpDelayUntil = ServerTick.getTime() + cfg.partyWarpDelaySeconds * 1000L;
                         return;
                     }
                     nextCommand = "party warp";
@@ -124,7 +125,7 @@ public final class PartyModule {
                 }
 
                 // !c / !warp cancel → cancel warp
-                if (cfg.partyWarp && CMD_WARP_CANCEL.matcher(msg).matches() && warpDelayUntil > System.currentTimeMillis()) {
+                if (cfg.partyWarp && CMD_WARP_CANCEL.matcher(msg).matches() && warpDelayUntil > ServerTick.getTime()) {
                     warpDelayUntil = 0;
                     return;
                 }
@@ -156,7 +157,7 @@ public final class PartyModule {
             var matcher = DM_INVITE.matcher(message.getString());
             if (matcher.find()) {
                 String player = ChatUtils.stripColor(matcher.group(1));
-                dmInvitePending.put(player.toLowerCase(), System.currentTimeMillis() + 2000);
+                dmInvitePending.put(player.toLowerCase(), ServerTick.getTime() + 2000);
                 ChatUtils.sendCommand("party invite " + player);
                 showMsg("party.dm_invited", player);
             }

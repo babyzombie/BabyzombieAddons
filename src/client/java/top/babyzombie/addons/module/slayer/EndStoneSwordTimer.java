@@ -3,6 +3,7 @@ package top.babyzombie.addons.module.slayer;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ServerTick;
 
 /**
  * Tracks End Stone Sword / Extreme Focus ability duration.
@@ -20,7 +21,7 @@ public final class EndStoneSwordTimer {
             if (overlay) return;
             String text = ChatUtils.stripColor(message.getString());
             if (text.contains("Extreme Focus")) {
-                time = System.currentTimeMillis();
+                time = ServerTick.getTime();
                 active = true;
             }
         });

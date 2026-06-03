@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 /**
  * Tracks Cells Alignment duration and source player.
@@ -21,8 +22,8 @@ public final class AlignedTimer {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             String text = ChatUtils.stripColor(message.getString());
 
-            if (text.contains("aligned") && (text.contains("yourself") || text.contains("player"))) {
-                time = WitherCloakTimer.now();
+            if (text.matches("You aligned (yourself|\\d+ other players?)!")) {
+                time = ServerTick.getTime();
                 by = "§e§lby §r§ayourself";
             }
         });
@@ -34,7 +35,7 @@ public final class AlignedTimer {
             if (text.contains("casted Cells Alignment on you")) {
                 String player = text.split(" ")[0];
                 if (!player.contains(" ")) {
-                    time = WitherCloakTimer.now();
+                    time = ServerTick.getTime();
                     by = "§e§lby §r§b" + player;
                 }
             }

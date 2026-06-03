@@ -1,7 +1,6 @@
 package top.babyzombie.addons.module.mining;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
-import net.minecraft.client.Minecraft;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 
 public final class MiningModule {
     private MiningModule() {}
@@ -24,12 +23,11 @@ public final class MiningModule {
         PowderMiningSounds.init();
         DrillSwingSuppression.init();
 
-        ClientEntityEvents.ENTITY_LOAD.register((entity, world) -> {
-            if (entity == Minecraft.getInstance().player) {
-                MiningAbilityAlerts.readyTime = 0;
-                ScathaCooldown.time = 0;
-                SuspiciousScrapCounter.count = 0;
-            }
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
+            if (world == null) return;
+            MiningAbilityAlerts.readyTime = 0;
+            ScathaCooldown.time = 0;
+            SuspiciousScrapCounter.count = 0;
         });
     }
 }

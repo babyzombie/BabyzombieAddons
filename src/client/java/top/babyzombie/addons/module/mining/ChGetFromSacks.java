@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 public final class ChGetFromSacks {
     private static long cooldown;
@@ -21,7 +22,7 @@ public final class ChGetFromSacks {
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getMap())) return;
 
-            long now = System.currentTimeMillis();
+            long now = ServerTick.getTime();
             if (cooldown > now) return;
 
             String text = ChatUtils.stripColor(message.getString());

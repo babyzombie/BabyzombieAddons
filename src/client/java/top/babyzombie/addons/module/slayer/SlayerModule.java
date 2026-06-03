@@ -1,7 +1,6 @@
 package top.babyzombie.addons.module.slayer;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
-import net.minecraft.client.Minecraft;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 
 public final class SlayerModule {
     private SlayerModule() {}
@@ -15,20 +14,19 @@ public final class SlayerModule {
         SlayerHUD.init();
 
         // Reset on world load
-        ClientEntityEvents.ENTITY_LOAD.register((entity, world) -> {
-            if (entity == Minecraft.getInstance().player) {
-                BossDetector.currentBoss = null;
-                BossDetector.bossType = "";
-                BossDetector.bossHP = 0;
-                BossDetector.bossMaxHP = 0;
-                PigmanSwordTimer.time = 0;
-                RagnarockAxeTimer.castTime = 0;
-                RagnarockAxeTimer.duration = 0;
-                RagnarockAxeTimer.cooldown = 0;
-                ReaperArmorTimer.time = 0;
-                EndStoneSwordTimer.time = 0;
-                EndStoneSwordTimer.active = false;
-            }
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
+            if (world == null) return;
+            BossDetector.currentBoss = null;
+            BossDetector.bossType = "";
+            BossDetector.bossHP = 0;
+            BossDetector.bossMaxHP = 0;
+            PigmanSwordTimer.time = 0;
+            RagnarockAxeTimer.castTime = 0;
+            RagnarockAxeTimer.duration = 0;
+            RagnarockAxeTimer.cooldown = 0;
+            ReaperArmorTimer.time = 0;
+            EndStoneSwordTimer.time = 0;
+            EndStoneSwordTimer.active = false;
         });
     }
 }

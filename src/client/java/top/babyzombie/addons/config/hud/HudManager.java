@@ -28,11 +28,11 @@ public final class HudManager {
     }
 
     public static void register(String name, int defaultX, int defaultY, float defaultScale,
-                                 int width, int height, String demoText,
+                                 String demoText, String labelKey,
                                  java.util.function.BooleanSupplier showCondition) {
         HudElement e = new HudElement();
         e.name = name; e.x = defaultX; e.y = defaultY; e.scale = defaultScale;
-        e.width = width; e.height = height; e.demoText = demoText; e.showCondition = showCondition;
+        e.demoText = demoText; e.labelKey = labelKey; e.showCondition = showCondition;
         elements.put(name, e);
     }
 
@@ -65,6 +65,11 @@ public final class HudManager {
     static String getDemoText(String name) {
         var e = elements.get(name);
         return e != null ? e.demoText : "";
+    }
+
+    static String getLabelKey(String name) {
+        var e = elements.get(name);
+        return e != null ? e.labelKey : "";
     }
 
     public static void openEditScreen(Screen parent) {
@@ -102,8 +107,8 @@ public final class HudManager {
     }
 
     static class HudElement {
-        String name, demoText;
-        int x, y, width, height;
+        String name, demoText, labelKey;
+        int x, y;
         float scale;
         java.util.function.BooleanSupplier showCondition;
     }

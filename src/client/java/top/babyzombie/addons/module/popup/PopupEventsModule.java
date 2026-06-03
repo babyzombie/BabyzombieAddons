@@ -15,6 +15,7 @@ import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
+import top.babyzombie.addons.util.ServerTick;
 
 import java.util.regex.Pattern;
 
@@ -116,7 +117,7 @@ public final class PopupEventsModule {
         });
 
         HudRenderCallback.EVENT.register((gui, delta) -> {
-            if (expireTime <= System.currentTimeMillis()) { close(); return; }
+            if (expireTime <= ServerTick.getTime()) { close(); return; }
             renderHUD(gui);
         });
     }
@@ -134,7 +135,7 @@ public final class PopupEventsModule {
                 : type == EventType.DUEL ? "duels accept " + player
                 : "";
         totalTime = 10000;
-        expireTime = System.currentTimeMillis() + totalTime;
+        expireTime = ServerTick.getTime() + totalTime;
         playBell();
     }
 
@@ -146,7 +147,7 @@ public final class PopupEventsModule {
     }
 
     private static void accept() {
-        if (!command.isEmpty() && expireTime > System.currentTimeMillis())
+        if (!command.isEmpty() && expireTime > ServerTick.getTime())
             ChatUtils.sendCommand(command);
         close();
     }
@@ -157,7 +158,7 @@ public final class PopupEventsModule {
     }
 
     private static void renderHUD(GuiGraphics gui) {
-        long remaining = expireTime - System.currentTimeMillis();
+        long remaining = expireTime - ServerTick.getTime();
         if (remaining <= 0) { close(); return; }
         var font = Minecraft.getInstance().font;
         int x = HudManager.x("Popup"), y = HudManager.y("Popup");

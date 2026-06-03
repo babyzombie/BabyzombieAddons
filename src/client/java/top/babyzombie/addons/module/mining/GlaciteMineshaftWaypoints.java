@@ -20,6 +20,7 @@ import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.PartyTracker;
 import top.babyzombie.addons.util.Scheduler;
+import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.WorldTextRenderer;
 import top.babyzombie.addons.util.WorldTextRenderer.TextEntry;
 
@@ -51,12 +52,12 @@ public final class GlaciteMineshaftWaypoints {
                             tr("babyzombieaddons.glacite.exit"));
                     exits.add(wp);
                 }
-                enterMineshaftTime = System.currentTimeMillis();
+                enterMineshaftTime = ServerTick.getTime();
                 // Auto warp if owner
                 var warpMode = ModConfigManager.get().mining.glaciteMineshaftWarp;
                 if (mineshaftOwner && (warpMode == MineshaftWarpMode.SEND_PTME
                         || warpMode == MineshaftWarpMode.PTME_AND_WARP)) {
-                    enterMineshaftTime = System.currentTimeMillis();
+                    enterMineshaftTime = ServerTick.getTime();
                     if (PartyTracker.getInstance().isSelfLeader()) {
                         if (warpMode == MineshaftWarpMode.PTME_AND_WARP) {
                             Scheduler.schedule(10, () -> ChatUtils.sendCommand("p warp"));
@@ -108,7 +109,7 @@ public final class GlaciteMineshaftWaypoints {
             if (warpMode == MineshaftWarpMode.OFF) return;
             if (!isInDwarvenMines()) return;
             if (ChatUtils.stripColor(message.getString()).equals("WOW! You found a Glacite Mineshaft portal!")) {
-                portalTimer = System.currentTimeMillis() + 30_000;
+                portalTimer = ServerTick.getTime() + 30_000;
                 if (warpMode != MineshaftWarpMode.TITLE_ONLY) {
                     var player = Minecraft.getInstance().player;
                     if (player != null) {
@@ -171,7 +172,7 @@ public final class GlaciteMineshaftWaypoints {
                     ownServerName = null;
                 }
             }
-            if (enterMineshaftTime > 0 && System.currentTimeMillis() - enterMineshaftTime > 60_000) {
+            if (enterMineshaftTime > 0 && ServerTick.getTime() - enterMineshaftTime > 60_000) {
                 mineshaftOwner = false;
                 ownServerName = null;
             }
@@ -188,8 +189,8 @@ public final class GlaciteMineshaftWaypoints {
             }
 
             // Portal timer in Dwarven Mines
-            if (t.isInSkyblock() && "Dwarven Mines".equals(t.getMap()) && portalTimer > System.currentTimeMillis()) {
-                long remaining = portalTimer - System.currentTimeMillis();
+            if (t.isInSkyblock() && "Dwarven Mines".equals(t.getMap()) && portalTimer > ServerTick.getTime()) {
+                long remaining = portalTimer - ServerTick.getTime();
                 // Find portal stand and render beam
                 var player = Minecraft.getInstance().player;
                 if (player != null) {

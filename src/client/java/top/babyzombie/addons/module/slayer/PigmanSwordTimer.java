@@ -2,6 +2,7 @@ package top.babyzombie.addons.module.slayer;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.ServerTick;
 
 /**
  * Tracks Pigman Sword ability cooldown via chat message detection.
@@ -18,7 +19,7 @@ public final class PigmanSwordTimer {
             if (overlay) return;
             String text = message.getString();
             if (text.contains("Pigman Sword")) {
-                time = System.currentTimeMillis();
+                time = ServerTick.getTime();
             }
         });
     }

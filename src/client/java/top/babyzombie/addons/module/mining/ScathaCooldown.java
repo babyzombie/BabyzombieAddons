@@ -8,6 +8,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 public final class ScathaCooldown {
     static long time;
@@ -21,7 +22,7 @@ public final class ScathaCooldown {
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getMap())) return;
             if (ChatUtils.stripColor(message.getString()).equals("You hear the sound of something approaching...")) {
-                time = System.currentTimeMillis();
+                time = ServerTick.getTime();
             }
         });
 
@@ -31,7 +32,7 @@ public final class ScathaCooldown {
             if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getMap())) return;
             if (time == 0) return;
 
-            long elapsed = System.currentTimeMillis() - time;
+            long elapsed = ServerTick.getTime() - time;
             if (elapsed > 30_000) return;
 
             var font = Minecraft.getInstance().font;

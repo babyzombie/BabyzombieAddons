@@ -6,6 +6,7 @@ import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 public final class SlayerHUD {
     private SlayerHUD() {}
@@ -20,7 +21,7 @@ public final class SlayerHUD {
     private static void render(net.minecraft.client.gui.GuiGraphics gui) {
         var font = Minecraft.getInstance().font;
         var config = ModConfigManager.get().slayer;
-        long now = System.currentTimeMillis();
+        long now = ServerTick.getTime();
 
         if (HudManager.shouldShow("SlayerBoss")) {
             BossDetector.updateHP();

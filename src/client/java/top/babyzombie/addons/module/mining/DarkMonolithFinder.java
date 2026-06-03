@@ -15,6 +15,7 @@ import top.babyzombie.addons.util.BeaconBeamRenderer;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.WorldTextRenderer;
+import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.WorldTextRenderer.TextEntry;
 
 import java.awt.Color;
@@ -46,8 +47,8 @@ public final class DarkMonolithFinder {
             var playerPos = client.player.position();
 
             if (shown.isEmpty()) {
-                if (resetTimer == 0) resetTimer = System.currentTimeMillis() + 30_000;
-                else if (System.currentTimeMillis() > resetTimer) {
+                if (resetTimer == 0) resetTimer = ServerTick.getTime() + 30_000;
+                else if (ServerTick.getTime() > resetTimer) {
                     for (var p : MONOLITH_POSITIONS) shown.add(p);
                     resetTimer = 0;
                 }

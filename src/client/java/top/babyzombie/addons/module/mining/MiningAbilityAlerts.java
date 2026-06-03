@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 public final class MiningAbilityAlerts {
     static long readyTime;
@@ -19,7 +20,7 @@ public final class MiningAbilityAlerts {
             String text = ChatUtils.stripColor(message.getString());
             if (text.endsWith(" is now available!")) {
                 String ability = text.substring(0, text.length() - " is now available!".length());
-                readyTime = System.currentTimeMillis();
+                readyTime = ServerTick.getTime();
                 ChatUtils.showTitle("", "§6" + ability + " §ais now available!", 0, 30, 5);
             }
         });

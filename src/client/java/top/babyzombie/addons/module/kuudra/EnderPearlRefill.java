@@ -8,6 +8,7 @@ import net.minecraft.world.item.Items;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 public final class EnderPearlRefill {
     private EnderPearlRefill() {}
@@ -34,7 +35,7 @@ public final class EnderPearlRefill {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return InteractionResult.PASS;
             var held = player.getItemInHand(hand);
             if (held.getItem() != Items.ENDER_PEARL) return InteractionResult.PASS;
-            if (System.currentTimeMillis() - lastRefill < 2000) return InteractionResult.PASS;
+            if (ServerTick.getTime() - lastRefill < 2000) return InteractionResult.PASS;
 
             int total = countEnderPearls(player);
             if (total >= 16) return InteractionResult.PASS;
@@ -45,7 +46,7 @@ public final class EnderPearlRefill {
     }
 
     private static void refill(int amount) {
-        lastRefill = System.currentTimeMillis();
+        lastRefill = ServerTick.getTime();
         ChatUtils.sendCommand("gfs ender_pearl " + amount);
     }
 

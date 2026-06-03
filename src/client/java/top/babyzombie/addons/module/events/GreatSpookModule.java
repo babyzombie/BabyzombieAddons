@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
 
 public final class GreatSpookModule {
 
@@ -51,17 +52,17 @@ public final class GreatSpookModule {
             // Public Speaking Demon
             if (text.startsWith("[FEAR] Public Speaking Demon: Speak ")
                     || text.startsWith("[FEAR] Public Speaking Demon: Say something interesting ")) {
-                if (System.currentTimeMillis() < publicSpeakingDemonCooldown + 20_000) return;
+                if (ServerTick.getTime() < publicSpeakingDemonCooldown + 20_000) return;
 
                 String cfgText = ModConfigManager.get().events.publicSpeakingDemon;
                 String sayStr;
-                if (System.currentTimeMillis() > publicSpeakingDemonCooldown + 60_000
+                if (ServerTick.getTime() > publicSpeakingDemonCooldown + 60_000
                         && cfgText != null && !cfgText.isEmpty()) {
                     sayStr = cfgText;
                 } else {
                     sayStr = randomString((int) (Math.random() * 16) + 16);
                 }
-                publicSpeakingDemonCooldown = System.currentTimeMillis();
+                publicSpeakingDemonCooldown = ServerTick.getTime();
                 scheduleCommand("ac " + sayStr);
             }
         });

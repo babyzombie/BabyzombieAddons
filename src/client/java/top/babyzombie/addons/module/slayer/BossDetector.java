@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ServerTick;
 
 /**
  * Detects slayer boss spawns and tracks HP.
@@ -24,7 +25,7 @@ public final class BossDetector {
             String text = ChatUtils.stripColor(message.getString());
 
             if (text.contains("SLAYER BOSS SPAWNED") || text.contains("A powerful")) {
-                spawnTime = System.currentTimeMillis();
+                spawnTime = ServerTick.getTime();
                 findBoss();
             }
             if (text.contains("SLAYER BOSS SLAIN")) {
