@@ -60,9 +60,8 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    //Hypixel Mod Api (bundled)
+    //Hypixel Mod Api
     modImplementation "net.hypixel:mod-api:${project.hypixel_mod_api_version}"
-    include "net.hypixel:mod-api:${project.hypixel_mod_api_version}"
 
     // Dandelion (bundled)
     include modImplementation("net.azureaaron:dandelion:${project.dandelion_version}")

@@ -27,7 +27,8 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": ">=${fabric_version}",
-    "minecraft": "${minecraft_version}"
+    "minecraft": "${minecraft_version}",
+    "hypixel-mod-api": ">=1.0"
   },
   "suggests": {
     "yet-another-config-lib": ">=${yacl_mod_version}",
