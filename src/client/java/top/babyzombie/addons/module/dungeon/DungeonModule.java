@@ -122,10 +122,10 @@ public final class DungeonModule {
             if (ModConfigManager.get().dungeon.autoRequeue == ModConfig.RequeueMode.OFF) return;
             var pm = PartyModule.PARTY_CHAT.matcher(m.getString());
             if (!pm.find()) return;
-            String sender = pm.group(3);
+            String sender = pm.group(1);
             if (!PartyTracker.getInstance().hasLeaderName(sender) && PartyTracker.getInstance().getLeaderName() != null)
                 return;
-            String t = ChatUtils.stripColor(pm.group(5)).trim().toLowerCase();
+            String t = ChatUtils.stripColor(pm.group(2)).trim().toLowerCase();
             for (String kw : ModConfigManager.get().dungeon.requeueCancelKeywords.toLowerCase().split("\\|")) {
                 if (!kw.isEmpty() && t.equals(kw)) {
                     AutoRequeue.cancel();
@@ -140,7 +140,7 @@ public final class DungeonModule {
             if (!HypixelLocationTracker.getInstance().isInDungeon()) return;
             if (screen instanceof AbstractContainerScreen<?> cs) {
                 String title = cs.getTitle().getString();
-                if (title.contains("Chest") || title.contains("箱子")) {
+                if (title.equals("Chest") || title.equals("箱子")) {
                     Scheduler.schedule(4, () -> {
                         if (client.screen == screen && HypixelLocationTracker.getInstance().isInDungeon())
                             client.execute(() -> { if (client.player != null) client.player.closeContainer(); });

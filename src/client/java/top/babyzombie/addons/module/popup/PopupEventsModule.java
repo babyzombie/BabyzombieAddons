@@ -26,16 +26,13 @@ import java.util.regex.Pattern;
 public final class PopupEventsModule {
 
     private static final Pattern PARTY_INVITE = Pattern.compile(
-            ".*(\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})( has invited you to join | has invited all members of .+ to |邀请你加入|已邀请.+中的所有成员加入)(.+)( party!|组队！).*",
-            Pattern.DOTALL);
+            "(?:\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})( has invited you to join | has invited all members of .+ to |邀请你加入|已邀请.+中的所有成员加入)(.+?)( party!|组队！)");
     private static final Pattern FRIEND_REQUEST = Pattern.compile(
-            ".*(Friend request from |好友请求：)(\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24}).*",
-            Pattern.DOTALL);
+            "(Friend request from |好友请求：)(?:\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})");
     private static final Pattern SKYBLOCK_TRADE = Pattern.compile(
             "([0-9a-zA-Z_]{2,24}) has sent you a trade request\\. Click here to accept!.*");
     private static final Pattern DUELS_REQUEST = Pattern.compile(
-            ".*(\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})( has invited you to |邀请你参与)(.+)[!！].*",
-            Pattern.DOTALL);
+            "(?:\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})( has invited you to |邀请你参与)(.+?)[!！]");
     private static final Pattern DUNGEON_RESTART = Pattern.compile(
             "(?:组队|組隊|Party) > (?:\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]+)(?: [♲Ⓑ☀⚒ቾ]+)?: rs",
             Pattern.CASE_INSENSITIVE);
@@ -72,9 +69,9 @@ public final class PopupEventsModule {
             if (cfg.popupPartyInvite || cfg.popupGuildPartyInvite) {
                 var m = PARTY_INVITE.matcher(text);
                 if (m.find()) {
-                    String player = m.group(2);
-                    String what = m.group(4);
-                    boolean guild = m.group(3) != null && (m.group(3).contains("all members") || m.group(3).contains("所有成员"));
+                    String player = m.group(1);
+                    String what = m.group(3);
+                    boolean guild = m.group(2) != null && (m.group(2).contains("all members") || m.group(2).contains("所有成员"));
                     if (guild && cfg.popupGuildPartyInvite)
                         notify(EventType.GUILD_PARTY, player, what);
                     else if (!guild && cfg.popupPartyInvite)
@@ -85,7 +82,7 @@ public final class PopupEventsModule {
 
             if (cfg.popupFriendRequest) {
                 var m = FRIEND_REQUEST.matcher(text);
-                if (m.find()) { notify(EventType.FRIEND, m.group(3), null); return; }
+                if (m.find()) { notify(EventType.FRIEND, m.group(2), null); return; }
             }
 
             if (cfg.popupSkyblockTrade && HypixelLocationTracker.getInstance().isInSkyblock()) {
@@ -101,7 +98,7 @@ public final class PopupEventsModule {
 
             if (cfg.popupDuelsRequest) {
                 var m = DUELS_REQUEST.matcher(text);
-                if (m.find()) { notify(EventType.DUEL, m.group(2), m.group(4)); return; }
+                if (m.find()) { notify(EventType.DUEL, m.group(1), m.group(3)); return; }
             }
 
             if (cfg.popupDungeonRestart && HypixelLocationTracker.getInstance().isInSkyblock()) {
@@ -126,9 +123,9 @@ public final class PopupEventsModule {
         String pre = "babyzombieaddons.popup.";
         title = Component.translatable(pre + "title." + type.key);
         if (extra != null)
-            body = Component.translatable(pre + "body." + type.key, player, extra);
+            body = Component.translatable(pre + "body." + type.key, "§6" + player + "§f", "§6" + extra + "§f");
         else
-            body = Component.translatable(pre + "body." + type.key, player);
+            body = Component.translatable(pre + "body." + type.key, "§6" + player + "§f");
         command = type == EventType.PARTY || type == EventType.GUILD_PARTY ? "party accept " + player
                 : type == EventType.FRIEND ? "friend accept " + player
                 : type == EventType.TRADE || type == EventType.POSITION_SWAP ? "trade " + player
@@ -171,20 +168,30 @@ public final class PopupEventsModule {
             x = 0; y = 0;
         }
 
-        gui.fill(x, y, x + 152, y + 52, 0x96000000);
-        gui.drawCenteredString(font, title.getString(), x + 76, y, 0xFFFFFFFF);
-        gui.drawString(font, body.getString(), x + 1, y + 16, 0xFFFFFFFF, false);
+        // Wrap body text
+        var bodyLines = font.split(body, 148);
+        int lh = font.lineHeight;
+        int boxH = 30 + bodyLines.size() * lh + 6;
+        int bodyY = y + lh;
 
+        gui.fill(x, y, x + 152, y + boxH, 0x96000000);
+        gui.drawCenteredString(font, title.getString(), x + 76, y, 0xFFFFFFFF);
+        for (int i = 0; i < bodyLines.size(); i++) {
+            gui.drawString(font, bodyLines.get(i), x + 1, bodyY + i * lh, 0xFFFFFFFF, false);
+        }
+
+        int bottomY = y + boxH - 6;
         float progress = 1f - (float) remaining / totalTime;
-        gui.fill(x, y + 46, x + (int)(152 * progress), y + 52, 0x46FFFFFF);
+        gui.fill(x, bottomY, x + (int)(152 * progress), y + boxH, 0x46FFFFFF);
 
         String kbYes = keyYes.getTranslatedKeyMessage().getString();
         String kbNo  = keyNo.getTranslatedKeyMessage().getString();
         Component accept = Component.translatable("babyzombieaddons.popup.accept", kbYes);
         Component ignore = Component.translatable("babyzombieaddons.popup.ignore", kbNo);
         String hint = "§a" + accept.getString() + "   §e" + ignore.getString();
-        gui.drawString(font, hint, x + 150 - font.width(hint), y + 32, 0xFFFFFFFF, false);
-        gui.drawCenteredString(font, "§7" + (remaining / 1000 + 1) + "s", x + 76, y + 32, 0xFFFFFFFF);
+        int hintY = bottomY - lh + 1;
+        gui.drawString(font, "§7" + (remaining / 1000 + 1) + "s", x + 1, hintY, 0xFFFFFFFF, false);
+        gui.drawString(font, hint, x + 150 - font.width(hint), hintY, 0xFFFFFFFF, false);
 
         if (s != 1f) gui.pose().popMatrix();
     }

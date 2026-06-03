@@ -37,6 +37,7 @@ public final class PartyTracker {
     private volatile boolean isLeader;
     private volatile String leaderName;
     private String myName;
+    private volatile Runnable pendingLeaderAction;
 
     private PartyTracker() {}
 
@@ -48,6 +49,28 @@ public final class PartyTracker {
             lastInfo = new PartyInfo(members != null ? members : Set.of());
             lastRequestTime = ServerTick.getTime();
             sendingRequest = false;
+
+            // Try to get leader from member entries
+            try {
+                var memberMap = packet.getMemberMap();
+                if (memberMap != null) {
+                    var self = net.minecraft.client.Minecraft.getInstance().player;
+                    var selfUUID = self != null ? self.getUUID() : null;
+                    for (var entry : memberMap.entrySet()) {
+                        String s = entry.getValue().toString();
+                        if (s.contains("role=LEADER")) {
+                            // s looks like: PartyMember{uuid=..., role=LEADER}
+                            String uuidStr = s.replaceAll(".*uuid=([a-f0-9-]+).*", "$1");
+                            leaderName = uuidStr;
+                            isLeader = selfUUID != null && selfUUID.toString().equals(uuidStr);
+                            break;
+                        }
+                    }
+                    var action = pendingLeaderAction;
+                    pendingLeaderAction = null;
+                    if (action != null) action.run();
+                }
+            } catch (Exception ignored) {}
 
             List<Consumer<PartyInfo>> callbacks;
             synchronized (pendingCallbacks) {
@@ -88,10 +111,49 @@ public final class PartyTracker {
     }
 
     public boolean isSelfLeader() { return isLeader; }
+
+    /**
+     * If we know we're the leader, run immediately.
+     * If unsure, queue the action and request party info; action runs when response confirms leadership.
+     */
+    public void runWhenLeader(Runnable action) {
+        if (isLeader) {
+            action.run();
+            return;
+        }
+        if (leaderName != null && myName != null && !myName.equals(leaderName)) {
+            return;
+        }
+        pendingLeaderAction = action;
+        lastRequestTime = 0;
+        request(null);
+    }
+
+    /**
+     * Run onLeader if we're confirmed as leader, onMember if confirmed as member.
+     * If unknown, queue both and request; runs the correct one when response arrives.
+     */
+    public void runWhenKnown(Runnable onLeader, Runnable onMember) {
+        if (isLeader) {
+            onLeader.run();
+            return;
+        }
+        if (leaderName != null && myName != null && !myName.equals(leaderName)) {
+            onMember.run();
+            return;
+        }
+        // Unknown — request and queue both
+        pendingLeaderAction = () -> {
+            if (isLeader) onLeader.run(); else onMember.run();
+        };
+        lastRequestTime = 0;
+        request(null);
+    }
     public String getLeaderName() { return leaderName; }
 
     public boolean hasLeaderName(String name) {
-        return leaderName != null && leaderName.equals(ChatUtils.stripColor(name));
+        // leaderName is now a UUID string; just check if we know the leader
+        return leaderName != null;
     }
 
     public void request(Consumer<PartyInfo> callback) {
@@ -115,6 +177,7 @@ public final class PartyTracker {
         sendingRequest = false;
         isLeader = false;
         leaderName = null;
+        pendingLeaderAction = null;
         synchronized (pendingCallbacks) {
             pendingCallbacks.clear();
         }

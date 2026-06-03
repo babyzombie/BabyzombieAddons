@@ -36,6 +36,8 @@ public final class EventsCategory {
                         .name(Component.translatable("config.babyzombieaddons.group.carnival"))
                         .option(bool("fruitDiggingHelper", defaults.events.fruitDiggingHelper,
                                 () -> config.events.fruitDiggingHelper, v -> config.events.fruitDiggingHelper = v))
+                        .option(bool("fruitDiggingAutoAccept", defaults.events.fruitDiggingAutoAccept,
+                                () -> config.events.fruitDiggingAutoAccept, v -> config.events.fruitDiggingAutoAccept = v))
                         .build())
                 .build();
     }

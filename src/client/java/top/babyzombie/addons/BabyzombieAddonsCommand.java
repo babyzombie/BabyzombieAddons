@@ -5,9 +5,11 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.module.playcmd.PlayCmdModule;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
@@ -16,9 +18,36 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.arg
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public final class BabyzombieAddonsCommand {
+    private static boolean soundMonitor;
+    private static final java.util.Set<String> soundBlacklist = new java.util.LinkedHashSet<>();
+
     private BabyzombieAddonsCommand() {}
 
     public static void init() {
+        PlaySoundEvents.BEFORE_PLAY.register(sound -> {
+            if (!soundMonitor) return false;
+            String id = "?";
+            try { var loc = sound.getIdentifier(); id = loc != null ? loc.toString() : "?"; } catch (Exception ignored) {}
+            if (soundBlacklist.contains(id)) return false;
+            String src = "?";
+            try { src = String.valueOf(sound.getSource()); } catch (Exception ignored) {}
+            float vol = 0, pit = 0;
+            try { vol = sound.getVolume(); pit = sound.getPitch(); } catch (Exception ignored) {}
+            boolean loop = false;
+            try { loop = sound.isLooping(); } catch (Exception ignored) {}
+            String posStr = "?";
+            try { posStr = String.format("%.1f,%.1f,%.1f", sound.getX(), sound.getY(), sound.getZ()); } catch (Exception ignored) {}
+            String msg = String.format(
+                    "§7[§bSound§7] §f%s §7vol=§f%.2f §7pit=§f%.2f §7src=§f%s §7pos=§f%s §7loop=§f%s",
+                    id, vol, pit, src, posStr, loop);
+            var cmd = "/bza sound " + id;
+            var comp = Component.literal(msg)
+                    .withStyle(style -> style.withClickEvent(new ClickEvent.RunCommand(cmd)));
+            var player = Minecraft.getInstance().player;
+            if (player != null) player.displayClientMessage(comp, false);
+            return false;
+        });
+
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             var bza = literal("bza").executes(BabyzombieAddonsCommand::settings)
                     .then(literal("s").executes(BabyzombieAddonsCommand::settings))
@@ -47,6 +76,10 @@ public final class BabyzombieAddonsCommand {
                     .then(literal("rotation").then(argument("yaw", StringArgumentType.word())
                             .then(argument("pitch", StringArgumentType.word())
                             .executes(BabyzombieAddonsCommand::rotation))))
+                    .then(literal("sound")
+                            .executes(BabyzombieAddonsCommand::toggleSoundMonitor)
+                            .then(argument("filter", StringArgumentType.greedyString())
+                                    .executes(BabyzombieAddonsCommand::setSoundFilter)))
                     .then(literal("l").executes(ctx -> { ChatUtils.sendCommand("limbo"); return 1; }))
                     ;
 
@@ -147,6 +180,27 @@ public final class BabyzombieAddonsCommand {
         }
         String result = sb2.toString();
         ctx.getSource().sendFeedback(Component.literal(result));
+        return 1;
+    }
+
+    private static int toggleSoundMonitor(CommandContext<FabricClientCommandSource> ctx) {
+        soundMonitor = !soundMonitor;
+        soundBlacklist.clear();
+        ctx.getSource().sendFeedback(Component.literal(
+                soundMonitor ? "§aSound monitor ON"
+                             : "§cSound monitor OFF"));
+        return 1;
+    }
+
+    private static int setSoundFilter(CommandContext<FabricClientCommandSource> ctx) {
+        String filter = StringArgumentType.getString(ctx, "filter");
+        if (soundBlacklist.contains(filter)) {
+            soundBlacklist.remove(filter);
+            ctx.getSource().sendFeedback(Component.literal("§eRemoved from blacklist: §f" + filter));
+        } else {
+            soundBlacklist.add(filter);
+            ctx.getSource().sendFeedback(Component.literal("§cAdded to blacklist: §f" + filter));
+        }
         return 1;
     }
 

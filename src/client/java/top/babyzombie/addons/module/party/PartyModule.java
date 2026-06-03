@@ -7,6 +7,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.PartyTracker;
+import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.util.ServerTick;
 
 import java.util.HashMap;
@@ -21,12 +22,11 @@ public final class PartyModule {
 
     // Same multi-line party invite regex used by PopupEventsModule
     private static final Pattern PARTY_INVITE = Pattern.compile(
-            ".*(\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})( has invited you to join | has invited all members of .+ to |邀请你加入|已邀请.+中的所有成员加入)(.+)( party!|组队！).*",
-            Pattern.DOTALL);
+            "(?:\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})( has invited you to join | has invited all members of .+? to |邀请你加入|已邀请.+?中的所有成员加入)(.+?)( party!|组队！)");
 
     // Party chat line: "Party > [RANK] PlayerName: message" (5 capture groups matching original JS)
     public static final Pattern PARTY_CHAT = Pattern.compile(
-            "(组队|組隊|Party) > (\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]+)( [♲Ⓑ☀⚒ቾ]+)?: (.+)");
+            "(?:Party|组队|組隊) > (?:\\[[^\\]]+\\] )?([0-9a-zA-Z_]{2,24}).*?: (.+)");
 
     // DM message: "From PlayerName: !p"
     private static final Pattern DM_INVITE = Pattern.compile(
@@ -38,7 +38,11 @@ public final class PartyModule {
     private static final Pattern CMD_WARP = Pattern.compile("^[!！][ ]?warp?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_WARP_CANCEL = Pattern.compile("^[!！][ ]?(?:warp)?[ ]?c(?:ancel)?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_JOIN = Pattern.compile("^[!！][ ]?(?:join)?[ ]?([fmt])([e0-7])$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CMD_PTME = Pattern.compile("^[!！][ ]?pt(?:me)?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_SENDCOORDS = Pattern.compile("^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$", Pattern.CASE_INSENSITIVE);
+
+    /** Strip rank prefix like "[MVP+] " from a player name. */
+    private static final Pattern RANK_PREFIX = Pattern.compile("^\\[[\\w+\\+-]+] ");
 
     private static boolean partyDisbanded;
     private static long warpDelayUntil;
@@ -61,7 +65,7 @@ public final class PartyModule {
             if (!m.find()) return;
 
             // Only auto-accept if inviter was recently sent DM !p by us
-            String inviter = m.group(2);
+            String inviter = m.group(1);
             if (inviter != null && dmInvitePending.containsKey(inviter.toLowerCase())) {
                 dmInvitePending.remove(inviter.toLowerCase());
                 ChatUtils.sendCommand("party accept");
@@ -75,79 +79,12 @@ public final class PartyModule {
             String text = ChatUtils.stripColor(message.getString());
             if (text.contains("disbanded the party") || text.contains("解散了组队")) {
                 partyDisbanded = true;
-                // Reset after 2 minutes
-                long now = ServerTick.getTime();
-                new Thread(() -> { try { Thread.sleep(120000); partyDisbanded = false; } catch (Exception ignored) {} }).start();
+                Scheduler.schedule(2400, () -> partyDisbanded = false);
             }
         });
 
         // Party chat commands
-            ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-                if (overlay) return;
-                var cfg = ModConfigManager.get().party;
-                String text = message.getString();
-                var matcher = PARTY_CHAT.matcher(text);
-                if (!matcher.find()) return;
-
-                String player = matcher.group(3);
-                String msg = ChatUtils.stripColor(matcher.group(5)).trim();
-
-                // Don't respond to self
-                var self = Minecraft.getInstance().player;
-                if (self != null && player.equals(self.getName().getString())) return;
-
-                // !allinv → toggle allinvite
-                if (cfg.partyAllinvite && CMD_ALLINVITE.matcher(msg).matches()) {
-                    nextCommand = "party settings allinvite";
-                    runWhenLeader();
-                    return;
-                }
-
-                // !p <player> → invite
-                if (cfg.partyInvite && CMD_PINVITE.matcher(msg).matches()) {
-                    var pm = CMD_PINVITE.matcher(msg);
-                    if (pm.find()) {
-                        nextCommand = "party invite " + pm.group(1);
-                        runWhenLeader();
-                    }
-                    return;
-                }
-
-                // !warp → warp
-                if (cfg.partyWarp && CMD_WARP.matcher(msg).matches()) {
-                    if (cfg.partyWarpDelay) {
-                        warpDelayUntil = ServerTick.getTime() + cfg.partyWarpDelaySeconds * 1000L;
-                        return;
-                    }
-                    nextCommand = "party warp";
-                    runWhenLeader();
-                    return;
-                }
-
-                // !c / !warp cancel → cancel warp
-                if (cfg.partyWarp && CMD_WARP_CANCEL.matcher(msg).matches() && warpDelayUntil > ServerTick.getTime()) {
-                    warpDelayUntil = 0;
-                    return;
-                }
-
-                // !join <f|m|t><e|0-7> → join instance
-                if (cfg.partyJoinInstance && HypixelLocationTracker.getInstance().isInSkyblock() && CMD_JOIN.matcher(msg).matches()) {
-                    var jm = CMD_JOIN.matcher(msg);
-                    if (jm.find()) {
-                        nextCommand = buildJoinCommand(jm.group(1), jm.group(2));
-                        runWhenLeader();
-                    }
-                    return;
-                }
-
-                // !sc → send coordinates
-                if (cfg.partySendCoords && HypixelLocationTracker.getInstance().isInSkyblock() && CMD_SENDCOORDS.matcher(msg).matches()) {
-                    if (self != null) {
-                        var pos = self.blockPosition();
-                        ChatUtils.sendCommand("pc x: " + pos.getX() + ", y: " + pos.getY() + ", z: " + pos.getZ());
-                    }
-                }
-            });
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> onPartyChat(message, overlay));
 
         // DM party invite (!p in private message)
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
@@ -156,7 +93,8 @@ public final class PartyModule {
             if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
             var matcher = DM_INVITE.matcher(message.getString());
             if (matcher.find()) {
-                String player = ChatUtils.stripColor(matcher.group(1));
+                String raw = ChatUtils.stripColor(matcher.group(1));
+                String player = RANK_PREFIX.matcher(raw).replaceFirst("");
                 dmInvitePending.put(player.toLowerCase(), ServerTick.getTime() + 2000);
                 ChatUtils.sendCommand("party invite " + player);
                 showMsg("party.dm_invited", player);
@@ -164,12 +102,87 @@ public final class PartyModule {
         });
     }
 
+    private static void onPartyChat(net.minecraft.network.chat.Component message, boolean overlay) {
+        if (overlay) return;
+        var cfg = ModConfigManager.get().party;
+        String text = ChatUtils.stripColor(message.getString());
+        var matcher = PARTY_CHAT.matcher(text);
+        if (!matcher.find()) return;
+
+        String player = matcher.group(1);
+        String msg = ChatUtils.stripColor(matcher.group(2)).trim();
+
+        var self = Minecraft.getInstance().player;
+        if (self != null && player.equals(self.getName().getString())) return;
+
+        // !pt / !ptme → transfer party leader to sender
+        if (cfg.partyTransfer && CMD_PTME.matcher(msg).matches()) {
+            nextCommand = "party transfer " + player;
+            runWhenLeader();
+            return;
+        }
+
+        // !allinv → toggle allinvite
+        if (cfg.partyAllinvite && CMD_ALLINVITE.matcher(msg).matches()) {
+            nextCommand = "party settings allinvite";
+            runWhenLeader();
+            return;
+        }
+
+        // !p <player> → invite
+        if (cfg.partyInvite && CMD_PINVITE.matcher(msg).matches()) {
+            var pm = CMD_PINVITE.matcher(msg);
+            if (pm.find()) {
+                nextCommand = "party invite " + pm.group(1);
+                runWhenLeader();
+            }
+            return;
+        }
+
+        // !warp → warp
+        if (cfg.partyWarp && CMD_WARP.matcher(msg).matches()) {
+            if (cfg.partyWarpDelay) {
+                warpDelayUntil = ServerTick.getTime() + cfg.partyWarpDelaySeconds * 1000L;
+                return;
+            }
+            nextCommand = "party warp";
+            runWhenLeader();
+            return;
+        }
+
+        // !c / !warp cancel → cancel warp
+        if (cfg.partyWarp && CMD_WARP_CANCEL.matcher(msg).matches() && warpDelayUntil > ServerTick.getTime()) {
+            warpDelayUntil = 0;
+            return;
+        }
+
+        // !join <f|m|t><e|0-7> → join instance
+        if (cfg.partyJoinInstance && HypixelLocationTracker.getInstance().isInSkyblock() && CMD_JOIN.matcher(msg).matches()) {
+            var jm = CMD_JOIN.matcher(msg);
+            if (jm.find()) {
+                nextCommand = buildJoinCommand(jm.group(1), jm.group(2));
+                runWhenLeader();
+            }
+            return;
+        }
+
+        // !sc → send coordinates
+        if (cfg.partySendCoords && HypixelLocationTracker.getInstance().isInSkyblock() && CMD_SENDCOORDS.matcher(msg).matches()) {
+            if (self != null) {
+                var pos = self.blockPosition();
+                ChatUtils.sendCommand("pc x: " + pos.getX() + ", y: " + pos.getY() + ", z: " + pos.getZ());
+            }
+        }
+    }
+
     private static void runWhenLeader() {
         if (nextCommand == null) return;
-        if (!PartyTracker.getInstance().isSelfLeader()) return;
-        ChatUtils.sendCommand(nextCommand);
-        showMsg("party.executed", "/" + nextCommand);
+        var cmd = nextCommand;
         nextCommand = null;
+        PartyTracker.getInstance().runWhenLeader(() -> {
+            ChatUtils.sendCommand(cmd);
+            showMsg("party.executed", "/" + cmd);
+        });
     }
 
     private static String buildJoinCommand(String type, String floor) {

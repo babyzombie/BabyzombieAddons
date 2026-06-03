@@ -31,7 +31,8 @@ public final class ChestMarkers {
                 for (int dy = -4; dy <= 4; dy++) {
                     for (int dz = -range; dz <= range; dz++) {
                         var bp = playerPos.offset(dx, dy, dz);
-                        if (level.getBlockState(bp).is(Blocks.CHEST)) {
+                        var bs = level.getBlockState(bp);
+                        if (bs.is(Blocks.CHEST) || bs.is(Blocks.TRAPPED_CHEST)) {
                             chests.add(bp);
                         }
                     }
@@ -43,12 +44,13 @@ public final class ChestMarkers {
             if (!ModConfigManager.get().mining.chestMarkers) return;
             if (!isInCrystalHollows() || chests.isEmpty()) return;
 
-            double e = 0.02; // slight offset to avoid z-fighting
+            float lw = ModConfigManager.get().mining.chestLineWidth;
+            double e = 0.02;
             for (var pos : chests) {
                 WorldRenderUtils.drawBoxXray(
                     pos.getX() - e, pos.getY() - e, pos.getZ() - e,
                     pos.getX() + 1 + e, pos.getY() + 1 + e, pos.getZ() + 1 + e,
-                    R, G, B, A);
+                    R, G, B, A, lw);
             }
         });
     }

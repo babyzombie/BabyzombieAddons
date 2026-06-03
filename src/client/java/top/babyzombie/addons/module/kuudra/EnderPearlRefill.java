@@ -38,7 +38,7 @@ public final class EnderPearlRefill {
             if (ServerTick.getTime() - lastRefill < 2000) return InteractionResult.PASS;
 
             int total = countEnderPearls(player);
-            if (total >= 16) return InteractionResult.PASS;
+            if (total > 4) return InteractionResult.PASS;
 
             refill(16 - total);
             return InteractionResult.PASS;

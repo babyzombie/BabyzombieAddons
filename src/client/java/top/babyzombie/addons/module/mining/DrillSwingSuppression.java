@@ -15,12 +15,15 @@ public final class DrillSwingSuppression {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             var player = Minecraft.getInstance().player;
             if (player == null) return;
-            if (!client.options.keyAttack.isDown()) return;
             var stack = player.getMainHandItem();
             String id = ItemUtils.getSkyblockId(stack);
-            if (id != null && (id.contains("DRILL") || id.contains("GAUNTLET") || id.contains("PICKAXE"))) {
-                player.swingTime = 0;
-            }
+            if (id == null || (!id.contains("DRILL") && !id.contains("GAUNTLET") && !id.contains("PICKAXE")))
+                return;
+
+            player.swingTime = 0;
+            player.swinging = false;
+            player.attackAnim = 0f;
+            player.oAttackAnim = 0f;
         });
     }
 }

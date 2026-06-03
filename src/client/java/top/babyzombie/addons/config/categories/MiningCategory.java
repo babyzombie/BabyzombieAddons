@@ -3,6 +3,7 @@ package top.babyzombie.addons.config.categories;
 import net.azureaaron.dandelion.api.ConfigCategory;
 import net.azureaaron.dandelion.api.Option;
 import net.azureaaron.dandelion.api.OptionGroup;
+import net.azureaaron.dandelion.api.controllers.IntegerController;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
@@ -33,6 +34,14 @@ public final class MiningCategory {
                                 () -> config.mining.crystalHollowsPassAutoRenew, v -> config.mining.crystalHollowsPassAutoRenew = v))
                         .option(bool("chestMarkers", defaults.mining.chestMarkers,
                                 () -> config.mining.chestMarkers, v -> config.mining.chestMarkers = v))
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.chestLineWidth"))
+                                .description(Component.translatable("config.babyzombieaddons.option.chestLineWidth.desc"))
+                                .binding(defaults.mining.chestLineWidth,
+                                        () -> config.mining.chestLineWidth,
+                                        v -> config.mining.chestLineWidth = v)
+                                .controller(IntegerController.createBuilder().range(1, 16).slider(1).build())
+                                .build())
                         .option(bool("getFromSacks", defaults.mining.getFromSacks,
                                 () -> config.mining.getFromSacks, v -> config.mining.getFromSacks = v))
                         .option(bool("scathaCooldown", defaults.mining.scathaCooldown,

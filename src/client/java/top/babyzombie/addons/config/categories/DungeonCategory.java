@@ -48,7 +48,7 @@ public final class DungeonCategory {
                                 .binding(defaults.dungeon.requeueDelay,
                                         () -> config.dungeon.requeueDelay,
                                         v -> config.dungeon.requeueDelay = v)
-                                .controller(IntegerController.createBuilder().range(0, 300).slider(1).build())
+                                .controller(IntegerController.createBuilder().range(0, 60).slider(1).build())
                                 .build())
                         .option(Option.<String>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.requeueMessage"))

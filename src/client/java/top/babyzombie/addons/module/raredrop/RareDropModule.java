@@ -76,12 +76,9 @@ public final class RareDropModule {
                 ignoreSoundTime = 0;
                 return false;
             }
-            try {
-                String id = sound.getSound().toString().toLowerCase();
-                return id.contains("pling") || id.contains("orb") || id.contains("experience");
-            } catch (Exception e) {
-                return false;
-            }
+            String id = "?";
+            try { var loc = sound.getIdentifier(); id = loc != null ? loc.toString() : "?"; } catch (Exception ignored) {}
+            return id.contains("note_block") || id.contains("experience_orb");
         });
     }
 

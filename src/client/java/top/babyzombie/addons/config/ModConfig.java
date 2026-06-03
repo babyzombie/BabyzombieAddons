@@ -40,8 +40,6 @@ public class ModConfig {
         public AutoISDest autoisDest = AutoISDest.GARDEN;
         public KickRecovery autoBackToSkyblock = KickRecovery.LOBBY_ONLY;
         public boolean cakeBuffTracker = false;
-
-
     }
 
     // ---- Dungeon ----
@@ -112,6 +110,7 @@ public class ModConfig {
         public boolean miningAbilityAlerts = false;
         public boolean crystalHollowsPassAutoRenew = false;
         public boolean chestMarkers = false;
+        public int chestLineWidth = 3;
         public boolean getFromSacks = false;
         public boolean scathaCooldown = false;
         public boolean armadilloEnergy = false;
@@ -156,6 +155,7 @@ public class ModConfig {
         public int partyWarpDelaySeconds = 3;
         public boolean partyJoinInstance = false;
         public boolean partySendCoords = false;
+        public boolean partyTransfer = false;
         public boolean dmPartyInvite = false;
     }
 
@@ -166,6 +166,7 @@ public class ModConfig {
         public boolean greatSpookDelay = false;
         public String publicSpeakingDemon = "";
         public boolean fruitDiggingHelper = false;
+        public boolean fruitDiggingAutoAccept = false;
     }
 
     // ---- Misc ----

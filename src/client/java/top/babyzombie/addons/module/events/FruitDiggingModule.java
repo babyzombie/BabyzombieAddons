@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import com.mojang.authlib.properties.Property;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -38,8 +41,8 @@ public final class FruitDiggingModule {
             Map.entry("ewogICJ0aW1lc3RhbXAiIDogMTcxODIwMzIzMzA1NiwKICAicHJvZmlsZUlkIiA6ICIxODA1Y2E2MmM0ZDI0M2NiOWQxYmY4YmM5N2E1YjgyNCIsCiAgInByb2ZpbGVOYW1lIiA6ICJSdWxsZWQiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDA3YjI3NWQyOGI5MjdiMWJmN2Y2ZGQ5ZjQ1ZmJkYWQyYWY4NTcxYzU0YzhmMDI3ZDFiZmY2OTU2ZmJmM2MxNiIKICAgIH0KICB9Cn0=", "Rum")
     );
 
-    private static final int AREA_X_MIN = -112, AREA_X_MAX = -105;
-    private static final int AREA_Z_MIN = -11, AREA_Z_MAX = -4;
+    private static final int AREA_X_MIN = -112, AREA_X_MAX = -106;
+    private static final int AREA_Z_MIN = 19, AREA_Z_MAX = 25;
     private static final int AREA_Y_MIN = 72, AREA_Y_MAX = 75;
 
     private static final List<Marker> fruits = new ArrayList<>();
@@ -47,6 +50,8 @@ public final class FruitDiggingModule {
     private static final List<Marker> bombs = new ArrayList<>();
     private static int digX, digZ;
     private static boolean hasDigLoc;
+    private static long lastNpcDialogTime;
+    private static String acceptCommand;
 
     private FruitDiggingModule() {}
 
@@ -91,7 +96,42 @@ public final class FruitDiggingModule {
                 treasures.clear();
                 bombs.clear();
                 hasDigLoc = false;
+                acceptCommand = null;
             }
+        });
+
+        // Auto-accept: capture accept command from options message
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+            if (overlay) return;
+            if (!ModConfigManager.get().events.fruitDiggingAutoAccept) return;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
+            String text = ChatUtils.stripColor(message.getString());
+
+            if (text.contains("[NPC] Carnival Pirateman: Would ye like to do some Fruit Digging?")) {
+                lastNpcDialogTime = System.currentTimeMillis();
+                acceptCommand = null;
+                return;
+            }
+
+            if (text.contains("Select an option:") && text.contains("[Aye sure do!]")) {
+                acceptCommand = findClickCommand(message, "Aye sure do!");
+            }
+        });
+
+        // Right-click on NPC within 2s → cancel and auto-accept
+        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (!ModConfigManager.get().events.fruitDiggingAutoAccept) return InteractionResult.PASS;
+            if (acceptCommand == null) return InteractionResult.PASS;
+            if (System.currentTimeMillis() - lastNpcDialogTime > 2000) {
+                acceptCommand = null;
+                return InteractionResult.PASS;
+            }
+            if (entity instanceof net.minecraft.world.entity.player.Player) {
+                ChatUtils.sendCommand(acceptCommand);
+                acceptCommand = null;
+                return InteractionResult.FAIL;
+            }
+            return InteractionResult.PASS;
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -106,8 +146,8 @@ public final class FruitDiggingModule {
                 var stack = item.getItem();
                 if (stack.getItem() != Items.PLAYER_HEAD) continue;
 
-                int bx = (int) Math.floor(item.getX()) - 1;
-                int bz = (int) Math.floor(item.getZ()) - 1;
+                int bx = (int) Math.floor(item.getX());
+                int bz = (int) Math.floor(item.getZ());
                 boolean dug = client.player.level()
                         .getBlockState(new net.minecraft.core.BlockPos(bx, 72, bz)).getBlock() != Blocks.SAND;
 
@@ -127,6 +167,8 @@ public final class FruitDiggingModule {
         WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
             if (!ModConfigManager.get().events.fruitDiggingHelper) return;
             if (!isInCarnival()) return;
+            int total = fruits.size() + treasures.size() + bombs.size();
+            if (total == 0) return;
 
             var entries = new ArrayList<TextEntry>();
             for (var m : bombs)
@@ -143,7 +185,11 @@ public final class FruitDiggingModule {
         if (!stack.is(Items.PLAYER_HEAD)) return null;
         ResolvableProfile profile = stack.get(DataComponents.PROFILE);
         if (profile == null) return null;
-        return profile.partialProfile().properties().get("textures").stream()
+        var gameProfile = profile.partialProfile();
+        if (gameProfile == null) return null;
+        var textures = gameProfile.properties().get("textures");
+        if (textures == null) return null;
+        return textures.stream()
                 .filter(Objects::nonNull)
                 .map(Property::value)
                 .findFirst()
@@ -163,6 +209,20 @@ public final class FruitDiggingModule {
         return x >= AREA_X_MIN && x <= AREA_X_MAX
                 && z >= AREA_Z_MIN && z <= AREA_Z_MAX
                 && y >= AREA_Y_MIN && y <= AREA_Y_MAX;
+    }
+
+    private static String findClickCommand(Component component, String targetText) {
+        var clickEvent = component.getStyle().getClickEvent();
+        if (clickEvent != null && component.getString().contains(targetText)) {
+            if (clickEvent instanceof ClickEvent.RunCommand runCommand) {
+                return runCommand.command();
+            }
+        }
+        for (var sibling : component.getSiblings()) {
+            String result = findClickCommand(sibling, targetText);
+            if (result != null) return result;
+        }
+        return null;
     }
 
     private record Marker(int x, int z, String label) {}

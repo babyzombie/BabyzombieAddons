@@ -59,15 +59,17 @@ public final class GlaciteMineshaftWaypoints {
                 if (mineshaftOwner && (warpMode == MineshaftWarpMode.SEND_PTME
                         || warpMode == MineshaftWarpMode.PTME_AND_WARP)) {
                     enterMineshaftTime = ServerTick.getTime();
-                    if (PartyTracker.getInstance().isSelfLeader()) {
-                        if (warpMode == MineshaftWarpMode.PTME_AND_WARP) {
-                            Scheduler.schedule(10, () -> ChatUtils.sendCommand("p warp"));
+                    PartyTracker.getInstance().runWhenKnown(
+                        () -> {
+                            if (warpMode == MineshaftWarpMode.PTME_AND_WARP)
+                                Scheduler.schedule(10, () -> ChatUtils.sendCommand("p warp"));
+                        },
+                        () -> {
+                            ChatUtils.sendCommand("pc !ptme");
+                            if (warpMode == MineshaftWarpMode.PTME_AND_WARP)
+                                waitingPartyTransfer = true;
                         }
-                    } else {
-                        ChatUtils.sendCommand("pc !ptme");
-                        if (warpMode == MineshaftWarpMode.PTME_AND_WARP)
-                            waitingPartyTransfer = true;
-                    }
+                    );
                 }
             }
             if (!nowIn) exits.clear();

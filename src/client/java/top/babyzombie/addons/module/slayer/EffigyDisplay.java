@@ -10,6 +10,7 @@ import top.babyzombie.addons.util.*;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,45 +53,38 @@ public final class EffigyDisplay {
                 if (!sb.listPlayerScores(holder).containsKey(obj)) continue;
                 PlayerTeam team = sb.getPlayersTeam(holder.getScoreboardName());
                 if (team == null) continue;
-                String rawText = team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString();
-                // Match JS: RemoveEmoji, replace "Effigies: §", split by §, gray(§7)=destroyed
-                String processed = ChatUtils.removeEmoji(rawText)
-                    .replace("Effigies: §", "");
-                if (processed.equals(rawText)) continue;
-                String[] parts = processed.split("§");
+                String raw = team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString();
+                if (!raw.contains("⧯")) continue;
+                String[] parts = raw.split("⧯");
                 for (int i = 0; i < parts.length && i < 6; i++) {
-                    if (!parts[i].equals("7")) active.add(i); // NOT destroyed = active
+                    if (parts[i].endsWith("§7") || parts[i].endsWith("&7")) {
+                        active.add(i);
+                    }
                 }
                 break;
             }
         });
 
         WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
+            var player = Minecraft.getInstance().player;
+            if (player == null) return;
+
             if (!ModConfigManager.get().slayer.showEffigies) return;
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock() || !"The Rift".equals(tracker.getMap())) return;
             if (active.isEmpty()) return;
-            var player = Minecraft.getInstance().player;
-            if (player == null) return;
 
             for (int idx : active) {
                 if (idx >= EFFIGY_POS.length) continue;
                 var pos = EFFIGY_POS[idx];
-                BeaconBeamRenderer.render(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                BeaconBeamRenderer.render(pos.getX(), pos.getY(), pos.getZ(),
                     new Color(255, 0, 0, 255), BeaconBeamRenderer.DEFAULT_HEIGHT);
-
-                double e = 0.02;
                 WorldRenderUtils.drawBox(
-                    pos.getX() - 0.5 - e, pos.getY() + boxH - 0.2 - e, pos.getZ() - 0.5 - e,
-                    pos.getX() + 1.5 + e, pos.getY() + boxH + 0.6 + e, pos.getZ() + 1.5 + e,
-                    1, 0, 0, 1);
-
-                double dist = Math.sqrt(player.distanceToSqr(
-                    pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
-                WorldTextRenderer.render(ctx.matrices(), List.of(new WorldTextRenderer.TextEntry(
-                    "§e(§c" + (int)dist + "m§e)",
-                    pos.getX() + 0.5, pos.getY() + boxH + 0.5, pos.getZ() + 0.5, 0xFFFF5555)));
+                    pos.getX(), pos.getY() + boxH, pos.getZ(),
+                    pos.getX() + 1, pos.getY() + boxH + 1, pos.getZ() + 1,
+                    1, 0, 0, 1, 4f);
             }
         });
     }
+
 }
