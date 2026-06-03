@@ -4,74 +4,96 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.minecraft.client.GuiMessageTag;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 
 public final class CakeBuffTracker {
 
-    private static final Map<String, Integer> CAKES = new LinkedHashMap<>();
+    private static final Map<String, Integer> CAKE_INDEX = new LinkedHashMap<>();
+    private static final String[] NAMES;
     static {
-        CAKES.put("10❤ Health", 2); CAKES.put("3❈ Defense", 4);
-        CAKES.put("2❁ Strength", 6); CAKES.put("10✦ Speed", 8);
-        CAKES.put("5✎ Intelligence", 10); CAKES.put("2⫽ Ferocity", 12);
-        CAKES.put("1♨ Vitality", 14); CAKES.put("1❂ True Defense", 16);
-        CAKES.put("1α Sea Creature Chance", 18); CAKES.put("1✯ Magic Find", 20);
-        CAKES.put("1♣ Pet Luck", 22); CAKES.put("1❄ Cold Resistance", 24);
-        CAKES.put("10ф Rift Time", 26); CAKES.put("5☘ Mining Fortune", 28);
-        CAKES.put("5☘ Farming Fortune", 30); CAKES.put("5☘ Foraging Fortune", 32);
+        Object[][] data = {
+            {"10❤ Health", "§c10❤ Health   "},
+            {"3❈ Defense", "§a3❈ Defense   "},
+            {"2❁ Strength", "§c2❁ Strength   "},
+            {"10✦ Speed", "§f10✦ Speed   "},
+            {"5✎ Intelligence", "§b5✎ Intelligence   "},
+            {"2⫽ Ferocity", "§c2⫽ Ferocity   "},
+            {"1♨ Vitality", "§41♨ Vitality   "},
+            {"1❂ True Defense", "§f1❂ True Defense   "},
+            {"1α Sea Creature Chance", "§31α Sea Creature Chance   "},
+            {"1✯ Magic Find", "§b1✯ Magic Find   "},
+            {"1♣ Pet Luck", "§d1♣ Pet Luck   "},
+            {"1❄ Cold Resistance", "§b1❄ Cold Resistance   "},
+            {"10ф Rift Time", "§a10ф Rift Time   "},
+            {"5☘ Mining Fortune", "§65☘ Mining Fortune   "},
+            {"5☘ Farming Fortune", "§65☘ Farming Fortune   "},
+            {"5☘ Foraging Fortune", "§65☘ Foraging Fortune   "},
+        };
+        NAMES = new String[data.length];
+        for (int i = 0; i < data.length; i++) {
+            CAKE_INDEX.put((String) data[i][0], i);
+            NAMES[i] = (String) data[i][1];
+        }
     }
 
-    private static final boolean[] found = new boolean[17]; // 1-indexed
+    private static final boolean[] found = new boolean[CAKE_INDEX.size()];
 
     private CakeBuffTracker() {}
 
     public static void init() {
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay) return;
-            if (!ModConfigManager.get().general.cakeBuffTracker) return;
+        // Cancel the original Hypixel cake message
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay) return true;
+            if (!ModConfigManager.get().general.cakeBuffTracker) return true;
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInSkyblock() || !"Private Island".equals(tracker.getMap())) return;
+            if (!tracker.isInSkyblock() || !"Private Island".equals(tracker.getMap())) return true;
 
             String text = ChatUtils.stripColor(message.getString());
-            if (!text.endsWith(" for 48 hours!")) return;
-            String prefix;
-            boolean refresh;
-            if (text.startsWith("Yum! You gain +")) {
-                prefix = "Yum! You gain +";
-                refresh = false;
-            } else if (text.startsWith("Big Yum! You refresh +")) {
-                prefix = "Big Yum! You refresh +";
-                refresh = true;
-            } else return;
-
-            String cakeName = text.substring(prefix.length(), text.length() - " for 48 hours!".length());
-            Integer idx = CAKES.get(cakeName);
-            if (idx == null) return;
-
-            found[idx] = true;
-            if (!refresh) ChatUtils.showMessage(buildChecklist());
+            if (text.startsWith("Yum! You gain +") || text.startsWith("Big Yum! You refresh +")) {
+                if (text.endsWith(" for 48 hours!")) {
+                    onCakeEaten(text);
+                    return false; // Cancel original message
+                }
+            }
+            return true;
         });
+    }
+
+    private static void onCakeEaten(String text) {
+        String cakeName = text
+            .replace("Yum! You gain +", "")
+            .replace("Big Yum! You refresh +", "")
+            .replace(" for 48 hours!", "");
+
+        if (cakeName.equals(text)) return;
+        Integer idx = CAKE_INDEX.get(cakeName);
+        if (idx == null) return;
+
+        found[idx] = true;
+
+        String msg = buildChecklist();
+        Minecraft.getInstance().gui.getChat().addMessage(
+            Component.literal(msg), null, GuiMessageTag.system());
+
+        if (!msg.contains("✘")) {
+            ChatUtils.showMessage(
+                Component.translatable("babyzombieaddons.cake.all_eaten").getString());
+        }
     }
 
     private static String buildChecklist() {
         var sb = new StringBuilder(512);
         sb.append("§f§m                                        §r");
-        int eaten = 0;
-        for (var entry : CAKES.entrySet()) {
-            boolean has = found[entry.getValue()];
-            sb.append("\n§c").append(entry.getKey()).append("   ");
-            if (has) {
-                sb.append("§a✔");
-                eaten++;
-            } else {
-                sb.append("§c✘");
-            }
+        for (int i = 0; i < NAMES.length; i++) {
+            sb.append('\n').append(NAMES[i]);
+            sb.append(found[i] ? "§a✔" : "§c✘");
         }
         sb.append("\n§f§m                                        §r");
-        if (eaten == CAKES.size()) {
-            return net.minecraft.network.chat.Component.translatable("babyzombieaddons.cake.all_eaten").getString();
-        }
         return sb.toString();
     }
 }

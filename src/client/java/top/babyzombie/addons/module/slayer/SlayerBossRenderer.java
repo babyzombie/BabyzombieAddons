@@ -18,10 +18,6 @@ import java.awt.Color;
  * Renders glow effect and beacon beams on slayer bosses.
  */
 public final class SlayerBossRenderer {
-    private static final String BOSS_BEAM_ID = "slayer_boss_beam";
-    private static final String BEACON_BEAM_ID = "slayer_beacon_loc";
-    private static final String INFERNO_BEAM_PREFIX = "slayer_inferno_";
-
     private SlayerBossRenderer() {}
 
     public static void init() {
@@ -36,37 +32,24 @@ public final class SlayerBossRenderer {
             boolean beam = cfg.boxslayerboss == ModConfig.BoxSlayerMode.GLOW_AND_BEAM;
             var boss = BossDetector.currentBoss;
             if (beam && boss != null && !boss.isDeadOrDying()) {
-                BeaconBeamRenderer.setBeam(BOSS_BEAM_ID,
-                    boss.getX() + 0.5, boss.getY(), boss.getZ() + 0.5,
+                BeaconBeamRenderer.render(boss.getX() + 0.5, boss.getY(), boss.getZ() + 0.5,
                     cfg.boxbosscolor, BeaconBeamRenderer.DEFAULT_HEIGHT);
-            } else {
-                BeaconBeamRenderer.removeBeam(BOSS_BEAM_ID);
             }
 
             // --- Voidgloom beacon beam ---
             if (BossDetector.beacon.loc != null) {
                 var bp = BossDetector.beacon.loc;
-                BeaconBeamRenderer.setBeam(BEACON_BEAM_ID,
-                    bp.getX() + 0.5, bp.getY(), bp.getZ() + 0.5,
+                BeaconBeamRenderer.render(bp.getX() + 0.5, bp.getY(), bp.getZ() + 0.5,
                     new Color(255, 255, 255, 128), BeaconBeamRenderer.DEFAULT_HEIGHT);
-            } else {
-                BeaconBeamRenderer.removeBeam(BEACON_BEAM_ID);
             }
 
             // --- Inferno split mobs ---
-            for (int i = 0; i < BossDetector.infernoMobs.size(); i++) {
-                var mob = BossDetector.infernoMobs.get(i);
-                if (mob == null || mob.isDeadOrDying()) {
-                    BeaconBeamRenderer.removeBeam(INFERNO_BEAM_PREFIX + i);
-                    continue;
-                }
+            for (var mob : BossDetector.infernoMobs) {
+                if (mob == null || mob.isDeadOrDying()) continue;
                 applyGlowToEntity(mob, cfg.boxslayerboss);
                 if (beam) {
-                    BeaconBeamRenderer.setBeam(INFERNO_BEAM_PREFIX + i,
-                        mob.getX() + 0.5, mob.getY(), mob.getZ() + 0.5,
+                    BeaconBeamRenderer.render(mob.getX() + 0.5, mob.getY(), mob.getZ() + 0.5,
                         cfg.boxbosscolor, BeaconBeamRenderer.DEFAULT_HEIGHT);
-                } else {
-                    BeaconBeamRenderer.removeBeam(INFERNO_BEAM_PREFIX + i);
                 }
             }
 

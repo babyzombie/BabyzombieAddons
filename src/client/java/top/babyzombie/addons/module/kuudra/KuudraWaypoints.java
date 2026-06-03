@@ -15,6 +15,8 @@ import top.babyzombie.addons.util.WorldTextRenderer;
 import top.babyzombie.addons.util.WorldTextRenderer.TextEntry;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,63 +24,57 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class KuudraWaypoints {
     private KuudraWaypoints() {}
 
+    private record Beam(double x, double y, double z, float r, float g, float b, float a, float h) {}
+
     private static final Map<String, TextEntry> textEntries = new ConcurrentHashMap<>();
     private static final Set<String> seenKeys = ConcurrentHashMap.newKeySet();
-    private static boolean renderRegistered;
+    private static final List<Beam> beams = new ArrayList<>();
 
     public static void init() {
-        if (!renderRegistered) {
-            WorldRenderEvents.BEFORE_ENTITIES.register(ctx ->
-                    WorldTextRenderer.render(ctx.matrices(), textEntries.values()));
-            renderRegistered = true;
-        }
+        WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
+            WorldTextRenderer.render(ctx.matrices(), textEntries.values());
+            for (var b : beams) {
+                BeaconBeamRenderer.render(b.x, b.y, b.z,
+                    new Color(b.r, b.g, b.b, b.a), b.h);
+            }
+        });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfigManager.get().kuudra.waypoints) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (client.player == null || client.player.tickCount % 20 != 0) return;
 
-            BeaconBeamRenderer.clearAll();
+            beams.clear();
             seenKeys.clear();
             String phase = getScoreboardPhase(client);
 
             if ("Rescue supplies".equals(phase)) {
-                var giants = client.player.level().getEntitiesOfClass(Giant.class,
-                        new AABB(client.player.blockPosition()).inflate(64));
-                for (var g : giants)
-                    BeaconBeamRenderer.addBeam(g.getX() - 2.5, g.getY() + 9.5, g.getZ() + 3.0,
-                            Color.RED, 20f, 1000);
+                for (var g : client.player.level().getEntitiesOfClass(Giant.class,
+                        new AABB(client.player.blockPosition()).inflate(64)))
+                    beams.add(new Beam(g.getX()-2.5, g.getY()+9.5, g.getZ()+3.0, 1,0,0,1,20f));
             } else if ("Protect Elle".equals(phase)) {
-                var stands = client.player.level().getEntitiesOfClass(
+                for (var s : client.player.level().getEntitiesOfClass(
                         net.minecraft.world.entity.decoration.ArmorStand.class,
                         new AABB(client.player.blockPosition()).inflate(64),
                         e -> {
                             String name = ChatUtils.stripColor(e.getName().getString());
                             return name.startsWith("PROGRESS: ") && !name.endsWith("COMPLETE");
-                        });
-                for (var s : stands) {
-                    double x = s.getX() - 0.5, y = s.getY() + 0.8, z = s.getZ() - 0.5;
-                    BeaconBeamRenderer.addBeam(x, y, z, Color.RED, 10f, 1000);
+                        })) {
+                    double x = s.getX()-0.5, y = s.getY()+0.8, z = s.getZ()-0.5;
+                    beams.add(new Beam(x,y,z,1,0,0,1,10f));
                     String[] parts = ChatUtils.stripColor(s.getName().getString()).split(" ");
-                    String prog = parts.length > 1 ? parts[parts.length - 1] : "";
-                    String key = "p2_" + s.getId();
-                    seenKeys.add(key);
-                    textEntries.put(key, new TextEntry(prog, x + 0.5, y + 1.5, z + 0.5, 0xFFFF55));
+                    String key = "p2_" + s.getId(); seenKeys.add(key);
+                    textEntries.put(key, new TextEntry(parts.length>1 ? parts[parts.length-1] : "", x+0.5, y+1.5, z+0.5,0xFFFF55));
                 }
             } else {
-                var giants = client.player.level().getEntitiesOfClass(Giant.class,
-                        new AABB(client.player.blockPosition()).inflate(64));
-                for (var g : giants)
-                    BeaconBeamRenderer.addBeam(g.getX() - 2.5, g.getY() + 9.5, g.getZ() + 3.0,
-                            Color.RED, 20f, 1000);
+                for (var g : client.player.level().getEntitiesOfClass(Giant.class,
+                        new AABB(client.player.blockPosition()).inflate(64)))
+                    beams.add(new Beam(g.getX()-2.5, g.getY()+9.5, g.getZ()+3.0, 1,0,0,1,20f));
             }
 
-            var mites = client.player.level().getEntitiesOfClass(Endermite.class,
-                    new AABB(client.player.blockPosition()).inflate(64),
-                    e -> !e.isDeadOrDying());
-            for (var m : mites)
-                BeaconBeamRenderer.addBeam(m.getX(), m.getY(), m.getZ(),
-                        new Color(1f, 0f, 0f, 0.7f), 10f, 1000);
+            for (var m : client.player.level().getEntitiesOfClass(Endermite.class,
+                    new AABB(client.player.blockPosition()).inflate(64), e -> !e.isDeadOrDying()))
+                beams.add(new Beam(m.getX(),m.getY(),m.getZ(),1,0,0,0.7f,10f));
 
             textEntries.keySet().removeIf(k -> !seenKeys.contains(k));
         });

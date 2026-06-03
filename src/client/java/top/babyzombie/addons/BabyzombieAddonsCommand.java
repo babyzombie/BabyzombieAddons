@@ -37,6 +37,7 @@ public final class BabyzombieAddonsCommand {
                             .then(argument("extra", StringArgumentType.greedyString())
                                     .executes(ctx -> parseSendcoordsArgs(ctx, "LookingAt"))))
                     .then(literal("location").executes(BabyzombieAddonsCommand::location))
+                    .then(literal("scoreboard").executes(BabyzombieAddonsCommand::scoreboard))
                     .then(literal("yaw").then(argument("yaw", StringArgumentType.word())
                             .then(argument("pitch", StringArgumentType.word())
                             .executes(BabyzombieAddonsCommand::rotation))))
@@ -46,7 +47,8 @@ public final class BabyzombieAddonsCommand {
                     .then(literal("rotation").then(argument("yaw", StringArgumentType.word())
                             .then(argument("pitch", StringArgumentType.word())
                             .executes(BabyzombieAddonsCommand::rotation))))
-                    .then(literal("l").executes(ctx -> { ChatUtils.sendCommand("limbo"); return 1; }));
+                    .then(literal("l").executes(ctx -> { ChatUtils.sendCommand("limbo"); return 1; }))
+                    ;
 
 
             dispatcher.register(bza);
@@ -113,6 +115,38 @@ public final class BabyzombieAddonsCommand {
     private static int location(CommandContext<FabricClientCommandSource> ctx) {
         var loc = HypixelLocationTracker.getInstance().getCurrentLocation();
         ctx.getSource().sendFeedback(Component.literal("§b" + loc.toString()));
+        return 1;
+    }
+
+    private static int scoreboard(CommandContext<FabricClientCommandSource> ctx) {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return 1;
+        var level = player.level();
+        if (level == null) return 1;
+        var sb = level.getScoreboard();
+        var obj = sb.getDisplayObjective(net.minecraft.world.scores.DisplaySlot.BY_ID.apply(1));
+        if (obj == null) {
+            ctx.getSource().sendFeedback(Component.literal("§cNo scoreboard found"));
+            return 1;
+        }
+        var title = obj.getDisplayName().getString();
+        var sb2 = new StringBuilder();
+        sb2.append("§6§lScoreboard: §r").append(title).append('\n');
+        var lines = new java.util.TreeMap<Integer, String>(java.util.Collections.reverseOrder());
+        for (var holder : sb.getTrackedPlayers()) {
+            if (!sb.listPlayerScores(holder).containsKey(obj)) continue;
+            var team = sb.getPlayersTeam(holder.getScoreboardName());
+            if (team == null) continue;
+            String text = team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString();
+            int score = sb.listPlayerScores(holder).get(obj);
+            lines.put(score, text);
+        }
+        int i = 0;
+        for (var e : lines.entrySet()) {
+            sb2.append(i++).append(" §7[§r").append(e.getValue()).append("§7]§r\n");
+        }
+        String result = sb2.toString();
+        ctx.getSource().sendFeedback(Component.literal(result));
         return 1;
     }
 

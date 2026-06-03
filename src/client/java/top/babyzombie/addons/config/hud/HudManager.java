@@ -50,15 +50,22 @@ public final class HudManager {
     }
 
     public static void drawScaled(net.minecraft.client.gui.GuiGraphics gui, net.minecraft.client.gui.Font font, String text, int x, int y, float s) {
+        String[] lines = text.split("\n", -1);
         if (s != 1f) {
             var ps = gui.pose();
             ps.pushMatrix();
             ps.translate((float) x, (float) y);
             ps.scale(s, s);
-            gui.drawString(font, text, 0, 0, 0xFFFFFFFF, true);
+            int lineH = font.lineHeight;
+            for (int i = 0; i < lines.length; i++) {
+                gui.drawString(font, lines[i], 0, i * lineH, 0xFFFFFFFF, true);
+            }
             ps.popMatrix();
         } else {
-            gui.drawString(font, text, x, y, 0xFFFFFFFF, true);
+            int lineH = font.lineHeight;
+            for (int i = 0; i < lines.length; i++) {
+                gui.drawString(font, lines[i], x, y + i * lineH, 0xFFFFFFFF, true);
+            }
         }
     }
 

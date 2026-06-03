@@ -43,10 +43,11 @@ public final class ChestMarkers {
             if (!ModConfigManager.get().mining.chestMarkers) return;
             if (!isInCrystalHollows() || chests.isEmpty()) return;
 
+            double e = 0.02; // slight offset to avoid z-fighting
             for (var pos : chests) {
                 WorldRenderUtils.drawBoxXray(
-                    pos.getX(), pos.getY(), pos.getZ(),
-                    pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1,
+                    pos.getX() - e, pos.getY() - e, pos.getZ() - e,
+                    pos.getX() + 1 + e, pos.getY() + 1 + e, pos.getZ() + 1 + e,
                     R, G, B, A);
             }
         });

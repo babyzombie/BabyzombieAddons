@@ -58,12 +58,13 @@ public class HypixelLocationTracker {
         var uuid = Minecraft.getInstance().getUser().getProfileId().toString();
         String serverType = Objects.requireNonNull(packet.getServerType().orElse(null)).getName();
         String map = packet.getMap().orElse(null);
-        boolean inSb = "SKYBLOCK".equals(serverType);
+        boolean inSb = "SkyBlock".equals(serverType);
         var prev = currentLocation;
         currentLocation = new HypixelLocationData(
             packet.getServerName(), serverType,
             packet.getLobbyName().orElse(null), packet.getMode().orElse(null), map,
             uuid, prev.profileId(), prev.location(),
+            inSb,
             inSb && "Dungeon".equals(map),
             inSb && "Kuudra".equals(map),
             "limbo".equals(packet.getServerName()),
@@ -82,6 +83,7 @@ public class HypixelLocationTracker {
                     prev.serverName(), prev.serverType(),
                     prev.lobbyName(), prev.mode(), prev.map(),
                     uuid, profileId, prev.location(),
+                    prev.inSkyblock(),
                     prev.inDungeon(), prev.inKuudra(),
                     prev.inLimbo(), prev.skyblockDay());
         }
@@ -109,6 +111,14 @@ public class HypixelLocationTracker {
             }
         }
 
+        // Fallback: if scoreboard has no location marker (e.g. Private Island), use the API map
+        if (newLocation == null) {
+            String map = currentLocation.map();
+            if (map != null && !map.isEmpty()) {
+                newLocation = map;
+            }
+        }
+
         if (newLocation != null) {
             var prev = currentLocation;
             int day = (int)(world.getDayTime() / 24000L);
@@ -116,6 +126,7 @@ public class HypixelLocationTracker {
                     prev.serverName(), prev.serverType(),
                     prev.lobbyName(), prev.mode(), prev.map(),
                     prev.uuid(), prev.profileId(), newLocation,
+                    prev.inSkyblock(),
                     prev.inDungeon(), prev.inKuudra(),
                     prev.inLimbo(), day);
         }
@@ -132,7 +143,7 @@ public class HypixelLocationTracker {
     @Nullable public String getMode() { return currentLocation.mode(); }
     @Nullable public String getMap() { return currentLocation.map(); }
     public boolean isOnHypixel() { return currentLocation.serverName() != null; }
-    public boolean isInSkyblock() { return "SKYBLOCK".equals(currentLocation.serverType()); }
+    public boolean isInSkyblock() { return currentLocation.inSkyblock(); }
     @Nullable public String getUuid() { return currentLocation.uuid(); }
     @Nullable public String getProfileId() { return currentLocation.profileId(); }
     @Nullable public String getLocation() { return currentLocation.location(); }

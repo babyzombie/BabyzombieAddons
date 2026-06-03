@@ -29,7 +29,7 @@ public final class SignAutoRotate {
         if (!ModConfigManager.get().garden.signAutoRotate) return;
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (world.isClientSide() || !HypixelLocationTracker.getInstance().isInSkyblock())
+            if (!world.isClientSide() || !HypixelLocationTracker.getInstance().isInSkyblock())
                 return InteractionResult.PASS;
 
             if (!(world.getBlockEntity(hitResult.getBlockPos()) instanceof SignBlockEntity sign))

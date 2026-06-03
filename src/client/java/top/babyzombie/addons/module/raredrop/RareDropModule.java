@@ -21,7 +21,6 @@ public final class RareDropModule {
     private static final Map<String, ShareMode> shareList = new LinkedHashMap<>();
     private static long ignoreSoundTime;
 
-    // Exact defaults from original ChatTriggers JS
     static {
         blacklist.add("potato");
         blacklist.add("carrot");
@@ -43,24 +42,21 @@ public final class RareDropModule {
     public static void init() {
         loadLists();
 
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay || !HypixelLocationTracker.getInstance().isInSkyblock()) return;
+        // Cancel blacklisted rare drop chat messages
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay || !HypixelLocationTracker.getInstance().isInSkyblock()) return true;
             String text = ChatUtils.stripColor(message.getString());
-
-            // Match: "RARE DROP! ...", "CRAZY RARE DROP! ...", "PET DROP! ..."
             if (!text.matches(".*(RARE|VERY RARE|CRAZY RARE|INSANE|PET) (DROP|CROP)!.*"))
-                return;
+                return true;
 
             String itemName = extractName(text);
-            if (itemName == null) return;
+            if (itemName == null) return true;
 
-            // Check blacklist → suppress sound + return
             if (blacklist.contains(itemName.toLowerCase())) {
                 ignoreSoundTime = ServerTick.getTime();
-                return;
+                return false; // Cancel the message
             }
-
-            // Check share list → auto-send
+            // Auto-share
             ShareMode mode = shareList.get(itemName.toLowerCase());
             if (mode != null) {
                 String original = message.getString();
@@ -70,18 +66,22 @@ public final class RareDropModule {
                 if (mode.gc()) ChatUtils.sendCommand("gc " + original);
                 if (mode.cc()) ChatUtils.sendCommand("cc " + original);
             }
+            return true;
         });
 
-        // Suppress rare drop sound within 1s of an ignored drop
+        // Suppress rare drop sounds within 1s of an ignored drop
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {
             if (ignoreSoundTime == 0) return false;
             if (ServerTick.getTime() - ignoreSoundTime > 1000) {
                 ignoreSoundTime = 0;
                 return false;
             }
-            // Cancel rare drop notification sounds
-            String id = sound.getSound().toString();
-            return id.contains("note.pling") || id.contains("random.orb");
+            try {
+                String id = sound.getSound().toString().toLowerCase();
+                return id.contains("pling") || id.contains("orb") || id.contains("experience");
+            } catch (Exception e) {
+                return false;
+            }
         });
     }
 
@@ -129,9 +129,7 @@ public final class RareDropModule {
 
     private static String extractName(String text) {
         text = text.replaceAll(".*?(RARE|VERY RARE|CRAZY RARE|INSANE|PET) (DROP|CROP)!", "").trim();
-        // Remove magic find suffix
         text = text.replaceAll("\\(.*Magic Find.*\\)", "").trim();
-        // Remove ( +XXX% ✯ Magic Find !) patterns
         text = text.replaceAll("\\(.*[✯✦].*\\)", "").trim();
         return text.isEmpty() ? null : text;
     }

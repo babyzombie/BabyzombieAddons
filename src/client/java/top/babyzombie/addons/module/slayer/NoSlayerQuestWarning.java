@@ -61,11 +61,9 @@ public final class NoSlayerQuestWarning {
         var customData = held.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return;
         var tag = customData.copyTag();
-        if (!tag.contains("ExtraAttributes")) return;
-        var extra = tag.getCompound("ExtraAttributes").orElse(null);
-        if (extra == null || !extra.contains("champion_combat_xp")) return;
+        if (!tag.contains("champion_combat_xp")) return;
 
-        int xp = extra.getInt("champion_combat_xp").orElse(0);
+        int xp = tag.getInt("champion_combat_xp").orElse(0);
         if (xp > weaponXP) {
             ChatUtils.showTranslatableTitle("slayer.noslayerquest.warning", 0, 35, 5);
         }

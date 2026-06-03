@@ -11,6 +11,7 @@ public record HypixelLocationData(
     @Nullable String uuid,
     @Nullable String profileId,
     @Nullable String location,
+    boolean inSkyblock,
     boolean inDungeon,
     boolean inKuudra,
     boolean inLimbo,
@@ -20,17 +21,17 @@ public record HypixelLocationData(
     public HypixelLocationData(@Nullable String serverName, @Nullable String serverType,
             @Nullable String lobbyName, @Nullable String mode, @Nullable String map,
             @Nullable String uuid, @Nullable String profileId) {
-        this(serverName, serverType, lobbyName, mode, map, uuid, profileId, null, false, false, false, -1);
+        this(serverName, serverType, lobbyName, mode, map, uuid, profileId, null, false, false, false, false, -1);
     }
 
     public HypixelLocationData withUuid(String newUuid) {
         return new HypixelLocationData(serverName, serverType, lobbyName, mode, map, newUuid, profileId,
-                location, inDungeon, inKuudra, inLimbo, skyblockDay);
+                location, inSkyblock, inDungeon, inKuudra, inLimbo, skyblockDay);
     }
 
     public HypixelLocationData withProfileId(String newProfileId) {
         return new HypixelLocationData(serverName, serverType, lobbyName, mode, map, uuid, newProfileId,
-                location, inDungeon, inKuudra, inLimbo, skyblockDay);
+                location, inSkyblock, inDungeon, inKuudra, inLimbo, skyblockDay);
     }
 
     @Nullable
@@ -45,9 +46,10 @@ public record HypixelLocationData(
     @Override
     public String toString() {
         return String.format(
-                "server=%s, type=%s, lobby=%s, mode=%s, map=%s, location=%s, floor=%s, dungeon=%s, kuudra=%s, limbo=%s, day=%d, uuid=%s, profile=%s",
+                "server=%s, type=%s, lobby=%s, mode=%s, map=%s, location=%s, floor=%s, inSkyblock=%s, dungeon=%s, kuudra=%s, limbo=%s, day=%d, uuid=%s, profile=%s",
                 serverName, serverType, lobbyName, mode, map,
                 location, getFloor(),
+                inSkyblock,
                 inDungeon, inKuudra, inLimbo,
                 skyblockDay,
                 uuid != null ? uuid.substring(0, Math.min(8, uuid.length())) + "..." : "null",

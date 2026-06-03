@@ -56,9 +56,6 @@ public final class DarkMonolithFinder {
                 return;
             }
 
-            // Filter out positions far from player
-            shown.removeIf(pos -> playerPos.distanceTo(new Vec3(pos.getX(), pos.getY(), pos.getZ())) < 10);
-
             // Check if player is looking at a monolith with dragon egg
             var hit = client.hitResult;
             if (hit != null && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
@@ -103,11 +100,12 @@ public final class DarkMonolithFinder {
             var camPos = player.getEyePosition();
             var entries = new ArrayList<TextEntry>();
             for (var pos : shown) {
-                BeaconBeamRenderer.addBeam(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                        new Color(102, 0, 204, 128), 20f, 1000);
-                WorldRenderUtils.drawBox(
-                    pos.getX(), pos.getY(), pos.getZ(),
-                    pos.getX() + 1, pos.getY() + 3, pos.getZ() + 1,
+                BeaconBeamRenderer.render(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        new Color(102, 0, 204, 128), 20f);
+                double e = 0.02;
+                WorldRenderUtils.drawBoxXray(
+                    pos.getX() - e, pos.getY() - e, pos.getZ() - e,
+                    pos.getX() + 1 + e, pos.getY() + 3 + e, pos.getZ() + 1 + e,
                     0.4f, 0, 0.8f, 0.5f);
                 double dist = camPos.distanceTo(new Vec3(pos.getX(), pos.getY(), pos.getZ()));
                 String label = (shown.size() == 1 ? "§5§l* " : "§5") + "Dark Monolith §6(" + (int) dist + "m)";

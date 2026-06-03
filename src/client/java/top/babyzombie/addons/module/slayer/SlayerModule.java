@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.event.PlaySoundEvents;
-import top.babyzombie.addons.util.BeaconBeamRenderer;
 
 public final class SlayerModule {
     private SlayerModule() {}
@@ -25,21 +24,21 @@ public final class SlayerModule {
 
         // ---- Wire sound events ----
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {
-            // Detect sound by parsing toString representation
-            String raw = sound.toString();
+            // Detect sound by parsing toString representation (1.21 names)
+            String raw = sound.toString().toLowerCase();
             String name;
-            if (raw.contains("zombified_piglin") || raw.contains("zpigangry")) {
+            if (raw.contains("angry") || raw.contains("zpigangry") || raw.contains("zombified_piglin")) {
                 name = "zpigangry";
-            } else if (raw.contains("zombie.remedy")) {
+            } else if (raw.contains("remedy") || raw.contains("zombie.remedy")) {
                 name = "zombie.remedy";
-            } else if (raw.contains("generic.drink") || raw.contains("random.drink")) {
+            } else if (raw.contains("drink") || raw.contains("generic.drink")) {
                 name = "drink";
             } else {
                 return false;
             }
             PigmanSwordTimer.onSound(name);
-            ReaperArmorTimer.onSound(name, sound.getPitch());
-            return false; // Don't cancel the sound
+            try { ReaperArmorTimer.onSound(name, sound.getPitch()); } catch (Exception ignored) {}
+            return false;
         });
 
         // ---- Wire entity death for NoSlayerQuestWarning ----
@@ -81,7 +80,6 @@ public final class SlayerModule {
             EndStoneSwordTimer.time = 0;
             EndStoneSwordTimer.resistance = 0;
             EndStoneSwordTimer.damage = 0;
-            BeaconBeamRenderer.clearAll();
         });
     }
 }

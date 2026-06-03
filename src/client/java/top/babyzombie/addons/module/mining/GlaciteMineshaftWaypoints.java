@@ -195,8 +195,8 @@ public final class GlaciteMineshaftWaypoints {
                             e -> e.getName().getString().contains(player.getName().getString())
                                     && ChatUtils.stripColor(e.getName().getString()).endsWith("'s Mineshaft Portal"));
                     for (var s : stands) {
-                        BeaconBeamRenderer.addBeam(s.getX() - 0.5, s.getY(), s.getZ() - 0.5,
-                                new Color(0, 1, 1, 1), 20f, 1000);
+                        BeaconBeamRenderer.render(s.getX() - 0.5, s.getY(), s.getZ() - 0.5,
+                                new Color(0, 1, 1, 1), 20f);
                         entries.add(new TextEntry("§a" + formatTime(remaining),
                                 s.getX(), s.getY() + 1, s.getZ(), 0x55FFFF));
                     }
