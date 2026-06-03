@@ -87,6 +87,23 @@ public final class ChatUtils {
     }
 
     /**
+     * Shows a translated title with timing control.
+     */
+    public static void showTranslatableTitle(String titleKey, String subtitleKey, int fadeIn, int stay, int fadeOut) {
+        var gui = Minecraft.getInstance().gui;
+        gui.setTimes(fadeIn, stay, fadeOut);
+        gui.setTitle(titleKey != null ? Component.translatable(titleKey) : Component.empty());
+        gui.setSubtitle(subtitleKey != null ? Component.translatable(subtitleKey) : Component.empty());
+    }
+
+    /**
+     * Shows a translated title with no subtitle.
+     */
+    public static void showTranslatableTitle(String titleKey, int fadeIn, int stay, int fadeOut) {
+        showTranslatableTitle(titleKey, null, fadeIn, stay, fadeOut);
+    }
+
+    /**
      * Translates a key with args through the Minecraft i18n system.
      */
     public static String translate(String key, Object... args) {

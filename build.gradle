@@ -60,8 +60,9 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    //Hypixel Mod Api
-    include modImplementation ("net.hypixel:mod-api:${project.hypixel_mod_api_version}")
+    //Hypixel Mod Api (bundled)
+    modImplementation "net.hypixel:mod-api:${project.hypixel_mod_api_version}"
+    include "net.hypixel:mod-api:${project.hypixel_mod_api_version}"
 
     // Dandelion (bundled)
     include modImplementation("net.azureaaron:dandelion:${project.dandelion_version}")
@@ -88,7 +89,10 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
                 "minecraft_version": project.minecraft_version,
-                "loader_version": project.loader_version
+                "loader_version": project.loader_version,
+                "fabric_version": project.fabric_version,
+                "yacl_mod_version": project.yacl_mod_version,
+                "mod_menu_mod_version": project.mod_menu_mod_version
     }
 }
 

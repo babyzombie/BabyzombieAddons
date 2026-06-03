@@ -7,14 +7,13 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.HypixelLocationTracker;
-import top.babyzombie.addons.util.WorldTextRenderer;
-import top.babyzombie.addons.util.WorldTextRenderer.TextEntry;
+import top.babyzombie.addons.util.WorldRenderUtils;
 
 public final class ChestMarkers {
     private static final List<BlockPos> chests = new ArrayList<>();
+    private static final float R = 0.2f, G = 1f, B = 0.2f, A = 0.8f;
 
     private ChestMarkers() {}
 
@@ -44,11 +43,12 @@ public final class ChestMarkers {
             if (!ModConfigManager.get().mining.chestMarkers) return;
             if (!isInCrystalHollows() || chests.isEmpty()) return;
 
-            var entries = new ArrayList<TextEntry>();
             for (var pos : chests) {
-                entries.add(new TextEntry("§cChest", pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0xFF5555));
+                WorldRenderUtils.drawBoxXray(
+                    pos.getX(), pos.getY(), pos.getZ(),
+                    pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1,
+                    R, G, B, A);
             }
-            WorldTextRenderer.render(ctx.matrices(), entries);
         });
     }
 

@@ -2,19 +2,18 @@ package top.babyzombie.addons.module.mining;
 
 import java.util.ArrayList;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
-import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.WorldRenderUtils;
 import top.babyzombie.addons.util.WorldTextRenderer;
 import top.babyzombie.addons.util.WorldTextRenderer.TextEntry;
 
 public final class GreatGlaciteWaypoints {
-    // Great Glacite block positions - not in config, always GPS-like feature
     private static final double[][] POSITIONS = {
             {52, 154, 274}, {18, 164, 303}, {99, 135, 318}, {110, 139, 337}, {-32, 130, 332}
     };
+    private static final double SIZE = 2.0;
 
     private GreatGlaciteWaypoints() {}
 
@@ -25,7 +24,12 @@ public final class GreatGlaciteWaypoints {
 
             var entries = new ArrayList<TextEntry>();
             for (var p : POSITIONS) {
-                entries.add(new TextEntry("§bGreat Glacite", p[0] + 0.5, p[1], p[2] + 0.5, 0x00FFFF));
+                double x = p[0], y = p[1], z = p[2];
+                WorldRenderUtils.drawBox(
+                    x - SIZE / 2, y, z - SIZE / 2,
+                    x + SIZE / 2, y + SIZE, z + SIZE / 2,
+                    0, 1, 1, 0.6f);
+                entries.add(new TextEntry("§bGreat Glacite", x + 0.5, y + SIZE + 0.3, z + 0.5, 0x00FFFF));
             }
             WorldTextRenderer.render(ctx.matrices(), entries);
         });

@@ -2,14 +2,60 @@ package top.babyzombie.addons.module.slayer;
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
-import top.babyzombie.addons.config.hud.HudManager;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.ResolvableProfile;
+import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
-
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.ServerTick;
 
+import java.util.UUID;
+
 public final class SlayerHUD {
+
+    // Item icons
+    private static final ItemStack GUMMY_BEAR_ICON = createGummyBearIcon();
+    private static final ItemStack END_STONE_SWORD_ICON = createEndStoneSwordIcon();
+
     private SlayerHUD() {}
+
+    private static ItemStack createGummyBearIcon() {
+        var stack = new ItemStack(Items.PLAYER_HEAD);
+        var tag = new CompoundTag();
+        tag.putString("name", "");
+        var uuid = UUID.fromString("74ddb947-f95e-3d16-bfb8-8d7fdadba323");
+        tag.putIntArray("id", new int[] {
+            (int)(uuid.getMostSignificantBits() >> 32), (int)(uuid.getMostSignificantBits()),
+            (int)(uuid.getLeastSignificantBits() >> 32), (int)(uuid.getLeastSignificantBits())});
+        var props = new CompoundTag();
+        var textures = new ListTag();
+        var tex = new CompoundTag();
+        tex.putString("Value", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDMwNjU4N2VjMzhjMjQ0NmQzODlhNTgxZTA2OTE1NTZmYTU4ZmNlMGEwMmQwODQ2ZDIzZmQ2OGUzNjU2YTI0OSJ9fX0=");
+        textures.add(tex);
+        props.put("textures", textures);
+        tag.put("properties", props);
+        var profile = ResolvableProfile.CODEC.parse(NbtOps.INSTANCE, tag).result().orElse(null);
+        stack.set(DataComponents.PROFILE, profile);
+        return stack;
+    }
+
+    private static ItemStack createEndStoneSwordIcon() {
+        var stack = new ItemStack(Items.GOLDEN_SWORD);
+        var tag = new CompoundTag();
+        tag.putInt("HideFlags", 254);
+        var ea = new CompoundTag();
+        ea.putString("id", "END_STONE_SWORD");
+        tag.put("ExtraAttributes", ea);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        return stack;
+    }
 
     public static void init() {
         HudRenderCallback.EVENT.register((gui, delta) -> {
@@ -23,52 +69,127 @@ public final class SlayerHUD {
         var config = ModConfigManager.get().slayer;
         long now = ServerTick.getTime();
 
+        // ---- Slayer Boss Info ----
         if (HudManager.shouldShow("SlayerBoss")) {
             BossDetector.updateHP();
-            if (BossDetector.currentBoss != null && !BossDetector.currentBoss.isDeadOrDying() && BossDetector.bossMaxHP > 0) {
-                int pct = (int)(BossDetector.bossHP / BossDetector.bossMaxHP * 100);
-                String text = String.format("§4§l%s §c%d%% §7(%.0f/%.0f)",
-                        BossDetector.bossType.isEmpty() ? "Boss" : BossDetector.bossType, pct, BossDetector.bossHP, BossDetector.bossMaxHP);
+            if (!BossDetector.renderStr.isEmpty()) {
                 int x = HudManager.x("SlayerBoss"), y = HudManager.y("SlayerBoss");
                 float s = HudManager.scale("SlayerBoss");
-                HudManager.drawScaled(gui, font, text, x, y, s);
+                HudManager.drawScaled(gui, font, BossDetector.renderStr, x, y, s);
             }
         }
 
-        if (HudManager.shouldShow("PigmanSword") && PigmanSwordTimer.time > 0) {
-            long rem = 5000 - (now - PigmanSwordTimer.time);
-            if (rem > 0) drawHud(gui, font, "PigmanSword", "§6Pigman: " + fmt(rem));
-            else PigmanSwordTimer.time = 0;
+        // ---- Pigman Sword ----
+        if (HudManager.shouldShow("PigmanSword")) {
+            if (PigmanSwordTimer.time > 0) {
+                long rem = 5000 - (now - PigmanSwordTimer.time);
+                if (rem > 0) {
+                    HudManager.drawScaled(gui, font, "§6Pigman: §a" + BossDetector.formatTime(rem),
+                        HudManager.x("PigmanSword"), HudManager.y("PigmanSword"),
+                        HudManager.scale("PigmanSword"));
+                } else {
+                    PigmanSwordTimer.time = 0;
+                }
+            }
         }
 
-        RagnarockAxeTimer.update();
+        // ---- Holy Ice ----
+        if (HudManager.shouldShow("HolyIce")) {
+            HolyIceTimer.updateText();
+            if (!HolyIceTimer.text.isEmpty()) {
+                HudManager.drawScaled(gui, font, HolyIceTimer.text,
+                    HudManager.x("HolyIce"), HudManager.y("HolyIce"),
+                    HudManager.scale("HolyIce"));
+            }
+        }
+
+        // ---- Ragnarock Axe ----
         if (HudManager.shouldShow("RagnarockAxe")) {
-            if (RagnarockAxeTimer.castTime > now)
-                drawHud(gui, font, "RagnarockAxe", "§5Ragnarock: §b" + fmt(RagnarockAxeTimer.castTime - now));
-            else if (RagnarockAxeTimer.duration > now)
-                drawHud(gui, font, "RagnarockAxe", "§5Ragnarock: §a" + fmt(RagnarockAxeTimer.duration - now));
-            else if (RagnarockAxeTimer.cooldown > now && RagnarockAxeTimer.castTime == 0 && RagnarockAxeTimer.duration == 0 && !RagnarockAxeTimer.cancelled)
-                drawHud(gui, font, "RagnarockAxe", "§5Ragnarock: §c" + fmt(RagnarockAxeTimer.cooldown - now));
+            RagnarockAxeTimer.update();
+            if (!RagnarockAxeTimer.text.isEmpty()) {
+                HudManager.drawScaled(gui, font, RagnarockAxeTimer.text,
+                    HudManager.x("RagnarockAxe"), HudManager.y("RagnarockAxe"),
+                    HudManager.scale("RagnarockAxe"));
+            }
         }
 
-        if (HudManager.shouldShow("EndStoneSword") && EndStoneSwordTimer.active) {
-            long rem = 5000 - (now - EndStoneSwordTimer.time);
-            if (rem > 0) drawHud(gui, font, "EndStoneSword", "§eEnd Stone Sword: §a" + (int)(rem/50f) + "% §7DR");
-            else EndStoneSwordTimer.active = false;
+        // ---- Reaper Armor ----
+        if (HudManager.shouldShow("ReaperArmor")) {
+            if (ReaperArmorTimer.cooldownEnd > 0) {
+                long rNow = now;
+                String text = "§2Reaper: ";
+                if (ReaperArmorTimer.activeTime > rNow) {
+                    text += "§a" + BossDetector.formatTime(ReaperArmorTimer.activeTime - rNow);
+                } else if (ReaperArmorTimer.cooldownEnd > rNow) {
+                    text += "§e" + BossDetector.formatTime(ReaperArmorTimer.cooldownEnd - rNow);
+                } else {
+                    ReaperArmorTimer.activeTime = 0;
+                    ReaperArmorTimer.cooldownEnd = 0;
+                    text = "";
+                }
+                if (!text.isEmpty()) {
+                    HudManager.drawScaled(gui, font, text,
+                        HudManager.x("ReaperArmor"), HudManager.y("ReaperArmor"),
+                        HudManager.scale("ReaperArmor"));
+                }
+            }
         }
 
-        if (HudManager.shouldShow("ReaperArmor") && ReaperArmorTimer.time > 0) {
-            long rem = 15000 - (now - ReaperArmorTimer.time);
-            if (rem > 0) drawHud(gui, font, "ReaperArmor", "§8Reaper Armor: §a" + fmt(rem));
-            else ReaperArmorTimer.time = 0;
+        // ---- End Stone Sword ----
+        if (HudManager.shouldShow("EndStoneSword")) {
+            if (EndStoneSwordTimer.isActive()) {
+                int x = HudManager.x("EndStoneSword"), y = HudManager.y("EndStoneSword");
+                float s = HudManager.scale("EndStoneSword");
+                long rem = EndStoneSwordTimer.time - now;
+
+                // Draw sword icon
+                gui.renderItem(END_STONE_SWORD_ICON, x, y);
+
+                // Draw resistance + time text beside the icon
+                int tx = x + 18, ty = y + 4;
+                var ps = gui.pose();
+                ps.pushMatrix();
+                ps.translate((float)tx, (float)ty);
+                ps.scale(s, s);
+                gui.drawString(font, String.format("§a❈ %d%%", EndStoneSwordTimer.resistance), 0, 0, 0xFFFFFFFF, true);
+                gui.drawString(font, "§e" + BossDetector.formatTime(rem), 0, (int)(9 * s), 0xFFFFFFFF, true);
+                ps.popMatrix();
+            }
+        }
+
+        // ---- Reheated Gummy Polar Bear ----
+        if (HudManager.shouldShow("ReheatedGummyPolarBear")) {
+            var cfg = config.reheatedGummyPolarBear;
+            if (cfg != ModConfig.GummyPolarBearMode.OFF) {
+                var tracker2 = HypixelLocationTracker.getInstance();
+                if (!tracker2.isInDungeon() && !"The Rift".equals(tracker2.getMap())) {
+                    if (cfg == ModConfig.GummyPolarBearMode.EVERYWHERE_EXCEPT_DUNGEON
+                            || "Smoldering Tomb".equals(tracker2.getLocation())) {
+                        String profileId = tracker2.getProfileId();
+                        if (profileId != null) {
+                            String timeStr = ReheatedGummyPolarBearTimer.getTimeString(profileId);
+                            if (!timeStr.isEmpty()) {
+                                int x = HudManager.x("ReheatedGummyPolarBear");
+                                int y = HudManager.y("ReheatedGummyPolarBear");
+                                float s = HudManager.scale("ReheatedGummyPolarBear");
+
+                                // Draw the skull icon
+                                gui.renderItem(GUMMY_BEAR_ICON, x, y);
+
+                                // Draw time text offset to the right of the icon
+                                int textX = x + 18; // 16px icon + 2px gap
+                                int textY = y + 4;  // centred vertically
+                                var ps2 = gui.pose();
+                                ps2.pushMatrix();
+                                ps2.translate((float)textX, (float)textY);
+                                ps2.scale(s, s);
+                                gui.drawString(font, "§a" + timeStr, 0, 0, 0xFFFFFFFF, true);
+                                ps2.popMatrix();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-
-    private static void drawHud(net.minecraft.client.gui.GuiGraphics gui, net.minecraft.client.gui.Font font, String key, String text) {
-        int x = HudManager.x(key), y = HudManager.y(key);
-        float s = HudManager.scale(key);
-        HudManager.drawScaled(gui, font, text, x, y, s);
-    }
-
-    private static String fmt(long ms) { long s = ms / 1000, m = (ms % 1000) / 10; return String.format("%d.%02ds", s, m); }
 }

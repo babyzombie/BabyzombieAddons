@@ -14,6 +14,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.BeaconBeamRenderer;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.WorldRenderUtils;
 import top.babyzombie.addons.util.WorldTextRenderer;
 import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.WorldTextRenderer.TextEntry;
@@ -104,9 +105,13 @@ public final class DarkMonolithFinder {
             for (var pos : shown) {
                 BeaconBeamRenderer.addBeam(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         new Color(102, 0, 204, 128), 20f, 1000);
+                WorldRenderUtils.drawBox(
+                    pos.getX(), pos.getY(), pos.getZ(),
+                    pos.getX() + 1, pos.getY() + 3, pos.getZ() + 1,
+                    0.4f, 0, 0.8f, 0.5f);
                 double dist = camPos.distanceTo(new Vec3(pos.getX(), pos.getY(), pos.getZ()));
                 String label = (shown.size() == 1 ? "§5§l* " : "§5") + "Dark Monolith §6(" + (int) dist + "m)";
-                entries.add(new TextEntry(label, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0xAA00CC));
+                entries.add(new TextEntry(label, pos.getX() + 0.5, pos.getY() + 3.5, pos.getZ() + 0.5, 0xAA00CC));
             }
             WorldTextRenderer.render(ctx.matrices(), entries);
         });

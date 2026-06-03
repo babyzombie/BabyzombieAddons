@@ -102,6 +102,14 @@ public final class HudEditScreen extends Screen {
     }
 
     @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            selected = null;
+        }
+        return super.mouseReleased(event);
+    }
+
+    @Override
     public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
         for (var e : HudManager.elements.values()) {
             if (!showElement(e)) continue;

@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.ServerTick;
 
@@ -81,14 +82,8 @@ public final class ChGetFromSacks {
         for (int i = 0; i < inv.getContainerSize(); i++) {
             var stack = inv.getItem(i);
             if (!stack.isEmpty()) {
-                var customData = stack.getComponents().get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-                if (customData == null) continue;
-                var tag = customData.copyTag();
-                if (tag != null) {
-                    var ea = tag.getCompound("ExtraAttributes").orElse(null);
-                    if (ea != null && sbid.equals(ea.getString("id").orElse(""))) {
-                        return true;
-                    }
+                if (sbid.equals(ItemUtils.getSkyblockId(stack))) {
+                    return true;
                 }
             }
         }

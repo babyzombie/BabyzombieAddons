@@ -10,6 +10,15 @@ public class ModConfig {
     public enum HpDisplayMode { OFF, HUD, BOSSBAR }
     public enum MineshaftWarpMode { OFF, TITLE_ONLY, TITLE_AND_SOUND, SEND_PTME, PTME_AND_WARP }
 
+    // Slayer info levels
+    public enum SlayerInfoLevel0_2 { OFF, HP_ONLY, HP_AND_STATUS }
+    public enum SlayerInfoLevel0_1 { OFF, HP_ONLY }
+    public enum SlayerInfoLevel0_3 { OFF, HP_ONLY, HP_AND_STATUS, HP_STATUS_REPEAT }
+    public enum BoxSlayerMode { OFF, GLOW, GLOW_AND_BEAM }
+    public enum GummyPolarBearMode { OFF, SMOLDERING_TOMB_ONLY, EVERYWHERE_EXCEPT_DUNGEON }
+    public enum RagnarockAxeMode { OFF, NUMERIC, PROGRESS_BAR }
+    public enum EndStoneSwordMode { OFF, TIMER_ONLY, PREVENT_REUSE, BOTH }
+
     public GeneralConfig general = new GeneralConfig();
     public DungeonConfig dungeon = new DungeonConfig();
     public KuudraConfig kuudra = new KuudraConfig();
@@ -68,10 +77,25 @@ public class ModConfig {
 
     public static class SlayerConfig {
         public boolean pigmanSwordTimer = false;
-        public boolean ragnarockAxeTimer = false;
+        public boolean holyIceTimer = false;
+        public RagnarockAxeMode ragnarockAxeTimer = RagnarockAxeMode.OFF;
         public boolean reaperArmorTimer = false;
-        public boolean endStoneSwordTimer = false;
+        public EndStoneSwordMode endStoneSwordTimer = EndStoneSwordMode.OFF;
         public boolean bossInfoHUD = false;
+
+        public boolean noslayerquest = false;
+        public GummyPolarBearMode reheatedGummyPolarBear = GummyPolarBearMode.OFF;
+        public BoxSlayerMode boxslayerboss = BoxSlayerMode.OFF;
+        public java.awt.Color boxbosscolor = new java.awt.Color(255, 0, 0, 255);
+        public boolean boxLowHPBloodfiend = false;
+        public boolean showEffigies = false;
+
+        public SlayerInfoLevel0_2 zombieSlayerInfo = SlayerInfoLevel0_2.HP_AND_STATUS;
+        public SlayerInfoLevel0_2 spiderSlayerInfo = SlayerInfoLevel0_2.HP_AND_STATUS;
+        public SlayerInfoLevel0_2 wolfSlayerInfo = SlayerInfoLevel0_2.HP_AND_STATUS;
+        public SlayerInfoLevel0_2 endermanSlayerInfo = SlayerInfoLevel0_2.HP_AND_STATUS;
+        public SlayerInfoLevel0_3 blazeSlayerInfo = SlayerInfoLevel0_3.HP_AND_STATUS;
+        public SlayerInfoLevel0_2 vampireSlayerInfo = SlayerInfoLevel0_2.HP_AND_STATUS;
     }
 
     public static class WitherCloakConfig {

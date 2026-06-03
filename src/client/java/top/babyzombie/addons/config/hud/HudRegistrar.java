@@ -12,22 +12,31 @@ public final class HudRegistrar {
                 "§6Pigman: §a2.50s",
                 "config.babyzombieaddons.option.pigmanSwordTimer",
                 () -> get().slayer.pigmanSwordTimer);
+        HudManager.register("HolyIce", 50, 100, 1.5f,
+                "§bHoly Ice: §a1.250s",
+                "config.babyzombieaddons.option.holyIceTimer",
+                () -> get().slayer.holyIceTimer);
         HudManager.register("RagnarockAxe", 50, 50, 1.5f,
                 "§5Ragnarock: §b2.80s",
                 "config.babyzombieaddons.option.ragnarockAxeTimer",
-                () -> get().slayer.ragnarockAxeTimer);
+                () -> get().slayer.ragnarockAxeTimer != ModConfig.RagnarockAxeMode.OFF);
         HudManager.register("ReaperArmor", 60, 50, 1.5f,
                 "§8Reaper Armor: §a10.00s",
                 "config.babyzombieaddons.option.reaperArmorTimer",
                 () -> get().slayer.reaperArmorTimer);
         HudManager.register("EndStoneSword", 60, 60, 1.0f,
-                "§eEnd Stone Sword: §a100% §7DR",
+                "     §a❈ 50%\n     §e3.14s",
                 "config.babyzombieaddons.option.endStoneSwordTimer",
-                () -> get().slayer.endStoneSwordTimer);
+                () -> get().slayer.endStoneSwordTimer != ModConfig.EndStoneSwordMode.OFF);
         HudManager.register("SlayerBoss", 190, 100, 1.5f,
                 "§4§lRevenant V §c100% §7(1.5M/1.5M)",
                 "config.babyzombieaddons.option.bossInfoHUD",
                 () -> get().slayer.bossInfoHUD);
+
+        HudManager.register("ReheatedGummyPolarBear", 80, 80, 1.0f,
+                "    §a12:34",
+                "config.babyzombieaddons.option.reheatedGummyPolarBear",
+                () -> get().slayer.reheatedGummyPolarBear != ModConfig.GummyPolarBearMode.OFF);
 
         // --- Kuudra ---
         HudManager.register("KuudraHP", 200, 20, 2.0f,
@@ -48,11 +57,22 @@ public final class HudRegistrar {
                 () -> get().kuudra.directionIndicator);
 
         // --- Wither Cloak ---
-        HudManager.register("WitherCloak", 120, 100, 1.0f,
-                "§a§lWither Cloak\n§aactivated 5.00s\n§1§lSoulward§7:§r §a3.50s\n§a§laligned §r§61.23s §a|||\n§e§lby §r§ayourself\n§5§lGravity Storm §r§b24.12s",
-                "config.babyzombieaddons.group.witherCloak",
-                () -> get().witherCloak.witherCloakTimer || get().witherCloak.soulwardTimer
-                        || get().witherCloak.alignedTimer || get().witherCloak.gravityStormTimer);
+        HudManager.register("WitherCloakTimer", 120, 100, 1.0f,
+                "§a§lWither Cloak\n§aactivated 5.00s",
+                "config.babyzombieaddons.option.witherCloakTimer",
+                () -> get().witherCloak.witherCloakTimer);
+        HudManager.register("SoulwardTimer", 120, 140, 1.0f,
+                "§1§lSoulward§7:§r §a3.50s",
+                "config.babyzombieaddons.option.soulwardTimer",
+                () -> get().witherCloak.soulwardTimer);
+        HudManager.register("AlignedTimer", 120, 160, 1.0f,
+                "§a§laligned §r§61.23s §a|||\n§e§lby §r§ayourself",
+                "config.babyzombieaddons.option.alignedTimer",
+                () -> get().witherCloak.alignedTimer);
+        HudManager.register("GravityStormTimer", 120, 200, 1.0f,
+                "§5§lGravity Storm §r§b24.12s",
+                "config.babyzombieaddons.option.gravityStormTimer",
+                () -> get().witherCloak.gravityStormTimer);
 
         // --- Mining ---
         HudManager.register("SuspiciousScrap", 400, 110, 1.0f,

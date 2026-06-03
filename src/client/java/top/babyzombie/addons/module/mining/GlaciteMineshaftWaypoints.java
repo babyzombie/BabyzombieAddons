@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.AABB;
+import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.config.ModConfig.MineshaftWarpMode;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.BeaconBeamRenderer;
@@ -84,13 +85,8 @@ public final class GlaciteMineshaftWaypoints {
             for (var stand : stands) {
                 var helm = stand.getItemBySlot(EquipmentSlot.HEAD);
                 if (helm.isEmpty()) continue;
-                var customData = helm.getComponents().get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-                if (customData == null) continue;
-                var tag = customData.copyTag();
-                if (tag == null) continue;
-                var ea = tag.getCompound("ExtraAttributes").orElse(null);
-                if (ea == null) continue;
-                String id = ea.getString("id").orElse("");
+                String id = ItemUtils.getSkyblockId(helm);
+                if (id == null) continue;
                 String name = switch (id) {
                     case "LAPIS_ARMOR_LEGGINGS" -> "§bLapis";
                     case "ARMOR_OF_YOG_LEGGINGS" -> "§6Umber";
