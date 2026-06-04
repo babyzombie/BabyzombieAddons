@@ -1,5 +1,6 @@
 package top.babyzombie.addons.module.mining;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -16,14 +17,14 @@ import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.config.ModConfig.MineshaftWarpMode;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.BeaconBeamRenderer;
+import top.babyzombie.addons.util.BeaconStateInjector;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.PartyTracker;
 import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.WorldTextRenderer;
-import top.babyzombie.addons.util.WorldTextRenderer.TextEntry;
+
 
 import java.awt.Color;
 
@@ -179,17 +180,16 @@ public final class GlaciteMineshaftWaypoints {
         // World render
         WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
             var t = HypixelLocationTracker.getInstance();
-            var entries = new ArrayList<TextEntry>();
 
             // Exit/corpse waypoints in mineshaft
             if (t.isInSkyblock() && "Mineshaft".equals(t.getMap())) {
-                for (var e : exits) entries.add(new TextEntry(e.label, e.x, e.y, e.z, 0xFFFF55));
+                for (var e : exits)
+                    WorldTextRenderer.renderString(ctx.matrices(), e.label, e.x, e.y, e.z, 0xFFFF55, 0.025f);
             }
 
             // Portal timer in Dwarven Mines
             if (t.isInSkyblock() && "Dwarven Mines".equals(t.getMap()) && portalTimer > ServerTick.getTime()) {
                 long remaining = portalTimer - ServerTick.getTime();
-                // Find portal stand and render beam
                 var player = Minecraft.getInstance().player;
                 if (player != null) {
                     var stands = player.level().getEntitiesOfClass(ArmorStand.class,
@@ -197,15 +197,13 @@ public final class GlaciteMineshaftWaypoints {
                             e -> e.getName().getString().contains(player.getName().getString())
                                     && ChatUtils.stripColor(e.getName().getString()).endsWith("'s Mineshaft Portal"));
                     for (var s : stands) {
-                        BeaconBeamRenderer.render(s.getX() - 0.5, s.getY(), s.getZ() - 0.5,
+                        BeaconStateInjector.addBeam(s.getX() - 0.5, s.getY(), s.getZ() - 0.5,
                                 new Color(0, 1, 1, 1), 20f);
-                        entries.add(new TextEntry("§a" + formatTime(remaining),
-                                s.getX(), s.getY() + 1, s.getZ(), 0x55FFFF));
+                        WorldTextRenderer.renderString(ctx.matrices(), "§a" + formatTime(remaining),
+                                s.getX(), s.getY() + 1, s.getZ(), 0x55FFFF, 0.025f);
                     }
                 }
             }
-
-            WorldTextRenderer.render(ctx.matrices(), entries);
         });
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {

@@ -8,13 +8,14 @@ import net.minecraft.world.entity.monster.Giant;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.DisplaySlot;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.BeaconBeamRenderer;
+import top.babyzombie.addons.util.BeaconStateInjector;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.WorldTextRenderer;
-import top.babyzombie.addons.util.WorldTextRenderer.TextEntry;
+
 
 import java.awt.Color;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,15 +27,17 @@ public final class KuudraWaypoints {
 
     private record Beam(double x, double y, double z, float r, float g, float b, float a, float h) {}
 
-    private static final Map<String, TextEntry> textEntries = new ConcurrentHashMap<>();
+    private record TextData(String text, double x, double y, double z, int color) {}
+    private static final Map<String, TextData> textEntries = new ConcurrentHashMap<>();
     private static final Set<String> seenKeys = ConcurrentHashMap.newKeySet();
     private static final List<Beam> beams = new ArrayList<>();
 
     public static void init() {
         WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
-            WorldTextRenderer.render(ctx.matrices(), textEntries.values());
+            for (var t : textEntries.values())
+                WorldTextRenderer.renderString(ctx.matrices(), t.text, t.x, t.y, t.z, t.color, 0.025f);
             for (var b : beams) {
-                BeaconBeamRenderer.render(b.x, b.y, b.z,
+                BeaconStateInjector.addBeam(b.x, b.y, b.z,
                     new Color(b.r, b.g, b.b, b.a), b.h);
             }
         });
@@ -64,7 +67,7 @@ public final class KuudraWaypoints {
                     beams.add(new Beam(x,y,z,1,0,0,1,10f));
                     String[] parts = ChatUtils.stripColor(s.getName().getString()).split(" ");
                     String key = "p2_" + s.getId(); seenKeys.add(key);
-                    textEntries.put(key, new TextEntry(parts.length>1 ? parts[parts.length-1] : "", x+0.5, y+1.5, z+0.5,0xFFFF55));
+                    textEntries.put(key, new TextData(parts.length>1 ? parts[parts.length-1] : "", x+0.5, y+1.5, z+0.5,0xFFFF55));
                 }
             } else {
                 for (var g : client.player.level().getEntitiesOfClass(Giant.class,

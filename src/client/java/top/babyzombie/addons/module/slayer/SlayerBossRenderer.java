@@ -8,7 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.BeaconBeamRenderer;
+import top.babyzombie.addons.util.BeaconStateInjector;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.WorldRenderUtils;
 
@@ -32,15 +32,15 @@ public final class SlayerBossRenderer {
             boolean beam = cfg.boxslayerboss == ModConfig.BoxSlayerMode.GLOW_AND_BEAM;
             var boss = BossDetector.currentBoss;
             if (beam && boss != null && !boss.isDeadOrDying()) {
-                BeaconBeamRenderer.render(boss.getX() + 0.5, boss.getY(), boss.getZ() + 0.5,
-                    cfg.boxbosscolor, BeaconBeamRenderer.DEFAULT_HEIGHT);
+                BeaconStateInjector.addBeam(boss.getX() + 0.5, boss.getY(), boss.getZ() + 0.5,
+                    cfg.boxbosscolor, 300f);
             }
 
             // --- Voidgloom beacon beam ---
             if (BossDetector.beacon.loc != null) {
                 var bp = BossDetector.beacon.loc;
-                BeaconBeamRenderer.render(bp.getX() + 0.5, bp.getY(), bp.getZ() + 0.5,
-                    new Color(255, 255, 255, 128), BeaconBeamRenderer.DEFAULT_HEIGHT);
+                BeaconStateInjector.addBeam(bp.getX() + 0.5, bp.getY(), bp.getZ() + 0.5,
+                    new Color(255, 255, 255, 128), 300f);
             }
 
             // --- Inferno split mobs ---
@@ -48,8 +48,8 @@ public final class SlayerBossRenderer {
                 if (mob == null || mob.isDeadOrDying()) continue;
                 applyGlowToEntity(mob, cfg.boxslayerboss);
                 if (beam) {
-                    BeaconBeamRenderer.render(mob.getX() + 0.5, mob.getY(), mob.getZ() + 0.5,
-                        cfg.boxbosscolor, BeaconBeamRenderer.DEFAULT_HEIGHT);
+                    BeaconStateInjector.addBeam(mob.getX() + 0.5, mob.getY(), mob.getZ() + 0.5,
+                        cfg.boxbosscolor, 300f);
                 }
             }
 

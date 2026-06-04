@@ -1,5 +1,6 @@
 package top.babyzombie.addons.module.mining;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,13 +12,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.BeaconBeamRenderer;
+import top.babyzombie.addons.util.BeaconStateInjector;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.WorldRenderUtils;
 import top.babyzombie.addons.util.WorldTextRenderer;
 import top.babyzombie.addons.util.ServerTick;
-import top.babyzombie.addons.util.WorldTextRenderer.TextEntry;
+
 
 import java.awt.Color;
 
@@ -98,9 +99,8 @@ public final class DarkMonolithFinder {
             var player = Minecraft.getInstance().player;
             if (player == null) return;
             var camPos = player.getEyePosition();
-            var entries = new ArrayList<TextEntry>();
             for (var pos : shown) {
-                BeaconBeamRenderer.render(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                BeaconStateInjector.addBeam(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         new Color(102, 0, 204, 128), 20f);
                 double e = 0.02;
                 WorldRenderUtils.drawBoxXray(
@@ -109,9 +109,8 @@ public final class DarkMonolithFinder {
                     0.4f, 0, 0.8f, 0.5f);
                 double dist = camPos.distanceTo(new Vec3(pos.getX(), pos.getY(), pos.getZ()));
                 String label = (shown.size() == 1 ? "§5§l* " : "§5") + "Dark Monolith §6(" + (int) dist + "m)";
-                entries.add(new TextEntry(label, pos.getX() + 0.5, pos.getY() + 3.5, pos.getZ() + 0.5, 0xAA00CC));
+                WorldTextRenderer.renderString(ctx.matrices(), label, pos.getX() + 0.5, pos.getY() + 3.5, pos.getZ() + 0.5, 0xAA00CC, 0.025f);
             }
-            WorldTextRenderer.render(ctx.matrices(), entries);
         });
     }
 

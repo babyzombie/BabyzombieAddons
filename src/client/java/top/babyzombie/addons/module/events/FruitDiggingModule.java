@@ -1,5 +1,6 @@
 package top.babyzombie.addons.module.events;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.WorldTextRenderer;
-import top.babyzombie.addons.util.WorldTextRenderer.TextEntry;
+
 
 public final class FruitDiggingModule {
 
@@ -170,14 +171,12 @@ public final class FruitDiggingModule {
             int total = fruits.size() + treasures.size() + bombs.size();
             if (total == 0) return;
 
-            var entries = new ArrayList<TextEntry>();
             for (var m : bombs)
-                entries.add(new TextEntry(m.label, m.x + 0.5, 74.7, m.z + 0.5, 0xFF5555));
+                WorldTextRenderer.renderString(ctx.matrices(), m.label, m.x + 0.5, 74.7, m.z + 0.5, 0xFF5555, 0.025f);
             for (var m : treasures)
-                entries.add(new TextEntry(m.label, m.x + 0.5, 74.5, m.z + 0.5, 0xFFFF55));
+                WorldTextRenderer.renderString(ctx.matrices(), m.label, m.x + 0.5, 74.5, m.z + 0.5, 0xFFFF55, 0.025f);
             for (var m : fruits)
-                entries.add(new TextEntry(m.label, m.x - 0.5, 74.3, m.z - 0.5, 0xFFFFFF));
-            WorldTextRenderer.render(ctx.matrices(), entries);
+                WorldTextRenderer.renderString(ctx.matrices(), m.label, m.x - 0.5, 74.3, m.z - 0.5, 0xFFFFFF, 0.025f);
         });
     }
 
