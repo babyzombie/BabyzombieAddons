@@ -55,7 +55,10 @@ public final class KuudraLocationTracker {
             var cubes = client.player.level().getEntitiesOfClass(MagmaCube.class,
                     new AABB(client.player.blockPosition()).inflate(128),
                     e -> e.getSize() == 30);
-            if (!cubes.isEmpty()) kuudraEntity = cubes.getFirst();
+            if (!cubes.isEmpty()) {
+                cubes.sort((a, b) -> Double.compare(b.getY(), a.getY()));
+                kuudraEntity = cubes.getFirst();
+            }
         }
 
         // HP优先从岩浆怪取；岩浆怪死了则从凋零BossBar反算

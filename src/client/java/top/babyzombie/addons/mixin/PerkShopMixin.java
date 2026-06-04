@@ -20,7 +20,7 @@ public abstract class PerkShopMixin {
     private void beforeMouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl, CallbackInfoReturnable<Boolean> cir) {
         if (ContainerClickEvents.BEFORE_MOUSE_CLICK.invoker()
                 .beforeMouseClick((AbstractContainerScreen<?>) (Object) this, hoveredSlot)) {
-            cir.cancel();
+            cir.setReturnValue(false);
         }
     }
 }

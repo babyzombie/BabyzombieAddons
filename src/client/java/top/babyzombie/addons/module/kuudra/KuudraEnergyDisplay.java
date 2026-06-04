@@ -3,8 +3,10 @@ package top.babyzombie.addons.module.kuudra;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.config.hud.HudManager;
@@ -48,14 +50,16 @@ public final class KuudraEnergyDisplay {
             }
         });
 
-        HudRenderCallback.EVENT.register((gui, delta) -> {
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "kuudra_energy"),
+                (context, tickCounter) -> {
             if (!ModConfigManager.get().kuudra.energyDisplay) return;
             if (!KuudraLocationTracker.inKuudra || fuel < 0 || "p4".equals(KuudraLocationTracker.area)) return;
             var font = Minecraft.getInstance().font;
             int x = HudManager.x("EnergyCharge"), y = HudManager.y("EnergyCharge");
             float s = HudManager.scale("EnergyCharge");
             String text = ChatUtils.translate("kuudra.energy", fuel);
-            HudManager.drawScaled(gui, font, text, x, y, s);
+            HudManager.drawScaled(context, font, text, x, y, s);
         });
     }
 

@@ -1,8 +1,10 @@
 package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
@@ -41,7 +43,9 @@ public final class KuudraStunTimer {
             }
         });
 
-        HudRenderCallback.EVENT.register((gui, delta) -> {
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "kuudra_stun_timer"),
+                (context, tickCounter) -> {
             if (!ModConfigManager.get().kuudra.stunTimer) return;
             long now = ServerTick.getTime();
             var font = Minecraft.getInstance().font;
@@ -58,7 +62,7 @@ public final class KuudraStunTimer {
             if (text != null) {
                 int x = HudManager.x("KuudraStun"), y = HudManager.y("KuudraStun");
                 float s = HudManager.scale("KuudraStun");
-                HudManager.drawScaled(gui, font, text, x, y, s);
+                HudManager.drawScaled(context, font, text, x, y, s);
             }
         });
     }

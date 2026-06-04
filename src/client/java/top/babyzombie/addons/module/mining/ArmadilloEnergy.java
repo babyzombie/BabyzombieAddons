@@ -4,8 +4,10 @@ import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.util.ChatUtils;
@@ -67,7 +69,9 @@ public final class ArmadilloEnergy {
         });
 
         // HUD overlay
-        HudRenderCallback.EVENT.register((gui, delta) -> {
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "armadillo_energy"),
+                (context, tickCounter) -> {
             if (!ModConfigManager.get().mining.armadilloEnergy) return;
             if (!isInCrystalHollows() || !hasDillo || energyMax == 0) return;
             if (energyNow >= energyMax) return;
@@ -77,7 +81,7 @@ public final class ArmadilloEnergy {
             int x = HudManager.x("ArmadilloEnergy");
             int y = HudManager.y("ArmadilloEnergy");
             float s = HudManager.scale("ArmadilloEnergy");
-            HudManager.drawScaled(gui, font, text, x, y, s);
+            HudManager.drawScaled(context, font, text, x, y, s);
         });
     }
 

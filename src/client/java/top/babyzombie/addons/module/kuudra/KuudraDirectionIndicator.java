@@ -1,6 +1,7 @@
 package top.babyzombie.addons.module.kuudra;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -13,7 +14,9 @@ public final class KuudraDirectionIndicator {
             Identifier.fromNamespaceAndPath("babyzombieaddons", "textures/gui/magmacube.png");
 
     public static void init() {
-        HudRenderCallback.EVENT.register((gui, delta) -> {
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "kuudra_dir"),
+                (context, tickCounter) -> {
             if (!ModConfigManager.get().kuudra.directionIndicator) return;
 
             var e = KuudraLocationTracker.kuudraEntity;
@@ -43,7 +46,7 @@ public final class KuudraDirectionIndicator {
             int ox = (int) (-dist * Math.sin(yawRad));
             int oy = (int) (-dist * Math.cos(yawRad));
             int sz = Math.max(1, (int) (12 * HudManager.scale("KuudraDir")));
-            gui.blit(ICON, cx + ox - sz / 2, cy + oy - sz / 2, 0, 0, sz, sz, sz, sz);
+            context.blit(ICON, cx + ox - sz / 2, cy + oy - sz / 2, 0, 0, sz, sz, sz, sz);
         });
     }
 }

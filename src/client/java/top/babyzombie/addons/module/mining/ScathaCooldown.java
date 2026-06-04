@@ -1,8 +1,10 @@
 package top.babyzombie.addons.module.mining;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 
@@ -26,7 +28,9 @@ public final class ScathaCooldown {
             }
         });
 
-        HudRenderCallback.EVENT.register((gui, delta) -> {
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "scatha_cooldown"),
+                (context, tickCounter) -> {
             if (!ModConfigManager.get().mining.scathaCooldown) return;
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock() || !"Crystal Hollows".equals(tracker.getMap())) return;
@@ -40,7 +44,7 @@ public final class ScathaCooldown {
             float s = HudManager.scale("ScathaCooldown");
             long remaining = 30_000 - elapsed;
             String text = String.format("§5§lScatha: §8§l%d.%03ds", remaining / 1000, remaining % 1000);
-            HudManager.drawScaled(gui, font, text, x, y, s);
+            HudManager.drawScaled(context, font, text, x, y, s);
         });
     }
 }

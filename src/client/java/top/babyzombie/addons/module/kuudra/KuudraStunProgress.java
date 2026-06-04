@@ -1,8 +1,10 @@
 package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.config.hud.HudManager;
@@ -31,7 +33,9 @@ public final class KuudraStunProgress {
             if (!stands.isEmpty()) stun[3] = ChatUtils.stripColor(stands.get(0).getName().getString());
         });
 
-        HudRenderCallback.EVENT.register((gui, delta) -> {
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "kuudra_stun_progress"),
+                (context, tickCounter) -> {
             if (!ModConfigManager.get().kuudra.stunTimer) return;
             if (stun[0].isEmpty() && stun[1].isEmpty() && stun[2].isEmpty()) return;
 
@@ -39,7 +43,7 @@ public final class KuudraStunProgress {
             int x = HudManager.x("KuudraStun"), y = HudManager.y("KuudraStun");
             float s = HudManager.scale("KuudraStun");
             String text = "      " + stun[0] + "\n  " + stun[1] + "  " + stun[2] + "\n" + stun[3];
-            HudManager.drawScaled(gui, font, text, x, y, s);
+            HudManager.drawScaled(context, font, text, x, y, s);
         });
     }
 

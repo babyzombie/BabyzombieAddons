@@ -1,8 +1,10 @@
 package top.babyzombie.addons.module.slayer;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -58,9 +60,11 @@ public final class SlayerHUD {
     }
 
     public static void init() {
-        HudRenderCallback.EVENT.register((gui, delta) -> {
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "slayer_hud"),
+                (context, tickCounter) -> {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
-            render(gui);
+            render(context);
         });
     }
 

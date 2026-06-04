@@ -1,8 +1,10 @@
 package top.babyzombie.addons.module.mining;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 
@@ -25,14 +27,16 @@ public final class SuspiciousScrapCounter {
             }
         });
 
-        HudRenderCallback.EVENT.register((gui, delta) -> {
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "suspicious_scrap"),
+                (context, tickCounter) -> {
             if (!ModConfigManager.get().mining.suspiciousScrapCounter) return;
             if (count <= 0) return;
             var font = Minecraft.getInstance().font;
             int x = HudManager.x("SuspiciousScrap"), y = HudManager.y("SuspiciousScrap");
             float s = HudManager.scale("SuspiciousScrap");
             String color = count >= 5 ? "§a" : "§e";
-            HudManager.drawScaled(gui, font, "§6Scraps: " + color + count + "/5", x, y, s);
+            HudManager.drawScaled(context, font, "§6Scraps: " + color + count + "/5", x, y, s);
         });
     }
 }

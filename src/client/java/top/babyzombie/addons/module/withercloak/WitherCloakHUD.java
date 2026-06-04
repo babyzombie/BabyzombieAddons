@@ -1,7 +1,9 @@
 package top.babyzombie.addons.module.withercloak;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.HypixelLocationTracker;
@@ -11,9 +13,11 @@ public final class WitherCloakHUD {
     private WitherCloakHUD() {}
 
     public static void init() {
-        HudRenderCallback.EVENT.register((gui, delta) -> {
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "wither_cloak_hud"),
+                (context, tickCounter) -> {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
-            render(gui);
+            render(context);
         });
     }
 

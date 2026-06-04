@@ -20,11 +20,12 @@ public final class HudManager {
             .resolve("babyzombieaddons").resolve("hud.json");
 
     static final Map<String, HudElement> elements = new LinkedHashMap<>();
+    private static Map<String, float[]> loaded;
 
     private HudManager() {}
 
     public static void init() {
-        load();
+        loaded = loadRaw();
     }
 
     public static void register(String name, int defaultX, int defaultY, float defaultScale,
@@ -33,6 +34,14 @@ public final class HudManager {
         HudElement e = new HudElement();
         e.name = name; e.x = defaultX; e.y = defaultY; e.scale = defaultScale;
         e.demoText = demoText; e.labelKey = labelKey; e.showCondition = showCondition;
+        if (loaded != null) {
+            float[] saved = loaded.get(name);
+            if (saved != null && saved.length >= 3) {
+                e.x = (int) saved[0];
+                e.y = (int) saved[1];
+                e.scale = saved[2];
+            }
+        }
         elements.put(name, e);
     }
 
@@ -83,22 +92,14 @@ public final class HudManager {
         Minecraft.getInstance().setScreen(new HudEditScreen(parent));
     }
 
-    private static void load() {
-        if (!Files.exists(SAVE_FILE)) return;
+    private static Map<String, float[]> loadRaw() {
+        if (!Files.exists(SAVE_FILE)) return null;
         try {
             String json = Files.readString(SAVE_FILE);
-            Map<String, float[]> saved = GSON.fromJson(json, new TypeToken<Map<String, float[]>>(){}.getType());
-            if (saved != null) {
-                for (var entry : saved.entrySet()) {
-                    HudElement e = elements.get(entry.getKey());
-                    if (e != null && entry.getValue().length >= 3) {
-                        e.x = (int) entry.getValue()[0];
-                        e.y = (int) entry.getValue()[1];
-                        e.scale = entry.getValue()[2];
-                    }
-                }
-            }
-        } catch (IOException ignored) {}
+            return GSON.fromJson(json, new TypeToken<Map<String, float[]>>(){}.getType());
+        } catch (IOException ignored) {
+            return null;
+        }
     }
 
     static void save() {

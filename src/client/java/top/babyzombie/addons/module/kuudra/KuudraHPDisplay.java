@@ -1,9 +1,11 @@
 package top.babyzombie.addons.module.kuudra;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.scores.DisplaySlot;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -18,7 +20,9 @@ public final class KuudraHPDisplay {
     private static final String DELIMITER = " §8❯§r ";
 
     public static void init() {
-        HudRenderCallback.EVENT.register((gui, delta) -> {
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "kuudra_hp"),
+                (context, tickCounter) -> {
             if (ModConfigManager.get().kuudra.hpDisplay != ModConfig.HpDisplayMode.HUD) return;
             var t = KuudraLocationTracker.kuudraEntity;
             float h = KuudraLocationTracker.hp;
@@ -28,7 +32,7 @@ public final class KuudraHPDisplay {
             int x = HudManager.x("KuudraHP"), y = HudManager.y("KuudraHP");
             float s = HudManager.scale("KuudraHP");
             String text = formatHP(h);
-            HudManager.drawScaled(gui, font, text, x, y, s);
+            HudManager.drawScaled(context, font, text, x, y, s);
         });
     }
 
