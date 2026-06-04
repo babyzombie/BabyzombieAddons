@@ -27,7 +27,7 @@ public final class PestDisplay {
                             && le.getMaxHealth() >= 600 && le.getMaxHealth() <= 1200)
                     .forEach(e -> BeaconStateInjector.addBeam(
                         e.getX() - 0.5, e.getY() + 1, e.getZ() - 0.5,
-                        new Color(0, 255, 0, 180), 300f));
+                        new Color(0, 255, 0, 180)));
         });
     }
 }

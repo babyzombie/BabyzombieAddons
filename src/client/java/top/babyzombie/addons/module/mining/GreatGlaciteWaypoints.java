@@ -24,10 +24,10 @@ public final class GreatGlaciteWaypoints {
 
             for (var p : POSITIONS) {
                 double x = p[0], y = p[1], z = p[2];
-                WorldRenderUtils.drawBox(
+                WorldRenderUtils.drawWireframeBox(ctx,
                     x - SIZE / 2, y, z - SIZE / 2,
                     x + SIZE / 2, y + SIZE, z + SIZE / 2,
-                    0, 1, 1, 0.6f);
+                    0, 1, 1, 0.6f, true, 4.0f);
                 WorldTextRenderer.renderString(ctx.matrices(), "§bGreat Glacite", x + 0.5, y + SIZE + 0.3, z + 0.5, 0x00FFFF, 0.025f);
             }
         });

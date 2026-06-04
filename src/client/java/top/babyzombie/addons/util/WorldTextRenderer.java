@@ -12,6 +12,7 @@ import org.joml.Quaternionf;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Renders floating text in the world via the BEFORE_TRANSLUCENT render phase. */
 public final class WorldTextRenderer {
 
     private static final List<PendingText> pending = new ArrayList<>();
@@ -47,6 +48,7 @@ public final class WorldTextRenderer {
 
     private WorldTextRenderer() {}
 
+    /** Queue a string for world-space rendering at the given coordinates. */
     public static void renderString(PoseStack ps, String text, double x, double y, double z, int color, float scale) {
         pending.add(new PendingText(text, x, y, z, color, scale));
     }

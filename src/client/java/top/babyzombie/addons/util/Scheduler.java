@@ -56,6 +56,7 @@ public final class Scheduler {
         tasks.add(new ScheduledTask(intervalTicks, intervalTicks, runnable, true));
     }
 
+    /** Cancel a scheduled task by its runnable reference. */
     public static void cancel(Runnable runnable) {
         tasks.removeIf(t -> t.runnable == runnable);
     }

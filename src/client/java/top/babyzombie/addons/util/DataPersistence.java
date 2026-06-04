@@ -21,6 +21,7 @@ public final class DataPersistence {
 
     private DataPersistence() {}
 
+    /** Save data to the root data directory. */
     public static <T> void save(String filename, T data) {
         save(null, filename, data);
     }
@@ -39,6 +40,7 @@ public final class DataPersistence {
         }
     }
 
+    /** Load data from the root data directory, or null if not found. */
     public static <T> T load(String filename, Class<T> clazz) {
         return load(null, filename, clazz);
     }
@@ -58,19 +60,23 @@ public final class DataPersistence {
         }
     }
 
+    /** Check whether a file exists in the root data directory. */
     public static boolean exists(String filename) {
         return exists(null, filename);
     }
 
+    /** Check whether a file exists under an optional subdirectory. */
     public static boolean exists(String subDir, String filename) {
         Path dir = subDir != null ? DATA_DIR.resolve(subDir) : DATA_DIR;
         return Files.exists(dir.resolve(filename));
     }
 
+    /** Delete a file from the root data directory. */
     public static void delete(String filename) {
         delete(null, filename);
     }
 
+    /** Delete a file from an optional subdirectory. */
     public static void delete(String subDir, String filename) {
         try {
             Path dir = subDir != null ? DATA_DIR.resolve(subDir) : DATA_DIR;

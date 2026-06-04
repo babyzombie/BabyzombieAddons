@@ -44,13 +44,12 @@ public final class ChestMarkers {
             if (!ModConfigManager.get().mining.chestMarkers) return;
             if (!isInCrystalHollows() || chests.isEmpty()) return;
 
-            float lw = ModConfigManager.get().mining.chestLineWidth;
             double e = 0.02;
             for (var pos : chests) {
-                WorldRenderUtils.drawBoxXray(
+                WorldRenderUtils.drawWireframeBox(ctx,
                     pos.getX() - e, pos.getY() - e, pos.getZ() - e,
                     pos.getX() + 1 + e, pos.getY() + 1 + e, pos.getZ() + 1 + e,
-                    R, G, B, A, lw);
+                    R, G, B, A, false, ModConfigManager.get().mining.chestLineWidth);
             }
         });
     }

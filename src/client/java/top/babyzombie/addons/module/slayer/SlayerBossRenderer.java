@@ -65,9 +65,10 @@ public final class SlayerBossRenderer {
                             float hpPct = p.getHealth() / p.getMaxHealth();
                             if (hpPct <= 0.2f) {
                                 double w = p.getBbWidth(), h = p.getBbHeight();
-                                WorldRenderUtils.drawBoxAtEntity(
-                                    p.getX(), p.getY(), p.getZ(), w, h, w,
-                                    0.48f, 0.41f, 0.93f, 0.8f);
+                                WorldRenderUtils.drawWireframeBox(ctx,
+                                    p.getX() - w / 2, p.getY(), p.getZ() - w / 2,
+                                    p.getX() + w / 2, p.getY() + h, p.getZ() + w / 2,
+                                    0.48f, 0.41f, 0.93f, 0.8f, true, 4.0f);
                             }
                         }
                     }

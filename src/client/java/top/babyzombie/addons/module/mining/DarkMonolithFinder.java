@@ -103,10 +103,10 @@ public final class DarkMonolithFinder {
                 BeaconStateInjector.addBeam(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         new Color(102, 0, 204, 128), 20f);
                 double e = 0.02;
-                WorldRenderUtils.drawBoxXray(
+                WorldRenderUtils.drawWireframeBox(ctx,
                     pos.getX() - e, pos.getY() - e, pos.getZ() - e,
                     pos.getX() + 1 + e, pos.getY() + 3 + e, pos.getZ() + 1 + e,
-                    0.4f, 0, 0.8f, 0.5f);
+                    0.4f, 0, 0.8f, 0.5f, false, 4.0f);
                 double dist = camPos.distanceTo(new Vec3(pos.getX(), pos.getY(), pos.getZ()));
                 String label = (shown.size() == 1 ? "§5§l* " : "§5") + "Dark Monolith §6(" + (int) dist + "m)";
                 WorldTextRenderer.renderString(ctx.matrices(), label, pos.getX() + 0.5, pos.getY() + 3.5, pos.getZ() + 0.5, 0xAA00CC, 0.025f);

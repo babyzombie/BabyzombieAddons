@@ -43,6 +43,7 @@ public final class PartyTracker {
 
     public static PartyTracker getInstance() { return INSTANCE; }
 
+    /** Register Hypixel Mod API packet handler and chat listeners for party tracking. */
     public void init() {
         HypixelModAPI.getInstance().createHandler(ClientboundPartyInfoPacket.class, packet -> {
             var members = packet.getMembers();
@@ -110,6 +111,7 @@ public final class PartyTracker {
         });
     }
 
+    /** @return true if the local player is the party leader. */
     public boolean isSelfLeader() { return isLeader; }
 
     /**
@@ -149,13 +151,16 @@ public final class PartyTracker {
         lastRequestTime = 0;
         request(null);
     }
+    /** @return the known party leader's name/UUID. */
     public String getLeaderName() { return leaderName; }
 
+    /** @return true if a party leader is known. */
     public boolean hasLeaderName(String name) {
         // leaderName is now a UUID string; just check if we know the leader
         return leaderName != null;
     }
 
+    /** Request party info from the server, with optional callback on response. */
     public void request(Consumer<PartyInfo> callback) {
         if (lastRequestTime + 30_000 > ServerTick.getTime()) {
             if (callback != null) callback.accept(lastInfo);

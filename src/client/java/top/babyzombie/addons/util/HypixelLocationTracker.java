@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/** Tracks the player's current Hypixel location via the Hypixel Mod API and scoreboard. */
 public class HypixelLocationTracker {
 
     private static final HypixelLocationTracker INSTANCE = new HypixelLocationTracker();
@@ -34,6 +35,7 @@ public class HypixelLocationTracker {
         this.currentLocation = new HypixelLocationData(null, null, null, null, null, null, null);
     }
 
+    /** Register Hypixel Mod API packet handler and tick listener. */
     public void init() {
         if (initialized) return;
         initialized = true;
@@ -135,6 +137,7 @@ public class HypixelLocationTracker {
     // ---- getters ----
 
     public static HypixelLocationTracker getInstance() { return INSTANCE; }
+    /** @return the latest known location snapshot. */
     public HypixelLocationData getCurrentLocation() { return currentLocation; }
 
     @Nullable public String getServerName() { return currentLocation.serverName(); }
@@ -151,5 +154,6 @@ public class HypixelLocationTracker {
     public boolean isInKuudra() { return currentLocation.inKuudra(); }
     public boolean isInLimbo() { return currentLocation.inLimbo(); }
     public int getSkyblockDay() { return currentLocation.skyblockDay(); }
+    /** @return the dungeon floor from the location string, or null. */
     @Nullable public String getFloor() { return currentLocation.getFloor(); }
 }

@@ -70,7 +70,6 @@ public final class EffigyDisplay {
             if (player == null) return;
 
             WorldTextRenderer.renderString(ctx.matrices(), "Hello World!", 0, 3, 0, 0xFFFF0000, 0.1f);
-            WorldRenderUtils.drawBox(0, 0, 0, 1, 1, 1, 1, 1, 0, 1);
 
             if (!ModConfigManager.get().slayer.showEffigies) return;
             var tracker = HypixelLocationTracker.getInstance();
@@ -81,11 +80,11 @@ public final class EffigyDisplay {
                 if (idx >= EFFIGY_POS.length) continue;
                 var pos = EFFIGY_POS[idx];
                 BeaconStateInjector.addBeam(pos.getX(), pos.getY(), pos.getZ(),
-                    new Color(255, 0, 0, 255), 300f);
-                WorldRenderUtils.drawBox(
+                    new Color(255, 0, 0, 255));
+                WorldRenderUtils.drawWireframeBox(ctx,
                     pos.getX(), pos.getY() + boxH, pos.getZ(),
                     pos.getX() + 1, pos.getY() + boxH + 1, pos.getZ() + 1,
-                    1, 0, 0, 1, 4f);
+                    1, 0, 0, 1, true, 4.0f);
             }
         });
     }

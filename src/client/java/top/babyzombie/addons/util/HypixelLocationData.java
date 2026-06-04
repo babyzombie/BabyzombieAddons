@@ -18,22 +18,26 @@ public record HypixelLocationData(
     int skyblockDay
 ) {
 
+    /** Construct with minimum fields; remaining fields default to null/false/-1. */
     public HypixelLocationData(@Nullable String serverName, @Nullable String serverType,
             @Nullable String lobbyName, @Nullable String mode, @Nullable String map,
             @Nullable String uuid, @Nullable String profileId) {
         this(serverName, serverType, lobbyName, mode, map, uuid, profileId, null, false, false, false, false, -1);
     }
 
+    /** Return a copy of this data with the given UUID. */
     public HypixelLocationData withUuid(String newUuid) {
         return new HypixelLocationData(serverName, serverType, lobbyName, mode, map, newUuid, profileId,
                 location, inSkyblock, inDungeon, inKuudra, inLimbo, skyblockDay);
     }
 
+    /** Return a copy of this data with the given profile ID. */
     public HypixelLocationData withProfileId(String newProfileId) {
         return new HypixelLocationData(serverName, serverType, lobbyName, mode, map, uuid, newProfileId,
                 location, inSkyblock, inDungeon, inKuudra, inLimbo, skyblockDay);
     }
 
+    /** Extract the floor number from the location string, e.g. "(F7)" → "F7". */
     @Nullable
     public String getFloor() {
         if (location == null) return null;

@@ -12,10 +12,12 @@ import net.minecraft.client.renderer.blockentity.state.BeaconRenderState;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Injects fake beacon block entity render states to draw beacon beams in the world. */
 public final class BeaconStateInjector {
 
     private static final List<PendingBeam> pending = new ArrayList<>();
 
+    /** Register the END_EXTRACTION listener that creates fake beacon render states. */
     public static void init() {
         WorldRenderEvents.END_EXTRACTION.register((WorldExtractionContext ctx) -> {
             if (pending.isEmpty()) return;
@@ -39,12 +41,24 @@ public final class BeaconStateInjector {
         });
     }
 
+    /** Queue a beacon beam at (x,y,z) with the given ARGB color and height. */
     public static void addBeam(double x, double y, double z, int color, float height) {
         pending.add(new PendingBeam(x, y, z, color, height));
     }
 
+    /** Queue a beacon beam at (x,y,z) with default height 2048. */
+    public static void addBeam(double x, double y, double z, int color) {
+        addBeam(x, y, z, color, 2048);
+    }
+
+    /** Queue a beacon beam at (x,y,z) with the given AWT Color and height. */
     public static void addBeam(double x, double y, double z, java.awt.Color c, float height) {
-        pending.add(new PendingBeam(x, y, z, c.getRGB(), height));
+        addBeam(x, y, z, c.getRGB(), height);
+    }
+
+    /** Queue a beacon beam at (x,y,z) with the given AWT Color and default height 2048. */
+    public static void addBeam(double x, double y, double z, java.awt.Color c) {
+        addBeam(x, y, z, c.getRGB(), 2048);
     }
 
     private record PendingBeam(double x, double y, double z, int color, float height) {}

@@ -15,6 +15,7 @@ public final class DungeonCooldown {
 
     private DungeonCooldown() {}
 
+    /** Register chat and world-change listeners for mage cooldown tracking. */
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
