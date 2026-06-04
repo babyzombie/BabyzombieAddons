@@ -2,12 +2,12 @@ package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.MagmaCube;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.GlowController;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 
 public final class KuudraLocationTracker {
@@ -46,18 +46,16 @@ public final class KuudraLocationTracker {
 
     private static void findKuudra(Minecraft client) {
         if (kuudraEntity != null && kuudraEntity.isDeadOrDying()) {
-            kuudraEntity.removeEffect(MobEffects.GLOWING);
             kuudraEntity = null;
         }
 
         if (client.player == null) return;
 
-        // Kuudra本体是大岩浆怪
         if (kuudraEntity == null) {
             var cubes = client.player.level().getEntitiesOfClass(MagmaCube.class,
-                    new AABB(client.player.blockPosition()).inflate(64),
-                    e -> e.getBoundingBox().getSize() > 10 && e.getMaxHealth() >= 100000);
-            if (!cubes.isEmpty()) kuudraEntity = cubes.get(0);
+                    new AABB(client.player.blockPosition()).inflate(128),
+                    e -> e.getSize() == 30);
+            if (!cubes.isEmpty()) kuudraEntity = cubes.getFirst();
         }
 
         // HP优先从岩浆怪取；岩浆怪死了则从凋零BossBar反算
@@ -79,7 +77,7 @@ public final class KuudraLocationTracker {
 
     public static void reset() {
         if (kuudraEntity != null) {
-            kuudraEntity.removeEffect(MobEffects.GLOWING);
+            GlowController.setGlow(kuudraEntity, false, 0);
         }
         inKuudra = false;
         kuudraEntity = null;

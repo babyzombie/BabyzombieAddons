@@ -92,13 +92,8 @@ public final class DungeonModule {
             boolean win = t.equals("          "
                     + "          "
                     + "         > EXTRA STATS <")  // 29 spaces — dungeon win
-                    || t.equals("          "
-                    + "               "
-                    + "      KUUDRA DOWN!");  // 31 spaces — kuudra win
-            boolean fail = t.equals("          "
-                    + "               "
-                    + "               "
-                    + " DEFEAT")  // 35 spaces — kuudra fail
+                    || t.equals("                               KUUDRA DOWN!");  // 31 spaces — kuudra win
+            boolean fail = t.equals("                                   DEFEAT")  // 35 spaces — kuudra fail
                     || (t.startsWith("     ") && t.contains("   ☠ Defeated ") && t.contains(" in "));
 
             if (win || fail) {

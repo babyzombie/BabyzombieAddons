@@ -17,9 +17,8 @@ public final class KuudraPhaseTimer {
             if (!ModConfigManager.get().kuudra.phaseTimer) return;
             if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
             String text = ChatUtils.stripColor(message.getString());
-            String raw = message.getString();
 
-            if (!raw.contains("[NPC] Elle:")) return;
+            if (!text.startsWith("[NPC] Elle:")) return;
 
             if (text.contains("Okay adventurers, I will go and fish up Kuudra")) {
                 startTime = ServerTick.getTime();

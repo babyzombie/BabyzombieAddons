@@ -96,15 +96,15 @@ public final class PartyTracker {
             }
             var tm = TRANSFER_PAT.matcher(text);
             if (tm.find()) {
-                String newLeader = ChatUtils.stripColor(tm.group(1) != null ? tm.group(1)
-                        : (tm.group(3) != null ? tm.group(3) : tm.group(5)));
+                String newLeader = stripRank(ChatUtils.stripColor(tm.group(1) != null ? tm.group(1)
+                        : (tm.group(3) != null ? tm.group(3) : tm.group(5))));
                 leaderName = newLeader;
                 isLeader = myName != null && myName.equals(leaderName);
                 return;
             }
             var pm = PROMOTE_PAT.matcher(text);
             if (pm.find()) {
-                String newLeader = ChatUtils.stripColor(pm.group(2));
+                String newLeader = stripRank(ChatUtils.stripColor(pm.group(2)));
                 leaderName = newLeader;
                 isLeader = myName != null && myName.equals(leaderName);
             }
@@ -186,6 +186,11 @@ public final class PartyTracker {
         synchronized (pendingCallbacks) {
             pendingCallbacks.clear();
         }
+    }
+
+    private static String stripRank(String name) {
+        if (name == null) return null;
+        return name.replaceFirst("^\\[[^\\]]+\\]\\s*", "");
     }
 
     public record PartyInfo(Set<UUID> members) {}

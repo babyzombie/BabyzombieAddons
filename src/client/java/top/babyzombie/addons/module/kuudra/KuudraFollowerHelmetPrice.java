@@ -7,6 +7,7 @@ import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.TimeZone;
 
 public final class KuudraFollowerHelmetPrice {
@@ -17,11 +18,11 @@ public final class KuudraFollowerHelmetPrice {
             if (!ModConfigManager.get().kuudra.followerHelmetPrice) return;
             if (overlay) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
-            var loc = HypixelLocationTracker.getInstance().getLocation();
-            if (loc == null || !loc.equals("Crimson Isle")) return;
+            if (!Objects.equals(HypixelLocationTracker.getInstance().getMap(), "Crimson Isle")
+                    || !Objects.equals(HypixelLocationTracker.getInstance().getLocation(), "Plhlegblast Pool")) return;
 
             String text = ChatUtils.stripColor(message.getString());
-            if (!text.contains("Kuudra Believer") || !text.contains("Maybe Kuudra will show favor")) return;
+            if (!text.equals("[NPC] Kuudra Believer: Maybe Kuudra will show favor upon you.")) return;
 
             var player = Minecraft.getInstance().player;
             if (player == null) return;
@@ -29,7 +30,7 @@ public final class KuudraFollowerHelmetPrice {
             int price = calculatePrice(name);
             int day = getDayOfYear();
 
-            String msg = ChatUtils.translate("kuudra.follower_helmet", name, price, getDayOfYear());
+            String msg = ChatUtils.translate("kuudra.follower_helmet", name, price, day);
             ChatUtils.showMessage(msg);
             ChatUtils.copyToClipboard(msg);
         });

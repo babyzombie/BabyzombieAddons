@@ -1,8 +1,12 @@
 package top.babyzombie.addons.module.kuudra;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
@@ -18,6 +22,22 @@ public final class KuudraEnergyDisplay {
     private static int fuel = -1;
 
     public static void init() {
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
+            fuel = -1;
+        });
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!ModConfigManager.get().kuudra.energyDisplay) return;
+            if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
+            if (fuel == 0 || fuel == 25) return;
+            if (client.player == null) return;
+            if (!client.player.level().getEntitiesOfClass(ArmorStand.class,
+                    new AABB(client.player.blockPosition()).inflate(64),
+                    e -> "§fEnergy Charge: §a0%".equals(e.getName().getString())).isEmpty()) {
+                fuel = 0;
+            }
+        });
+
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (!ModConfigManager.get().kuudra.energyDisplay) return;
             if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
@@ -30,7 +50,7 @@ public final class KuudraEnergyDisplay {
 
         HudRenderCallback.EVENT.register((gui, delta) -> {
             if (!ModConfigManager.get().kuudra.energyDisplay) return;
-            if (fuel < 0 || "p4".equals(KuudraLocationTracker.area)) return;
+            if (!KuudraLocationTracker.inKuudra || fuel < 0 || "p4".equals(KuudraLocationTracker.area)) return;
             var font = Minecraft.getInstance().font;
             int x = HudManager.x("EnergyCharge"), y = HudManager.y("EnergyCharge");
             float s = HudManager.scale("EnergyCharge");
