@@ -1,6 +1,5 @@
 package top.babyzombie.addons.module.garden;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,7 +25,7 @@ public final class PestDisplay {
                     e -> e instanceof LivingEntity le && e != player && !(e instanceof net.minecraft.world.entity.player.Player)
                             && le.getMaxHealth() >= 600 && le.getMaxHealth() <= 1200)
                     .forEach(e -> BeaconStateInjector.addBeam(
-                        e.getX() - 0.5, e.getY() + 1, e.getZ() - 0.5,
+                        e.getX(), e.getY(), e.getZ(),
                         new Color(0, 255, 0, 180)));
         });
     }

@@ -298,8 +298,8 @@
   "config.babyzombieaddons.option.publicSpeakingDemon.desc": "Text to auto-send when the Speaking Demon asks to say something interesting. Leave empty for random text.",
   "config.babyzombieaddons.option.fruitDiggingHelper": "Fruit Digging Helper",
   "config.babyzombieaddons.option.fruitDiggingHelper.desc": "Mark dug fruit locations and nearby treasure at Carnival.",
-  "config.babyzombieaddons.option.fruitDiggingAutoAccept": "Auto Accept Fruit Digging",
-  "config.babyzombieaddons.option.fruitDiggingAutoAccept.desc": "Auto-click \"Aye sure do!\" on the second+ encounter with the Carnival Fruit Digging NPC.",
+  "config.babyzombieaddons.option.carnivalAutoAccept": "Carnival Double-Click Accept",
+  "config.babyzombieaddons.option.carnivalAutoAccept.desc": "Double-click the Carnival minigame NPC on the second+ encounter to auto-accept.",
 
   "config.babyzombieaddons.option.abiphoneGui": "Abiphone Contact GUI",
   "config.babyzombieaddons.option.abiphoneGui.desc": "Replace /call with a graphical contact list.",
@@ -372,7 +372,7 @@
   "slayer.gummybear.1min": "§bGummy Bear: §c60 seconds remaining!",
   "slayer.gummybear.expired": "§cGummy Bear effect expired!",
 
-  "babyzombieaddons.fruitdigging.treasure_nearby": "§eTreasure nearby",
+  "babyzombieaddons.fruitdigging.treasure_nearby": "§e%s nearby",
   "babyzombieaddons.fruitdigging.no_fruit": "§eNo fruit nearby",
-  "babyzombieaddons.fruitdigging.bombs_nearby": "§cBombs nearby"
+  "babyzombieaddons.fruitdigging.bombs_nearby": "§c%s bombs nearby"
 }

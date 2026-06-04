@@ -166,7 +166,7 @@ public class ModConfig {
         public boolean greatSpookDelay = false;
         public String publicSpeakingDemon = "";
         public boolean fruitDiggingHelper = false;
-        public boolean fruitDiggingAutoAccept = false;
+        public boolean carnivalAutoAccept = false;
     }
 
     // ---- Misc ----

@@ -184,7 +184,7 @@ public final class GlaciteMineshaftWaypoints {
             // Exit/corpse waypoints in mineshaft
             if (t.isInSkyblock() && "Mineshaft".equals(t.getMap())) {
                 for (var e : exits)
-                    WorldTextRenderer.renderString(ctx, e.label, e.x, e.y, e.z, 0xFFFF55, 0.05f, true);
+                    WorldTextRenderer.renderString(ctx, e.label, e.x, e.y, e.z, 0xFFFFFF55, 0.05f, true);
             }
 
             // Portal timer in Dwarven Mines
@@ -200,7 +200,7 @@ public final class GlaciteMineshaftWaypoints {
                         BeaconStateInjector.addBeam(s.getX() - 0.5, s.getY(), s.getZ() - 0.5,
                                 new Color(0, 1, 1, 1), 20f);
                         WorldTextRenderer.renderString(ctx, "§a" + formatTime(remaining),
-                                s.getX(), s.getY() + 1, s.getZ(), 0x55FFFF, 0.025f, true);
+                                s.getX(), s.getY() + 1, s.getZ(), 0xFF55FFFF, 0.025f, true);
                     }
                 }
             }

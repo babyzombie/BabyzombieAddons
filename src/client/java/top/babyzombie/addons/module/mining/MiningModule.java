@@ -13,7 +13,6 @@ public final class MiningModule {
         CrystalHollowsPassRenew.init();
         ChGetFromSacks.init();
         ChestMarkers.init();
-        DarkMonolithFinder.init();
         ArmadilloEnergy.init();
         GlaciteMineshaftWaypoints.init();
 

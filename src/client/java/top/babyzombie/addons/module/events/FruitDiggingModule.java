@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import com.mojang.authlib.properties.Property;
+import net.minecraft.client.Minecraft;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.core.component.DataComponents;
@@ -42,9 +45,9 @@ public final class FruitDiggingModule {
             Map.entry("ewogICJ0aW1lc3RhbXAiIDogMTcxODIwMzIzMzA1NiwKICAicHJvZmlsZUlkIiA6ICIxODA1Y2E2MmM0ZDI0M2NiOWQxYmY4YmM5N2E1YjgyNCIsCiAgInByb2ZpbGVOYW1lIiA6ICJSdWxsZWQiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDA3YjI3NWQyOGI5MjdiMWJmN2Y2ZGQ5ZjQ1ZmJkYWQyYWY4NTcxYzU0YzhmMDI3ZDFiZmY2OTU2ZmJmM2MxNiIKICAgIH0KICB9Cn0=", "Rum")
     );
 
-    private static final int AREA_X_MIN = -112, AREA_X_MAX = -106;
-    private static final int AREA_Z_MIN = 19, AREA_Z_MAX = 25;
-    private static final int AREA_Y_MIN = 72, AREA_Y_MAX = 75;
+    private static final int AREA_X_MIN = -113, AREA_X_MAX = -105;
+    private static final int AREA_Z_MIN = 18, AREA_Z_MAX = 26;
+    private static final int AREA_Y_MIN = 71, AREA_Y_MAX = 76;
 
     private static final List<Marker> fruits = new ArrayList<>();
     private static final List<Marker> treasures = new ArrayList<>();
@@ -73,14 +76,21 @@ public final class FruitDiggingModule {
             if (!isInCarnival() || !hasDigLoc) return;
             String text = ChatUtils.stripColor(message.getString());
 
-            if (text.matches("TREASURE! There is a[n]? [a-zA-Z]+ nearby\\.")) {
-                treasures.add(new Marker(digX, digZ, tr("babyzombieaddons.fruitdigging.treasure_nearby")));
+            Matcher m;
+            m = Pattern.compile("TREASURE! There is a[n]? ([a-zA-Z]+) nearby\\.").matcher(text);
+            if (m.matches()) {
+                treasures.add(new Marker(digX, digZ, Component.translatable("babyzombieaddons.fruitdigging.treasure_nearby", m.group(1)).getString()));
                 hasDigLoc = false;
-            } else if (text.matches("(ANCHOR|TREASURE)! There are no fruits nearby!")) {
-                treasures.add(new Marker(digX, digZ, tr("babyzombieaddons.fruitdigging.no_fruit")));
+                return;
+            }
+            if (text.matches("(ANCHOR|TREASURE)! There are no fruits nearby!")) {
+                treasures.add(new Marker(digX, digZ, Component.translatable("babyzombieaddons.fruitdigging.no_fruit").getString()));
                 hasDigLoc = false;
-            } else if (text.matches("MINES! There are [0-9]+ bomb[s]? hidden nearby\\.")) {
-                bombs.add(new Marker(digX, digZ, tr("babyzombieaddons.fruitdigging.bombs_nearby")));
+                return;
+            }
+            m = Pattern.compile("MINES! There (is|are) ([0-9]+) bomb[s]? hidden nearby\\.").matcher(text);
+            if (m.matches()) {
+                bombs.add(new Marker(digX, digZ, Component.translatable("babyzombieaddons.fruitdigging.bombs_nearby", m.group(2)).getString()));
                 hasDigLoc = false;
             }
         });
@@ -104,7 +114,7 @@ public final class FruitDiggingModule {
         // Auto-accept: capture accept command from options message
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().events.fruitDiggingAutoAccept) return;
+            if (!ModConfigManager.get().events.carnivalAutoAccept) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             String text = ChatUtils.stripColor(message.getString());
 
@@ -113,15 +123,27 @@ public final class FruitDiggingModule {
                 acceptCommand = null;
                 return;
             }
+            if (text.contains("[NPC] Carnival Fisherman: Are you here to play?")) {
+                lastNpcDialogTime = System.currentTimeMillis();
+                acceptCommand = null;
+                return;
+            }
+            if (text.contains("[NPC] Carnival Cowboy: Wouldja like to play Zombie Shootout?")) {
+                lastNpcDialogTime = System.currentTimeMillis();
+                acceptCommand = null;
+                return;
+            }
 
-            if (text.contains("Select an option:") && text.contains("[Aye sure do!]")) {
-                acceptCommand = findClickCommand(message, "Aye sure do!");
+            if (text.contains("Select an option:")) {
+                if (text.contains("[Aye sure do!]")) acceptCommand = findClickCommand(message, "Aye sure do!");
+                else if (text.contains("[You guessed it!]")) acceptCommand = findClickCommand(message, "You guessed it!");
+                else if (text.contains("[Sure thing, partner!]")) acceptCommand = findClickCommand(message, "Sure thing, partner!");
             }
         });
 
         // Right-click on NPC within 2s → cancel and auto-accept
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (!ModConfigManager.get().events.fruitDiggingAutoAccept) return InteractionResult.PASS;
+            if (!ModConfigManager.get().events.carnivalAutoAccept) return InteractionResult.PASS;
             if (acceptCommand == null) return InteractionResult.PASS;
             if (System.currentTimeMillis() - lastNpcDialogTime > 2000) {
                 acceptCommand = null;
@@ -160,23 +182,24 @@ public final class FruitDiggingModule {
                 String label = (dug ? "§a" : "§e") + fruitName;
                 int fx = (int) Math.floor(item.getX());
                 int fz = (int) Math.floor(item.getZ());
-                fruits.removeIf(m -> m.x == fx && m.z == fz);
-                fruits.add(new Marker(fx, fz, label));
+                fruits.removeIf(m -> m.x == fx + 1 && m.z == fz + 1);
+                fruits.add(new Marker(fx + 1, fz + 1, label));
             }
         });
 
         WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
             if (!ModConfigManager.get().events.fruitDiggingHelper) return;
-            if (!isInCarnival()) return;
+            boolean inCarnival = isInCarnival();
+            if (!inCarnival) return;
             int total = fruits.size() + treasures.size() + bombs.size();
             if (total == 0) return;
 
             for (var m : bombs)
-                WorldTextRenderer.renderString(ctx, m.label, m.x + 0.5, 74.7, m.z + 0.5, 0xFF5555, 0.025f, true);
+                WorldTextRenderer.renderString(ctx, m.label, m.x + 0.5, 74.7, m.z + 0.5, 0xFFFF5555, 0.025f, false);
             for (var m : treasures)
-                WorldTextRenderer.renderString(ctx, m.label, m.x + 0.5, 74.5, m.z + 0.5, 0xFFFF55, 0.025f, true);
+                WorldTextRenderer.renderString(ctx, m.label, m.x + 0.5, 74.5, m.z + 0.5, 0xFFFFFF55, 0.025f, false);
             for (var m : fruits)
-                WorldTextRenderer.renderString(ctx, m.label, m.x - 0.5, 74.3, m.z - 0.5, 0xFFFFFF, 0.025f, true);
+                WorldTextRenderer.renderString(ctx, m.label, m.x - 0.5, 74.3, m.z - 0.5, 0xFFFFFFFF, 0.025f, false);
         });
     }
 
@@ -193,10 +216,6 @@ public final class FruitDiggingModule {
                 .map(Property::value)
                 .findFirst()
                 .orElse(null);
-    }
-
-    private static String tr(String key) {
-        return Component.translatable(key).getString();
     }
 
     private static boolean isInCarnival() {
