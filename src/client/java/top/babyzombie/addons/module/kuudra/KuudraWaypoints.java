@@ -35,7 +35,7 @@ public final class KuudraWaypoints {
     public static void init() {
         WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
             for (var t : textEntries.values())
-                WorldTextRenderer.renderString(ctx.matrices(), t.text, t.x, t.y, t.z, t.color, 0.025f);
+                WorldTextRenderer.renderString(ctx, t.text, t.x, t.y, t.z, t.color, 0.025f, true);
             for (var b : beams) {
                 BeaconStateInjector.addBeam(b.x, b.y, b.z,
                     new Color(b.r, b.g, b.b, b.a), b.h);

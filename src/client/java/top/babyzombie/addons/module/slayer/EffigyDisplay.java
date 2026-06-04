@@ -66,11 +66,6 @@ public final class EffigyDisplay {
         });
 
         WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
-            var player = Minecraft.getInstance().player;
-            if (player == null) return;
-
-            WorldTextRenderer.renderString(ctx.matrices(), "Hello World!", 0, 3, 0, 0xFFFF0000, 0.1f);
-
             if (!ModConfigManager.get().slayer.showEffigies) return;
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock() || !"The Rift".equals(tracker.getMap())) return;

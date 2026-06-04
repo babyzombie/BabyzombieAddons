@@ -44,9 +44,9 @@ public final class DarkMonolithFinder {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfigManager.get().mining.darkMonolithFinder) return;
             if (!isInDwarvenMines()) return;
-            if (client.player == null || client.player.tickCount % 10 != 0) return;
-
-            var playerPos = client.player.position();
+            if (client.player == null || client.player.tickCount % 20 != 0) return;
+            var level = client.player.level();
+            if (level == null) return;
 
             if (shown.isEmpty()) {
                 if (resetTimer == 0) resetTimer = ServerTick.getTime() + 30_000;
@@ -57,29 +57,22 @@ public final class DarkMonolithFinder {
                 return;
             }
 
-            // Check if player is looking at a monolith with dragon egg
-            var hit = client.hitResult;
-            if (hit != null && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
-                var hitPos = ((net.minecraft.world.phys.BlockHitResult) hit).getBlockPos();
-                var level = client.player.level();
-                for (var pos : MONOLITH_POSITIONS) {
-                    for (int dx = -2; dx <= 2; dx++) {
-                        for (int dz = -2; dz <= 2; dz++) {
-                            var checkPos = new BlockPos(pos.getX() + dx, pos.getY(), pos.getZ() + dz);
-                            if (checkPos.distSqr(hitPos) < 25) {
-                                if (level.getBlockState(checkPos).is(Blocks.DRAGON_EGG)) {
-                                    shown.clear();
-                                    shown.add(pos);
-                                    resetTimer = 0;
-                                    return;
-                                }
-                                if (!level.getBlockState(new BlockPos(pos.getX() + dx, pos.getY() - 1, pos.getZ() + dz)).isAir()) {
-                                    shown.remove(pos);
-                                }
-                            }
+            // Remove monoliths whose chunk is loaded but no dragon egg found nearby
+            var it = shown.iterator();
+            while (it.hasNext()) {
+                var pos = it.next();
+                if (!level.hasChunkAt(pos)) continue;
+
+                boolean foundEgg = false;
+                for (int dx = -2; dx <= 2 && !foundEgg; dx++) {
+                    for (int dz = -2; dz <= 2 && !foundEgg; dz++) {
+                        var checkPos = new BlockPos(pos.getX() + dx, pos.getY(), pos.getZ() + dz);
+                        if (level.getBlockState(checkPos).is(Blocks.DRAGON_EGG)) {
+                            foundEgg = true;
                         }
                     }
                 }
+                if (!foundEgg) it.remove();
             }
         });
 
@@ -109,7 +102,7 @@ public final class DarkMonolithFinder {
                     0.4f, 0, 0.8f, 0.5f, false, 4.0f);
                 double dist = camPos.distanceTo(new Vec3(pos.getX(), pos.getY(), pos.getZ()));
                 String label = (shown.size() == 1 ? "§5§l* " : "§5") + "Dark Monolith §6(" + (int) dist + "m)";
-                WorldTextRenderer.renderString(ctx.matrices(), label, pos.getX() + 0.5, pos.getY() + 3.5, pos.getZ() + 0.5, 0xAA00CC, 0.025f);
+                WorldTextRenderer.renderString(ctx, label, pos.getX() + 0.5, pos.getY() + 3.5, pos.getZ() + 0.5, 0xAA00CC, 0.05f, true);
             }
         });
     }

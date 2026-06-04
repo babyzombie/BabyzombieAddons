@@ -172,11 +172,11 @@ public final class FruitDiggingModule {
             if (total == 0) return;
 
             for (var m : bombs)
-                WorldTextRenderer.renderString(ctx.matrices(), m.label, m.x + 0.5, 74.7, m.z + 0.5, 0xFF5555, 0.025f);
+                WorldTextRenderer.renderString(ctx, m.label, m.x + 0.5, 74.7, m.z + 0.5, 0xFF5555, 0.025f, true);
             for (var m : treasures)
-                WorldTextRenderer.renderString(ctx.matrices(), m.label, m.x + 0.5, 74.5, m.z + 0.5, 0xFFFF55, 0.025f);
+                WorldTextRenderer.renderString(ctx, m.label, m.x + 0.5, 74.5, m.z + 0.5, 0xFFFF55, 0.025f, true);
             for (var m : fruits)
-                WorldTextRenderer.renderString(ctx.matrices(), m.label, m.x - 0.5, 74.3, m.z - 0.5, 0xFFFFFF, 0.025f);
+                WorldTextRenderer.renderString(ctx, m.label, m.x - 0.5, 74.3, m.z - 0.5, 0xFFFFFF, 0.025f, true);
         });
     }
 
