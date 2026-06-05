@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfig.CrowdHideMode;
+import top.babyzombie.addons.config.ModConfig.DailyCounterMode;
 import top.babyzombie.addons.config.ModConfig.RequeueMode;
 
 import java.util.function.Supplier;
@@ -89,8 +90,15 @@ public final class DungeonCategory {
                         .build())
                 .option(bool("autoChestClose", defaults.dungeon.autoChestClose,
                         () -> config.dungeon.autoChestClose, v -> config.dungeon.autoChestClose = v))
-                .option(bool("dailyCounter", defaults.dungeon.dailyCounter,
-                        () -> config.dungeon.dailyCounter, v -> config.dungeon.dailyCounter = v))
+                .option(Option.<DailyCounterMode>createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.dailyRunsCounter"))
+                        .description(Component.translatable("config.babyzombieaddons.option.dailyRunsCounter.desc"))
+                        .binding(defaults.dungeon.dailyRunsCounter,
+                                () -> config.dungeon.dailyRunsCounter,
+                                v -> config.dungeon.dailyRunsCounter = v)
+                        .controller(ConfigUtils.createEnumController(m ->
+                                Component.translatable("config.babyzombieaddons.option.dailyRunsCounter." + m.name())))
+                        .build())
                 .build();
     }
 

@@ -31,11 +31,10 @@ public final class KuudraEnergyDisplay {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfigManager.get().kuudra.energyDisplay) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
-            if (fuel == 0 || fuel == 25) return;
-            if (client.player == null) return;
+            if (fuel == 0 || client.player == null) return;
             if (!client.player.level().getEntitiesOfClass(ArmorStand.class,
                     new AABB(client.player.blockPosition()).inflate(64),
-                    e -> "§fEnergy Charge: §a0%".equals(e.getName().getString())).isEmpty()) {
+                    e -> "Energy Charge: 0%".equals(ChatUtils.stripColor(e.getName().getString()))).isEmpty()) {
                 fuel = 0;
             }
         });

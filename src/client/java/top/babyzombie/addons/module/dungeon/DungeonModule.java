@@ -4,7 +4,9 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ModConfig;
+import top.babyzombie.addons.config.ModConfig.DailyCounterMode;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.EntityRenderEvents;
 import top.babyzombie.addons.module.party.PartyModule;
@@ -99,27 +101,31 @@ public final class DungeonModule {
             if (win || fail) {
                 instanceStarted = false;
 
-                if (win && ModConfigManager.get().dungeon.dailyCounter) {
+                var mode = ModConfigManager.get().dungeon.dailyRunsCounter;
+                if (mode != DailyCounterMode.OFF && (win || HypixelLocationTracker.getInstance().isInDungeon())) {
                     loadDaily();
                     dailyRuns++;
                     saveDaily();
-                    if (dailyRuns <= 5)
-                        ChatUtils.sendCommand("pc Daily runs: " + dailyRuns + "/5");
+                    if (mode == DailyCounterMode.ALWAYS || dailyRuns <= 5) {
+                        String color = dailyRuns <= 5 ? "§a" : "§e";
+                        ChatUtils.showMessage(
+                            Component.translatable(
+                                "babyzombieaddons.dailyRuns.info", color + dailyRuns).getString()
+                        );
+                    }
                 }
 
                 AutoRequeue.schedule(win);
             }
         });
 
-        // Cancel keywords from party chat (only by party leader)
+        // Cancel keywords from party chat (only if we're the one who can requeue)
         ClientReceiveMessageEvents.GAME.register((m, o) -> {
             if (o) return;
             if (ModConfigManager.get().dungeon.autoRequeue == ModConfig.RequeueMode.OFF) return;
+            if (!AutoRequeue.canRequeue) return;
             var pm = PartyModule.PARTY_CHAT.matcher(m.getString());
             if (!pm.find()) return;
-            String sender = pm.group(1);
-            if (!PartyTracker.getInstance().hasLeaderName(sender) && PartyTracker.getInstance().getLeaderName() != null)
-                return;
             String t = ChatUtils.stripColor(pm.group(2)).trim().toLowerCase();
             for (String kw : ModConfigManager.get().dungeon.requeueCancelKeywords.toLowerCase().split("\\|")) {
                 if (!kw.isEmpty() && t.equals(kw)) {

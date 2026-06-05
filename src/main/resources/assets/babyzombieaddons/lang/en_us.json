@@ -16,6 +16,8 @@
   "babyzombieaddons.party.executed": "Executing command: %s",
   "babyzombieaddons.party.dm_invited": "Invited %s to party",
 
+  "babyzombieaddons.dailyRuns.info": "§bDaily runs: %s/5",
+
   "config.babyzombieaddons.title": "BabyzombieAddons Config",
 
   "config.babyzombieaddons.category.general": "General",
@@ -42,6 +44,8 @@
   "config.babyzombieaddons.option.partyTransfer.desc": "Respond to !pt or !ptme in party chat to transfer party leader.",
   "config.babyzombieaddons.option.dmPartyInvite": "DM !p - Invite",
   "config.babyzombieaddons.option.dmPartyInvite.desc": "Auto-invite players who send you a DM with !p.",
+  "config.babyzombieaddons.option.partySelfExecute": "Respond to Own Commands",
+  "config.babyzombieaddons.option.partySelfExecute.desc": "When enabled, party chat commands sent by yourself will also be executed.",
   "config.babyzombieaddons.category.party": "Party",
   "config.babyzombieaddons.category.popup": "Popup Events",
   "config.babyzombieaddons.category.popup.desc": "Accept and Ignore keybinds can be changed in the game's Controls settings.",
@@ -76,8 +80,11 @@
   "config.babyzombieaddons.option.f4CrowdHiding.REMOVE": "Remove",
   "config.babyzombieaddons.option.autoChestClose": "Auto Chest Close",
   "config.babyzombieaddons.option.autoChestClose.desc": "Automatically close chest GUIs after looting.",
-  "config.babyzombieaddons.option.dailyCounter": "Daily Counter",
-  "config.babyzombieaddons.option.dailyCounter.desc": "Track daily dungeon runs (1-5 for bonus XP).",
+  "config.babyzombieaddons.option.dailyRunsCounter": "Daily Counter",
+  "config.babyzombieaddons.option.dailyRunsCounter.desc": "Track daily dungeon/kuudra run count.",
+  "config.babyzombieaddons.option.dailyRunsCounter.OFF": "Off",
+  "config.babyzombieaddons.option.dailyRunsCounter.FIRST_5": "First 5",
+  "config.babyzombieaddons.option.dailyRunsCounter.ALWAYS": "Always",
   "config.babyzombieaddons.group.requeue": "Requeue Settings",
   "config.babyzombieaddons.option.autoRequeue": "Auto Requeue",
   "config.babyzombieaddons.option.autoRequeue.desc": "Automatically /instancerequeue after dungeon/kuudra end.",

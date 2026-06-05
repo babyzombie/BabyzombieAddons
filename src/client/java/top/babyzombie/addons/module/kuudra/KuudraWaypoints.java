@@ -54,7 +54,17 @@ public final class KuudraWaypoints {
             if ("Rescue supplies".equals(phase)) {
                 for (var g : client.player.level().getEntitiesOfClass(Giant.class,
                         new AABB(client.player.blockPosition()).inflate(64)))
-                    beams.add(new Beam(g.getX()-1.5, g.getY()+9.5, g.getZ()+4.0, 0,1,0,1,20f));
+                    beams.add(new Beam(g.getX()-2.5, g.getY()+9.5, g.getZ()+3.0, 0,1,0,1,20f));
+                for (var s : client.player.level().getEntitiesOfClass(
+                        net.minecraft.world.entity.decoration.ArmorStand.class,
+                        new AABB(client.player.blockPosition()).inflate(64),
+                        e -> ChatUtils.stripColor(e.getName().getString()).contains("BRING SUPPLY CHEST HERE"))) {
+                    double x = s.getX()-1.5, y = s.getY(), z = s.getZ()-1.5;
+                    beams.add(new Beam(x, y, z, 1, 1, 0, 1, 20f));
+                    String key = "p1_supply_" + s.getId(); seenKeys.add(key);
+                    double dist = Math.sqrt(client.player.distanceToSqr(x, y, z));
+                    textEntries.put(key, new TextData("§e(§6" + (int)dist + "m§e)", x+0.5, y+1, z+0.5, 0xFFFFFF55));
+                }
             } else if ("Protect Elle".equals(phase)) {
                 for (var s : client.player.level().getEntitiesOfClass(
                         net.minecraft.world.entity.decoration.ArmorStand.class,
@@ -63,21 +73,21 @@ public final class KuudraWaypoints {
                             String name = ChatUtils.stripColor(e.getName().getString());
                             return name.startsWith("PROGRESS: ") && !name.endsWith("COMPLETE");
                         })) {
-                    double x = s.getX()+0.5, y = s.getY()+0.8, z = s.getZ()+0.5;
+                    double x = s.getX()-1.5, y = s.getY()+0.8, z = s.getZ()-1.5;
                     beams.add(new Beam(x,y,z,0.3f,0.5f,1,1,10f));
                     String[] parts = ChatUtils.stripColor(s.getName().getString()).split(" ");
                     String key = "p2_" + s.getId(); seenKeys.add(key);
-                    textEntries.put(key, new TextData(parts.length>1 ? parts[parts.length-1] : "", x+0.5, y+1.5, z+0.5,0xFFFF55));
+                    textEntries.put(key, new TextData(parts.length>1 ? parts[parts.length-1] : "", x+0.5, y+1.5, z+0.5, 0xFFFFFF55));
                 }
             } else {
                 for (var g : client.player.level().getEntitiesOfClass(Giant.class,
                         new AABB(client.player.blockPosition()).inflate(64)))
-                    beams.add(new Beam(g.getX()-1.5, g.getY()+9.5, g.getZ()+4.0, 1,0,0,1,20f));
+                    beams.add(new Beam(g.getX()-2.5, g.getY()+9.5, g.getZ()+3.0, 1,0,0,1,20f));
             }
 
             for (var m : client.player.level().getEntitiesOfClass(Endermite.class,
                     new AABB(client.player.blockPosition()).inflate(64), e -> !e.isDeadOrDying()))
-                beams.add(new Beam(m.getX()+1,m.getY(),m.getZ()+1,0,1,0,0.7f,10f));
+                beams.add(new Beam(m.getX(),m.getY(),m.getZ(),0,1,0,0.7f,10f));
 
             textEntries.keySet().removeIf(k -> !seenKeys.contains(k));
         });

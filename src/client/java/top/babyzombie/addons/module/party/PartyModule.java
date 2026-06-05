@@ -113,7 +113,7 @@ public final class PartyModule {
         String msg = ChatUtils.stripColor(matcher.group(2)).trim();
 
         var self = Minecraft.getInstance().player;
-        if (self != null && player.equals(self.getName().getString())) return;
+        if (self != null && player.equals(self.getName().getString()) && !cfg.partySelfExecute) return;
 
         // !pt / !ptme → transfer party leader to sender
         if (cfg.partyTransfer && CMD_PTME.matcher(msg).matches()) {

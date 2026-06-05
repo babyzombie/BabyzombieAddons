@@ -16,6 +16,8 @@
   "babyzombieaddons.party.executed": "正在执行指令：%s",
   "babyzombieaddons.party.dm_invited": "已邀请 %s 加入队伍",
 
+  "babyzombieaddons.dailyRuns.info": "§b地牢每日场数：%s/5",
+
   "config.babyzombieaddons.title": "BabyzombieAddons 设置",
 
   "config.babyzombieaddons.category.general": "通用",
@@ -42,6 +44,8 @@
   "config.babyzombieaddons.option.partyTransfer.desc": "回应队伍聊天中的 !pt 或 !ptme，转让队长给发送者。",
   "config.babyzombieaddons.option.dmPartyInvite": "私信 !p - 邀请",
   "config.babyzombieaddons.option.dmPartyInvite.desc": "私信用 !p 的玩家自动邀请。",
+  "config.babyzombieaddons.option.partySelfExecute": "响应自己的指令",
+  "config.babyzombieaddons.option.partySelfExecute.desc": "开启后，自己在队伍聊天中发送的指令也会触发执行。",
   "config.babyzombieaddons.category.party": "队伍",
   "config.babyzombieaddons.category.popup": "弹出通知",
   "config.babyzombieaddons.category.popup.desc": "接受和忽略的快捷键可以在游戏的「控制」设置中修改。",
@@ -76,8 +80,11 @@
   "config.babyzombieaddons.option.f4CrowdHiding.REMOVE": "移除",
   "config.babyzombieaddons.option.autoChestClose": "自动关闭箱子",
   "config.babyzombieaddons.option.autoChestClose.desc": "右键开箱后 500ms 自动关闭箱子界面。",
-  "config.babyzombieaddons.option.dailyCounter": "每日计数",
-  "config.babyzombieaddons.option.dailyCounter.desc": "追踪每日地牢次数（1-5 次有额外经验加成）。",
+  "config.babyzombieaddons.option.dailyRunsCounter": "每日计数",
+  "config.babyzombieaddons.option.dailyRunsCounter.desc": "追踪每日地牢/Kuudra 场次。",
+  "config.babyzombieaddons.option.dailyRunsCounter.OFF": "关闭",
+  "config.babyzombieaddons.option.dailyRunsCounter.FIRST_5": "前五场",
+  "config.babyzombieaddons.option.dailyRunsCounter.ALWAYS": "总是",
   "config.babyzombieaddons.group.requeue": "重排设置",
   "config.babyzombieaddons.option.autoRequeue": "自动重排",
   "config.babyzombieaddons.option.autoRequeue.desc": "地牢/Kuudra 结束后自动 /instancerequeue。",

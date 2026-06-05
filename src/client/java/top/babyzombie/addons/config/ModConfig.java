@@ -7,6 +7,7 @@ public class ModConfig {
     public enum KickRecovery { OFF, LOBBY_ONLY, LOBBY_AND_SKYBLOCK }
     public enum RequeueMode { OFF, ON_FAIL, ON_WIN, ALWAYS }
     public enum CrowdHideMode { OFF, HIDE, REMOVE }
+    public enum DailyCounterMode { OFF, FIRST_5, ALWAYS }
     public enum HpDisplayMode { OFF, HUD, BOSSBAR }
     public enum MineshaftWarpMode { OFF, TITLE_ONLY, TITLE_AND_SOUND, SEND_PTME, PTME_AND_WARP }
 
@@ -48,7 +49,7 @@ public class ModConfig {
         public String requeueCancelMessage = "ok";
         public String requeueCancelKeywords = "c|cancel|n|nr|wait|stop|dt|don't|gtg|tyfr|tyfrs|gtg tyfr|gtg tyfrs|no key|别急|等会|等下|先别开";
         public boolean autoChestClose = false;
-        public boolean dailyCounter = false;
+        public DailyCounterMode dailyRunsCounter = DailyCounterMode.OFF;
     }
 
     // ---- Kuudra ----
@@ -143,6 +144,7 @@ public class ModConfig {
         public boolean partySendCoords = false;
         public boolean partyTransfer = false;
         public boolean dmPartyInvite = false;
+        public boolean partySelfExecute = false;
     }
 
     // ---- Events ----

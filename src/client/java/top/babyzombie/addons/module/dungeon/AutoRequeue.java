@@ -12,7 +12,7 @@ public final class AutoRequeue {
     static boolean cancelAutoJoin;
     static boolean ended;
     private static boolean counting;
-    private static boolean canRequeue;
+    static boolean canRequeue;
 
     private AutoRequeue() {}
 
@@ -25,7 +25,7 @@ public final class AutoRequeue {
             var members = info.members();
             var player = Minecraft.getInstance().player;
             canRequeue = members.isEmpty()
-                    || (player != null && members.contains(player.getUUID()));
+                    || (player != null && PartyTracker.getInstance().isSelfLeader());
         });
     }
 
@@ -51,12 +51,14 @@ public final class AutoRequeue {
             Scheduler.schedule(delay * 20, () -> {
                 counting = false;
                 if (cancelAutoJoin) return;
+                if (!PartyTracker.getInstance().isSelfLeader()) return;
                 var t = HypixelLocationTracker.getInstance();
                 if (!t.isInSkyblock() || (!t.isInDungeon() && !t.isInKuudra())) return;
                 ended = false;
                 ChatUtils.sendCommand("instancerequeue");
             });
         } else {
+            if (!PartyTracker.getInstance().isSelfLeader()) return;
             counting = false;
             ended = false;
             ChatUtils.sendCommand("instancerequeue");

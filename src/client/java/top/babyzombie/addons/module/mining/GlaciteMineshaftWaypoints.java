@@ -30,7 +30,7 @@ import java.awt.Color;
 
 public final class GlaciteMineshaftWaypoints {
     private static final Pattern MINESHAFT_ENTER_PAT = Pattern.compile(
-            "[-]+\\n(.+) entered Glacite Mineshafts!\\n[-]+", Pattern.DOTALL);
+            "[-]+\\n(.+) entered Glacite Mineshafts!\\n[-]+");
 
     private static long portalTimer;
     private static final List<Waypoint> exits = new ArrayList<>();
@@ -80,11 +80,11 @@ public final class GlaciteMineshaftWaypoints {
         // Corpses
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfigManager.get().mining.mineshaftWaypoints) return;
-            if (!inMineshaft || client.player == null || client.player.tickCount % 20 != 0) return;
+            if (!isInMineshaft() || client.player == null || client.player.tickCount % 20 != 0) return;
             var level = client.player.level();
             var stands = level.getEntitiesOfClass(ArmorStand.class,
-                    new AABB(client.player.blockPosition()).inflate(64),
-                    e -> !e.isDeadOrDying() && !e.isInvisible());
+                    new AABB(client.player.blockPosition()).inflate(96),
+                    e -> !e.isDeadOrDying());
             for (var stand : stands) {
                 var helm = stand.getItemBySlot(EquipmentSlot.HEAD);
                 if (helm.isEmpty()) continue;
@@ -131,11 +131,11 @@ public final class GlaciteMineshaftWaypoints {
             if (overlay) return;
             if (ModConfigManager.get().mining.glaciteMineshaftWarp == MineshaftWarpMode.OFF) return;
             if (!isInDwarvenMines()) return;
-            String text = message.getString();
-            // Each line of multiline comes separately, match middle line
-            if (text.contains("entered Glacite Mineshafts!")) {
+            var m = MINESHAFT_ENTER_PAT.matcher(message.getString());
+            if (m.find()) {
                 var self = Minecraft.getInstance().player;
-                if (self != null && text.contains(self.getName().getString())) {
+                String name = ChatUtils.stripRank(ChatUtils.stripColor(m.group(1)));
+                if (self != null && name.equals(self.getName().getString())) {
                     mineshaftOwner = true;
                     ownServerName = HypixelLocationTracker.getInstance().getServerName();
                 }
@@ -146,7 +146,7 @@ public final class GlaciteMineshaftWaypoints {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
             if (!waitingPartyTransfer) return;
-            if (!inMineshaft) return;
+            if (!isInMineshaft()) return;
             String text = ChatUtils.stripColor(message.getString());
             if (text.matches(".+ has promoted .+ to Party Leader")
                     || text.matches(".+将.+提拔为组队队长.+")

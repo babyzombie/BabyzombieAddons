@@ -47,6 +47,14 @@ public final class ChatUtils {
     }
 
     /**
+     * Strips the rank prefix like [MVP+] from a player name.
+     */
+    public static String stripRank(String name) {
+        if (name == null) return null;
+        return name.replaceFirst("^\\[[^\\]]+\\]\\s*", "");
+    }
+
+    /**
      * Removes emoji characters from a string (Unicode symbols outside BMP).
      */
     public static String removeEmoji(String text) {
