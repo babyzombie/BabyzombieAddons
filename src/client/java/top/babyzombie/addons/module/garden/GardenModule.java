@@ -7,5 +7,6 @@ public final class GardenModule {
         PestDisplay.init();
         SignAutoRotate.init();
         XpOrbSoundReducer.init();
+        TrevorAutoAccept.init();
     }
 }

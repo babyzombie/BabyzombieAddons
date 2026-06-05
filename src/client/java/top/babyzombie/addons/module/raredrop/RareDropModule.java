@@ -76,9 +76,19 @@ public final class RareDropModule {
                 ignoreSoundTime = 0;
                 return false;
             }
-            String id = "?";
-            try { var loc = sound.getIdentifier(); id = loc != null ? loc.toString() : "?"; } catch (Exception ignored) {}
-            return id.contains("note_block") || id.contains("experience_orb");
+            var snd = sound.getSound();
+            if (snd == null) return false;
+            String path = snd.getLocation().getPath();
+            float p = sound.getPitch();
+            if (path.equals("note/pling")) {
+                return Math.abs(p - 0.59f) < 0.01f || Math.abs(p - 0.79f) < 0.01f
+                    || Math.abs(p - 1.05f) < 0.01f || Math.abs(p - 1.17f) < 0.01f;
+            }
+            if (path.equals("random/orb")) {
+                return Math.abs(p - 0.70f) < 0.01f || Math.abs(p - 0.94f) < 0.01f
+                    || Math.abs(p - 1.25f) < 0.01f || Math.abs(p - 1.41f) < 0.01f;
+            }
+            return false;
         });
     }
 

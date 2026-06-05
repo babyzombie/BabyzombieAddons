@@ -20,8 +20,6 @@ public final class MiningCategory {
                 .name(Component.translatable("config.babyzombieaddons.category.mining"))
                 .option(bool("miningAbilityAlerts", defaults.mining.miningAbilityAlerts,
                         () -> config.mining.miningAbilityAlerts, v -> config.mining.miningAbilityAlerts = v))
-                .option(bool("darkMonolithFinder", defaults.mining.darkMonolithFinder,
-                        () -> config.mining.darkMonolithFinder, v -> config.mining.darkMonolithFinder = v))
                 .option(bool("drillSwingSuppression", defaults.mining.drillSwingSuppression,
                         () -> config.mining.drillSwingSuppression, v -> config.mining.drillSwingSuppression = v))
                 .option(bool("creeperVisibility", defaults.mining.creeperVisibility,

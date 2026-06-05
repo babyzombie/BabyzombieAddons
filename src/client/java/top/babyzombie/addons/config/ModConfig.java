@@ -10,11 +10,6 @@ public class ModConfig {
     public enum HpDisplayMode { OFF, HUD, BOSSBAR }
     public enum MineshaftWarpMode { OFF, TITLE_ONLY, TITLE_AND_SOUND, SEND_PTME, PTME_AND_WARP }
 
-    // Slayer info levels
-    public enum SlayerInfoLevel0_2 { OFF, HP_ONLY, HP_AND_STATUS }
-    public enum SlayerInfoLevel0_1 { OFF, HP_ONLY }
-    public enum SlayerInfoLevel0_3 { OFF, HP_ONLY, HP_AND_STATUS, HP_STATUS_REPEAT }
-    public enum BoxSlayerMode { OFF, GLOW, GLOW_AND_BEAM }
     public enum GummyPolarBearMode { OFF, SMOLDERING_TOMB_ONLY, EVERYWHERE_EXCEPT_DUNGEON }
     public enum RagnarockAxeMode { OFF, NUMERIC, PROGRESS_BAR }
     public enum EndStoneSwordMode { OFF, TIMER_ONLY, PREVENT_REUSE, BOTH }
@@ -40,6 +35,7 @@ public class ModConfig {
         public AutoISDest autoisDest = AutoISDest.GARDEN;
         public KickRecovery autoBackToSkyblock = KickRecovery.LOBBY_ONLY;
         public boolean cakeBuffTracker = false;
+        public int skipSecondPerson = 0;
     }
 
     // ---- Dungeon ----
@@ -69,6 +65,7 @@ public class ModConfig {
         public boolean perkShopBlacklist = false;
         public String perkShopBlacklistItems = "Elle's Pickaxe,Elle's Lava Rod,Auto Revive,Support Route,Mining Frenzy I";
         public boolean followerHelmetPrice = false;
+        public boolean muteCrimsonArmor = false;
     }
 
     // ---- Slayer ----
@@ -79,21 +76,10 @@ public class ModConfig {
         public RagnarockAxeMode ragnarockAxeTimer = RagnarockAxeMode.OFF;
         public boolean reaperArmorTimer = false;
         public EndStoneSwordMode endStoneSwordTimer = EndStoneSwordMode.OFF;
-        public boolean bossInfoHUD = false;
-
         public boolean noslayerquest = false;
         public GummyPolarBearMode reheatedGummyPolarBear = GummyPolarBearMode.OFF;
-        public BoxSlayerMode boxslayerboss = BoxSlayerMode.OFF;
-        public java.awt.Color boxbosscolor = new java.awt.Color(255, 0, 0, 255);
         public boolean boxLowHPBloodfiend = false;
         public boolean showEffigies = false;
-
-        public SlayerInfoLevel0_2 zombieSlayerInfo = SlayerInfoLevel0_2.HP_AND_STATUS;
-        public SlayerInfoLevel0_2 spiderSlayerInfo = SlayerInfoLevel0_2.HP_AND_STATUS;
-        public SlayerInfoLevel0_2 wolfSlayerInfo = SlayerInfoLevel0_2.HP_AND_STATUS;
-        public SlayerInfoLevel0_2 endermanSlayerInfo = SlayerInfoLevel0_2.HP_AND_STATUS;
-        public SlayerInfoLevel0_3 blazeSlayerInfo = SlayerInfoLevel0_3.HP_AND_STATUS;
-        public SlayerInfoLevel0_2 vampireSlayerInfo = SlayerInfoLevel0_2.HP_AND_STATUS;
     }
 
     public static class WitherCloakConfig {
@@ -114,7 +100,6 @@ public class ModConfig {
         public boolean getFromSacks = false;
         public boolean scathaCooldown = false;
         public boolean armadilloEnergy = false;
-        public boolean darkMonolithFinder = false;
         public boolean drillSwingSuppression = false;
         public boolean powderMiningSounds = false;
 
@@ -132,6 +117,7 @@ public class ModConfig {
         public boolean pestDisplay = false;
         public int xpOrbSoundRemoval = 100;
         public boolean signAutoRotate = false;
+        public boolean trevorAutoAccept = false;
     }
 
     // ---- Popup Events ----

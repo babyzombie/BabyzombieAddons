@@ -14,6 +14,7 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ResolvableProfile;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.ServerTick;
@@ -73,22 +74,12 @@ public final class SlayerHUD {
         var config = ModConfigManager.get().slayer;
         long now = ServerTick.getTime();
 
-        // ---- Slayer Boss Info ----
-        if (HudManager.shouldShow("SlayerBoss")) {
-            BossDetector.updateHP();
-            if (!BossDetector.renderStr.isEmpty()) {
-                int x = HudManager.x("SlayerBoss"), y = HudManager.y("SlayerBoss");
-                float s = HudManager.scale("SlayerBoss");
-                HudManager.drawScaled(gui, font, BossDetector.renderStr, x, y, s);
-            }
-        }
-
         // ---- Pigman Sword ----
         if (HudManager.shouldShow("PigmanSword")) {
             if (PigmanSwordTimer.time > 0) {
                 long rem = 5000 - (now - PigmanSwordTimer.time);
                 if (rem > 0) {
-                    HudManager.drawScaled(gui, font, "§6Pigman: §a" + BossDetector.formatTime(rem),
+                    HudManager.drawScaled(gui, font, "§6Pigman: §a" + ChatUtils.formatTime(rem),
                         HudManager.x("PigmanSword"), HudManager.y("PigmanSword"),
                         HudManager.scale("PigmanSword"));
                 } else {
@@ -123,9 +114,9 @@ public final class SlayerHUD {
                 long rNow = now;
                 String text = "§2Reaper: ";
                 if (ReaperArmorTimer.activeTime > rNow) {
-                    text += "§a" + BossDetector.formatTime(ReaperArmorTimer.activeTime - rNow);
+                    text += "§a" + ChatUtils.formatTime(ReaperArmorTimer.activeTime - rNow);
                 } else if (ReaperArmorTimer.cooldownEnd > rNow) {
-                    text += "§e" + BossDetector.formatTime(ReaperArmorTimer.cooldownEnd - rNow);
+                    text += "§e" + ChatUtils.formatTime(ReaperArmorTimer.cooldownEnd - rNow);
                 } else {
                     ReaperArmorTimer.activeTime = 0;
                     ReaperArmorTimer.cooldownEnd = 0;
@@ -156,7 +147,7 @@ public final class SlayerHUD {
                 ps.translate((float)tx, (float)ty);
                 ps.scale(s, s);
                 gui.drawString(font, String.format("§a❈ %d%%", EndStoneSwordTimer.resistance), 0, 0, 0xFFFFFFFF, true);
-                gui.drawString(font, "§e" + BossDetector.formatTime(rem), 0, (int)(9 * s), 0xFFFFFFFF, true);
+                gui.drawString(font, "§e" + ChatUtils.formatTime(rem), 0, (int)(9 * s), 0xFFFFFFFF, true);
                 ps.popMatrix();
             }
         }

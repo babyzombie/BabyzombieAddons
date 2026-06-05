@@ -1,5 +1,6 @@
 package top.babyzombie.addons.module.slayer;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -84,7 +85,7 @@ public final class RagnarockAxeTimer {
 
     private static void makeCastText(long rem, int mode) {
         switch (mode) {
-            case 1 -> text = "§5Ragnarock: §b" + BossDetector.formatTime(rem);
+            case 1 -> text = "§5Ragnarock: §b" + ChatUtils.formatTime(rem);
             case 2 -> {
                 int n = Math.min(20, (int)((3000 - rem) / (3000.0 / 20)) + 1);
                 text = "§5Ragnarock: §b[§a" + "|".repeat(n) + "§e" + "|".repeat(20 - n) + "§b]";
@@ -95,7 +96,7 @@ public final class RagnarockAxeTimer {
 
     private static void makeActiveText(long rem, int mode) {
         switch (mode) {
-            case 1 -> text = "§5Ragnarock: §a" + BossDetector.formatTime(rem);
+            case 1 -> text = "§5Ragnarock: §a" + ChatUtils.formatTime(rem);
             case 2 -> {
                 int n = Math.min(20, (int)(rem / (10000.0 / 20)) + 1);
                 text = "§5Ragnarock: §b[§a" + "|".repeat(n) + "§c" + "|".repeat(20 - n) + "§b]";
@@ -106,7 +107,7 @@ public final class RagnarockAxeTimer {
 
     private static void makeCooldownText(long rem, int mode) {
         switch (mode) {
-            case 1 -> text = "§5Ragnarock: §c" + BossDetector.formatTime(rem);
+            case 1 -> text = "§5Ragnarock: §c" + ChatUtils.formatTime(rem);
             case 2 -> {
                 int total = finished ? 7000 : 20000;
                 long elapsed = total - rem;

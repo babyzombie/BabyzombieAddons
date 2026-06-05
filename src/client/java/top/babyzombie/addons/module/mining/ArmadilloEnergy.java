@@ -3,6 +3,7 @@ package top.babyzombie.addons.module.mining;
 import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -21,26 +22,23 @@ public final class ArmadilloEnergy {
     private ArmadilloEnergy() {}
 
     public static void init() {
-        // Track armadillo pet status
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
+            hasDillo = false;
+            energyNow = 0;
+            energyMax = 0;
+        });
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfigManager.get().mining.armadilloEnergy) return;
             if (!isInCrystalHollows()) return;
             var player = client.player;
-            if (player == null) {
-                hasDillo = false;
-                return;
-            }
+            if (player == null) return;
 
-            // Check if riding (armadillo pet is active)
-            if (player.isPassenger() && energyMax > 0) {
-                hasDillo = false;
-                return;
-            }
+            hasDillo = player.isPassenger() || hasDillo;
+            if (energyMax == 0 || !hasDillo || player.isPassenger()) return;
 
-            // Energy regeneration (simplified)
-            if (!hasDillo || energyMax == 0) return;
-            if (energyNow + energyMax / 300 < energyMax)
-                energyNow = Math.floor((energyNow + energyMax / 300) * 10) / 10;
+            if (energyNow + energyMax * 0.000165 < energyMax)
+                energyNow = Math.floor((energyNow + energyMax * 0.000165) * 10) / 10;
             else energyNow = energyMax;
         });
 

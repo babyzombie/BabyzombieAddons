@@ -6,5 +6,6 @@ public final class MiscModule {
     public static void init() {
         CakeBuffTracker.init();
         SecondPersonKey.init();
+        SkipSecondPerson.init();
     }
 }

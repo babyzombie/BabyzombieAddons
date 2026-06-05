@@ -66,6 +66,8 @@
   "config.babyzombieaddons.option.autoBackToSkyblock.LOBBY_AND_SKYBLOCK": "大厅+重连 SkyBlock",
   "config.babyzombieaddons.option.cakeBuffTracker": "蛋糕 Buff 追踪",
   "config.babyzombieaddons.option.cakeBuffTracker.desc": "用已食用蛋糕清单替换默认蛋糕消息。",
+  "config.babyzombieaddons.option.skipSecondPerson": "跳过第二人称视角",
+  "config.babyzombieaddons.option.skipSecondPerson.desc": "按 F5 时跳过第二人称视角，仅在第一人称和第三人称后方之间切换。长按超过设定 tick 数后松手时切换至第二人称视角。调为 0 关闭，20 tick = 1 秒。",
 
   "config.babyzombieaddons.option.f4CrowdHiding": "F4 观众隐藏",
   "config.babyzombieaddons.option.f4CrowdHiding.desc": "处理 F4 Boss 房间的观众 NPC。",
@@ -130,6 +132,8 @@
   "kuudra.follower_helmet": "§a%s 今天的 §cKuudra Follower §a帽子价格为 §7: §b%s §e(Day %d)  §7(已复制到剪贴板)",
   "config.babyzombieaddons.option.followerHelmetPrice": "追随者头盔价格",
   "config.babyzombieaddons.option.followerHelmetPrice.desc": "计算当天的 Kuudra Follower 头盔价格。",
+  "config.babyzombieaddons.option.muteCrimsonArmor": "地狱套装满层静音",
+  "config.babyzombieaddons.option.muteCrimsonArmor.desc": "当地狱套装（Crimson/Terror/Aurora/Fervor）层数叠满时自动静音活塞声音。",
 
   "config.babyzombieaddons.option.pigmanSwordTimer": "猪人剑冷却计时",
   "config.babyzombieaddons.option.pigmanSwordTimer.desc": "猪人剑触发后在屏幕上显示冷却计时器。",
@@ -149,8 +153,6 @@
   "config.babyzombieaddons.option.endStoneSwordTimer.TIMER_ONLY": "仅计时器",
   "config.babyzombieaddons.option.endStoneSwordTimer.PREVENT_REUSE": "仅防重复使用",
   "config.babyzombieaddons.option.endStoneSwordTimer.BOTH": "同时启用",
-  "config.babyzombieaddons.option.bossInfoHUD": "Slayer Boss 信息显示",
-  "config.babyzombieaddons.option.bossInfoHUD.desc": "其实很多都在 Boss 头顶。",
 
   "config.babyzombieaddons.option.noslayerquest": "没接任务提醒",
   "config.babyzombieaddons.option.noslayerquest.desc": "任务失败后如果没重新接就刷怪时提醒一下（需要武器有 Champion 附魔）。",
@@ -161,14 +163,7 @@
   "config.babyzombieaddons.option.reheatedGummyPolarBear.SMOLDERING_TOMB_ONLY": "仅在烈焰人洞显示",
   "config.babyzombieaddons.option.reheatedGummyPolarBear.EVERYWHERE_EXCEPT_DUNGEON": "除了地牢都显示",
 
-  "config.babyzombieaddons.option.boxslayerboss": "往你的 Slayer Boss 上套一个框",
-  "config.babyzombieaddons.option.boxslayerboss.desc": "大概率没有完全套进去，甚至有些时候会套到离得很近的怪上，但是基本能分辨就行啦。",
-  "config.babyzombieaddons.option.boxslayerboss.OFF": "关闭",
-  "config.babyzombieaddons.option.boxslayerboss.GLOW": "发光",
-  "config.babyzombieaddons.option.boxslayerboss.GLOW_AND_BEAM": "发光和光柱",
 
-  "config.babyzombieaddons.option.boxbosscolor": "Slayer Boss 身上的框的颜色",
-  "config.babyzombieaddons.option.boxbosscolor.desc": "就是上面那个框的颜色啊~",
 
   "config.babyzombieaddons.option.boxLowHPBloodfiend": "标记血量低于 20% 的吸血鬼 Boss",
   "config.babyzombieaddons.option.boxLowHPBloodfiend.desc": "当出现这个（紫色）标记的时候，代表可以用 Steak Stake 斩杀 Boss 了。",
@@ -176,45 +171,12 @@
   "config.babyzombieaddons.option.showEffigies": "显示 Rift 城堡里没拆的血柱",
   "config.babyzombieaddons.option.showEffigies.desc": "根据计分板判断，不会显示已经拆掉的。",
 
-  "config.babyzombieaddons.option.zombieSlayerInfo": "Zombie Slayer 信息显示",
-  "config.babyzombieaddons.option.zombieSlayerInfo.desc": "目前也就看个血条，Boss 状态也没人关注。",
-  "config.babyzombieaddons.option.zombieSlayerInfo.OFF": "关闭",
-  "config.babyzombieaddons.option.zombieSlayerInfo.HP_ONLY": "仅血条",
-  "config.babyzombieaddons.option.zombieSlayerInfo.HP_AND_STATUS": "血条和状态",
 
-  "config.babyzombieaddons.option.spiderSlayerInfo": "Spider Slayer 信息显示",
-  "config.babyzombieaddons.option.spiderSlayerInfo.desc": "目前也就看个血条和状态。",
-  "config.babyzombieaddons.option.spiderSlayerInfo.OFF": "关闭",
-  "config.babyzombieaddons.option.spiderSlayerInfo.HP_ONLY": "仅血条",
-  "config.babyzombieaddons.option.spiderSlayerInfo.HP_AND_STATUS": "血条和状态",
 
-  "config.babyzombieaddons.option.wolfSlayerInfo": "Wolf Slayer 信息显示",
-  "config.babyzombieaddons.option.wolfSlayerInfo.desc": "目前也就看个血条，Boss 状态也没人关注。",
-  "config.babyzombieaddons.option.wolfSlayerInfo.OFF": "关闭",
-  "config.babyzombieaddons.option.wolfSlayerInfo.HP_ONLY": "仅血条",
-  "config.babyzombieaddons.option.wolfSlayerInfo.HP_AND_STATUS": "血条和状态",
 
-  "config.babyzombieaddons.option.endermanSlayerInfo": "Enderman Slayer 信息显示",
-  "config.babyzombieaddons.option.endermanSlayerInfo.desc": "血条，盾量，激光和信标计时。",
-  "config.babyzombieaddons.option.endermanSlayerInfo.OFF": "关闭",
-  "config.babyzombieaddons.option.endermanSlayerInfo.HP_ONLY": "仅血条",
-  "config.babyzombieaddons.option.endermanSlayerInfo.HP_AND_STATUS": "血条和状态",
 
-  "config.babyzombieaddons.option.blazeSlayerInfo": "Blaze Slayer 信息显示",
-  "config.babyzombieaddons.option.blazeSlayerInfo.desc": "目前也就看个血条和现在用什么刀。",
-  "config.babyzombieaddons.option.blazeSlayerInfo.OFF": "关闭",
-  "config.babyzombieaddons.option.blazeSlayerInfo.HP_ONLY": "仅血条",
-  "config.babyzombieaddons.option.blazeSlayerInfo.HP_AND_STATUS": "血条和状态",
-  "config.babyzombieaddons.option.blazeSlayerInfo.HP_STATUS_REPEAT": "血条 状态 和 Repeat",
 
-  "config.babyzombieaddons.option.vampireSlayerInfo": "Vampire Slayer 信息显示",
-  "config.babyzombieaddons.option.vampireSlayerInfo.desc": "血条和一些技能计时。其实就写在 Boss 头上。",
-  "config.babyzombieaddons.option.vampireSlayerInfo.OFF": "关闭",
-  "config.babyzombieaddons.option.vampireSlayerInfo.HP_ONLY": "仅血条",
-  "config.babyzombieaddons.option.vampireSlayerInfo.HP_AND_STATUS": "血条和状态",
 
-  "config.babyzombieaddons.group.bossBox": "Boss 框设置",
-  "config.babyzombieaddons.group.bossInfoSettings": "各 Boss 信息等级",
 
   "config.babyzombieaddons.group.crystalHollows": "水晶矿洞",
   "config.babyzombieaddons.group.glaciteTunnels": "冰川隧道",
@@ -245,8 +207,6 @@
   "config.babyzombieaddons.option.armadilloEnergy": "犰狳能量",
   "config.babyzombieaddons.option.armadilloEnergy.desc": "显示当前/最大能量及颜色渐变。",
 
-  "config.babyzombieaddons.option.darkMonolithFinder": "黑暗石碑查找器",
-  "config.babyzombieaddons.option.darkMonolithFinder.desc": "标记全部 14 个可能的石碑位置。",
   "config.babyzombieaddons.option.drillSwingSuppression": "钻头挥动抑制",
   "config.babyzombieaddons.option.drillSwingSuppression.desc": "挖矿时防止手臂挥动动画。",
   "config.babyzombieaddons.option.powderMiningSounds": "粉末挖矿音效",
@@ -277,6 +237,8 @@
   "config.babyzombieaddons.option.xpOrbSoundRemoval.desc": "在花园手持斧头或锄头破坏作物时经验球音效的音量大小。0 = 完全静音, 100 = 不变。",
   "config.babyzombieaddons.option.signAutoRotate": "告示牌自动转向",
   "config.babyzombieaddons.option.signAutoRotate.desc": "手持锄头或斧头右键告示牌自动转向并取消交互。告示牌任意一行写 \"yaw: 角度值\" 和 \"pitch: 角度值\" 即可识别，大小写无关。",
+  "config.babyzombieaddons.option.trevorAutoAccept": "自动接取猎手任务",
+  "config.babyzombieaddons.option.trevorAutoAccept.desc": "猎手Trevor打电话来的时候自动帮你点 [YES] 接受任务。",
 
 
   "config.babyzombieaddons.option.popupPartyInvite": "组队邀请",
@@ -361,6 +323,13 @@
   "babyzombieaddons.popup.body.restart_request": "%s 想要重新开始",
   "babyzombieaddons.popup.accept": "[%s] 接受",
   "babyzombieaddons.popup.ignore": "[%s] 忽略",
+  "babyzombieaddons.sound.hover": "§7点击忽略 §f%s\n§7再次点击恢复显示\n§7/bza sound clear 清除全部忽略",
+  "babyzombieaddons.sound.monitor_on": "§a声音监听器已开启",
+  "babyzombieaddons.sound.monitor_off": "§c声音监听器已关闭",
+  "babyzombieaddons.sound.added_to_ignore": "§c已添加到忽略列表: §f%s",
+  "babyzombieaddons.sound.removed_from_ignore": "§e已从忽略列表移除: §f%s",
+  "babyzombieaddons.sound.clear_ignore": "§a已清除所有忽略的声音",
+
   "babyzombieaddons.cake.all_eaten": "§a已吃完所有 16 种蛋糕！",
   "babyzombieaddons.ch.nucleus": "§b准备传送到晶核，再点一下水晶进行传送",
   "babyzombieaddons.glacite.exit": "§6出口",

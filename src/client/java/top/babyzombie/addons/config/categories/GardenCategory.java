@@ -29,6 +29,8 @@ public final class GardenCategory {
                         .build())
                 .option(bool("signAutoRotate", defaults.garden.signAutoRotate,
                         () -> config.garden.signAutoRotate, v -> config.garden.signAutoRotate = v))
+                .option(bool("trevorAutoAccept", defaults.garden.trevorAutoAccept,
+                        () -> config.garden.trevorAutoAccept, v -> config.garden.trevorAutoAccept = v))
                 .build();
     }
 

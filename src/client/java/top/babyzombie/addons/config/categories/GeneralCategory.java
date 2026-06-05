@@ -73,6 +73,14 @@ public final class GeneralCategory {
                                         Component.translatable("config.babyzombieaddons.option.autoBackToSkyblock." + m.name())))
                                 .build())
                         .build())
+                .option(Option.<Integer>createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.skipSecondPerson"))
+                        .description(Component.translatable("config.babyzombieaddons.option.skipSecondPerson.desc"))
+                        .binding(defaults.general.skipSecondPerson,
+                                () -> config.general.skipSecondPerson,
+                                v -> config.general.skipSecondPerson = v)
+                        .controller(IntegerController.createBuilder().range(0, 30).slider(1).build())
+                        .build())
                 .option(createBool("cakeBuffTracker", defaults.general.cakeBuffTracker,
                         () -> config.general.cakeBuffTracker, v -> config.general.cakeBuffTracker = v))
                 .build();

@@ -1,13 +1,11 @@
 package top.babyzombie.addons.module.slayer;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
@@ -25,7 +23,7 @@ public final class EndStoneSwordTimer {
     static int resistance;
     static int damage;
     private static final Pattern RESIST_PATTERN =
-        Pattern.compile("You now have ([0-9]+)% Damage Resistance for 5 seconds and \\+([0-9]+)% damage on your next hit within 5 seconds!");
+        Pattern.compile("You now have ([0-9]+)% Damage Resistance for 5s and \\+([0-9]+)% damage on your next hit within 5s!");
 
     private EndStoneSwordTimer() {}
 
@@ -43,6 +41,9 @@ public final class EndStoneSwordTimer {
                 time = ServerTick.getTime() + 5000;
             }
         });
+
+        UseItemCallback.EVENT.register((player, world, hand) ->
+            shouldPreventUse(player, hand) ? InteractionResult.FAIL : InteractionResult.PASS);
     }
 
     /**

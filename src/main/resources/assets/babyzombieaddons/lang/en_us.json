@@ -66,6 +66,8 @@
   "config.babyzombieaddons.option.autoBackToSkyblock.LOBBY_AND_SKYBLOCK": "Lobby + SkyBlock",
   "config.babyzombieaddons.option.cakeBuffTracker": "Cake Buff Tracker",
   "config.babyzombieaddons.option.cakeBuffTracker.desc": "Replace default cake messages with a checklist of consumed cakes.",
+  "config.babyzombieaddons.option.skipSecondPerson": "Skip Second Person View",
+  "config.babyzombieaddons.option.skipSecondPerson.desc": "Skip second-person view when pressing F5, cycling only between first-person and third-person back. Hold longer than the set tick count to switch to second-person. Set to 0 to disable, 20 ticks = 1 second.",
 
   "config.babyzombieaddons.option.f4CrowdHiding": "F4 Crowd Hiding",
   "config.babyzombieaddons.option.f4CrowdHiding.desc": "Handle spectator crowd in Floor 4 boss room.",
@@ -130,6 +132,8 @@
   "kuudra.follower_helmet": "§a%s today's §cKuudra Follower §ahelmet price §7: §b%s §e(Day %d)  §7(copied to clipboard)",
   "config.babyzombieaddons.option.followerHelmetPrice": "Follower Helmet Price",
   "config.babyzombieaddons.option.followerHelmetPrice.desc": "Calculate today's Kuudra Follower Helmet price.",
+  "config.babyzombieaddons.option.muteCrimsonArmor": "Mute Crimson Armor Piston",
+  "config.babyzombieaddons.option.muteCrimsonArmor.desc": "Cancel piston sound when Crimson Isle armor stacks are full (10 stacks).",
 
   "config.babyzombieaddons.option.pigmanSwordTimer": "Pigman Sword CD Timer",
   "config.babyzombieaddons.option.pigmanSwordTimer.desc": "Show cooldown timer on HUD after Pigman Sword triggers.",
@@ -149,8 +153,6 @@
   "config.babyzombieaddons.option.endStoneSwordTimer.TIMER_ONLY": "Timer Only",
   "config.babyzombieaddons.option.endStoneSwordTimer.PREVENT_REUSE": "Prevent Reuse Only",
   "config.babyzombieaddons.option.endStoneSwordTimer.BOTH": "Both",
-  "config.babyzombieaddons.option.bossInfoHUD": "Slayer Boss Info Display",
-  "config.babyzombieaddons.option.bossInfoHUD.desc": "Most info is already above the boss head.",
 
   "config.babyzombieaddons.option.noslayerquest": "No Quest Reminder",
   "config.babyzombieaddons.option.noslayerquest.desc": "Remind you after failing a quest if you keep killing mobs without taking a new one (requires Champion enchant on weapon).",
@@ -161,14 +163,7 @@
   "config.babyzombieaddons.option.reheatedGummyPolarBear.SMOLDERING_TOMB_ONLY": "Smoldering Tomb Only",
   "config.babyzombieaddons.option.reheatedGummyPolarBear.EVERYWHERE_EXCEPT_DUNGEON": "Everywhere Except Dungeon",
 
-  "config.babyzombieaddons.option.boxslayerboss": "Box around Slayer Boss",
-  "config.babyzombieaddons.option.boxslayerboss.desc": "Draw a box around your slayer boss. Not perfectly fitted but good enough to tell where it is.",
-  "config.babyzombieaddons.option.boxslayerboss.OFF": "Off",
-  "config.babyzombieaddons.option.boxslayerboss.GLOW": "Glow",
-  "config.babyzombieaddons.option.boxslayerboss.GLOW_AND_BEAM": "Glow + Beam",
 
-  "config.babyzombieaddons.option.boxbosscolor": "Boss Box Color",
-  "config.babyzombieaddons.option.boxbosscolor.desc": "Color of the box around the slayer boss.",
 
   "config.babyzombieaddons.option.boxLowHPBloodfiend": "Low HP Bloodfiend Marker",
   "config.babyzombieaddons.option.boxLowHPBloodfiend.desc": "Mark Bloodfiend bosses below 20% HP with a colored indicator. When this marker appears, you can use Steak Stake to execute.",
@@ -176,45 +171,12 @@
   "config.babyzombieaddons.option.showEffigies": "Show Effigies",
   "config.babyzombieaddons.option.showEffigies.desc": "Show remaining blood pillars in the Rift castle based on scoreboard.",
 
-  "config.babyzombieaddons.option.zombieSlayerInfo": "Zombie Slayer Info",
-  "config.babyzombieaddons.option.zombieSlayerInfo.desc": "Currently just HP bar, nobody cares about boss status anyway.",
-  "config.babyzombieaddons.option.zombieSlayerInfo.OFF": "Off",
-  "config.babyzombieaddons.option.zombieSlayerInfo.HP_ONLY": "HP Only",
-  "config.babyzombieaddons.option.zombieSlayerInfo.HP_AND_STATUS": "HP + Status",
 
-  "config.babyzombieaddons.option.spiderSlayerInfo": "Spider Slayer Info",
-  "config.babyzombieaddons.option.spiderSlayerInfo.desc": "HP and status display for Tarantula Broodfather.",
-  "config.babyzombieaddons.option.spiderSlayerInfo.OFF": "Off",
-  "config.babyzombieaddons.option.spiderSlayerInfo.HP_ONLY": "HP Only",
-  "config.babyzombieaddons.option.spiderSlayerInfo.HP_AND_STATUS": "HP + Status",
 
-  "config.babyzombieaddons.option.wolfSlayerInfo": "Wolf Slayer Info",
-  "config.babyzombieaddons.option.wolfSlayerInfo.desc": "Currently just HP bar, nobody cares about boss status anyway.",
-  "config.babyzombieaddons.option.wolfSlayerInfo.OFF": "Off",
-  "config.babyzombieaddons.option.wolfSlayerInfo.HP_ONLY": "HP Only",
-  "config.babyzombieaddons.option.wolfSlayerInfo.HP_AND_STATUS": "HP + Status",
 
-  "config.babyzombieaddons.option.endermanSlayerInfo": "Enderman Slayer Info",
-  "config.babyzombieaddons.option.endermanSlayerInfo.desc": "HP bar, shield, lazer and beacon timer.",
-  "config.babyzombieaddons.option.endermanSlayerInfo.OFF": "Off",
-  "config.babyzombieaddons.option.endermanSlayerInfo.HP_ONLY": "HP Only",
-  "config.babyzombieaddons.option.endermanSlayerInfo.HP_AND_STATUS": "HP + Status",
 
-  "config.babyzombieaddons.option.blazeSlayerInfo": "Blaze Slayer Info",
-  "config.babyzombieaddons.option.blazeSlayerInfo.desc": "HP bar and which dagger to use right now.",
-  "config.babyzombieaddons.option.blazeSlayerInfo.OFF": "Off",
-  "config.babyzombieaddons.option.blazeSlayerInfo.HP_ONLY": "HP Only",
-  "config.babyzombieaddons.option.blazeSlayerInfo.HP_AND_STATUS": "HP + Status",
-  "config.babyzombieaddons.option.blazeSlayerInfo.HP_STATUS_REPEAT": "HP + Status + Repeat",
 
-  "config.babyzombieaddons.option.vampireSlayerInfo": "Vampire Slayer Info",
-  "config.babyzombieaddons.option.vampireSlayerInfo.desc": "HP bar and some skill timers. Most info is actually written above the boss head.",
-  "config.babyzombieaddons.option.vampireSlayerInfo.OFF": "Off",
-  "config.babyzombieaddons.option.vampireSlayerInfo.HP_ONLY": "HP Only",
-  "config.babyzombieaddons.option.vampireSlayerInfo.HP_AND_STATUS": "HP + Status",
 
-  "config.babyzombieaddons.group.bossBox": "Boss Box Settings",
-  "config.babyzombieaddons.group.bossInfoSettings": "Per-Boss Info Level",
 
 
   "config.babyzombieaddons.group.crystalHollows": "Crystal Hollows",
@@ -244,8 +206,6 @@
   "config.babyzombieaddons.option.armadilloEnergy": "Armadillo Energy",
   "config.babyzombieaddons.option.armadilloEnergy.desc": "Show current/max energy with color transition.",
 
-  "config.babyzombieaddons.option.darkMonolithFinder": "Dark Monolith Finder",
-  "config.babyzombieaddons.option.darkMonolithFinder.desc": "Mark all 14 possible monolith locations.",
   "config.babyzombieaddons.option.drillSwingSuppression": "Drill Swing Suppression",
   "config.babyzombieaddons.option.drillSwingSuppression.desc": "Prevent arm swinging animation while mining.",
   "config.babyzombieaddons.option.powderMiningSounds": "Powder Mining Sounds",
@@ -275,6 +235,8 @@
   "config.babyzombieaddons.option.xpOrbSoundRemoval.desc": "XP orb sound volume when breaking crops while holding an axe or hoe in the Garden. 0 = fully muted, 100 = unchanged.",
   "config.babyzombieaddons.option.signAutoRotate": "Sign Auto Rotate",
   "config.babyzombieaddons.option.signAutoRotate.desc": "Right-click a sign while holding a hoe or axe to auto-rotate and cancel interaction. Write \"yaw: value\" and \"pitch: value\" on any sign line (case-insensitive).",
+  "config.babyzombieaddons.option.trevorAutoAccept": "Trevor Auto Accept",
+  "config.babyzombieaddons.option.trevorAutoAccept.desc": "Automatically accept Trevor the Trapper's hunting task by clicking [YES] for you.",
 
 
   "config.babyzombieaddons.option.popupPartyInvite": "Party Invite",
@@ -359,6 +321,13 @@
   "babyzombieaddons.popup.body.restart_request": "%s wants to restart",
   "babyzombieaddons.popup.accept": "[%s] Accept",
   "babyzombieaddons.popup.ignore": "[%s] Ignore",
+  "babyzombieaddons.sound.hover": "§7Click to ignore §f%s\n§7Click again to restore\n§7/bza sound clear to clear all",
+  "babyzombieaddons.sound.monitor_on": "§aSound monitor ON",
+  "babyzombieaddons.sound.monitor_off": "§cSound monitor OFF",
+  "babyzombieaddons.sound.added_to_ignore": "§cAdded to ignore list: §f%s",
+  "babyzombieaddons.sound.removed_from_ignore": "§eRemoved from ignore list: §f%s",
+  "babyzombieaddons.sound.clear_ignore": "§aCleared all ignored sounds",
+
   "babyzombieaddons.cake.all_eaten": "§aYou have eaten all 16 cakes!",
   "babyzombieaddons.ch.nucleus": "§bReady to /warp nucleus, click the crystal again",
   "babyzombieaddons.glacite.exit": "§6Exit",

@@ -28,11 +28,6 @@ public final class HudRegistrar {
                 "     §a❈ 50%\n     §e3.14s",
                 "config.babyzombieaddons.option.endStoneSwordTimer",
                 () -> get().slayer.endStoneSwordTimer != ModConfig.EndStoneSwordMode.OFF);
-        HudManager.register("SlayerBoss", 190, 100, 1.5f,
-                "§4§lRevenant V §c100% §7(1.5M/1.5M)",
-                "config.babyzombieaddons.option.bossInfoHUD",
-                () -> get().slayer.bossInfoHUD);
-
         HudManager.register("ReheatedGummyPolarBear", 80, 80, 1.0f,
                 "    §a12:34",
                 "config.babyzombieaddons.option.reheatedGummyPolarBear",

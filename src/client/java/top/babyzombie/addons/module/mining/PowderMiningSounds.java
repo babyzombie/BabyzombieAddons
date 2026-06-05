@@ -25,8 +25,10 @@ public final class PowderMiningSounds {
             if (!isInCrystalHollows()) return false;
             if (blockBreakTimer < ServerTick.getTime()) return false;
 
-            String snd = sound.getSound().toString();
-            if (snd.contains("random.orb")) {
+            var snd = sound.getSound();
+            if (snd == null) return false;
+            String path = snd.getLocation().getPath();
+            if (path.equals("random/orb")) {
                 return true; // cancel XP orb sounds
             }
             return false;

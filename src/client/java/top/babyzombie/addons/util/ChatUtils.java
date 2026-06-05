@@ -127,4 +127,9 @@ public final class ChatUtils {
         }
         return null;
     }
+
+    public static String formatTime(long ms) {
+        long s = ms / 1000, m = (ms % 1000) / 10;
+        return String.format("%d.%02ds", s, m);
+    }
 }

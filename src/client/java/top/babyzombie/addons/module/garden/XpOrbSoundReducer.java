@@ -33,8 +33,10 @@ public final class XpOrbSoundReducer {
     }
 
     private static boolean shouldReduce(SoundInstance sound) {
-        if (!sound.getSound().toString().contains("random.orb")
-                && !sound.getSound().toString().contains("entity.experience_orb"))
+        var snd = sound.getSound();
+        if (snd == null) return false;
+        String path = snd.getLocation().getPath();
+        if (!path.equals("random/orb"))
             return false;
 
         if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;

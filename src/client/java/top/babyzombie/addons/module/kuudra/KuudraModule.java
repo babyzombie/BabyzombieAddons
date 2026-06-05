@@ -18,6 +18,7 @@ public final class KuudraModule {
         KuudraPerkShopBlacklist.init();
         EnderPearlRefill.init();
         KuudraFollowerHelmetPrice.init();
+        CrimsonArmorPistonMute.init();
 
         ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
             if (world != null) KuudraLocationTracker.reset();

@@ -26,23 +26,33 @@ public final class BabyzombieAddonsCommand {
     public static void init() {
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {
             if (!soundMonitor) return false;
-            String id = "?";
-            try { var loc = sound.getIdentifier(); id = loc != null ? loc.toString() : "?"; } catch (Exception ignored) {}
+            var snd = sound.getSound();
+            String id;
+            if (snd != null) {
+                var loc = snd.getLocation();
+                id = loc.getNamespace() + ":" + loc.getPath();
+            } else {
+                id = "?";
+            }
             if (soundBlacklist.contains(id)) return false;
-            String src = "?";
-            try { src = String.valueOf(sound.getSource()); } catch (Exception ignored) {}
+
             float vol = 0, pit = 0;
-            try { vol = sound.getVolume(); pit = sound.getPitch(); } catch (Exception ignored) {}
-            boolean loop = false;
-            try { loop = sound.isLooping(); } catch (Exception ignored) {}
-            String posStr = "?";
-            try { posStr = String.format("%.1f,%.1f,%.1f", sound.getX(), sound.getY(), sound.getZ()); } catch (Exception ignored) {}
+            double sx = 0, sy = 0, sz = 0;
+            try { vol = sound.getVolume(); } catch (Exception ignored) {}
+            try { pit = sound.getPitch(); } catch (Exception ignored) {}
+            try { sx = sound.getX(); } catch (Exception ignored) {}
+            try { sy = sound.getY(); } catch (Exception ignored) {}
+            try { sz = sound.getZ(); } catch (Exception ignored) {}
+
             String msg = String.format(
-                    "§7[§bSound§7] §f%s §7vol=§f%.2f §7pit=§f%.2f §7src=§f%s §7pos=§f%s §7loop=§f%s",
-                    id, vol, pit, src, posStr, loop);
-            var cmd = "/bza sound " + id;
+                    "§7resource: §f%s §7volume: §f%.2f §7, pitch: §f%.2f §7x: §f%.2f §7, y: §f%.2f §7, z: §f%.2f",
+                    id, vol, pit, sx, sy, sz);
+
             var comp = Component.literal(msg)
-                    .withStyle(style -> style.withClickEvent(new ClickEvent.RunCommand(cmd)));
+                    .withStyle(style -> style
+                            .withClickEvent(new ClickEvent.RunCommand("/bza sound " + id))
+                            .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
+                                    Component.translatable("babyzombieaddons.sound.hover", id))));
             var player = Minecraft.getInstance().player;
             if (player != null) player.displayClientMessage(comp, false);
             return false;
@@ -78,6 +88,7 @@ public final class BabyzombieAddonsCommand {
                             .executes(BabyzombieAddonsCommand::rotation))))
                     .then(literal("sound")
                             .executes(BabyzombieAddonsCommand::toggleSoundMonitor)
+                            .then(literal("clear").executes(BabyzombieAddonsCommand::clearSoundFilter))
                             .then(argument("filter", StringArgumentType.greedyString())
                                     .executes(BabyzombieAddonsCommand::setSoundFilter)))
                     .then(literal("l").executes(ctx -> { ChatUtils.sendCommand("limbo"); return 1; }))
@@ -187,8 +198,8 @@ public final class BabyzombieAddonsCommand {
         soundMonitor = !soundMonitor;
         soundBlacklist.clear();
         ctx.getSource().sendFeedback(Component.literal(
-                soundMonitor ? "§aSound monitor ON"
-                             : "§cSound monitor OFF"));
+                soundMonitor ? Component.translatable("babyzombieaddons.sound.monitor_on").getString()
+                             : Component.translatable("babyzombieaddons.sound.monitor_off").getString()));
         return 1;
     }
 
@@ -196,11 +207,17 @@ public final class BabyzombieAddonsCommand {
         String filter = StringArgumentType.getString(ctx, "filter");
         if (soundBlacklist.contains(filter)) {
             soundBlacklist.remove(filter);
-            ctx.getSource().sendFeedback(Component.literal("§eRemoved from blacklist: §f" + filter));
+            ctx.getSource().sendFeedback(Component.translatable("babyzombieaddons.sound.removed_from_ignore", filter));
         } else {
             soundBlacklist.add(filter);
-            ctx.getSource().sendFeedback(Component.literal("§cAdded to blacklist: §f" + filter));
+            ctx.getSource().sendFeedback(Component.translatable("babyzombieaddons.sound.added_to_ignore", filter));
         }
+        return 1;
+    }
+
+    private static int clearSoundFilter(CommandContext<FabricClientCommandSource> ctx) {
+        soundBlacklist.clear();
+        ctx.getSource().sendFeedback(Component.translatable("babyzombieaddons.sound.clear_ignore"));
         return 1;
     }
 

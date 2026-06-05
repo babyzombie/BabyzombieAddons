@@ -198,9 +198,9 @@ public final class GlaciteMineshaftWaypoints {
                                     && ChatUtils.stripColor(e.getName().getString()).endsWith("'s Mineshaft Portal"));
                     for (var s : stands) {
                         BeaconStateInjector.addBeam(s.getX() - 0.5, s.getY(), s.getZ() - 0.5,
-                                new Color(0, 1, 1, 1), 20f);
+                                new Color(0.4f, 0.7f, 1.0f, 0.4f), 20f);
                         WorldTextRenderer.renderString(ctx, "§a" + formatTime(remaining),
-                                s.getX(), s.getY() + 1, s.getZ(), 0xFF55FFFF, 0.025f, true);
+                                s.getX(), s.getY() + 2.5, s.getZ(), 0xFF55FFFF, 0.04f, false);
                     }
                 }
             }

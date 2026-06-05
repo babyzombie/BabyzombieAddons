@@ -1,5 +1,6 @@
 package top.babyzombie.addons.module.slayer;
 
+import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.ServerTick;
 
 /**
@@ -18,11 +19,11 @@ public final class HolyIceTimer {
         if (activated) {
             long rem = 1500 - (now - time);
             if (rem <= 0) { activated = false; time = now; }
-            else text = "§bHoly Ice: §a" + BossDetector.formatTime(rem);
+            else text = "§bHoly Ice: §a" + ChatUtils.formatTime(rem);
         } else {
             long rem = 2500 - (now - time);
             if (rem <= 0) { time = 0; text = ""; }
-            else text = "§bHoly Ice: §e" + BossDetector.formatTime(rem);
+            else text = "§bHoly Ice: §e" + ChatUtils.formatTime(rem);
         }
     }
 }

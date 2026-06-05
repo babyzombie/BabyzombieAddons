@@ -58,6 +58,8 @@ public final class KuudraCategory {
                         .build())
                 .option(bool("followerHelmetPrice", defaults.kuudra.followerHelmetPrice,
                         () -> config.kuudra.followerHelmetPrice, v -> config.kuudra.followerHelmetPrice = v))
+                .option(bool("muteCrimsonArmor", defaults.kuudra.muteCrimsonArmor,
+                        () -> config.kuudra.muteCrimsonArmor, v -> config.kuudra.muteCrimsonArmor = v))
                 .build();
     }
 

@@ -1,71 +1,68 @@
 package top.babyzombie.addons.module.slayer;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.event.PlaySoundEvents;
+import top.babyzombie.addons.util.ChatUtils;
 
 public final class SlayerModule {
     private SlayerModule() {}
 
     public static void init() {
         // Initialize sub-modules (register their event listeners)
-        BossDetector.init();
         PigmanSwordTimer.init();
         RagnarockAxeTimer.init();
         ReaperArmorTimer.init();
         EndStoneSwordTimer.init();
         ReheatedGummyPolarBearTimer.init();
         NoSlayerQuestWarning.init();
-        SlayerBossRenderer.init();
-        SlayerHUD.init();
+        BloodfiendLowHPBox.init();
         EffigyDisplay.init();
+        SlayerHUD.init();
 
         // ---- Wire sound events ----
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {
-            // Detect sound by parsing toString representation (1.21 names)
-            String raw = sound.toString().toLowerCase();
+            var snd = sound.getSound();
+            if (snd == null) return false;
+            String path = snd.getLocation().getPath().toLowerCase();
             String name;
-            if (raw.contains("angry") || raw.contains("zpigangry") || raw.contains("zombified_piglin")) {
+            if (path.contains("zpigangry") || path.contains("angry") || path.contains("zombified_piglin")) {
                 name = "zpigangry";
-            } else if (raw.contains("remedy") || raw.contains("zombie.remedy")) {
-                name = "zombie.remedy";
-            } else if (raw.contains("drink") || raw.contains("generic.drink")) {
+            } else if (path.contains("zombie/remedy") || path.contains("remedy")) {
+                name = "zombie/remedy";
+            } else if (path.contains("drink") || path.contains("generic/drink")) {
                 name = "drink";
             } else {
                 return false;
             }
             PigmanSwordTimer.onSound(name);
-            try { ReaperArmorTimer.onSound(name, sound.getPitch()); } catch (Exception ignored) {}
+            float pitch = 1f;
+            try { pitch = sound.getPitch(); } catch (Exception ignored) {}
+            ReaperArmorTimer.onSound(name, pitch);
             return false;
         });
 
         // ---- Wire entity death for NoSlayerQuestWarning ----
         ClientEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
             if (entity == null || entity.isAlive()) return;
-            // Entity died/unloaded - check if we need to warn about missing slayer quest
             NoSlayerQuestWarning.onEntityDeath();
         });
 
-        // ---- Boss detector tick ----
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            BossDetector.tick();
-        });
-
-        // ---- Slayer quest start detection ----
+        // ---- Slayer quest lifecycle ----
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
             String text = message.getString();
             if (text.contains("SLAYER QUEST STARTED")) {
                 NoSlayerQuestWarning.onSlayerStart();
+            } else if (ChatUtils.stripColor(text).contains("SLAYER QUEST FAILED")) {
+                NoSlayerQuestWarning.onSlayerFail();
             }
         });
 
         // ---- Reset on world load ----
         ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
             if (world == null) return;
-            BossDetector.reset();
             PigmanSwordTimer.time = 0;
             HolyIceTimer.time = 0;
             HolyIceTimer.activated = false;
