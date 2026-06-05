@@ -6,7 +6,11 @@
   "name": "BabyzombieAddons",
   "description": "Hypixel SkyBlock QoL utilities",
   "authors": ["baby__zombie"],
-  "contact": {},
+  "contact": {
+    "homepage": "https://github.com/babyzombie/BabyzombieAddons",
+    "sources": "https://github.com/babyzombie/BabyzombieAddons",
+    "issues": "https://github.com/babyzombie/BabyzombieAddons/issues"
+  },
 
   "license": "All-Rights-Reserved",
   "icon": "assets/babyzombieaddons/icon.png",
