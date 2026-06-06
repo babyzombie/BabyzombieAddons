@@ -25,6 +25,8 @@ public final class GeneralCategory {
         return ConfigCategory.createBuilder()
                 .id(Identifier.fromNamespaceAndPath("babyzombieaddons", "config/general"))
                 .name(Component.translatable("config.babyzombieaddons.category.general"))
+                .option(createBool("updateChecker", defaults.general.updateChecker,
+                        () -> config.general.updateChecker, v -> config.general.updateChecker = v))
                 .option(ButtonOption.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.option.hudEdit"))
                         .description(Component.translatable("config.babyzombieaddons.option.hudEdit.desc"))

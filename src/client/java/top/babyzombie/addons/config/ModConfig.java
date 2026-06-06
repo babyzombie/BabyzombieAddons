@@ -31,6 +31,7 @@ public class ModConfig {
     // ---- General ----
 
     public static class GeneralConfig {
+        public boolean updateChecker = true;
         public boolean autois = false;
         public int autoisDelay = 5;
         public AutoISDest autoisDest = AutoISDest.GARDEN;

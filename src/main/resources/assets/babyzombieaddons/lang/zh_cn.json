@@ -55,6 +55,9 @@
   "config.babyzombieaddons.category.misc": "杂项",
 
   "config.babyzombieaddons.group.autois": "AutoIS 设置",
+  "config.babyzombieaddons.option.updateChecker": "检查更新",
+  "config.babyzombieaddons.option.updateChecker.desc": "进入世界时在 GitHub 检查是否有新版本。",
+
   "config.babyzombieaddons.option.autois": "自动回岛",
   "config.babyzombieaddons.option.autois.desc": "进入 SkyBlock 时自动传送到岛屿或花园。",
   "config.babyzombieaddons.option.autoisDelay": "延迟（秒）",
@@ -354,5 +357,8 @@
   "babyzombieaddons.fruitdigging.no_fruit": "§e附近没有水果",
   "babyzombieaddons.fruitdigging.bombs_nearby": "§c附近有%s个炸弹",
 
-  "babyzombieaddons.sendcoords.no_target": "§c视线内没有目标方块"
+  "babyzombieaddons.sendcoords.no_target": "§c视线内没有目标方块",
+
+  "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §a发现新版本 §e%s §a(当前: §7%s§a)  §b§n[点击下载]",
+  "babyzombieaddons.update.open_url": "§7点击打开 §f%s"
 }
