@@ -183,6 +183,41 @@
   "config.babyzombieaddons.option.showEffigies": "Show Effigies",
   "config.babyzombieaddons.option.showEffigies.desc": "Show remaining blood pillars in the Rift castle based on scoreboard.",
 
+  "config.babyzombieaddons.option.slayerBossInfo": "Slayer Boss Info",
+  "config.babyzombieaddons.option.slayerBossInfoMode.OFF": "Off",
+  "config.babyzombieaddons.option.slayerBossInfoMode.BASIC": "Basic HP",
+  "config.babyzombieaddons.option.slayerBossInfoMode.FULL": "Full Info",
+
+  "config.babyzombieaddons.option.zombieSlayerInfo": "Zombie Slayer Info",
+  "config.babyzombieaddons.option.zombieSlayerInfo.desc": "Show Revenant Horror boss HP and status on HUD.",
+  "config.babyzombieaddons.option.spiderSlayerInfo": "Spider Slayer Info",
+  "config.babyzombieaddons.option.spiderSlayerInfo.desc": "Show Tarantula Broodfather boss HP and status on HUD.",
+  "config.babyzombieaddons.option.wolfSlayerInfo": "Wolf Slayer Info",
+  "config.babyzombieaddons.option.wolfSlayerInfo.desc": "Show Sven Packmaster boss HP and status on HUD.",
+  "config.babyzombieaddons.option.endermanSlayerInfo": "Enderman Slayer Info",
+  "config.babyzombieaddons.option.endermanSlayerInfo.desc": "Show Voidgloom Seraph boss HP, lazer timer and beacon status on HUD.",
+  "config.babyzombieaddons.option.blazeSlayerInfo": "Blaze Slayer Info",
+  "config.babyzombieaddons.option.blazeSlayerInfo.desc": "Show Inferno Demonlord boss HP, attunement and minion status on HUD.",
+  "config.babyzombieaddons.option.vampireSlayerInfo": "Vampire Slayer Info",
+  "config.babyzombieaddons.option.vampireSlayerInfo.desc": "Show Riftstalker Bloodfiend boss HP and status on HUD.",
+
+  "config.babyzombieaddons.option.boxSlayerBoss": "Slayer Boss Box",
+  "config.babyzombieaddons.option.boxSlayerBoss.desc": "Draw a bounding box around the slayer boss.",
+  "config.babyzombieaddons.option.boxSlayerBoss.OFF": "Off",
+  "config.babyzombieaddons.option.boxSlayerBoss.WIREFRAME": "Wireframe",
+  "config.babyzombieaddons.option.boxSlayerBoss.BOX": "Box",
+  "config.babyzombieaddons.option.boxBossColor": "Boss Box Color",
+  "config.babyzombieaddons.option.boxBossColor.desc": "Color of the slayer boss bounding box and beam.",
+  "config.babyzombieaddons.option.boxBossBeamColor": "Beam Color",
+  "config.babyzombieaddons.option.boxBossBeamColor.desc": "Color of the beacon beam.",
+  "config.babyzombieaddons.option.boxBossBeam": "Beacon Beam",
+  "config.babyzombieaddons.option.boxBossBeam.desc": "Draw a beacon beam on the slayer boss and its minions.",
+  "config.babyzombieaddons.option.boxBossRenderThroughWalls": "Render Through Walls",
+  "config.babyzombieaddons.option.boxBossRenderThroughWalls.desc": "When enabled, the boss box is visible even behind walls.",
+  "config.babyzombieaddons.group.itemSkillTimers": "Item Skill Timers",
+  "config.babyzombieaddons.group.slayerBossInfo": "Boss Info",
+  "config.babyzombieaddons.group.slayerBossBox": "Boss Box",
+
 
 
 

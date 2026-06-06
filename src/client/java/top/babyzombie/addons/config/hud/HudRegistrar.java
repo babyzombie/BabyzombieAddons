@@ -32,6 +32,18 @@ public final class HudRegistrar {
                 "    §a12:34",
                 "config.babyzombieaddons.option.reheatedGummyPolarBear",
                 () -> get().slayer.reheatedGummyPolarBear != ModConfig.GummyPolarBearMode.OFF);
+        HudManager.register("SlayerBoss", 200, 20, 1.5f,
+                "§5Voidgloom Seraph §a205M§c❤",
+                "config.babyzombieaddons.option.slayerBossInfo",
+                () -> {
+                    var s = get().slayer;
+                    return s.zombieSlayerInfo != ModConfig.SlayerBossInfoMode.OFF
+                            || s.spiderSlayerInfo != ModConfig.SlayerBossInfoMode.OFF
+                            || s.wolfSlayerInfo != ModConfig.SlayerBossInfoMode.OFF
+                            || s.endermanSlayerInfo != ModConfig.SlayerBossInfoMode.OFF
+                            || s.blazeSlayerInfo != ModConfig.SlayerBossInfoMode.OFF
+                            || s.vampireSlayerInfo != ModConfig.SlayerBossInfoMode.OFF;
+                });
 
         // --- Kuudra ---
         HudManager.register("KuudraHP", 200, 20, 2.0f,

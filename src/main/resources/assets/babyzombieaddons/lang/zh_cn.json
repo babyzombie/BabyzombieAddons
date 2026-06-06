@@ -183,6 +183,41 @@
   "config.babyzombieaddons.option.showEffigies": "显示 Rift 城堡里没拆的血柱",
   "config.babyzombieaddons.option.showEffigies.desc": "根据计分板判断，不会显示已经拆掉的。",
 
+  "config.babyzombieaddons.option.slayerBossInfo": "猎手 Boss 信息",
+  "config.babyzombieaddons.option.slayerBossInfoMode.OFF": "关闭",
+  "config.babyzombieaddons.option.slayerBossInfoMode.BASIC": "仅血量",
+  "config.babyzombieaddons.option.slayerBossInfoMode.FULL": "完整信息",
+
+  "config.babyzombieaddons.option.zombieSlayerInfo": "僵尸猎手信息",
+  "config.babyzombieaddons.option.zombieSlayerInfo.desc": "在屏幕上显示 Revenant Horror Boss 的血量和状态。",
+  "config.babyzombieaddons.option.spiderSlayerInfo": "蜘蛛猎手信息",
+  "config.babyzombieaddons.option.spiderSlayerInfo.desc": "在屏幕上显示 Tarantula Broodfather Boss 的血量和状态。",
+  "config.babyzombieaddons.option.wolfSlayerInfo": "狼猎手信息",
+  "config.babyzombieaddons.option.wolfSlayerInfo.desc": "在屏幕上显示 Sven Packmaster Boss 的血量和状态。",
+  "config.babyzombieaddons.option.endermanSlayerInfo": "末影人猎手信息",
+  "config.babyzombieaddons.option.endermanSlayerInfo.desc": "在屏幕上显示 Voidgloom Seraph Boss 的血量、激光计时和信标状态。",
+  "config.babyzombieaddons.option.blazeSlayerInfo": "烈焰人猎手信息",
+  "config.babyzombieaddons.option.blazeSlayerInfo.desc": "在屏幕上显示 Inferno Demonlord Boss 的血量、调谐和小弟状态。",
+  "config.babyzombieaddons.option.vampireSlayerInfo": "吸血鬼猎手信息",
+  "config.babyzombieaddons.option.vampireSlayerInfo.desc": "在屏幕上显示 Riftstalker Bloodfiend Boss 的血量和状态。",
+
+  "config.babyzombieaddons.option.boxSlayerBoss": "猎手 Boss 边框",
+  "config.babyzombieaddons.option.boxSlayerBoss.desc": "为猎手 Boss 绘制包围框。",
+  "config.babyzombieaddons.option.boxSlayerBoss.OFF": "关闭",
+  "config.babyzombieaddons.option.boxSlayerBoss.WIREFRAME": "边框",
+  "config.babyzombieaddons.option.boxSlayerBoss.BOX": "盒子",
+  "config.babyzombieaddons.option.boxBossColor": "Boss 边框颜色",
+  "config.babyzombieaddons.option.boxBossColor.desc": "猎手 Boss 包围框和光束的颜色。",
+  "config.babyzombieaddons.option.boxBossBeamColor": "光柱颜色",
+  "config.babyzombieaddons.option.boxBossBeamColor.desc": "信标光柱的颜色。",
+  "config.babyzombieaddons.option.boxBossBeam": "信标光柱",
+  "config.babyzombieaddons.option.boxBossBeam.desc": "在猎手 Boss 和小弟上绘制信标光柱。",
+  "config.babyzombieaddons.option.boxBossRenderThroughWalls": "框渲染穿墙",
+  "config.babyzombieaddons.option.boxBossRenderThroughWalls.desc": "开启时，Boss 边框在墙体后也始终可见。",
+  "config.babyzombieaddons.group.itemSkillTimers": "物品技能计时器",
+  "config.babyzombieaddons.group.slayerBossInfo": "Boss 信息",
+  "config.babyzombieaddons.group.slayerBossBox": "Boss 边框",
+
 
 
 

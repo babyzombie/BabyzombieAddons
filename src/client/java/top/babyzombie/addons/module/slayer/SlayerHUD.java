@@ -186,5 +186,14 @@ public final class SlayerHUD {
                 }
             }
         }
+
+        // ---- Slayer Boss Info ----
+        if (HudManager.shouldShow("SlayerBoss")) {
+            if (!SlayerBossDetector.renderStr.isEmpty()) {
+                HudManager.drawScaled(gui, font, SlayerBossDetector.renderStr,
+                        HudManager.x("SlayerBoss"), HudManager.y("SlayerBoss"),
+                        HudManager.scale("SlayerBoss"));
+            }
+        }
     }
 }

@@ -14,6 +14,8 @@ public class ModConfig {
     public enum GummyPolarBearMode { OFF, SMOLDERING_TOMB_ONLY, EVERYWHERE_EXCEPT_DUNGEON }
     public enum RagnarockAxeMode { OFF, NUMERIC, PROGRESS_BAR }
     public enum EndStoneSwordMode { OFF, TIMER_ONLY, PREVENT_REUSE, BOTH }
+    public enum SlayerBossInfoMode { OFF, BASIC, FULL }
+    public enum SlayerBossBoxMode { OFF, WIREFRAME, BOX }
 
     public GeneralConfig general = new GeneralConfig();
     public DungeonConfig dungeon = new DungeonConfig();
@@ -83,6 +85,17 @@ public class ModConfig {
         public GummyPolarBearMode reheatedGummyPolarBear = GummyPolarBearMode.OFF;
         public boolean boxLowHPBloodfiend = false;
         public boolean showEffigies = false;
+        public SlayerBossInfoMode zombieSlayerInfo = SlayerBossInfoMode.OFF;
+        public SlayerBossInfoMode spiderSlayerInfo = SlayerBossInfoMode.OFF;
+        public SlayerBossInfoMode wolfSlayerInfo = SlayerBossInfoMode.OFF;
+        public SlayerBossInfoMode endermanSlayerInfo = SlayerBossInfoMode.OFF;
+        public SlayerBossInfoMode blazeSlayerInfo = SlayerBossInfoMode.OFF;
+        public SlayerBossInfoMode vampireSlayerInfo = SlayerBossInfoMode.OFF;
+        public SlayerBossBoxMode boxSlayerBoss = SlayerBossBoxMode.OFF;
+        public int boxBossColor = 0xFFFFFFFF;
+        public int boxBossBeamColor = 0xFFFFFFFF;
+        public boolean boxBossBeam = false;
+        public boolean boxBossRenderThroughWalls = false;
     }
 
     public static class WitherCloakConfig {

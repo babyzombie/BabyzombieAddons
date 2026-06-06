@@ -19,6 +19,8 @@ public final class SlayerModule {
         NoSlayerQuestWarning.init();
         BloodfiendLowHPBox.init();
         EffigyDisplay.init();
+        SlayerBossDetector.init();
+        SlayerBossBox.init();
         SlayerHUD.init();
 
         // ---- Wire sound events ----
@@ -77,6 +79,7 @@ public final class SlayerModule {
             EndStoneSwordTimer.time = 0;
             EndStoneSwordTimer.resistance = 0;
             EndStoneSwordTimer.damage = 0;
+            SlayerBossDetector.reset();
         });
     }
 }
