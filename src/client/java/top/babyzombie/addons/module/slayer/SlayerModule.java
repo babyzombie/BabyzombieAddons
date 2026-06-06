@@ -54,10 +54,10 @@ public final class SlayerModule {
         // ---- Slayer quest lifecycle ----
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            String text = message.getString();
-            if (text.contains("SLAYER QUEST STARTED")) {
+            String text = ChatUtils.stripColor(message.getString()).trim();
+            if (text.equals("SLAYER QUEST STARTED!")) {
                 NoSlayerQuestWarning.onSlayerStart();
-            } else if (ChatUtils.stripColor(text).contains("SLAYER QUEST FAILED")) {
+            } else if (text.equals("SLAYER QUEST FAILED!")) {
                 NoSlayerQuestWarning.onSlayerFail();
             }
         });

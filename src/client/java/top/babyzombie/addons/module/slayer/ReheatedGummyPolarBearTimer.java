@@ -43,8 +43,8 @@ public final class ReheatedGummyPolarBearTimer {
             if (cfg.reheatedGummyPolarBear == ModConfig.GummyPolarBearMode.OFF) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
 
-            String text = ChatUtils.stripColor(message.getString());
-            if (text.contains("You ate a Re-heated Gummy Polar Bear")) {
+            String text = ChatUtils.stripColor(message.getString()).trim();
+            if (text.startsWith("You ate a Re-heated Gummy Polar Bear")) {
                 String profileId = HypixelLocationTracker.getInstance().getProfileId();
                 if (profileId != null) {
                     profileTimers.put(profileId, 3600); // 60 minutes * 60 seconds

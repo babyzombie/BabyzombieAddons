@@ -43,8 +43,8 @@ public final class RagnarockAxeTimer {
                     finished = false;
                 }
             } else {
-                // Chat
-                if (text.contains("Ragnarock was cancelled")) {
+                // Chat (exact match, won't catch player chat)
+                if (ChatUtils.stripColor(text).trim().equals("Ragnarock was cancelled due to taking damage!")) {
                     cancelled = true;
                     castTime = 0;
                     duration = 0;
