@@ -102,7 +102,7 @@ public final class DungeonModule {
                 instanceStarted = false;
 
                 var mode = ModConfigManager.get().dungeon.dailyRunsCounter;
-                if (mode != DailyCounterMode.OFF && (win || HypixelLocationTracker.getInstance().isInDungeon())) {
+                if (mode != DailyCounterMode.OFF && win && HypixelLocationTracker.getInstance().isInDungeon()) {
                     loadDaily();
                     dailyRuns++;
                     saveDaily();

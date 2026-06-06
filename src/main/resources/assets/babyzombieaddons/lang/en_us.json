@@ -350,5 +350,7 @@
 
   "babyzombieaddons.fruitdigging.treasure_nearby": "§e%s nearby",
   "babyzombieaddons.fruitdigging.no_fruit": "§eNo fruit nearby",
-  "babyzombieaddons.fruitdigging.bombs_nearby": "§c%s bombs nearby"
+  "babyzombieaddons.fruitdigging.bombs_nearby": "§c%s bombs nearby",
+
+  "babyzombieaddons.sendcoords.no_target": "§cNo block in sight"
 }

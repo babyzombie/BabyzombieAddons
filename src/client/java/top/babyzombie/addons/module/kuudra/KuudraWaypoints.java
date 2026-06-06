@@ -35,7 +35,7 @@ public final class KuudraWaypoints {
     public static void init() {
         WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
             for (var t : textEntries.values())
-                WorldTextRenderer.renderString(ctx, t.text, t.x, t.y, t.z, t.color, 0.025f, true);
+                WorldTextRenderer.renderString(ctx, t.text, t.x, t.y, t.z, t.color, 0.05f, true);
             for (var b : beams) {
                 BeaconStateInjector.addBeam(b.x, b.y, b.z,
                     new Color(b.r, b.g, b.b, b.a), b.h);
@@ -61,9 +61,6 @@ public final class KuudraWaypoints {
                         e -> ChatUtils.stripColor(e.getName().getString()).contains("BRING SUPPLY CHEST HERE"))) {
                     double x = s.getX()-1.5, y = s.getY(), z = s.getZ()-1.5;
                     beams.add(new Beam(x, y, z, 1, 1, 0, 1, 20f));
-                    String key = "p1_supply_" + s.getId(); seenKeys.add(key);
-                    double dist = Math.sqrt(client.player.distanceToSqr(x, y, z));
-                    textEntries.put(key, new TextData("§e(§6" + (int)dist + "m§e)", x+0.5, y+1, z+0.5, 0xFFFFFF55));
                 }
             } else if ("Protect Elle".equals(phase)) {
                 for (var s : client.player.level().getEntitiesOfClass(

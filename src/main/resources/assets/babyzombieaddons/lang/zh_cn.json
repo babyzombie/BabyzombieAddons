@@ -352,5 +352,7 @@
 
   "babyzombieaddons.fruitdigging.treasure_nearby": "§e附近有 %s",
   "babyzombieaddons.fruitdigging.no_fruit": "§e附近没有水果",
-  "babyzombieaddons.fruitdigging.bombs_nearby": "§c附近有%s个炸弹"
+  "babyzombieaddons.fruitdigging.bombs_nearby": "§c附近有%s个炸弹",
+
+  "babyzombieaddons.sendcoords.no_target": "§c视线内没有目标方块"
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
@@ -14,16 +15,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.AABB;
-import top.babyzombie.addons.util.ItemUtils;
+import top.babyzombie.addons.util.*;
 import top.babyzombie.addons.config.ModConfig.MineshaftWarpMode;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.BeaconStateInjector;
-import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.HypixelLocationTracker;
-import top.babyzombie.addons.util.PartyTracker;
-import top.babyzombie.addons.util.Scheduler;
-import top.babyzombie.addons.util.ServerTick;
-import top.babyzombie.addons.util.WorldTextRenderer;
 
 
 import java.awt.Color;
@@ -33,7 +27,7 @@ public final class GlaciteMineshaftWaypoints {
             "[-]+\\n(.+) entered Glacite Mineshafts!\\n[-]+");
 
     private static long portalTimer;
-    private static final List<Waypoint> exits = new ArrayList<>();
+    private static final List<Waypoint> corpses = new ArrayList<>();
     private static boolean inMineshaft;
     private static boolean mineshaftOwner;
     private static long enterMineshaftTime;
@@ -49,11 +43,6 @@ public final class GlaciteMineshaftWaypoints {
             if (!t.isInSkyblock()) { inMineshaft = false; return; }
             boolean nowIn = "Mineshaft".equals(t.getMap());
             if (nowIn && !inMineshaft) {
-                if (client.player != null) {
-                    var wp = new Waypoint(client.player.getX(), client.player.getY(), client.player.getZ(),
-                            tr("babyzombieaddons.glacite.exit"));
-                    exits.add(wp);
-                }
                 enterMineshaftTime = ServerTick.getTime();
                 // Auto warp if owner
                 var warpMode = ModConfigManager.get().mining.glaciteMineshaftWarp;
@@ -66,14 +55,14 @@ public final class GlaciteMineshaftWaypoints {
                                 Scheduler.schedule(10, () -> ChatUtils.sendCommand("p warp"));
                         },
                         () -> {
-                            ChatUtils.sendCommand("pc !ptme");
+                            Scheduler.schedule(6, () -> ChatUtils.sendCommand("pc !ptme"));
                             if (warpMode == MineshaftWarpMode.PTME_AND_WARP)
                                 waitingPartyTransfer = true;
                         }
                     );
                 }
             }
-            if (!nowIn) exits.clear();
+            if (!nowIn) corpses.clear();
             inMineshaft = nowIn;
         });
 
@@ -86,7 +75,7 @@ public final class GlaciteMineshaftWaypoints {
                     new AABB(client.player.blockPosition()).inflate(96),
                     e -> !e.isDeadOrDying());
             for (var stand : stands) {
-                var helm = stand.getItemBySlot(EquipmentSlot.HEAD);
+                var helm = stand.getItemBySlot(EquipmentSlot.LEGS);
                 if (helm.isEmpty()) continue;
                 String id = ItemUtils.getSkyblockId(helm);
                 if (id == null) continue;
@@ -97,7 +86,7 @@ public final class GlaciteMineshaftWaypoints {
                     case "VANGUARD_LEGGINGS" -> "§bVanguard";
                     default -> null;
                 };
-                if (name != null) exits.add(new Waypoint(stand.getX(), stand.getY() + 2, stand.getZ(), name));
+                if (name != null) corpses.add(new Waypoint(stand.getX(), stand.getY() + 2, stand.getZ(), name));
             }
         });
 
@@ -181,10 +170,17 @@ public final class GlaciteMineshaftWaypoints {
         WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
             var t = HypixelLocationTracker.getInstance();
 
-            // Exit/corpse waypoints in mineshaft
+            // Corpse waypoints in mineshaft
             if (t.isInSkyblock() && "Mineshaft".equals(t.getMap())) {
-                for (var e : exits)
+                for (var e : corpses) {
+                    var color = mcColorToAwt(e.label);
+                    WorldRenderUtils.drawWireframeBox(ctx,
+                            e.x - 0.4, e.y - 2.0, e.z - 0.4,
+                            e.x + 0.4, e.y + 0.2, e.z + 0.4,
+                            color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 0.6f,
+                            false, 4.0f);
                     WorldTextRenderer.renderString(ctx, e.label, e.x, e.y, e.z, 0xFFFFFF55, 0.05f, true);
+                }
             }
 
             // Portal timer in Dwarven Mines
@@ -206,8 +202,8 @@ public final class GlaciteMineshaftWaypoints {
             }
         });
 
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-            exits.clear(); portalTimer = 0; inMineshaft = false;
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
+            corpses.clear(); portalTimer = 0; inMineshaft = false;
             mineshaftOwner = false; waitingPartyTransfer = false; ownServerName = null;
         });
     }
@@ -229,6 +225,31 @@ public final class GlaciteMineshaftWaypoints {
     private static String formatTime(long ms) {
         long s = ms / 1000; long m = s / 60; s %= 60;
         return String.format("%d:%02d", m, s);
+    }
+
+    private static Color mcColorToAwt(String text) {
+        if (text.length() >= 2 && text.charAt(0) == '§') {
+            return switch (text.charAt(1)) {
+                case '0' -> new Color(0x000000);
+                case '1' -> new Color(0x0000AA);
+                case '2' -> new Color(0x00AA00);
+                case '3' -> new Color(0x00AAAA);
+                case '4' -> new Color(0xAA0000);
+                case '5' -> new Color(0xAA00AA);
+                case '6' -> new Color(0xFFAA00);
+                case '7' -> new Color(0xAAAAAA);
+                case '8' -> new Color(0x555555);
+                case '9' -> new Color(0x5555FF);
+                case 'a' -> new Color(0x55FF55);
+                case 'b' -> new Color(0x55FFFF);
+                case 'c' -> new Color(0xFF5555);
+                case 'd' -> new Color(0xFF55FF);
+                case 'e' -> new Color(0xFFFF55);
+                case 'f' -> new Color(0xFFFFFF);
+                default -> new Color(0xFFFFFF);
+            };
+        }
+        return new Color(0xFFFFFF);
     }
 
     private record Waypoint(double x, double y, double z, String label) {}

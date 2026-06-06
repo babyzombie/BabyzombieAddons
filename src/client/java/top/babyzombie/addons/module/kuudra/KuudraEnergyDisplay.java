@@ -24,9 +24,7 @@ public final class KuudraEnergyDisplay {
     private static int fuel = -1;
 
     public static void init() {
-        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
-            fuel = -1;
-        });
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> fuel = -1);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfigManager.get().kuudra.energyDisplay) return;

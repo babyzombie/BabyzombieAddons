@@ -130,15 +130,24 @@ public final class BabyzombieAddonsCommand {
         if (player == null) return 1;
         var pos = player.blockPosition();
         if (mode.equals("LookingAt")) {
-            var hit = player.pick(20, 0, false);
-            if (hit instanceof net.minecraft.world.phys.BlockHitResult bhit
-                    && hit.getType() != net.minecraft.world.phys.HitResult.Type.MISS)
-                pos = bhit.getBlockPos();
+            var eyePos = player.getEyePosition();
+            var lookVec = player.getViewVector(1.0f);
+            var farPoint = eyePos.add(lookVec.scale(500.0));
+            var hit = player.level().clip(new net.minecraft.world.level.ClipContext(
+                    eyePos, farPoint,
+                    net.minecraft.world.level.ClipContext.Block.OUTLINE,
+                    net.minecraft.world.level.ClipContext.Fluid.NONE,
+                    player));
+            if (hit.getType() != net.minecraft.world.phys.HitResult.Type.MISS)
+                pos = hit.getBlockPos();
+            else {
+                ctx.getSource().sendFeedback(Component.translatable("babyzombieaddons.sendcoords.no_target"));
+                return 1;
+            }
         }
         String msg = String.format("x: %d, y: %d, z: %d", pos.getX(), pos.getY(), pos.getZ());
         if (suffix != null && !suffix.isEmpty()) msg += ", " + suffix;
         String prefix = channelToPrefix(channel);
-        ctx.getSource().sendFeedback(Component.literal("§6§l§b" + mode + (channel != null ? " " + prefix : "") + " §7: §a" + msg));
         if (channel != null) ChatUtils.sendCommand(prefix + " " + msg);
         else ChatUtils.sendMessage(msg);
         return 1;
