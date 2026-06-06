@@ -20,7 +20,7 @@ import top.babyzombie.addons.module.playcmd.PlayCmdModule;
 import top.babyzombie.addons.module.popup.PopupEventsModule;
 import top.babyzombie.addons.module.raredrop.RareDropModule;
 import top.babyzombie.addons.module.slayer.SlayerModule;
-import top.babyzombie.addons.module.update.UpdateChecker;
+import top.babyzombie.addons.module.misc.UpdateChecker;
 import top.babyzombie.addons.module.withercloak.WitherCloakModule;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import top.babyzombie.addons.util.BeaconStateInjector;

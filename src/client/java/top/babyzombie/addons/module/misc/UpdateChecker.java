@@ -1,4 +1,4 @@
-package top.babyzombie.addons.module.update;
+package top.babyzombie.addons.module.misc;
 
 import com.google.gson.JsonParser;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -39,8 +39,7 @@ public final class UpdateChecker {
 
     private static void check(Minecraft client, String currentVersion) {
         var thread = new Thread(() -> {
-            try {
-                var http = HttpClient.newHttpClient();
+            try (var http = HttpClient.newHttpClient()) {
                 var req = HttpRequest.newBuilder()
                         .uri(URI.create(API_URL))
                         .header("User-Agent", "BabyzombieAddons-UpdateChecker")
