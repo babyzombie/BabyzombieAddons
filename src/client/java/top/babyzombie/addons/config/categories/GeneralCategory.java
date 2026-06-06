@@ -85,6 +85,8 @@ public final class GeneralCategory {
                         .build())
                 .option(createBool("cakeBuffTracker", defaults.general.cakeBuffTracker,
                         () -> config.general.cakeBuffTracker, v -> config.general.cakeBuffTracker = v))
+                .option(createBool("useTpsAdjustedTime", defaults.general.useTpsAdjustedTime,
+                        () -> config.general.useTpsAdjustedTime, v -> config.general.useTpsAdjustedTime = v))
                 .build();
     }
 

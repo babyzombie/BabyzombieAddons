@@ -75,6 +75,8 @@
   "config.babyzombieaddons.option.cakeBuffTracker.desc": "Replace default cake messages with a checklist of consumed cakes.",
   "config.babyzombieaddons.option.skipSecondPerson": "Skip Second Person View",
   "config.babyzombieaddons.option.skipSecondPerson.desc": "Skip second-person view when pressing F5, cycling only between first-person and third-person back. Hold longer than the set tick count to switch to second-person. Set to 0 to disable, 20 ticks = 1 second.",
+  "config.babyzombieaddons.option.useTpsAdjustedTime": "TPS-Adjusted Timers",
+  "config.babyzombieaddons.option.useTpsAdjustedTime.desc": "Use server tick rate to adjust timer speeds. On laggy servers, cooldowns will slow down to match actual game time instead of using real wall-clock time.",
 
   "config.babyzombieaddons.option.f4CrowdHiding": "F4 Crowd Hiding",
   "config.babyzombieaddons.option.f4CrowdHiding.desc": "Handle spectator crowd in Floor 4 boss room.",
@@ -209,6 +211,8 @@
   "config.babyzombieaddons.option.crystalHollowsPassAutoRenew.desc": "Automatically purchase the 6-hour pass.",
   "config.babyzombieaddons.option.chestMarkers": "Chest Markers",
   "config.babyzombieaddons.option.chestMarkers.desc": "Box rendering on nearby chests.",
+  "config.babyzombieaddons.option.chestLineWidth": "Chest Line Width",
+  "config.babyzombieaddons.option.chestLineWidth.desc": "Width of chest marker lines (1-16). Default 3.",
   "config.babyzombieaddons.option.getFromSacks": "Get From Sacks",
   "config.babyzombieaddons.option.getFromSacks.desc": "Auto-extract keys, eggs, and apparatus from sacks.",
   "config.babyzombieaddons.option.scathaCooldown": "Scatha Cooldown",

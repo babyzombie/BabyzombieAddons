@@ -75,6 +75,8 @@
   "config.babyzombieaddons.option.cakeBuffTracker.desc": "用已食用蛋糕清单替换默认蛋糕消息。",
   "config.babyzombieaddons.option.skipSecondPerson": "跳过第二人称视角",
   "config.babyzombieaddons.option.skipSecondPerson.desc": "按 F5 时跳过第二人称视角，仅在第一人称和第三人称后方之间切换。长按超过设定 tick 数后松手时切换至第二人称视角。调为 0 关闭，20 tick = 1 秒。",
+  "config.babyzombieaddons.option.useTpsAdjustedTime": "TPS 校准计时",
+  "config.babyzombieaddons.option.useTpsAdjustedTime.desc": "使用服务器 tick 速率调整计时器速度。在卡顿的服务器上，冷却时间会跟随实际游戏时间变慢，而非使用真实墙上时间。",
 
   "config.babyzombieaddons.option.f4CrowdHiding": "F4 观众隐藏",
   "config.babyzombieaddons.option.f4CrowdHiding.desc": "处理 F4 Boss 房间的观众 NPC。",

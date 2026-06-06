@@ -12,7 +12,10 @@
     "EntityGlowMixin",
     "GlowAppearMixin",
     "BossHealthOverlayAccessor",
-    "BossHealthOverlayMixin"
+    "BossHealthOverlayMixin",
+    "ClientCommonPacketListenerImplMixin",
+    "ConnectionMixin",
+    "PingDebugMonitorMixin"
   ],
   "injectors": {
     "defaultRequire": 1

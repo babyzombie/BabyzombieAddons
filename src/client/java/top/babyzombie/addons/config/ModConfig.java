@@ -38,6 +38,7 @@ public class ModConfig {
         public KickRecovery autoBackToSkyblock = KickRecovery.LOBBY_ONLY;
         public boolean cakeBuffTracker = false;
         public int skipSecondPerson = 0;
+        public boolean useTpsAdjustedTime = false;
     }
 
     // ---- Dungeon ----

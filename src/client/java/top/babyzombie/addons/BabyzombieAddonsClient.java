@@ -28,6 +28,7 @@ import top.babyzombie.addons.util.DungeonCooldown;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.PartyTracker;
+import top.babyzombie.addons.util.ServerTickCounter;
 import top.babyzombie.addons.util.WorldRenderUtils;
 
 public class BabyzombieAddonsClient implements ClientModInitializer {
@@ -49,6 +50,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         AbiphoneTracker.getInstance().init();
         PartyTracker.getInstance().init();
         DungeonCooldown.init();
+        ServerTickCounter.init();
         IncomingCallHandler.register();
 
         BabyzombieAddonsCommand.init();
