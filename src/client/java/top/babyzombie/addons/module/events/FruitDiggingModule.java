@@ -187,7 +187,7 @@ public final class FruitDiggingModule {
             }
         });
 
-        WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
+        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
             if (!ModConfigManager.get().events.fruitDiggingHelper) return;
             boolean inCarnival = isInCarnival();
             if (!inCarnival) return;

@@ -23,7 +23,6 @@ import top.babyzombie.addons.module.slayer.SlayerModule;
 import top.babyzombie.addons.module.misc.UpdateChecker;
 import top.babyzombie.addons.module.withercloak.WitherCloakModule;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import top.babyzombie.addons.util.BeaconStateInjector;
 import top.babyzombie.addons.util.DungeonCooldown;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
@@ -40,7 +39,6 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         ModConfigManager.init();
         UpdateChecker.init();
         HudManager.init();
-        BeaconStateInjector.init();
         HudRegistrar.register();
 
         cancelKeyBindingRelease = KeyBindingUtil.register(

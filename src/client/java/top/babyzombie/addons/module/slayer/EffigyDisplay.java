@@ -6,7 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.scores.*;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.*;
+import top.babyzombie.addons.util.BeamRenderer;
+import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.WorldRenderUtils;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -65,7 +67,7 @@ public final class EffigyDisplay {
             }
         });
 
-        WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
+        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
             if (!ModConfigManager.get().slayer.showEffigies) return;
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock() || !"The Rift".equals(tracker.getMap())) return;
@@ -74,8 +76,8 @@ public final class EffigyDisplay {
             for (int idx : active) {
                 if (idx >= EFFIGY_POS.length) continue;
                 var pos = EFFIGY_POS[idx];
-                BeaconStateInjector.addBeam(pos.getX(), pos.getY(), pos.getZ(),
-                    new Color(255, 0, 0, 255));
+                BeamRenderer.drawBeam(ctx, pos.getX(), pos.getY(), pos.getZ(),
+                    2048, 0.15f, new Color(255, 0, 0, 255).getRGB());
                 WorldRenderUtils.drawWireframeBox(ctx,
                     pos.getX(), pos.getY() + boxH, pos.getZ(),
                     pos.getX() + 1, pos.getY() + boxH + 1, pos.getZ() + 1,

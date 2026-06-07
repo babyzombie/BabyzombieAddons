@@ -40,7 +40,7 @@ public final class ChestMarkers {
             }
         });
 
-        WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
+        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
             if (!ModConfigManager.get().mining.chestMarkers) return;
             if (!isInCrystalHollows() || chests.isEmpty()) return;
 

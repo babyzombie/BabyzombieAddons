@@ -7,7 +7,7 @@ import net.minecraft.world.entity.monster.Giant;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.DisplaySlot;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.BeaconStateInjector;
+import top.babyzombie.addons.util.BeamRenderer;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.WorldTextRenderer;
@@ -30,12 +30,12 @@ public final class KuudraWaypoints {
     private static final List<Beam> beams = new ArrayList<>();
 
     public static void init() {
-        WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
+        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
             for (var t : textEntries.values())
                 WorldTextRenderer.renderString(ctx, t.text, t.x, t.y, t.z, t.color, 0.05f, true);
             for (var b : beams) {
-                BeaconStateInjector.addBeam(b.x, b.y, b.z,
-                    new Color(b.r, b.g, b.b, b.a), b.h);
+                BeamRenderer.drawBeam(ctx, b.x, b.y, b.z,
+                    b.h, 0.15f, new Color(b.r, b.g, b.b, b.a).getRGB());
             }
         });
 

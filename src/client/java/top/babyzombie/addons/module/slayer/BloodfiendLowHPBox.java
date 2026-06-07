@@ -13,7 +13,7 @@ public final class BloodfiendLowHPBox {
     private BloodfiendLowHPBox() {}
 
     public static void init() {
-        WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
+        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
             if (!ModConfigManager.get().slayer.boxLowHPBloodfiend) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
 

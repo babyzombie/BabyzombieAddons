@@ -167,7 +167,7 @@ public final class GlaciteMineshaftWaypoints {
         });
 
         // World render
-        WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
+        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
             var t = HypixelLocationTracker.getInstance();
 
             // Corpse waypoints in mineshaft
@@ -193,8 +193,8 @@ public final class GlaciteMineshaftWaypoints {
                             e -> e.getName().getString().contains(player.getName().getString())
                                     && ChatUtils.stripColor(e.getName().getString()).endsWith("'s Mineshaft Portal"));
                     for (var s : stands) {
-                        BeaconStateInjector.addBeam(s.getX() - 0.5, s.getY(), s.getZ() - 0.5,
-                                new Color(0.4f, 0.7f, 1.0f, 0.4f), 20f);
+                        BeamRenderer.drawBeam(ctx, s.getX() - 0.5, s.getY(), s.getZ() - 0.5,
+                                20, 0.15f, new Color(0.4f, 0.7f, 1.0f, 0.4f).getRGB());
                         WorldTextRenderer.renderString(ctx, "§a" + formatTime(remaining),
                                 s.getX(), s.getY() + 2.5, s.getZ(), 0xFF55FFFF, 0.04f, false);
                     }

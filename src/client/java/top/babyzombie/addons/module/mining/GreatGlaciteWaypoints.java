@@ -20,7 +20,7 @@ public final class GreatGlaciteWaypoints {
     private GreatGlaciteWaypoints() {}
 
     public static void init() {
-        WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
+        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
             if (!ModConfigManager.get().mining.greatGlaciteWaypoints) return;
             if (!isInGlaciteArea()) return;
 

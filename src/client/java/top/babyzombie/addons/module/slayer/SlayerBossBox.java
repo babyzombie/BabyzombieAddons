@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.world.entity.Entity;
 import top.babyzombie.addons.config.ModConfig.SlayerBossBoxMode;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.BeaconStateInjector;
+import top.babyzombie.addons.util.BeamRenderer;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.WorldRenderUtils;
 
@@ -12,7 +12,7 @@ public final class SlayerBossBox {
     private SlayerBossBox() {}
 
     public static void init() {
-        WorldRenderEvents.BEFORE_ENTITIES.register(ctx -> {
+        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
             var cfg = ModConfigManager.get().slayer;
             if (cfg.boxSlayerBoss == SlayerBossBoxMode.OFF) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
@@ -49,7 +49,7 @@ public final class SlayerBossBox {
 
             // Beacon beam (at box origin corner)
             if (cfg.boxBossBeam) {
-                BeaconStateInjector.addBeam(x1, y1, z1, cfg.boxBossBeamColor, 2048);
+                BeamRenderer.drawBeam(ctx, x1, y1, z1, 2048, 0.15f, cfg.boxBossBeamColor);
             }
 
             // Inferno minion boxes
@@ -68,7 +68,7 @@ public final class SlayerBossBox {
                         WorldRenderUtils.drawFilledBox(ctx, mx1, my1, mz1, mx2, my2, mz2, r, g, b, a * 0.5f, depthTest);
                     }
                     if (cfg.boxBossBeam) {
-                        BeaconStateInjector.addBeam(mx1, my1, mz1, cfg.boxBossBeamColor, 2048);
+                        BeamRenderer.drawBeam(ctx, mx1, my1, mz1, 2048, 0.15f, cfg.boxBossBeamColor);
                     }
                 }
             }

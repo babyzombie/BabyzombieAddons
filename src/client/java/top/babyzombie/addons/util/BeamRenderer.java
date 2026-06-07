@@ -24,6 +24,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 
+import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
@@ -35,11 +36,10 @@ public final class BeamRenderer {
             Identifier.fromNamespaceAndPath("minecraft", "textures/entity/beacon_beam.png");
     private static final int FULLBRIGHT = 0xF000F0;
 
-    // ── Pipeline (BEACON_BEAM_SNIPPET with translucent) ────────────
+    // ── Pipeline (BEACON_BEAM_SNIPPET, depthWrite=true for proper depth sorting) ──
     private static final RenderPipeline BEAM_PIPELINE = RenderPipelines.register(
         RenderPipeline.builder(RenderPipelines.BEACON_BEAM_SNIPPET)
             .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/bza_beam"))
-            .withDepthWrite(false)
             .withBlend(BlendFunction.TRANSLUCENT)
             .build()
     );
@@ -59,7 +59,7 @@ public final class BeamRenderer {
     public static void drawBeam(WorldRenderContext context,
                                  double x, double y, double z,
                                  double height, float halfWidth,
-                                 int color, float alpha) {
+                                 int argb) {
         var pipeline = BEAM_PIPELINE;
         if (beamBuf == null) {
             beamBuf = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
@@ -67,16 +67,15 @@ public final class BeamRenderer {
 
         // Animation: scroll UV based on game time
         var client = Minecraft.getInstance();
-        long gameTime = client.level.getGameTime();
+        long gameTime = Objects.requireNonNull(client.level).getGameTime();
         float partialTick = client.getDeltaTracker().getGameTimeDeltaPartialTick(true);
         float animTime = Math.floorMod(gameTime, 40) + partialTick;
 
-        // Pack color: ARGB → int
-        int a = Math.round(alpha * 255f);
-        int r = (color >> 16) & 0xFF;
-        int g = (color >> 8) & 0xFF;
-        int b = color & 0xFF;
-        int packedColor = (a << 24) | (b << 16) | (g << 8) | r;
+        // Pack color for vertex: ARGB → BGRA (vanilla vertex format)
+        int r = (argb >> 16) & 0xFF;
+        int g = (argb >> 8) & 0xFF;
+        int b = argb & 0xFF;
+        int packedColor = (argb & 0xFF000000) | (b << 16) | (g << 8) | r;
 
         var matrices = context.matrices();
         Vec3 camera = context.worldState().cameraRenderState.pos;
@@ -166,18 +165,20 @@ public final class BeamRenderer {
         GpuSampler texSampler = RenderSystem.getSamplerCache().getRepeat(FilterMode.NEAREST);
 
         var client = Minecraft.getInstance();
-        try (RenderPass renderPass = RenderSystem.getDevice()
-                .createCommandEncoder()
-                .createRenderPass(() -> MOD_ID + " beam pass",
-                    client.getMainRenderTarget().getColorTextureView(), OptionalInt.empty(),
-                    client.getMainRenderTarget().getDepthTextureView(), OptionalDouble.empty())) {
-            renderPass.setPipeline(pipeline);
-            RenderSystem.bindDefaultUniforms(renderPass);
-            renderPass.setUniform("DynamicTransforms", dynamicTransforms);
-            renderPass.bindTexture("Sampler0", texView, texSampler);
-            renderPass.setVertexBuffer(0, vertices);
-            renderPass.setIndexBuffer(indices, indexType);
-            renderPass.drawIndexed(0, 0, drawParams.indexCount(), 1);
+        if (client.getMainRenderTarget().getColorTextureView() != null) {
+            try (RenderPass renderPass = RenderSystem.getDevice()
+                    .createCommandEncoder()
+                    .createRenderPass(() -> MOD_ID + " beam pass",
+                        client.getMainRenderTarget().getColorTextureView(), OptionalInt.empty(),
+                        client.getMainRenderTarget().getDepthTextureView(), OptionalDouble.empty())) {
+                renderPass.setPipeline(pipeline);
+                RenderSystem.bindDefaultUniforms(renderPass);
+                renderPass.setUniform("DynamicTransforms", dynamicTransforms);
+                renderPass.bindTexture("Sampler0", texView, texSampler);
+                renderPass.setVertexBuffer(0, vertices);
+                renderPass.setIndexBuffer(indices, indexType);
+                renderPass.drawIndexed(0, 0, drawParams.indexCount(), 1);
+            }
         }
 
         beamVertexBuffer.rotate();
