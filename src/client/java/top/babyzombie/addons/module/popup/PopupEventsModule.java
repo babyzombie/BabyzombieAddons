@@ -69,42 +69,48 @@ public final class PopupEventsModule {
             var cfg = ModConfigManager.get().popup;
             String text = message.getString();
 
-            if (cfg.popupPartyInvite || cfg.popupGuildPartyInvite) {
-                var m = PARTY_INVITE.matcher(text);
-                if (m.find()) {
-                    String player = m.group(1);
-                    String what = m.group(3);
-                    boolean guild = m.group(2) != null && (m.group(2).contains("all members") || m.group(2).contains("所有成员"));
-                    if (guild && cfg.popupGuildPartyInvite)
-                        notify(EventType.GUILD_PARTY, player, what);
-                    else if (!guild && cfg.popupPartyInvite)
-                        notify(EventType.PARTY, player, what);
-                    return;
+            // System messages (not from chat channels) — skip messages
+            // relayed through Guild/Party/Officer/Co-op/PM to avoid false triggers
+            boolean isSysMsg = !text.matches("^(Guild|Party|Officer|Co-op) > .+|From .+");
+
+            if (isSysMsg) {
+                if (cfg.popupPartyInvite || cfg.popupGuildPartyInvite) {
+                    var m = PARTY_INVITE.matcher(text);
+                    if (m.find()) {
+                        String player = m.group(1);
+                        String what = m.group(3);
+                        boolean guild = m.group(2) != null && (m.group(2).contains("all members") || m.group(2).contains("所有成员"));
+                        if (guild && cfg.popupGuildPartyInvite)
+                            notify(EventType.GUILD_PARTY, player, what);
+                        else if (!guild && cfg.popupPartyInvite)
+                            notify(EventType.PARTY, player, what);
+                        return;
+                    }
+                }
+
+                if (cfg.popupFriendRequest) {
+                    var m = FRIEND_REQUEST.matcher(text);
+                    if (m.find()) { notify(EventType.FRIEND, m.group(2), null); return; }
+                }
+
+                if (cfg.popupSkyblockTrade && HypixelLocationTracker.getInstance().isInSkyblock()) {
+                    var m = SKYBLOCK_TRADE.matcher(ChatUtils.stripColor(text));
+                    if (m.find()) {
+                        var loc = HypixelLocationTracker.getInstance();
+                        EventType t = loc.getMap() != null && loc.getMap().contains("Rift")
+                                ? EventType.POSITION_SWAP : EventType.TRADE;
+                        notify(t, m.group(1), null);
+                        return;
+                    }
+                }
+
+                if (cfg.popupDuelsRequest) {
+                    var m = DUELS_REQUEST.matcher(text);
+                    if (m.find()) { notify(EventType.DUEL, m.group(1), m.group(3)); return; }
                 }
             }
 
-            if (cfg.popupFriendRequest) {
-                var m = FRIEND_REQUEST.matcher(text);
-                if (m.find()) { notify(EventType.FRIEND, m.group(2), null); return; }
-            }
-
-            if (cfg.popupSkyblockTrade && HypixelLocationTracker.getInstance().isInSkyblock()) {
-                var m = SKYBLOCK_TRADE.matcher(ChatUtils.stripColor(text));
-                if (m.find()) {
-                    var loc = HypixelLocationTracker.getInstance();
-                    EventType t = loc.getMap() != null && loc.getMap().contains("Rift")
-                            ? EventType.POSITION_SWAP : EventType.TRADE;
-                    notify(t, m.group(1), null);
-                    return;
-                }
-            }
-
-            if (cfg.popupDuelsRequest) {
-                var m = DUELS_REQUEST.matcher(text);
-                if (m.find()) { notify(EventType.DUEL, m.group(1), m.group(3)); return; }
-            }
-
-            if (cfg.popupDungeonRestart && HypixelLocationTracker.getInstance().isInSkyblock()) {
+            if (cfg.popupDungeonRestart && HypixelLocationTracker.getInstance().isInDungeon()) {
                 var m = DUNGEON_RESTART.matcher(text);
                 if (m.find()) { notify(EventType.RESTART, m.group(1), null); return; }
             }
@@ -189,9 +195,9 @@ public final class PopupEventsModule {
         var bodyLines = font.split(body, 148);
         int lh = font.lineHeight;
         float titleScale = 1.5f;
-        int titleH = (int)(lh * titleScale);
-        int bodyY = y + titleH + 2;
-        int boxH = titleH + 4 + bodyLines.size() * lh + 8;
+        int titleH = (int) Math.ceil(lh * titleScale) + 2;
+        int bodyY = y + titleH + 4;
+        int boxH = titleH + 6 + bodyLines.size() * lh + 10;
 
         gui.fill(x, y, x + 152, y + boxH, 0x96000000);
 
