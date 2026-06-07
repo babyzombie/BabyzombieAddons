@@ -62,7 +62,16 @@ public class ModConfig {
         public HpDisplayMode hpDisplay = HpDisplayMode.OFF;
         public boolean phaseTimer = false;
         public boolean stunTimer = false;
-        public boolean waypoints = false;
+        public boolean supplyBeacons = false;
+        public int supplyBeaconColor = 0xFF00FF00;
+        public boolean supplyDropoffBeacons = false;
+        public int supplyDropoffBeaconColor = 0xFFFFFF00;
+        public boolean ballistaProgressText = false;
+        public int ballistaTextColor = 0xFFFFFF55;
+        public boolean ballistaBuildBeacons = false;
+        public int ballistaBeaconColor = 0xFF4C7FFF;
+        public boolean fuelOrbBeacons = false;
+        public int fuelOrbBeaconColor = 0xFFFF0000;
         public boolean energyDisplay = false;
         public boolean directionIndicator = false;
         public boolean boxKuudra = false;

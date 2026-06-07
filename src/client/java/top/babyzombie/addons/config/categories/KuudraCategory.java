@@ -9,6 +9,7 @@ import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfig.HpDisplayMode;
 
+import java.awt.Color;
 import java.util.function.Supplier;
 import java.util.function.Consumer;
 
@@ -32,8 +33,29 @@ public final class KuudraCategory {
                         () -> config.kuudra.phaseTimer, v -> config.kuudra.phaseTimer = v))
                 .option(bool("stunTimer", defaults.kuudra.stunTimer,
                         () -> config.kuudra.stunTimer, v -> config.kuudra.stunTimer = v))
-                .option(bool("waypoints", defaults.kuudra.waypoints,
-                        () -> config.kuudra.waypoints, v -> config.kuudra.waypoints = v))
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.waypoints"))
+                        .option(bool("supplyBeacons", defaults.kuudra.supplyBeacons,
+                                () -> config.kuudra.supplyBeacons, v -> config.kuudra.supplyBeacons = v))
+                        .option(colour("supplyBeaconColor", defaults.kuudra.supplyBeaconColor,
+                                () -> config.kuudra.supplyBeaconColor, v -> config.kuudra.supplyBeaconColor = v))
+                        .option(bool("supplyDropoffBeacons", defaults.kuudra.supplyDropoffBeacons,
+                                () -> config.kuudra.supplyDropoffBeacons, v -> config.kuudra.supplyDropoffBeacons = v))
+                        .option(colour("supplyDropoffBeaconColor", defaults.kuudra.supplyDropoffBeaconColor,
+                                () -> config.kuudra.supplyDropoffBeaconColor, v -> config.kuudra.supplyDropoffBeaconColor = v))
+                        .option(bool("ballistaProgressText", defaults.kuudra.ballistaProgressText,
+                                () -> config.kuudra.ballistaProgressText, v -> config.kuudra.ballistaProgressText = v))
+                        .option(colour("ballistaTextColor", defaults.kuudra.ballistaTextColor,
+                                () -> config.kuudra.ballistaTextColor, v -> config.kuudra.ballistaTextColor = v))
+                        .option(bool("ballistaBuildBeacons", defaults.kuudra.ballistaBuildBeacons,
+                                () -> config.kuudra.ballistaBuildBeacons, v -> config.kuudra.ballistaBuildBeacons = v))
+                        .option(colour("ballistaBeaconColor", defaults.kuudra.ballistaBeaconColor,
+                                () -> config.kuudra.ballistaBeaconColor, v -> config.kuudra.ballistaBeaconColor = v))
+                        .option(bool("fuelOrbBeacons", defaults.kuudra.fuelOrbBeacons,
+                                () -> config.kuudra.fuelOrbBeacons, v -> config.kuudra.fuelOrbBeacons = v))
+                        .option(colour("fuelOrbBeaconColor", defaults.kuudra.fuelOrbBeaconColor,
+                                () -> config.kuudra.fuelOrbBeaconColor, v -> config.kuudra.fuelOrbBeaconColor = v))
+                        .build())
                 .option(bool("energyDisplay", defaults.kuudra.energyDisplay,
                         () -> config.kuudra.energyDisplay, v -> config.kuudra.energyDisplay = v))
                 .option(bool("directionIndicator", defaults.kuudra.directionIndicator,
@@ -69,6 +91,17 @@ public final class KuudraCategory {
                 .description(Component.translatable("config.babyzombieaddons.option." + key + ".desc"))
                 .binding(def, getter, setter)
                 .controller(ConfigUtils.createBooleanController())
+                .build();
+    }
+
+    private static Option<Color> colour(String key, int def, Supplier<Integer> getter, Consumer<Integer> setter) {
+        return Option.<Color>createBuilder()
+                .name(Component.translatable("config.babyzombieaddons.option." + key))
+                .description(Component.translatable("config.babyzombieaddons.option." + key + ".desc"))
+                .binding(new Color(def, true),
+                        () -> new Color(getter.get(), true),
+                        v -> setter.accept(v.getRGB()))
+                .controller(ConfigUtils.createColourController(true))
                 .build();
     }
 }

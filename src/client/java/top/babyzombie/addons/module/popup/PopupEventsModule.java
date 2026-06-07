@@ -71,7 +71,7 @@ public final class PopupEventsModule {
 
             // System messages (not from chat channels) — skip messages
             // relayed through Guild/Party/Officer/Co-op/PM to avoid false triggers
-            boolean isSysMsg = !text.matches("^(Guild|Party|Officer|Co-op) > .+|From .+");
+            boolean isSysMsg = !text.matches("^(公会|Guild|组队|Party|Officer|Co-op) > .+|From .+");
 
             if (isSysMsg) {
                 if (cfg.popupPartyInvite || cfg.popupGuildPartyInvite) {

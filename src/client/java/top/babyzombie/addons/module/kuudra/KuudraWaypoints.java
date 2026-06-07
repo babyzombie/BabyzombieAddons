@@ -3,7 +3,6 @@ package top.babyzombie.addons.module.kuudra;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.monster.Giant;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.DisplaySlot;
@@ -13,9 +12,7 @@ import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.WorldTextRenderer;
 
-
 import java.awt.Color;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +40,11 @@ public final class KuudraWaypoints {
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!ModConfigManager.get().kuudra.waypoints) return;
+            var cfg = ModConfigManager.get().kuudra;
+            boolean anyOn = cfg.supplyBeacons || cfg.supplyDropoffBeacons
+                    || cfg.ballistaProgressText || cfg.ballistaBuildBeacons
+                    || cfg.fuelOrbBeacons;
+            if (!anyOn) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (client.player == null || client.player.tickCount % 20 != 0) return;
 
@@ -52,42 +53,65 @@ public final class KuudraWaypoints {
             String phase = getScoreboardPhase(client);
 
             if ("Rescue supplies".equals(phase)) {
-                for (var g : client.player.level().getEntitiesOfClass(Giant.class,
-                        new AABB(client.player.blockPosition()).inflate(64)))
-                    beams.add(new Beam(g.getX()-2.5, g.getY()+9.5, g.getZ()+3.0, 0,1,0,1,20f));
-                for (var s : client.player.level().getEntitiesOfClass(
-                        net.minecraft.world.entity.decoration.ArmorStand.class,
-                        new AABB(client.player.blockPosition()).inflate(64),
-                        e -> ChatUtils.stripColor(e.getName().getString()).contains("BRING SUPPLY CHEST HERE"))) {
-                    double x = s.getX()-1.5, y = s.getY(), z = s.getZ()-1.5;
-                    beams.add(new Beam(x, y, z, 1, 1, 0, 1, 20f));
+                if (cfg.supplyBeacons) {
+                    float[] c = argbToFloats(cfg.supplyBeaconColor);
+                    for (var g : client.player.level().getEntitiesOfClass(Giant.class,
+                            new AABB(client.player.blockPosition()).inflate(64)))
+                        beams.add(new Beam(g.getX() - 2.5, g.getY() + 9.5, g.getZ() + 3.0,
+                                c[0], c[1], c[2], c[3], 20f));
+                }
+                if (cfg.supplyDropoffBeacons) {
+                    float[] c = argbToFloats(cfg.supplyDropoffBeaconColor);
+                    for (var s : client.player.level().getEntitiesOfClass(
+                            net.minecraft.world.entity.decoration.ArmorStand.class,
+                            new AABB(client.player.blockPosition()).inflate(64),
+                            e -> ChatUtils.stripColor(e.getName().getString()).contains("BRING SUPPLY CHEST HERE"))) {
+                        double x = s.getX() - 1.5, z = s.getZ() - 1.5;
+                        beams.add(new Beam(x, s.getY(), z, c[0], c[1], c[2], c[3], 20f));
+                    }
                 }
             } else if ("Protect Elle".equals(phase)) {
-                for (var s : client.player.level().getEntitiesOfClass(
-                        net.minecraft.world.entity.decoration.ArmorStand.class,
-                        new AABB(client.player.blockPosition()).inflate(64),
-                        e -> {
-                            String name = ChatUtils.stripColor(e.getName().getString());
-                            return name.startsWith("PROGRESS: ") && !name.endsWith("COMPLETE");
-                        })) {
-                    double x = s.getX()-1.5, y = s.getY()+0.8, z = s.getZ()-1.5;
-                    beams.add(new Beam(x,y,z,0.3f,0.5f,1,1,10f));
-                    String[] parts = ChatUtils.stripColor(s.getName().getString()).split(" ");
-                    String key = "p2_" + s.getId(); seenKeys.add(key);
-                    textEntries.put(key, new TextData(parts.length>1 ? parts[parts.length-1] : "", x+0.5, y+1.5, z+0.5, 0xFFFFFF55));
+                if (cfg.ballistaBuildBeacons || cfg.ballistaProgressText) {
+                    float[] bc = argbToFloats(cfg.ballistaBeaconColor);
+                    for (var s : client.player.level().getEntitiesOfClass(
+                            net.minecraft.world.entity.decoration.ArmorStand.class,
+                            new AABB(client.player.blockPosition()).inflate(64),
+                            e -> {
+                                String name = ChatUtils.stripColor(e.getName().getString());
+                                return name.startsWith("PROGRESS: ") && !name.endsWith("COMPLETE");
+                            })) {
+                        double x = s.getX() - 1.5, y = s.getY(), z = s.getZ() - 1.5;
+                        if (cfg.ballistaBuildBeacons)
+                            beams.add(new Beam(x, y, z, bc[0], bc[1], bc[2], bc[3], 10f));
+                        if (cfg.ballistaProgressText) {
+                            String[] parts = ChatUtils.stripColor(s.getName().getString()).split(" ");
+                            String key = "p2_" + s.getId(); seenKeys.add(key);
+                            textEntries.put(key, new TextData(parts.length > 1 ? parts[parts.length - 1] : "",
+                                    x + 1.5, y + 1.2, z + 1.5, cfg.ballistaTextColor));
+                        }
+                    }
                 }
             } else {
-                for (var g : client.player.level().getEntitiesOfClass(Giant.class,
-                        new AABB(client.player.blockPosition()).inflate(64)))
-                    beams.add(new Beam(g.getX()-2.5, g.getY()+9.5, g.getZ()+3.0, 1,0,0,1,20f));
+                if (cfg.fuelOrbBeacons) {
+                    float[] c = argbToFloats(cfg.fuelOrbBeaconColor);
+                    for (var g : client.player.level().getEntitiesOfClass(Giant.class,
+                            new AABB(client.player.blockPosition()).inflate(64)))
+                        beams.add(new Beam(g.getX() - 2.5, g.getY() + 9.5, g.getZ() + 3.0,
+                                c[0], c[1], c[2], c[3], 20f));
+                }
             }
-
-            for (var m : client.player.level().getEntitiesOfClass(Endermite.class,
-                    new AABB(client.player.blockPosition()).inflate(64), e -> !e.isDeadOrDying()))
-                beams.add(new Beam(m.getX(),m.getY(),m.getZ(),0,1,0,0.7f,10f));
 
             textEntries.keySet().removeIf(k -> !seenKeys.contains(k));
         });
+    }
+
+    private static float[] argbToFloats(int argb) {
+        return new float[] {
+            ((argb >> 16) & 0xFF) / 255f,
+            ((argb >> 8) & 0xFF) / 255f,
+            (argb & 0xFF) / 255f,
+            ((argb >> 24) & 0xFF) / 255f
+        };
     }
 
     private static String getScoreboardPhase(Minecraft client) {
