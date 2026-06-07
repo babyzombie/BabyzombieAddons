@@ -2,6 +2,7 @@ package top.babyzombie.addons.config.categories;
 
 import net.azureaaron.dandelion.api.ConfigCategory;
 import net.azureaaron.dandelion.api.Option;
+import net.azureaaron.dandelion.api.OptionGroup;
 import net.azureaaron.dandelion.api.controllers.IntegerController;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ConfigUtils;
@@ -29,8 +30,13 @@ public final class GardenCategory {
                         .build())
                 .option(bool("signAutoRotate", defaults.garden.signAutoRotate,
                         () -> config.garden.signAutoRotate, v -> config.garden.signAutoRotate = v))
-                .option(bool("trevorAutoAccept", defaults.garden.trevorAutoAccept,
-                        () -> config.garden.trevorAutoAccept, v -> config.garden.trevorAutoAccept = v))
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.trevor"))
+                        .option(bool("trevorAutoAccept", defaults.garden.trevorAutoAccept,
+                                () -> config.garden.trevorAutoAccept, v -> config.garden.trevorAutoAccept = v))
+                        .option(bool("trevorAutoCall", defaults.garden.trevorAutoCall,
+                                () -> config.garden.trevorAutoCall, v -> config.garden.trevorAutoCall = v))
+                        .build())
                 .build();
     }
 

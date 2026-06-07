@@ -304,8 +304,17 @@
   "config.babyzombieaddons.option.xpOrbSoundRemoval.desc": "XP orb sound volume when breaking crops while holding an axe or hoe in the Garden. 0 = fully muted, 100 = unchanged.",
   "config.babyzombieaddons.option.signAutoRotate": "Sign Auto Rotate",
   "config.babyzombieaddons.option.signAutoRotate.desc": "Right-click a sign while holding a hoe or axe to auto-rotate and cancel interaction. Write \"yaw: value\" and \"pitch: value\" on any sign line (case-insensitive).",
+  "config.babyzombieaddons.group.trevor": "Trevor",
+
   "config.babyzombieaddons.option.trevorAutoAccept": "Trevor Auto Accept",
   "config.babyzombieaddons.option.trevorAutoAccept.desc": "Automatically accept Trevor the Trapper's hunting task by clicking [YES] for you.",
+  "config.babyzombieaddons.option.trevorAutoCall": "Trevor Auto Call",
+  "config.babyzombieaddons.option.trevorAutoCall.desc": "Automatically /call trevor_the_trapper 31 seconds after the hunting task starts, once the previous animal is found.",
+
+  "babyzombieaddons.trevor.auto_call": "Auto-called Trevor",
+  "babyzombieaddons.trevor.auto_call_disable_btn": "§7[§cDisable§7]",
+  "babyzombieaddons.trevor.auto_call_disable_hover": "§7Click to disable auto-call until world change",
+  "babyzombieaddons.trevor.auto_call_disabled": "§eTrevor auto-call disabled until world change",
 
 
   "config.babyzombieaddons.option.popupPartyInvite": "Party Invite",

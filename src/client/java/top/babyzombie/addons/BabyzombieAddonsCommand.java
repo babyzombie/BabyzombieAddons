@@ -92,6 +92,11 @@ public final class BabyzombieAddonsCommand {
                             .then(argument("filter", StringArgumentType.greedyString())
                                     .executes(BabyzombieAddonsCommand::setSoundFilter)))
                     .then(literal("l").executes(ctx -> { ChatUtils.sendCommand("limbo"); return 1; }))
+                    .then(literal("trevorautocall").executes(ctx -> {
+                        top.babyzombie.addons.module.garden.TrevorAutoAccept.disableAutoCall();
+                        ctx.getSource().sendFeedback(Component.translatable("babyzombieaddons.trevor.auto_call_disabled"));
+                        return 1;
+                    }))
                     ;
 
 

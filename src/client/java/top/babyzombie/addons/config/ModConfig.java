@@ -143,6 +143,7 @@ public class ModConfig {
         public int xpOrbSoundRemoval = 100;
         public boolean signAutoRotate = false;
         public boolean trevorAutoAccept = false;
+        public boolean trevorAutoCall = false;
     }
 
     // ---- Popup Events ----

@@ -43,11 +43,11 @@ public final class GeneralCategory {
                         .build())
                 .option(createBool("abiphoneGui", defaults.misc.abiphoneGui,
                         () -> config.misc.abiphoneGui, v -> config.misc.abiphoneGui = v))
-                .option(createBool("autois", defaults.general.autois,
-                        () -> config.general.autois, v -> config.general.autois = v))
                 .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.autois"))
                         .collapsed(true)
+                        .option(createBool("autois", defaults.general.autois,
+                                () -> config.general.autois, v -> config.general.autois = v))
                         .option(Option.<Integer>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.autoisDelay"))
                                 .description(Component.translatable("config.babyzombieaddons.option.autoisDelay.desc"))

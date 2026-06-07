@@ -84,7 +84,7 @@
   "config.babyzombieaddons.option.f4CrowdHiding.HIDE": "隐藏",
   "config.babyzombieaddons.option.f4CrowdHiding.REMOVE": "移除",
   "config.babyzombieaddons.option.autoChestClose": "自动关闭箱子",
-  "config.babyzombieaddons.option.autoChestClose.desc": "右键开箱后 500ms 自动关闭箱子界面。",
+  "config.babyzombieaddons.option.autoChestClose.desc": "开箱后自动关闭箱子界面。",
   "config.babyzombieaddons.option.dailyRunsCounter": "每日计数",
   "config.babyzombieaddons.option.dailyRunsCounter.desc": "追踪每日地牢/Kuudra 场次。",
   "config.babyzombieaddons.option.dailyRunsCounter.OFF": "关闭",
@@ -304,8 +304,17 @@
   "config.babyzombieaddons.option.xpOrbSoundRemoval.desc": "在花园手持斧头或锄头破坏作物时经验球音效的音量大小。0 = 完全静音, 100 = 不变。",
   "config.babyzombieaddons.option.signAutoRotate": "告示牌自动转向",
   "config.babyzombieaddons.option.signAutoRotate.desc": "手持锄头或斧头右键告示牌自动转向并取消交互。告示牌任意一行写 \"yaw: 角度值\" 和 \"pitch: 角度值\" 即可识别，大小写无关。",
+  "config.babyzombieaddons.group.trevor": "Trevor 猎手",
+
   "config.babyzombieaddons.option.trevorAutoAccept": "自动接取猎手任务",
   "config.babyzombieaddons.option.trevorAutoAccept.desc": "猎手Trevor打电话来的时候自动帮你点 [YES] 接受任务。",
+  "config.babyzombieaddons.option.trevorAutoCall": "自动呼叫 Trevor",
+  "config.babyzombieaddons.option.trevorAutoCall.desc": "狩猎任务完成后自动 /call trevor_the_trapper，确保距离任务开始至少 31 秒。",
+
+  "babyzombieaddons.trevor.auto_call": "§f已自动呼叫 Trevor",
+  "babyzombieaddons.trevor.auto_call_disable_btn": "§7[§c本次关闭§7]",
+  "babyzombieaddons.trevor.auto_call_disable_hover": "§7点击后切换世界前不再自动呼叫 Trevor",
+  "babyzombieaddons.trevor.auto_call_disabled": "§e已暂时关闭 Trevor 自动呼叫，切换世界后恢复",
 
 
   "config.babyzombieaddons.option.popupPartyInvite": "组队邀请",
