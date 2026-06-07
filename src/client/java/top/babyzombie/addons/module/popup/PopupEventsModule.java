@@ -32,7 +32,7 @@ public final class PopupEventsModule {
     private static final Pattern FRIEND_REQUEST = Pattern.compile(
             "(Friend request from |好友请求：)(?:\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})");
     private static final Pattern SKYBLOCK_TRADE = Pattern.compile(
-            "([0-9a-zA-Z_]{2,24}) has sent you a trade request\\. Click here to accept!.*");
+            "([0-9a-zA-Z_]{2,24}) has sent you a trade request\\. Click here to accept!");
     private static final Pattern DUELS_REQUEST = Pattern.compile(
             "(?:\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]{2,24})( has invited you to |邀请你参与)(.+?)[!！]");
     private static final Pattern DUNGEON_RESTART = Pattern.compile(
@@ -53,6 +53,7 @@ public final class PopupEventsModule {
     private static String command = "";
     private static long expireTime;
     private static long totalTime;
+    private static EventType eventType;
     private static KeyMapping keyYes;
     private static KeyMapping keyNo;
 
@@ -88,10 +89,10 @@ public final class PopupEventsModule {
             }
 
             if (cfg.popupSkyblockTrade && HypixelLocationTracker.getInstance().isInSkyblock()) {
-                var m = SKYBLOCK_TRADE.matcher(text);
+                var m = SKYBLOCK_TRADE.matcher(ChatUtils.stripColor(text));
                 if (m.find()) {
                     var loc = HypixelLocationTracker.getInstance();
-                    EventType t = loc.getMode() != null && loc.getMode().contains("Rift")
+                    EventType t = loc.getMap() != null && loc.getMap().contains("Rift")
                             ? EventType.POSITION_SWAP : EventType.TRADE;
                     notify(t, m.group(1), null);
                     return;
@@ -124,6 +125,7 @@ public final class PopupEventsModule {
     }
 
     private static void notify(EventType type, String player, String extra) {
+        eventType = type;
         String pre = "babyzombieaddons.popup.";
         title = Component.translatable(pre + "title." + type.key);
         if (extra != null)
@@ -156,6 +158,18 @@ public final class PopupEventsModule {
     private static void close() {
         title = Component.empty(); body = Component.empty();
         command = ""; expireTime = 0; totalTime = 0;
+        eventType = null;
+    }
+
+    private static int titleColor() {
+        if (eventType == null) return 0xFFFFFFFF;
+        return switch (eventType) {
+            case PARTY, GUILD_PARTY -> 0xFFFFAA00;
+            case FRIEND -> 0xFF55FF55;
+            case TRADE, POSITION_SWAP -> 0xFF55FFFF;
+            case DUEL -> 0xFFFF5555;
+            case RESTART -> 0xFFFFFF55;
+        };
     }
 
     private static void renderHUD(GuiGraphics gui) {
@@ -172,14 +186,23 @@ public final class PopupEventsModule {
             x = 0; y = 0;
         }
 
-        // Wrap body text
         var bodyLines = font.split(body, 148);
         int lh = font.lineHeight;
-        int boxH = 30 + bodyLines.size() * lh + 6;
-        int bodyY = y + lh;
+        float titleScale = 1.5f;
+        int titleH = (int)(lh * titleScale);
+        int bodyY = y + titleH + 2;
+        int boxH = titleH + 4 + bodyLines.size() * lh + 8;
 
         gui.fill(x, y, x + 152, y + boxH, 0x96000000);
-        gui.drawCenteredString(font, title.getString(), x + 76, y, 0xFFFFFFFF);
+
+        // Scaled colored title
+        var ps = gui.pose();
+        ps.pushMatrix();
+        ps.translate(x + 76, y + titleH / 2f);
+        ps.scale(titleScale, titleScale);
+        gui.drawCenteredString(font, title.getString(), 0, -lh / 2, titleColor());
+        ps.popMatrix();
+
         for (int i = 0; i < bodyLines.size(); i++) {
             gui.drawString(font, bodyLines.get(i), x + 1, bodyY + i * lh, 0xFFFFFFFF, false);
         }

@@ -102,8 +102,6 @@ public final class KuudraHPDisplay {
     }
 
     private static String numFormat(int num) {
-        if (num < 1000) return String.valueOf(num);
-        String s = String.valueOf(num);
-        return s.substring(0, s.length() - 3) + "," + s.substring(s.length() - 3);
+        return String.format("%,d", num);
     }
 }

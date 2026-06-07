@@ -335,7 +335,7 @@ public final class SlayerBossDetector {
                 }
                 if (hasGuardian) {
                     if (voidgloom.lazer < ServerTick.getTime()) {
-                        voidgloom.lazer = ServerTick.getTime() + 7200;
+                        voidgloom.lazer = ServerTick.getTime() + 6200;
                     }
                 }
             } else {
@@ -520,18 +520,18 @@ public final class SlayerBossDetector {
         float hpVal = entity.getHealth();
         float maxHp = entity.getMaxHealth();
         if (maxHp < 10000) {
-            return "§" + (hpVal / maxHp > 0.5f ? "a" : "e") + Math.round(hpVal) + "§c❤";
+            return "§" + (hpVal / maxHp > 0.5f ? "a" : "e") + String.format("%,d", Math.round(hpVal)) + "§c❤";
         }
         double displayHp = hpVal;
         String[] suffix = {"", "k", "M", "B"};
         for (int tier = 0; tier < 4; tier++) {
             if (displayHp < 1000) {
                 return "§" + (hpVal / maxHp > 0.5f ? "a" : "e")
-                        + String.format("%.2f", displayHp) + suffix[tier] + "§c❤";
+                        + String.format("%,.2f", displayHp) + suffix[tier] + "§c❤";
             }
             displayHp /= 1000;
         }
-        return "§" + (hpVal / maxHp > 0.5f ? "a" : "e") + String.format("%.2f", displayHp) + "T§c❤";
+        return "§" + (hpVal / maxHp > 0.5f ? "a" : "e") + String.format("%,.2f", displayHp) + "T§c❤";
     }
 
     static boolean isBlazeDagger(ItemStack item) {

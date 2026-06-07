@@ -68,8 +68,8 @@ public final class KuudraStunTimer {
     }
 
     private static String formatTime(long ms) {
-        long s = ms / 1000, m = s / 60;
-        s %= 60;
-        return String.format("%d:%02d", m, s);
+        long s = ms / 1000;
+        long m = ms % 1000;
+        return String.format("%d.%03d", s, m);
     }
 }
