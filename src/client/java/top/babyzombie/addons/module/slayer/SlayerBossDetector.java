@@ -15,6 +15,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
@@ -342,7 +343,8 @@ public final class SlayerBossDetector {
             }
 
             // Beacon tracking
-            if (enderman.getCarriedBlock().is(Blocks.BEACON)) {
+            BlockState carriedBlock = enderman.getCarriedBlock();
+            if (carriedBlock != null && carriedBlock.is(Blocks.BEACON)) {
                 voidgloom.beaconStatus = "holding";
             } else if ("holding".equals(voidgloom.beaconStatus)) {
                 ArmorStand beaconStand = null;
