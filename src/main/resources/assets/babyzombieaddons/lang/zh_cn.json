@@ -234,6 +234,8 @@
   "config.babyzombieaddons.option.boxBossBeam.desc": "在猎手 Boss 和小弟上绘制信标光柱。",
   "config.babyzombieaddons.option.boxBossRenderThroughWalls": "框渲染穿墙",
   "config.babyzombieaddons.option.boxBossRenderThroughWalls.desc": "开启时，Boss 边框在墙体后也始终可见。",
+  "config.babyzombieaddons.option.boxBossLineWidth": "Boss 框线条宽度",
+  "config.babyzombieaddons.option.boxBossLineWidth.desc": "猎手 Boss 线框的线条宽度（1-16）。默认 5。",
   "config.babyzombieaddons.group.itemSkillTimers": "物品技能计时器",
   "config.babyzombieaddons.group.slayerBossInfo": "Boss 信息",
   "config.babyzombieaddons.group.slayerBossBox": "Boss 边框",

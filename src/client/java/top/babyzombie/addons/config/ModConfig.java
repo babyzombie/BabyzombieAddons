@@ -105,6 +105,7 @@ public class ModConfig {
         public int boxBossBeamColor = 0xFFFFFFFF;
         public boolean boxBossBeam = false;
         public boolean boxBossRenderThroughWalls = false;
+        public int boxBossLineWidth = 5;
     }
 
     public static class WitherCloakConfig {

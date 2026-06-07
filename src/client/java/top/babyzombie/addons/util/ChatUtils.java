@@ -1,7 +1,13 @@
 package top.babyzombie.addons.util;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public final class ChatUtils {
 
@@ -134,6 +140,46 @@ public final class ChatUtils {
             return matcher.group(group);
         }
         return null;
+    }
+
+    private static final Map<Integer, String> LEGACY_COLOR_CODES = buildLegacyColorMap();
+
+    private static Map<Integer, String> buildLegacyColorMap() {
+        var map = new HashMap<Integer, String>();
+        for (ChatFormatting fmt : ChatFormatting.values()) {
+            if (fmt.getColor() != null) {
+                map.put(fmt.getColor(), "§" + fmt.getChar());
+            }
+        }
+        return Map.copyOf(map);
+    }
+
+    /**
+     * Converts a Component to a legacy §-formatted string, preserving colors and text styles.
+     */
+    public static String toLegacyString(Component component) {
+        StringBuilder sb = new StringBuilder();
+        component.visit((style, str) -> {
+            var color = style.getColor();
+            if (color != null) {
+                String legacy = LEGACY_COLOR_CODES.get(color.getValue());
+                if (legacy != null) {
+                    sb.append(legacy);
+                } else {
+                    int rgb = color.getValue();
+                    sb.append(String.format("§x§%02x§%02x§%02x",
+                            (rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
+                }
+            }
+            if (style.isBold()) sb.append("§l");
+            if (style.isItalic()) sb.append("§o");
+            if (style.isUnderlined()) sb.append("§n");
+            if (style.isStrikethrough()) sb.append("§m");
+            if (style.isObfuscated()) sb.append("§k");
+            sb.append(str);
+            return Optional.empty();
+        }, Style.EMPTY);
+        return sb.toString();
     }
 
     public static String formatTime(long ms) {

@@ -4,15 +4,12 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -171,10 +168,29 @@ public final class SlayerBossDetector {
         }
         if (spawnArmorStand == null) { reset(); return; }
 
-        // Find boss entity near the armor stand
-        bossEntity = null;
-        double minDist = Double.MAX_VALUE;
+        // Find boss entity near the armor stand.
+        // Keep the existing boss as a fallback so the box doesn't flicker
+        // when the boss briefly leaves the detection window during jumps/knockbacks.
+        Entity best = bossEntity;
+        double bestDist = Double.MAX_VALUE;
+
+        // Score current boss
+        if (best != null) {
+            if (!best.isAlive() || best.getType() != def.type
+                    || ("Riftstalker Bloodfiend".equals(bossName)
+                        && !"Bloodfiend ".equals(best.getName().getString()))) {
+                best = null;
+            } else {
+                double dx = best.getX() - spawnArmorStand.getX();
+                double dy = (best.getY() + def.h) - spawnArmorStand.getY();
+                double dz = best.getZ() - spawnArmorStand.getZ();
+                bestDist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            }
+        }
+
+        // Search for a closer entity
         for (Entity e : level.entitiesForRendering()) {
+            if (e == best) continue;
             if (e.getType() != def.type) continue;
             if (!e.isAlive()) continue;
             if ("Riftstalker Bloodfiend".equals(bossName) && !"Bloodfiend ".equals(e.getName().getString())) continue;
@@ -183,11 +199,13 @@ public final class SlayerBossDetector {
             double dy = (e.getY() + def.h) - spawnArmorStand.getY();
             double dz = e.getZ() - spawnArmorStand.getZ();
             double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-            if (dist < def.range && e.getY() < spawnArmorStand.getY() && dist < minDist) {
-                bossEntity = e;
-                minDist = dist;
+            if (dist < def.range && e.getY() < spawnArmorStand.getY() && dist < bestDist) {
+                best = e;
+                bestDist = dist;
             }
         }
+
+        bossEntity = best;
 
         // Find nearby armor stands for HP and time info
         if (bossEntity != null) {
@@ -208,7 +226,7 @@ public final class SlayerBossDetector {
             }
             hpTag = null;
             for (ArmorStand as : nearbyStands) {
-                String nm = as.getName().getString();
+                String nm = ChatUtils.toLegacyString(as.getName());
                 if (ChatUtils.stripColor(nm).contains(searchName)) {
                     hpTag = nm;
                     break;
@@ -220,7 +238,7 @@ public final class SlayerBossDetector {
             // Time left
             timeLeft = "";
             for (ArmorStand as : nearbyStands) {
-                String nm = as.getName().getString();
+                String nm = ChatUtils.toLegacyString(as.getName());
                 if (nm.contains(":")) {
                     timeLeft = nm;
                     break;
@@ -268,11 +286,11 @@ public final class SlayerBossDetector {
         if (cfg.blazeSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) return;
 
         List<String> bossStatus = new ArrayList<>();
-        String[] parts = timeLeft != null ? ChatUtils.stripColor(timeLeft).split(" ") : new String[0];
+        String[] parts = timeLeft != null ? timeLeft.split(" ") : new String[0];
         if (parts.length > 1) {
             for (int i = 0; i < parts.length - 1; i++) bossStatus.add(parts[i]);
             bossStatus.add("§7→§r");
-            bossStatus.add(NEXT_BLAZE_ATTUNED.getOrDefault(parts[0], ""));
+            bossStatus.add(NEXT_BLAZE_ATTUNED.getOrDefault(ChatUtils.stripColor(parts[0]), ""));
         }
 
         String currentlyShield = "";
@@ -283,7 +301,7 @@ public final class SlayerBossDetector {
             for (Entity a : level.entitiesForRendering()) {
                 if (!(a instanceof ArmorStand as)) continue;
                 if (as.distanceTo(e) >= 3) continue;
-                String nm = as.getName().getString();
+                String nm = ChatUtils.toLegacyString(as.getName());
                 if (nm.contains("❤") && nm.contains(marker)) {
                     String[] hpParts = nm.split(" ");
                     String separator = e.getType() == EntityType.SKELETON ? "     " : " ";
@@ -535,7 +553,7 @@ public final class SlayerBossDetector {
     }
 
     static boolean isBlazeDagger(ItemStack item) {
-        String id = getSBID(item);
+        String id = ItemUtils.getSkyblockId(item);
         if (id == null) return false;
         return switch (id) {
             case "FIREDUST_DAGGER", "MAWDUST_DAGGER", "BURSTFIRE_DAGGER",
@@ -545,7 +563,7 @@ public final class SlayerBossDetector {
     }
 
     static String getBlazeDaggerAttunement(ItemStack item) {
-        String id = getSBID(item);
+        String id = ItemUtils.getSkyblockId(item);
         if (id == null) return null;
         return switch (id) {
             case "FIREDUST_DAGGER", "MAWDUST_DAGGER" -> "§8§lASHEN";
@@ -555,14 +573,4 @@ public final class SlayerBossDetector {
         };
     }
 
-    private static String getSBID(ItemStack item) {
-        if (item == null || item.isEmpty()) return null;
-        CustomData data = item.get(DataComponents.CUSTOM_DATA);
-        if (data == null) return null;
-        CompoundTag tag = data.copyTag();
-        if (tag == null) return null;
-        CompoundTag ea = tag.getCompound("ExtraAttributes").orElse(null);
-        if (ea == null) return null;
-        return ea.getString("id").orElse(null);
-    }
 }

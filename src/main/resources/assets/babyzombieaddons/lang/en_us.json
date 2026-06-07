@@ -234,6 +234,8 @@
   "config.babyzombieaddons.option.boxBossBeam.desc": "Draw a beacon beam on the slayer boss and its minions.",
   "config.babyzombieaddons.option.boxBossRenderThroughWalls": "Render Through Walls",
   "config.babyzombieaddons.option.boxBossRenderThroughWalls.desc": "When enabled, the boss box is visible even behind walls.",
+  "config.babyzombieaddons.option.boxBossLineWidth": "Boss Box Line Width",
+  "config.babyzombieaddons.option.boxBossLineWidth.desc": "Line width of the slayer boss wireframe box (1-16). Default: 5.",
   "config.babyzombieaddons.group.itemSkillTimers": "Item Skill Timers",
   "config.babyzombieaddons.group.slayerBossInfo": "Boss Info",
   "config.babyzombieaddons.group.slayerBossBox": "Boss Box",

@@ -5,6 +5,7 @@ import java.awt.Color;
 import net.azureaaron.dandelion.api.ConfigCategory;
 import net.azureaaron.dandelion.api.Option;
 import net.azureaaron.dandelion.api.OptionGroup;
+import net.azureaaron.dandelion.api.controllers.IntegerController;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
@@ -91,6 +92,14 @@ public final class SlayerCategory {
                         .option(bool("boxBossRenderThroughWalls", defaults.slayer.boxBossRenderThroughWalls,
                                 () -> config.slayer.boxBossRenderThroughWalls,
                                 v -> config.slayer.boxBossRenderThroughWalls = v))
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.boxBossLineWidth"))
+                                .description(Component.translatable("config.babyzombieaddons.option.boxBossLineWidth.desc"))
+                                .binding(defaults.slayer.boxBossLineWidth,
+                                        () -> config.slayer.boxBossLineWidth,
+                                        v -> config.slayer.boxBossLineWidth = v)
+                                .controller(IntegerController.createBuilder().range(1, 16).slider(1).build())
+                                .build())
                         .option(Option.<Color>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.boxBossColor"))
                                 .description(Component.translatable("config.babyzombieaddons.option.boxBossColor.desc"))

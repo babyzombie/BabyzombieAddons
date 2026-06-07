@@ -40,16 +40,16 @@ public final class SlayerBossBox {
             double z2 = boss.getZ() + def.wZ / 2;
 
             // Wireframe box
-            WorldRenderUtils.drawWireframeBox(ctx, x1, y1, z1, x2, y2, z2, r, g, b, a, depthTest, 5.0f);
+            WorldRenderUtils.drawWireframeBox(ctx, x1, y1, z1, x2, y2, z2, r, g, b, a, depthTest, cfg.boxBossLineWidth);
 
             // Filled box
             if (filled) {
                 WorldRenderUtils.drawFilledBox(ctx, x1, y1, z1, x2, y2, z2, r, g, b, a * 0.5f, depthTest);
             }
 
-            // Beacon beam
+            // Beacon beam (at box origin corner)
             if (cfg.boxBossBeam) {
-                BeaconStateInjector.addBeam(boss.getX() - 1, boss.getY(), boss.getZ() - 1, cfg.boxBossBeamColor, 2048);
+                BeaconStateInjector.addBeam(x1, y1, z1, cfg.boxBossBeamColor, 2048);
             }
 
             // Inferno minion boxes
@@ -63,12 +63,12 @@ public final class SlayerBossBox {
                     double my2 = minion.getY() + def.h;
                     double mz2 = minion.getZ() + def.wZ / 2;
 
-                    WorldRenderUtils.drawWireframeBox(ctx, mx1, my1, mz1, mx2, my2, mz2, r, g, b, a, depthTest, 5.0f);
+                    WorldRenderUtils.drawWireframeBox(ctx, mx1, my1, mz1, mx2, my2, mz2, r, g, b, a, depthTest, cfg.boxBossLineWidth);
                     if (filled) {
                         WorldRenderUtils.drawFilledBox(ctx, mx1, my1, mz1, mx2, my2, mz2, r, g, b, a * 0.5f, depthTest);
                     }
                     if (cfg.boxBossBeam) {
-                        BeaconStateInjector.addBeam(minion.getX() - 1, minion.getY(), minion.getZ() - 1, cfg.boxBossBeamColor, 2048);
+                        BeaconStateInjector.addBeam(mx1, my1, mz1, cfg.boxBossBeamColor, 2048);
                     }
                 }
             }
