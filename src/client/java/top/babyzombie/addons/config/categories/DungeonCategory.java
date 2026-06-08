@@ -90,6 +90,8 @@ public final class DungeonCategory {
                         .build())
                 .option(bool("autoChestClose", defaults.dungeon.autoChestClose,
                         () -> config.dungeon.autoChestClose, v -> config.dungeon.autoChestClose = v))
+                .option(bool("muteStormThunder", defaults.dungeon.muteStormThunder,
+                        () -> config.dungeon.muteStormThunder, v -> config.dungeon.muteStormThunder = v))
                 .option(Option.<DailyCounterMode>createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.option.dailyRunsCounter"))
                         .description(Component.translatable("config.babyzombieaddons.option.dailyRunsCounter.desc"))
