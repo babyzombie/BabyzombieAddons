@@ -1,6 +1,6 @@
 package top.babyzombie.addons.module.garden;
 
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import top.babyzombie.addons.util.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
@@ -14,7 +14,7 @@ public final class PestDisplay {
     private PestDisplay() {}
 
     public static void init() {
-        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
+        RenderPhaseRegister.register(ctx -> {
             if (!ModConfigManager.get().garden.pestDisplay) return;
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock() || !"Garden".equals(tracker.getMap())) return;

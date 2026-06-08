@@ -1,7 +1,7 @@
 package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import top.babyzombie.addons.util.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.monster.Giant;
 import net.minecraft.world.phys.AABB;
@@ -30,7 +30,7 @@ public final class KuudraWaypoints {
     private static final List<Beam> beams = new ArrayList<>();
 
     public static void init() {
-        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
+        RenderPhaseRegister.register(ctx -> {
             for (var t : textEntries.values())
                 WorldTextRenderer.renderString(ctx, t.text, t.x, t.y, t.z, t.color, 0.05f, true);
             for (var b : beams) {

@@ -12,6 +12,7 @@ import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfig.AutoISDest;
 import top.babyzombie.addons.config.ModConfig.KickRecovery;
+import top.babyzombie.addons.config.ModConfig.WorldRenderPhase;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.module.raredrop.RareDropScreen;
 
@@ -87,6 +88,15 @@ public final class GeneralCategory {
                         () -> config.general.cakeBuffTracker, v -> config.general.cakeBuffTracker = v))
                 .option(createBool("useTpsAdjustedTime", defaults.general.useTpsAdjustedTime,
                         () -> config.general.useTpsAdjustedTime, v -> config.general.useTpsAdjustedTime = v))
+                .option(Option.<WorldRenderPhase>createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.renderPhase"))
+                        .description(Component.translatable("config.babyzombieaddons.option.renderPhase.desc"))
+                        .binding(defaults.general.renderPhase,
+                                () -> config.general.renderPhase,
+                                v -> config.general.renderPhase = v)
+                        .controller(ConfigUtils.createEnumController(m ->
+                                Component.translatable("config.babyzombieaddons.option.renderPhase." + m.name())))
+                        .build())
                 .build();
     }
 

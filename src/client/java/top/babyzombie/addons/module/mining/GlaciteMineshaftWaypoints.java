@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import top.babyzombie.addons.util.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -167,7 +167,7 @@ public final class GlaciteMineshaftWaypoints {
         });
 
         // World render
-        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
+        RenderPhaseRegister.register(ctx -> {
             var t = HypixelLocationTracker.getInstance();
 
             // Corpse waypoints in mineshaft

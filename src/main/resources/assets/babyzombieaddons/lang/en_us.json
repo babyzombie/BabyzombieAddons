@@ -77,6 +77,10 @@
   "config.babyzombieaddons.option.skipSecondPerson.desc": "Skip second-person view when pressing F5, cycling only between first-person and third-person back. Hold longer than the set tick count to switch to second-person. Set to 0 to disable, 20 ticks = 1 second.",
   "config.babyzombieaddons.option.useTpsAdjustedTime": "TPS-Adjusted Timers",
   "config.babyzombieaddons.option.useTpsAdjustedTime.desc": "Use server tick rate to adjust timer speeds. On laggy servers, cooldowns will slow down to match actual game time instead of using real wall-clock time.",
+  "config.babyzombieaddons.option.renderPhase": "World Render Phase",
+  "config.babyzombieaddons.option.renderPhase.desc": "Controls when boxes, beams, and floating text are rendered. If shaders cover them up, switch to 'End of Main Render'.",
+  "config.babyzombieaddons.option.renderPhase.AFTER_ENTITIES": "After Entities (Default)",
+  "config.babyzombieaddons.option.renderPhase.END_MAIN": "End of Main Render (Shader Compat)",
 
   "config.babyzombieaddons.option.f4CrowdHiding": "F4 Crowd Hiding",
   "config.babyzombieaddons.option.f4CrowdHiding.desc": "Handle spectator crowd in Floor 4 boss room.",

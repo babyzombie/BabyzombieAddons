@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import top.babyzombie.addons.util.RenderPhaseRegister;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Blocks;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -40,7 +40,7 @@ public final class ChestMarkers {
             }
         });
 
-        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
+        RenderPhaseRegister.register(ctx -> {
             if (!ModConfigManager.get().mining.chestMarkers) return;
             if (!isInCrystalHollows() || chests.isEmpty()) return;
 

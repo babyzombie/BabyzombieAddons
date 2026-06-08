@@ -1,7 +1,7 @@
 package top.babyzombie.addons.module.slayer;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import top.babyzombie.addons.util.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.scores.*;
@@ -67,7 +67,7 @@ public final class EffigyDisplay {
             }
         });
 
-        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
+        RenderPhaseRegister.register(ctx -> {
             if (!ModConfigManager.get().slayer.showEffigies) return;
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock() || !"The Rift".equals(tracker.getMap())) return;

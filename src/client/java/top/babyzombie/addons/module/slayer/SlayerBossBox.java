@@ -1,6 +1,6 @@
 package top.babyzombie.addons.module.slayer;
 
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import top.babyzombie.addons.util.RenderPhaseRegister;
 import net.minecraft.world.entity.Entity;
 import top.babyzombie.addons.config.ModConfig.SlayerBossBoxMode;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -12,7 +12,7 @@ public final class SlayerBossBox {
     private SlayerBossBox() {}
 
     public static void init() {
-        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
+        RenderPhaseRegister.register(ctx -> {
             var cfg = ModConfigManager.get().slayer;
             if (cfg.boxSlayerBoss == SlayerBossBoxMode.OFF) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;

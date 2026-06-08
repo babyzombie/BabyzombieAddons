@@ -16,6 +16,7 @@ public class ModConfig {
     public enum EndStoneSwordMode { OFF, TIMER_ONLY, PREVENT_REUSE, BOTH }
     public enum SlayerBossInfoMode { OFF, BASIC, FULL }
     public enum SlayerBossBoxMode { OFF, WIREFRAME, BOX }
+    public enum WorldRenderPhase { AFTER_ENTITIES, END_MAIN }
 
     public GeneralConfig general = new GeneralConfig();
     public DungeonConfig dungeon = new DungeonConfig();
@@ -41,6 +42,7 @@ public class ModConfig {
         public boolean cakeBuffTracker = false;
         public int skipSecondPerson = 0;
         public boolean useTpsAdjustedTime = false;
+        public WorldRenderPhase renderPhase = WorldRenderPhase.AFTER_ENTITIES;
     }
 
     // ---- Dungeon ----

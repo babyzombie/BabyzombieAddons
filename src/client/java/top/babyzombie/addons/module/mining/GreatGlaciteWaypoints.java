@@ -1,6 +1,6 @@
 package top.babyzombie.addons.module.mining;
 
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import top.babyzombie.addons.util.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -20,7 +20,7 @@ public final class GreatGlaciteWaypoints {
     private GreatGlaciteWaypoints() {}
 
     public static void init() {
-        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
+        RenderPhaseRegister.register(ctx -> {
             if (!ModConfigManager.get().mining.greatGlaciteWaypoints) return;
             if (!isInGlaciteArea()) return;
 

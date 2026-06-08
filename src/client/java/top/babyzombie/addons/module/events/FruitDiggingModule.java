@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import top.babyzombie.addons.util.RenderPhaseRegister;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.client.Minecraft;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
@@ -187,7 +187,7 @@ public final class FruitDiggingModule {
             }
         });
 
-        WorldRenderEvents.AFTER_ENTITIES.register(ctx -> {
+        RenderPhaseRegister.register(ctx -> {
             if (!ModConfigManager.get().events.fruitDiggingHelper) return;
             boolean inCarnival = isInCarnival();
             if (!inCarnival) return;
