@@ -35,8 +35,8 @@ public final class PartyModule {
     // Party chat commands
     private static final Pattern CMD_ALLINVITE = Pattern.compile("^[!！][ ]?all(?:inv)?(?:ite)?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_PINVITE = Pattern.compile("^[!！][ ]?p ([a-zA-Z0-9_-]+)$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern CMD_WARP = Pattern.compile("^[!！][ ]?warp?$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern CMD_WARP_CANCEL = Pattern.compile("^[!！][ ]?(?:warp)?[ ]?c(?:ancel)?$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CMD_WARP = Pattern.compile("^[!！][ ]?wa?r?p?$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CMD_WARP_CANCEL = Pattern.compile("^[!！][ ]?(?:wa?r?p?)?[ ]?c(?:ancel)?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_JOIN = Pattern.compile("^[!！][ ]?(?:join)?[ ]?([fmt])([e0-7])$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_PTME = Pattern.compile("^[!！][ ]?pt(?:me)?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_SENDCOORDS = Pattern.compile("^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$", Pattern.CASE_INSENSITIVE);

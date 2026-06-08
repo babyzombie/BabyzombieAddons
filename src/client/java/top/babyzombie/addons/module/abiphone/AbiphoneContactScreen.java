@@ -184,7 +184,11 @@ public class AbiphoneContactScreen extends Screen {
 
     @Override
     public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        renderBackground(gui, mouseX, mouseY, delta);
+        try {
+            renderBackground(gui, mouseX, mouseY, delta);
+        } catch (IllegalStateException e) {
+            gui.fill(0, 0, width, height, 0xC0101010);
+        }
         if (layoutDirty) recalcLayout();
         searchCursorTicks++;
 
