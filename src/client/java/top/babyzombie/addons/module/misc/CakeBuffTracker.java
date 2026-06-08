@@ -77,12 +77,13 @@ public final class CakeBuffTracker {
         found[idx] = true;
 
         String msg = buildChecklist();
-        Minecraft.getInstance().gui.getChat().addMessage(
-            Component.literal(msg), null, GuiMessageTag.system());
 
         if (!msg.contains("✘")) {
             ChatUtils.showMessage(
-                Component.translatable("babyzombieaddons.cake.all_eaten").getString());
+                    Component.translatable("babyzombieaddons.cake.all_eaten").getString());
+        } else {
+            Minecraft.getInstance().gui.getChat().addMessage(
+                    Component.literal(msg), null, GuiMessageTag.system());
         }
     }
 

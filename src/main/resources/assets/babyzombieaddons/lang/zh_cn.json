@@ -21,6 +21,7 @@
   "config.babyzombieaddons.title": "BabyzombieAddons 设置",
 
   "config.babyzombieaddons.category.general": "通用",
+  "config.babyzombieaddons.category.skyblock": "Skyblock 通用",
   "config.babyzombieaddons.category.dungeon": "地牢",
   "config.babyzombieaddons.category.kuudra": "Kuudra",
   "config.babyzombieaddons.category.slayer": "猎手",
@@ -351,6 +352,11 @@
   "config.babyzombieaddons.option.carnivalAutoAccept": "嘉年华双击接受",
   "config.babyzombieaddons.option.carnivalAutoAccept.desc": "第二次与嘉年华小游戏NPC对话时，双击NPC即可自动接受。",
 
+  "config.babyzombieaddons.option.bzGetFromSacks": "BZ 从袋子提取物品",
+  "config.babyzombieaddons.option.bzGetFromSacks.desc": "在 Bazaar 创建出售订单时，若物品显示\"None in inventory!\"，自动从袋子提取。",
+  "config.babyzombieaddons.option.bzGetFromSacks.OFF": "关闭",
+  "config.babyzombieaddons.option.bzGetFromSacks.GET_ONLY": "仅提取",
+  "config.babyzombieaddons.option.bzGetFromSacks.GET_AND_RECLICK": "提取 + 自动重点",
   "config.babyzombieaddons.option.abiphoneGui": "Abiphone 联系人界面",
   "config.babyzombieaddons.option.abiphoneGui.desc": "用图形化联系人列表替换 /call 指令。",
   "config.babyzombieaddons.option.playCmd": "Play 命令界面",

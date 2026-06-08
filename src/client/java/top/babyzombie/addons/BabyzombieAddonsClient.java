@@ -8,6 +8,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.abiphone.AbiphoneTracker;
 import top.babyzombie.addons.module.abiphone.IncomingCallHandler;
 import top.babyzombie.addons.module.autois.AutoISModule;
+import top.babyzombie.addons.module.misc.BazaarSellFromSacks;
 import top.babyzombie.addons.module.dungeon.DungeonModule;
 import top.babyzombie.addons.module.garden.GardenModule;
 import top.babyzombie.addons.module.events.FruitDiggingModule;
@@ -54,6 +55,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         BabyzombieAddonsCommand.init();
 
         AutoISModule.init();
+        BazaarSellFromSacks.init();
         DungeonModule.init();
         GardenModule.init();
         GreatSpookModule.init();

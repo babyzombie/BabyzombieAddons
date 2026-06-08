@@ -47,6 +47,7 @@ public final class ModConfigManager {
         return DandelionConfigScreen.create(CONFIG_MANAGER, (defaults, config, builder) -> builder
                 .title(Component.translatable("config.babyzombieaddons.title"))
                 .category(GeneralCategory.create(defaults, config))
+                .category(SkyblockCategory.create(defaults, config))
                 .category(DungeonCategory.create(defaults, config))
                 .category(KuudraCategory.create(defaults, config))
                 .category(SlayerCategory.create(defaults, config))

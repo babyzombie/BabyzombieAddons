@@ -21,6 +21,7 @@
   "config.babyzombieaddons.title": "BabyzombieAddons Config",
 
   "config.babyzombieaddons.category.general": "General",
+  "config.babyzombieaddons.category.skyblock": "Skyblock",
   "config.babyzombieaddons.category.dungeon": "Dungeon",
   "config.babyzombieaddons.category.kuudra": "Kuudra",
   "config.babyzombieaddons.category.slayer": "Slayer",
@@ -351,6 +352,11 @@
   "config.babyzombieaddons.option.carnivalAutoAccept": "Carnival Double-Click Accept",
   "config.babyzombieaddons.option.carnivalAutoAccept.desc": "Double-click the Carnival minigame NPC on the second+ encounter to auto-accept.",
 
+  "config.babyzombieaddons.option.bzGetFromSacks": "BZ Get From Sacks",
+  "config.babyzombieaddons.option.bzGetFromSacks.desc": "Auto-extract items from sacks when creating a Bazaar sell offer with \"None in inventory!\".",
+  "config.babyzombieaddons.option.bzGetFromSacks.OFF": "Off",
+  "config.babyzombieaddons.option.bzGetFromSacks.GET_ONLY": "Get Only",
+  "config.babyzombieaddons.option.bzGetFromSacks.GET_AND_RECLICK": "Get + Re-click",
   "config.babyzombieaddons.option.abiphoneGui": "Abiphone Contact GUI",
   "config.babyzombieaddons.option.abiphoneGui.desc": "Replace /call with a graphical contact list.",
   "config.babyzombieaddons.option.playCmd": "Play Command GUI",

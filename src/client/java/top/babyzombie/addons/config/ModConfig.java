@@ -17,6 +17,7 @@ public class ModConfig {
     public enum SlayerBossInfoMode { OFF, BASIC, FULL }
     public enum SlayerBossBoxMode { OFF, WIREFRAME, BOX }
     public enum WorldRenderPhase { AFTER_ENTITIES, END_MAIN }
+    public enum BzGetFromSacksMode { OFF, GET_ONLY, GET_AND_RECLICK }
 
     public GeneralConfig general = new GeneralConfig();
     public DungeonConfig dungeon = new DungeonConfig();
@@ -193,6 +194,7 @@ public class ModConfig {
 
         public boolean abiphoneGui = false;
         public boolean playCmd = false;
+        public BzGetFromSacksMode bzGetFromSacks = BzGetFromSacksMode.OFF;
     }
 
     // ---- Debug ----
