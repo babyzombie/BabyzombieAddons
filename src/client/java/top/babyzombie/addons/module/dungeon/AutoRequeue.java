@@ -11,7 +11,6 @@ import top.babyzombie.addons.util.Scheduler;
 public final class AutoRequeue {
     static boolean cancelAutoJoin;
     static boolean ended;
-    private static boolean counting;
     static boolean canRequeue;
 
     private AutoRequeue() {}
@@ -31,7 +30,9 @@ public final class AutoRequeue {
 
     static void schedule(boolean win) {
         var cfg = ModConfigManager.get().dungeon;
-        ModConfig.RequeueMode mode = cfg.autoRequeue;
+        var t = HypixelLocationTracker.getInstance();
+        boolean isKuudra = t.isInKuudra();
+        ModConfig.RequeueMode mode = isKuudra ? cfg.kuudraRequeue : cfg.dungeonRequeue;
         if (mode == ModConfig.RequeueMode.OFF) return;
         if (ended) return;
         if (mode == ModConfig.RequeueMode.ON_FAIL && win) return;
@@ -40,8 +41,7 @@ public final class AutoRequeue {
         if (!canRequeue) return;
 
         ended = true;
-        counting = true;
-        int delay = cfg.requeueDelay;
+        int delay = isKuudra ? cfg.kuudraRequeueDelay : cfg.dungeonRequeueDelay;
         if (!cfg.requeueMessage.isEmpty()) {
             String msg = cfg.requeueMessage.replace("%delay%", String.valueOf(delay));
             ChatUtils.sendCommand("pc " + msg);
@@ -49,24 +49,21 @@ public final class AutoRequeue {
 
         if (delay > 0) {
             Scheduler.schedule(delay * 20, () -> {
-                counting = false;
                 if (cancelAutoJoin) return;
                 if (!PartyTracker.getInstance().isSelfLeader()) return;
-                var t = HypixelLocationTracker.getInstance();
-                if (!t.isInSkyblock() || (!t.isInDungeon() && !t.isInKuudra())) return;
+                var loc = HypixelLocationTracker.getInstance();
+                if (!loc.isInSkyblock() || (!loc.isInDungeon() && !loc.isInKuudra())) return;
                 ended = false;
                 ChatUtils.sendCommand("instancerequeue");
             });
         } else {
             if (!PartyTracker.getInstance().isSelfLeader()) return;
-            counting = false;
             ended = false;
             ChatUtils.sendCommand("instancerequeue");
         }
     }
 
     static void cancel() {
-        if (!ended && !counting) return;
         cancelAutoJoin = true;
         String cancelMsg = ModConfigManager.get().dungeon.requeueCancelMessage;
         if (!cancelMsg.isEmpty()) ChatUtils.sendCommand("pc " + cancelMsg);

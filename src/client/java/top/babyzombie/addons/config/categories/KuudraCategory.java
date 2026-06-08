@@ -3,11 +3,13 @@ package top.babyzombie.addons.config.categories;
 import net.azureaaron.dandelion.api.ConfigCategory;
 import net.azureaaron.dandelion.api.Option;
 import net.azureaaron.dandelion.api.OptionGroup;
+import net.azureaaron.dandelion.api.controllers.IntegerController;
 import net.azureaaron.dandelion.api.controllers.StringController;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfig.HpDisplayMode;
+import top.babyzombie.addons.config.ModConfig.RequeueMode;
 
 import java.awt.Color;
 import java.util.function.Supplier;
@@ -33,6 +35,51 @@ public final class KuudraCategory {
                         () -> config.kuudra.phaseTimer, v -> config.kuudra.phaseTimer = v))
                 .option(bool("stunTimer", defaults.kuudra.stunTimer,
                         () -> config.kuudra.stunTimer, v -> config.kuudra.stunTimer = v))
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.requeue"))
+                        .collapsed(true)
+                        .option(Option.<RequeueMode>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.kuudraRequeue"))
+                                .description(Component.translatable("config.babyzombieaddons.option.kuudraRequeue.desc"))
+                                .binding(defaults.dungeon.kuudraRequeue,
+                                        () -> config.dungeon.kuudraRequeue,
+                                        v -> config.dungeon.kuudraRequeue = v)
+                                .controller(ConfigUtils.createEnumController(m ->
+                                        Component.translatable("config.babyzombieaddons.option.requeueMode." + m.name())))
+                                .build())
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.kuudraRequeueDelay"))
+                                .description(Component.translatable("config.babyzombieaddons.option.kuudraRequeueDelay.desc"))
+                                .binding(defaults.dungeon.kuudraRequeueDelay,
+                                        () -> config.dungeon.kuudraRequeueDelay,
+                                        v -> config.dungeon.kuudraRequeueDelay = v)
+                                .controller(IntegerController.createBuilder().range(0, 60).slider(1).build())
+                                .build())
+                        .option(Option.<String>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.requeueMessage"))
+                                .description(Component.translatable("config.babyzombieaddons.option.requeueMessage.desc"))
+                                .binding(defaults.dungeon.requeueMessage,
+                                        () -> config.dungeon.requeueMessage,
+                                        v -> config.dungeon.requeueMessage = v)
+                                .controller(StringController.createBuilder().build())
+                                .build())
+                        .option(Option.<String>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.requeueCancelMessage"))
+                                .description(Component.translatable("config.babyzombieaddons.option.requeueCancelMessage.desc"))
+                                .binding(defaults.dungeon.requeueCancelMessage,
+                                        () -> config.dungeon.requeueCancelMessage,
+                                        v -> config.dungeon.requeueCancelMessage = v)
+                                .controller(StringController.createBuilder().build())
+                                .build())
+                        .option(Option.<String>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.requeueCancelKeywords"))
+                                .description(Component.translatable("config.babyzombieaddons.option.requeueCancelKeywords.desc"))
+                                .binding(defaults.dungeon.requeueCancelKeywords,
+                                        () -> config.dungeon.requeueCancelKeywords,
+                                        v -> config.dungeon.requeueCancelKeywords = v)
+                                .controller(StringController.createBuilder().build())
+                                .build())
+                        .build())
                 .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.waypoints"))
                         .option(bool("supplyBeacons", defaults.kuudra.supplyBeacons,

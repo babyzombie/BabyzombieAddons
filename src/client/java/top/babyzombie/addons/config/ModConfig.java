@@ -50,8 +50,10 @@ public class ModConfig {
 
     public static class DungeonConfig {
         public CrowdHideMode f4CrowdHiding = CrowdHideMode.OFF;
-        public RequeueMode autoRequeue = RequeueMode.OFF;
-        public int requeueDelay = 0;
+        public RequeueMode dungeonRequeue = RequeueMode.OFF;
+        public int dungeonRequeueDelay = 0;
+        public RequeueMode kuudraRequeue = RequeueMode.OFF;
+        public int kuudraRequeueDelay = 0;
         public String requeueMessage = "going in %delay%";
         public String requeueCancelMessage = "ok";
         public String requeueCancelKeywords = "c|cancel|n|nr|wait|stop|dt|don't|gtg|tyfr|tyfrs|gtg tyfr|gtg tyfrs|no key|别急|等会|等下|先别开";

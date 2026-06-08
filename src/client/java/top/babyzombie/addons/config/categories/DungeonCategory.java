@@ -35,20 +35,20 @@ public final class DungeonCategory {
                         .name(Component.translatable("config.babyzombieaddons.group.requeue"))
                         .collapsed(true)
                         .option(Option.<RequeueMode>createBuilder()
-                                .name(Component.translatable("config.babyzombieaddons.option.autoRequeue"))
-                                .description(Component.translatable("config.babyzombieaddons.option.autoRequeue.desc"))
-                                .binding(defaults.dungeon.autoRequeue,
-                                        () -> config.dungeon.autoRequeue,
-                                        v -> config.dungeon.autoRequeue = v)
+                                .name(Component.translatable("config.babyzombieaddons.option.dungeonRequeue"))
+                                .description(Component.translatable("config.babyzombieaddons.option.dungeonRequeue.desc"))
+                                .binding(defaults.dungeon.dungeonRequeue,
+                                        () -> config.dungeon.dungeonRequeue,
+                                        v -> config.dungeon.dungeonRequeue = v)
                                 .controller(ConfigUtils.createEnumController(m ->
-                                        Component.translatable("config.babyzombieaddons.option.autoRequeue." + m.name())))
+                                        Component.translatable("config.babyzombieaddons.option.requeueMode." + m.name())))
                                 .build())
                         .option(Option.<Integer>createBuilder()
-                                .name(Component.translatable("config.babyzombieaddons.option.requeueDelay"))
-                                .description(Component.translatable("config.babyzombieaddons.option.requeueDelay.desc"))
-                                .binding(defaults.dungeon.requeueDelay,
-                                        () -> config.dungeon.requeueDelay,
-                                        v -> config.dungeon.requeueDelay = v)
+                                .name(Component.translatable("config.babyzombieaddons.option.dungeonRequeueDelay"))
+                                .description(Component.translatable("config.babyzombieaddons.option.dungeonRequeueDelay.desc"))
+                                .binding(defaults.dungeon.dungeonRequeueDelay,
+                                        () -> config.dungeon.dungeonRequeueDelay,
+                                        v -> config.dungeon.dungeonRequeueDelay = v)
                                 .controller(IntegerController.createBuilder().range(0, 60).slider(1).build())
                                 .build())
                         .option(Option.<String>createBuilder()

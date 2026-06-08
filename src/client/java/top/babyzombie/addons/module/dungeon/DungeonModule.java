@@ -1,11 +1,17 @@
 package top.babyzombie.addons.module.dungeon;
 
+import com.mojang.brigadier.context.CommandContext;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.party.PartyModule;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.PartyTracker;
+
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 /**
  * Dungeon orchestration: instance start/end detection, auto requeue cancellation keywords,
@@ -53,10 +59,16 @@ public final class DungeonModule {
             }
         });
 
+        // /dt command — cancel auto requeue + notify party
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            dispatcher.register(literal("dt").executes(DungeonModule::dtCancel));
+        });
+
         // Cancel keywords from party chat
         ClientReceiveMessageEvents.GAME.register((m, o) -> {
             if (o) return;
-            if (ModConfigManager.get().dungeon.autoRequeue == ModConfig.RequeueMode.OFF) return;
+            if (ModConfigManager.get().dungeon.dungeonRequeue == ModConfig.RequeueMode.OFF) return;
+            if (!PartyTracker.getInstance().isSelfLeader()) return;
             if (!AutoRequeue.canRequeue) return;
             var pm = PartyModule.PARTY_CHAT.matcher(m.getString());
             if (!pm.find()) return;
@@ -68,5 +80,13 @@ public final class DungeonModule {
                 }
             }
         });
+    }
+
+    private static int dtCancel(CommandContext<FabricClientCommandSource> ctx) {
+        if (!AutoRequeue.canRequeue || AutoRequeue.cancelAutoJoin) return 1;
+        AutoRequeue.cancelAutoJoin = true;
+        ctx.getSource().sendFeedback(
+                net.minecraft.network.chat.Component.translatable("babyzombieaddons.dt.cancelled"));
+        return 1;
     }
 }
