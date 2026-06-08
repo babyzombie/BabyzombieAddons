@@ -75,7 +75,7 @@ public final class BeamRenderer {
         int r = (argb >> 16) & 0xFF;
         int g = (argb >> 8) & 0xFF;
         int b = argb & 0xFF;
-        int packedColor = (argb & 0xFF000000) | (b << 16) | (g << 8) | r;
+        int packedColor = (argb & 0xFF000000) | (r << 16) | (g << 8) | b;
 
         var matrices = context.matrices();
         Vec3 camera = context.worldState().cameraRenderState.pos;

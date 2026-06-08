@@ -76,7 +76,7 @@ public final class EffigyDisplay {
             for (int idx : active) {
                 if (idx >= EFFIGY_POS.length) continue;
                 var pos = EFFIGY_POS[idx];
-                BeamRenderer.drawBeam(ctx, pos.getX(), pos.getY(), pos.getZ(),
+                BeamRenderer.drawBeam(ctx, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
                     2048, 0.15f, new Color(255, 0, 0, 255).getRGB());
                 WorldRenderUtils.drawWireframeBox(ctx,
                     pos.getX(), pos.getY() + boxH, pos.getZ(),

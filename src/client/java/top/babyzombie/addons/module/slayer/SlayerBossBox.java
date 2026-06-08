@@ -49,7 +49,7 @@ public final class SlayerBossBox {
 
             // Beacon beam (at box origin corner)
             if (cfg.boxBossBeam) {
-                BeamRenderer.drawBeam(ctx, x1, y1, z1, 2048, 0.15f, cfg.boxBossBeamColor);
+                BeamRenderer.drawBeam(ctx, boss.getX(), boss.getY(), boss.getZ(), 2048, 0.15f, cfg.boxBossBeamColor);
             }
 
             // Inferno minion boxes
@@ -68,7 +68,7 @@ public final class SlayerBossBox {
                         WorldRenderUtils.drawFilledBox(ctx, mx1, my1, mz1, mx2, my2, mz2, r, g, b, a * 0.5f, depthTest);
                     }
                     if (cfg.boxBossBeam) {
-                        BeamRenderer.drawBeam(ctx, mx1, my1, mz1, 2048, 0.15f, cfg.boxBossBeamColor);
+                        BeamRenderer.drawBeam(ctx, minion.getX(), minion.getY(), minion.getZ(), 2048, 0.15f, cfg.boxBossBeamColor);
                     }
                 }
             }
