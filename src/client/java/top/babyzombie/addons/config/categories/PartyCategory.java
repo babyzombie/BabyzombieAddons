@@ -39,6 +39,8 @@ public final class PartyCategory {
                         () -> config.party.partyJoinInstance, v -> config.party.partyJoinInstance = v))
                 .option(bool("partySendCoords", defaults.party.partySendCoords,
                         () -> config.party.partySendCoords, v -> config.party.partySendCoords = v))
+                .option(bool("partyPlay", defaults.party.partyPlay,
+                        () -> config.party.partyPlay, v -> config.party.partyPlay = v))
                 .option(bool("partyTransfer", defaults.party.partyTransfer,
                         () -> config.party.partyTransfer, v -> config.party.partyTransfer = v))
                 .option(bool("dmPartyInvite", defaults.party.dmPartyInvite,

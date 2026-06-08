@@ -40,6 +40,8 @@ public final class PartyModule {
     private static final Pattern CMD_JOIN = Pattern.compile("^[!！][ ]?(?:join)?[ ]?([fmt])([e0-7])$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_PTME = Pattern.compile("^[!！][ ]?pt(?:me)?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_SENDCOORDS = Pattern.compile("^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$", Pattern.CASE_INSENSITIVE);
+    // !play <content> — execute /play <content>
+    private static final Pattern CMD_PLAY = Pattern.compile("^[!！][ ]?play(?: (.+))?$", Pattern.CASE_INSENSITIVE);
 
     /** Strip rank prefix like "[MVP+] " from a player name. */
     private static final Pattern RANK_PREFIX = Pattern.compile("^\\[[\\w+\\+-]+] ");
@@ -161,6 +163,17 @@ public final class PartyModule {
             var jm = CMD_JOIN.matcher(msg);
             if (jm.find()) {
                 nextCommand = buildJoinCommand(jm.group(1), jm.group(2));
+                runWhenLeader();
+            }
+            return;
+        }
+
+        // !play <content> → /play <content>
+        if (cfg.partyPlay && CMD_PLAY.matcher(msg).matches()) {
+            var pm = CMD_PLAY.matcher(msg);
+            if (pm.find()) {
+                String content = pm.group(1);
+                nextCommand = "play" + (content != null ? " " + content : "");
                 runWhenLeader();
             }
             return;

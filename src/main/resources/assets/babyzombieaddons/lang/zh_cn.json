@@ -40,6 +40,8 @@
   "config.babyzombieaddons.option.partyJoinInstance.desc": "响应 !join f1/m2/t3 加入地牢或 Kuudra。\n正则: ^[!！][ ]?(?:join)?[ ]?([fmt])([e0-7])$",
   "config.babyzombieaddons.option.partySendCoords": "!sc - 发送坐标",
   "config.babyzombieaddons.option.partySendCoords.desc": "响应队伍聊天中的 !sc 指令发送自己的坐标。\n正则: ^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$",
+  "config.babyzombieaddons.option.partyPlay": "!play - 执行 /play",
+  "config.babyzombieaddons.option.partyPlay.desc": "响应队伍聊天中的 !play <内容>，执行 /play <内容>。\n正则: ^[!！][ ]?play(?: (.+))?$",
   "config.babyzombieaddons.option.partyTransfer": "!pt - 转让队长",
   "config.babyzombieaddons.option.partyTransfer.desc": "回应队伍聊天中的 !pt 或 !ptme，转让队长给发送者。\n正则: ^[!！][ ]?pt(?:me)?$",
   "config.babyzombieaddons.option.dmPartyInvite": "私信 !p - 邀请",
