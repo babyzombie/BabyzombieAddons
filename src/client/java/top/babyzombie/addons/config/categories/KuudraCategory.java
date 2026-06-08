@@ -112,6 +112,26 @@ public final class KuudraCategory {
                 .option(bool("enderPearlRefill", defaults.kuudra.enderPearlRefill,
                         () -> config.kuudra.enderPearlRefill, v -> config.kuudra.enderPearlRefill = v))
                 .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.arrowPoison"))
+                        .collapsed(true)
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.toxicArrowThreshold"))
+                                .description(Component.translatable("config.babyzombieaddons.option.toxicArrowThreshold.desc"))
+                                .binding(defaults.kuudra.toxicArrowThreshold,
+                                        () -> config.kuudra.toxicArrowThreshold,
+                                        v -> config.kuudra.toxicArrowThreshold = v)
+                                .controller(IntegerController.createBuilder().range(0, 32).slider(2).build())
+                                .build())
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.twilightArrowThreshold"))
+                                .description(Component.translatable("config.babyzombieaddons.option.twilightArrowThreshold.desc"))
+                                .binding(defaults.kuudra.twilightArrowThreshold,
+                                        () -> config.kuudra.twilightArrowThreshold,
+                                        v -> config.kuudra.twilightArrowThreshold = v)
+                                .controller(IntegerController.createBuilder().range(0, 8).slider(1).build())
+                                .build())
+                        .build())
+                .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.perkShop"))
                         .collapsed(true)
                         .option(bool("perkShopBlacklist", defaults.kuudra.perkShopBlacklist,

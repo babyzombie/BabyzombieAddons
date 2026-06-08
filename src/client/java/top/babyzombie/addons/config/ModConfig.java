@@ -86,6 +86,8 @@ public class ModConfig {
         public String perkShopBlacklistItems = "Elle's Pickaxe,Elle's Lava Rod,Auto Revive,Support Route,Mining Frenzy I";
         public boolean followerHelmetPrice = false;
         public boolean muteCrimsonArmor = false;
+        public int toxicArrowThreshold = 0;
+        public int twilightArrowThreshold = 0;
     }
 
     // ---- Slayer ----

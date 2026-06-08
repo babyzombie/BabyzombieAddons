@@ -66,7 +66,7 @@ public final class KuudraWaypoints {
                             net.minecraft.world.entity.decoration.ArmorStand.class,
                             new AABB(client.player.blockPosition()).inflate(64),
                             e -> ChatUtils.stripColor(e.getName().getString()).contains("BRING SUPPLY CHEST HERE"))) {
-                        double x = s.getX() - 1.5, z = s.getZ() - 1.5;
+                        double x = s.getX(), z = s.getZ();
                         beams.add(new Beam(x, s.getY(), z, c[0], c[1], c[2], c[3], 20f));
                     }
                 }
@@ -80,7 +80,7 @@ public final class KuudraWaypoints {
                                 String name = ChatUtils.stripColor(e.getName().getString());
                                 return name.startsWith("PROGRESS: ") && !name.endsWith("COMPLETE");
                             })) {
-                        double x = s.getX() - 1.5, y = s.getY(), z = s.getZ() - 1.5;
+                        double x = s.getX(), y = s.getY(), z = s.getZ();
                         if (cfg.ballistaBuildBeacons)
                             beams.add(new Beam(x, y, z, bc[0], bc[1], bc[2], bc[3], 10f));
                         if (cfg.ballistaProgressText) {
