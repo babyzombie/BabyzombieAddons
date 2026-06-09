@@ -10,6 +10,7 @@ public final class WitherCloakModule {
         SoulwardTimer.init();
         AlignedTimer.init();
         GravityStormTimer.init();
+        ChargedCreeperHider.init();
         WitherCloakHUD.init();
 
         // Reset on world load

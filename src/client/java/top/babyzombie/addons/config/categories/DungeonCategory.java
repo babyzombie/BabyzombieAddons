@@ -87,6 +87,8 @@ public final class DungeonCategory {
                                 () -> config.witherCloak.alignedTimer, v -> config.witherCloak.alignedTimer = v))
                         .option(bool("gravityStormTimer", defaults.witherCloak.gravityStormTimer,
                                 () -> config.witherCloak.gravityStormTimer, v -> config.witherCloak.gravityStormTimer = v))
+                        .option(bool("hideChargedCreepers", defaults.witherCloak.hideChargedCreepers,
+                                () -> config.witherCloak.hideChargedCreepers, v -> config.witherCloak.hideChargedCreepers = v))
                         .build())
                 .option(bool("autoChestClose", defaults.dungeon.autoChestClose,
                         () -> config.dungeon.autoChestClose, v -> config.dungeon.autoChestClose = v))

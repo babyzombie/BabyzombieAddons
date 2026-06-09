@@ -278,6 +278,8 @@
   "config.babyzombieaddons.option.alignedTimer.desc": "Show 6-second alignment duration and source player.",
   "config.babyzombieaddons.option.gravityStormTimer": "Gravity Storm Timer",
   "config.babyzombieaddons.option.gravityStormTimer.desc": "Track 30-second Gravity Storm cooldown.",
+  "config.babyzombieaddons.option.hideChargedCreepers": "Hide Invisible Charged Creepers",
+  "config.babyzombieaddons.option.hideChargedCreepers.desc": "Hide invisible charged creepers within 2 blocks when Wither Cloak is active.",
 
   "config.babyzombieaddons.option.nucleusAutoWarp": "Nucleus Auto Warp",
   "config.babyzombieaddons.option.nucleusAutoWarp.desc": "Double-click crystal to /warp nucleus.",

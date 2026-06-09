@@ -121,6 +121,7 @@ public class ModConfig {
         public boolean soulwardTimer = false;
         public boolean alignedTimer = false;
         public boolean gravityStormTimer = false;
+        public boolean hideChargedCreepers = false;
     }
 
     // ---- Mining ----

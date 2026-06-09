@@ -277,6 +277,8 @@
   "config.babyzombieaddons.option.alignedTimer.desc": "显示 6 秒对齐持续时间和来源玩家。",
   "config.babyzombieaddons.option.gravityStormTimer": "Gravity Storm Timer",
   "config.babyzombieaddons.option.gravityStormTimer.desc": "追踪 30 秒重力风暴冷却。",
+  "config.babyzombieaddons.option.hideChargedCreepers": "隐藏隐身闪电苦力怕",
+  "config.babyzombieaddons.option.hideChargedCreepers.desc": "当 Wither Cloak 激活时，隐藏 2 格范围内的隐身闪电苦力怕。",
 
   "config.babyzombieaddons.option.nucleusAutoWarp": "水晶核自动传送",
   "config.babyzombieaddons.option.nucleusAutoWarp.desc": "双击水晶直接传送到晶核。",
