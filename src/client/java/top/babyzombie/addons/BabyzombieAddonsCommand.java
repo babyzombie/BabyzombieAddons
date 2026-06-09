@@ -12,7 +12,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.module.playcmd.PlayCmdModule;
 import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;

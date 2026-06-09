@@ -1,12 +1,12 @@
 package top.babyzombie.addons.module.slayer;
 
-import top.babyzombie.addons.util.RenderPhaseRegister;
+import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import net.minecraft.world.entity.Entity;
 import top.babyzombie.addons.config.ModConfig.SlayerBossBoxMode;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.BeamRenderer;
-import top.babyzombie.addons.util.HypixelLocationTracker;
-import top.babyzombie.addons.util.WorldRenderUtils;
+import top.babyzombie.addons.util.render.BeamRenderer;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.render.WorldRenderUtils;
 
 public final class SlayerBossBox {
     private SlayerBossBox() {}

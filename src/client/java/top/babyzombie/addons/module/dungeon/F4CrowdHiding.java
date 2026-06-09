@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.EntityRenderEvents;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 /**
  * Hides or removes spectator crowd entities in the F4 boss room.

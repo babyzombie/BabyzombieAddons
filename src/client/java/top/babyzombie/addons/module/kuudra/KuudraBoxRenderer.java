@@ -2,7 +2,7 @@ package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.GlowController;
+import top.babyzombie.addons.util.render.GlowController;
 
 public final class KuudraBoxRenderer {
     private KuudraBoxRenderer() {}

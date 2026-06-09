@@ -6,7 +6,7 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoeItem;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 public final class XpOrbSoundReducer {
     private XpOrbSoundReducer() {}

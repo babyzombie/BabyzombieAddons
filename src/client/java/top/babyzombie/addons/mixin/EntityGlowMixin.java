@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import top.babyzombie.addons.util.GlowController;
+import top.babyzombie.addons.util.render.GlowController;
 
 @Mixin(Entity.class)
 public class EntityGlowMixin {

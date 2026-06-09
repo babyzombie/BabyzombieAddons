@@ -14,7 +14,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.Nullable;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

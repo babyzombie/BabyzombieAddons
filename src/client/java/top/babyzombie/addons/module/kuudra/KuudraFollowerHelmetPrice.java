@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.Calendar;
 import java.util.Objects;

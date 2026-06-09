@@ -1,4 +1,4 @@
-package top.babyzombie.addons.util;
+package top.babyzombie.addons.util.render;
 
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
@@ -19,6 +19,12 @@ public final class WorldTextRenderer {
     /** Render a string at world coordinates (x,y,z) with the given ARGB color and scale. */
     public static void renderString(WorldRenderContext context, String text, double x, double y, double z,
                                      int color, float scale, boolean throughWalls) {
+        renderString(context, text, x, y, z, color, scale, throughWalls, 0);
+    }
+
+    /** Render a string at world coordinates (x,y,z) with a screen-space vertical offset. */
+    public static void renderString(WorldRenderContext context, String text, double x, double y, double z,
+                                     int color, float scale, boolean throughWalls, float fontYOffset) {
         var font = Minecraft.getInstance().font;
         var matrices = context.matrices();
         Vec3 camera = context.worldState().cameraRenderState.pos;
@@ -33,7 +39,7 @@ public final class WorldTextRenderer {
 
         font.drawInBatch(
             Component.literal(text).getVisualOrderText(),
-            -font.width(text) / 2f, 0,
+            -font.width(text) / 2f, fontYOffset,
             color, false,
             new Matrix4f(matrices.last().pose()),
             bufferSource,

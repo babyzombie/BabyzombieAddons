@@ -3,7 +3,7 @@ package top.babyzombie.addons.module.mining;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.ItemUtils;
 
 public final class DrillSwingSuppression {

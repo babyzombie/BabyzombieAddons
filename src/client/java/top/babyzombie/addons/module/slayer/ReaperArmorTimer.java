@@ -5,7 +5,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.util.ServerTick;

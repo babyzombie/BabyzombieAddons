@@ -11,7 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,4 +1,4 @@
-package top.babyzombie.addons.util;
+package top.babyzombie.addons.util.render;
 
 import net.minecraft.world.entity.Entity;
 

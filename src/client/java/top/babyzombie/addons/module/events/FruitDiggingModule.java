@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import top.babyzombie.addons.util.RenderPhaseRegister;
+import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.client.Minecraft;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
@@ -26,8 +26,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.HypixelLocationTracker;
-import top.babyzombie.addons.util.WorldTextRenderer;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.render.WorldTextRenderer;
 
 
 public final class FruitDiggingModule {

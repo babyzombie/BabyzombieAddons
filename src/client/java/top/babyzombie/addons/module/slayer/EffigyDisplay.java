@@ -1,14 +1,14 @@
 package top.babyzombie.addons.module.slayer;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import top.babyzombie.addons.util.RenderPhaseRegister;
+import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.scores.*;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.BeamRenderer;
-import top.babyzombie.addons.util.HypixelLocationTracker;
-import top.babyzombie.addons.util.WorldRenderUtils;
+import top.babyzombie.addons.util.render.BeamRenderer;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.render.WorldRenderUtils;
 
 import java.awt.Color;
 import java.util.ArrayList;

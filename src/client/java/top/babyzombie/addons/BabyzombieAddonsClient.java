@@ -27,11 +27,12 @@ import top.babyzombie.addons.module.misc.UpdateChecker;
 import top.babyzombie.addons.module.withercloak.WitherCloakModule;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import top.babyzombie.addons.util.DungeonCooldown;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
-import top.babyzombie.addons.util.PartyTracker;
+import top.babyzombie.addons.util.tracker.PartyTracker;
 import top.babyzombie.addons.util.ServerTickCounter;
-import top.babyzombie.addons.util.WorldRenderUtils;
+import top.babyzombie.addons.util.render.Waypoints;
+import top.babyzombie.addons.util.render.WorldRenderUtils;
 
 public class BabyzombieAddonsClient implements ClientModInitializer {
 
@@ -52,6 +53,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         PartyTracker.getInstance().init();
         DungeonCooldown.init();
         ServerTickCounter.init();
+        Waypoints.init();
         IncomingCallHandler.register();
 
         BabyzombieAddonsCommand.init();

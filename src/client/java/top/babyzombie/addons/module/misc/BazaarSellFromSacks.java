@@ -8,7 +8,7 @@ import net.minecraft.world.item.component.ItemLore;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.config.ModConfig.BzGetFromSacksMode;
 import top.babyzombie.addons.util.ServerTick;

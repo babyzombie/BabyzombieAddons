@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.monster.Creeper;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.EntityRenderEvents;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.Scheduler;
 
 /**

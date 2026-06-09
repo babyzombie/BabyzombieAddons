@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 /** Player state queries: held item, ping, profile, and location checks. */
 public final class PlayerUtils {

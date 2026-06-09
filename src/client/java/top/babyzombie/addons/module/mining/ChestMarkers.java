@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import top.babyzombie.addons.util.RenderPhaseRegister;
+import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Blocks;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.HypixelLocationTracker;
-import top.babyzombie.addons.util.WorldRenderUtils;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.render.WorldRenderUtils;
 
 public final class ChestMarkers {
     private static final List<BlockPos> chests = new ArrayList<>();

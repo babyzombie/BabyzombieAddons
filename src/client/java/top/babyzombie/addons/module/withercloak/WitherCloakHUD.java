@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.ServerTick;
 
 public final class WitherCloakHUD {

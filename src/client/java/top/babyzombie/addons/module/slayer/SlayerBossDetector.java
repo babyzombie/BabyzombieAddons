@@ -20,7 +20,10 @@ import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.Scoreboard;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.*;
+import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ItemUtils;
+import top.babyzombie.addons.util.ServerTick;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.*;
 import java.util.regex.Matcher;

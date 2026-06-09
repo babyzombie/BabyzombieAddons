@@ -486,5 +486,9 @@
   "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §a发现新版本 §e%s §a(当前: §7%s§a)  §b§n[点击下载]",
   "babyzombieaddons.update.open_url": "§7点击打开 §f%s",
   "babyzombieaddons.reconnect.countdown": "将在 %d 秒后自动重连...",
-  "babyzombieaddons.reconnect.attempt": "（第 %d 次）"
+  "babyzombieaddons.reconnect.attempt": "（第 %d 次）",
+
+  "babyzombieaddons.waypoint.added": "§a已在 §b%s %s %s §a处添加标记点 §r%s",
+  "babyzombieaddons.waypoint.deleted": "§a删除了§b%s§a个名为 §b%s §a的坐标点",
+  "babyzombieaddons.waypoint.not_found": "§e没有找到名为 §b%s §e的坐标点"
 }

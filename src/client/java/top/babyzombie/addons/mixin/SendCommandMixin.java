@@ -10,7 +10,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.abiphone.AbiphoneContactScreen;
 import top.babyzombie.addons.module.abiphone.AbiphoneTracker;
 import top.babyzombie.addons.module.playcmd.PlayCmdModule;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 @Mixin(ClientPacketListener.class)
 public class SendCommandMixin {

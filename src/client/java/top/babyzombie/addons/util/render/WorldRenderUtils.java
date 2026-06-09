@@ -1,4 +1,4 @@
-package top.babyzombie.addons.util;
+package top.babyzombie.addons.util.render;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;

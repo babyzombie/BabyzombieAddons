@@ -486,5 +486,9 @@
   "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §aNew version available: §e%s §a(current: §7%s§a)  §b§n[Download]",
   "babyzombieaddons.update.open_url": "§7Click to open §f%s",
   "babyzombieaddons.reconnect.countdown": "Auto-reconnecting in %d s...",
-  "babyzombieaddons.reconnect.attempt": "(attempt %d)"
+  "babyzombieaddons.reconnect.attempt": "(attempt %d)",
+
+  "babyzombieaddons.waypoint.added": "§aWaypoint added at §b%s %s %s§a: §r%s",
+  "babyzombieaddons.waypoint.deleted": "§aDeleted §b%s §awaypoint(s) named §b%s",
+  "babyzombieaddons.waypoint.not_found": "§eNo waypoint found named §b%s"
 }

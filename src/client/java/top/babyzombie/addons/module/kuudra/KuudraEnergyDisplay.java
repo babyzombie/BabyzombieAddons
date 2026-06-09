@@ -12,7 +12,7 @@ import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

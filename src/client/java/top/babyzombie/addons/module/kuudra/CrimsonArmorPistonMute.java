@@ -3,7 +3,7 @@ package top.babyzombie.addons.module.kuudra;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 /**
  * Mutes piston sound when Crimson Isle armor is at max stacks.

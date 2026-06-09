@@ -1,4 +1,4 @@
-package top.babyzombie.addons.util;
+package top.babyzombie.addons.util.render;
 
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;

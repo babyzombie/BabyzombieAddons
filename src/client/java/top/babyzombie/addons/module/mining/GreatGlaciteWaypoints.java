@@ -1,12 +1,12 @@
 package top.babyzombie.addons.module.mining;
 
-import top.babyzombie.addons.util.RenderPhaseRegister;
+import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.HypixelLocationTracker;
-import top.babyzombie.addons.util.WorldRenderUtils;
-import top.babyzombie.addons.util.WorldTextRenderer;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.render.WorldRenderUtils;
+import top.babyzombie.addons.util.render.WorldTextRenderer;
 
 public final class GreatGlaciteWaypoints {
     private static final double[][][] POSITIONS = {

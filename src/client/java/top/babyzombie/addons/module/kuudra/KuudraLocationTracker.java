@@ -7,8 +7,8 @@ import net.minecraft.world.entity.monster.MagmaCube;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.GlowController;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.render.GlowController;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 public final class KuudraLocationTracker {
     private KuudraLocationTracker() {}

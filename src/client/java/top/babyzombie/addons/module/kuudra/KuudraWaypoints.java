@@ -1,16 +1,16 @@
 package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import top.babyzombie.addons.util.RenderPhaseRegister;
+import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.monster.Giant;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.DisplaySlot;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.BeamRenderer;
+import top.babyzombie.addons.util.render.BeamRenderer;
 import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.HypixelLocationTracker;
-import top.babyzombie.addons.util.WorldTextRenderer;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.render.WorldTextRenderer;
 
 import java.awt.Color;
 import java.util.ArrayList;

@@ -7,7 +7,7 @@ import top.babyzombie.addons.config.ModConfig.ToxicArrowTiming;
 import top.babyzombie.addons.config.ModConfig.TwilightArrowTiming;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.Scheduler;
 

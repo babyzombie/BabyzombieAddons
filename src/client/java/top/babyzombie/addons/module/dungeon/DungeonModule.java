@@ -8,8 +8,8 @@ import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.party.PartyModule;
 import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.HypixelLocationTracker;
-import top.babyzombie.addons.util.PartyTracker;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.PartyTracker;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
