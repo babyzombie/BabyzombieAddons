@@ -22,10 +22,10 @@ public class ModConfig {
     public enum ToxicArrowMinTier { T1, T2, T3, T4, T5 }
 
     public enum ToxicArrowTiming {
-        STUNNER_ENTER,
         KUUDRA_START,
         SUPPLIES_DONE,
         BALLISTA_READY,
+        STUNNER_ENTER,
         KUUDRA_STUNNED
     }
 
@@ -106,10 +106,10 @@ public class ModConfig {
         public String perkShopBlacklistItems = "Elle's Pickaxe,Elle's Lava Rod,Auto Revive,Support Route,Mining Frenzy I";
         public boolean followerHelmetPrice = false;
         public boolean muteCrimsonArmor = false;
-        public ToxicArrowMinTier toxicArrowMinTier = ToxicArrowMinTier.T1;
-        public ToxicArrowTiming toxicArrowTiming = ToxicArrowTiming.STUNNER_ENTER;
+        public ToxicArrowMinTier toxicArrowMinTier = ToxicArrowMinTier.T3;
+        public ToxicArrowTiming toxicArrowTiming = ToxicArrowTiming.KUUDRA_STUNNED;
         public int toxicArrowThreshold = 0;
-        public TwilightArrowTiming twilightArrowTiming = TwilightArrowTiming.P4_SHORTLY_AFTER;
+        public TwilightArrowTiming twilightArrowTiming = TwilightArrowTiming.P4_START;
         public int twilightArrowThreshold = 0;
     }
 

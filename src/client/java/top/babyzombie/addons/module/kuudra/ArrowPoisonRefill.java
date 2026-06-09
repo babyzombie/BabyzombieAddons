@@ -9,7 +9,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.ItemUtils;
-import top.babyzombie.addons.util.ServerTick;
+import top.babyzombie.addons.util.Scheduler;
 
 import java.util.regex.Pattern;
 
@@ -47,7 +47,7 @@ public final class ArrowPoisonRefill {
 
             if (!toxicMatches && !twilightMatches) return;
 
-            long now = ServerTick.getTime();
+            long now = System.currentTimeMillis();
 
             if (toxicMatches && toxicCooldown <= now) {
                 int current = countArrow("TOXIC_ARROW_POISON");
@@ -55,7 +55,15 @@ public final class ArrowPoisonRefill {
                     ChatUtils.sendCommand("gfs Toxic Arrow Poison " + (cfg.toxicArrowThreshold - current));
                     toxicCooldown = now + 2000;
                     if (twilightMatches) {
-                        twilightCooldown = Math.max(twilightCooldown, toxicCooldown);
+                        int threshold = cfg.twilightArrowThreshold;
+                        Scheduler.schedule(40, () -> {
+                            int cur = countArrow("TWILIGHT_ARROW_POISON");
+                            if (cur < threshold) {
+                                ChatUtils.sendCommand("gfs Twilight Arrow Poison " + (threshold - cur));
+                                twilightCooldown = System.currentTimeMillis() + 2000;
+                            }
+                        });
+                        twilightCooldown = now + 4000;
                     }
                 }
             }
