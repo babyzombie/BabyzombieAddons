@@ -19,6 +19,26 @@ public class ModConfig {
     public enum WorldRenderPhase { AFTER_ENTITIES, END_MAIN }
     public enum BzGetFromSacksMode { OFF, GET_ONLY, GET_AND_RECLICK }
 
+    public enum ToxicArrowMinTier { T1, T2, T3, T4, T5 }
+
+    public enum ToxicArrowTiming {
+        STUNNER_ENTER,
+        KUUDRA_START,
+        SUPPLIES_DONE,
+        BALLISTA_READY,
+        KUUDRA_STUNNED
+    }
+
+    public enum TwilightArrowTiming {
+        P4_SHORTLY_AFTER,
+        KUUDRA_START,
+        SUPPLIES_DONE,
+        BALLISTA_READY,
+        KUUDRA_STUNNED,
+        P4_START,
+        P4_TRUE_LAIR
+    }
+
     public GeneralConfig general = new GeneralConfig();
     public DungeonConfig dungeon = new DungeonConfig();
     public KuudraConfig kuudra = new KuudraConfig();
@@ -86,7 +106,10 @@ public class ModConfig {
         public String perkShopBlacklistItems = "Elle's Pickaxe,Elle's Lava Rod,Auto Revive,Support Route,Mining Frenzy I";
         public boolean followerHelmetPrice = false;
         public boolean muteCrimsonArmor = false;
+        public ToxicArrowMinTier toxicArrowMinTier = ToxicArrowMinTier.T1;
+        public ToxicArrowTiming toxicArrowTiming = ToxicArrowTiming.STUNNER_ENTER;
         public int toxicArrowThreshold = 0;
+        public TwilightArrowTiming twilightArrowTiming = TwilightArrowTiming.P4_SHORTLY_AFTER;
         public int twilightArrowThreshold = 0;
     }
 

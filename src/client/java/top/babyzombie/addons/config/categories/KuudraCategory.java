@@ -10,6 +10,9 @@ import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfig.HpDisplayMode;
 import top.babyzombie.addons.config.ModConfig.RequeueMode;
+import top.babyzombie.addons.config.ModConfig.ToxicArrowMinTier;
+import top.babyzombie.addons.config.ModConfig.ToxicArrowTiming;
+import top.babyzombie.addons.config.ModConfig.TwilightArrowTiming;
 
 import java.awt.Color;
 import java.util.function.Supplier;
@@ -114,6 +117,24 @@ public final class KuudraCategory {
                 .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.arrowPoison"))
                         .collapsed(true)
+                        .option(Option.<ToxicArrowMinTier>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.toxicArrowMinTier"))
+                                .description(Component.translatable("config.babyzombieaddons.option.toxicArrowMinTier.desc"))
+                                .binding(defaults.kuudra.toxicArrowMinTier,
+                                        () -> config.kuudra.toxicArrowMinTier,
+                                        v -> config.kuudra.toxicArrowMinTier = v)
+                                .controller(ConfigUtils.createEnumController(m ->
+                                        Component.translatable("config.babyzombieaddons.option.toxicArrowMinTier." + m.name())))
+                                .build())
+                        .option(Option.<ToxicArrowTiming>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.toxicArrowTiming"))
+                                .description(Component.translatable("config.babyzombieaddons.option.toxicArrowTiming.desc"))
+                                .binding(defaults.kuudra.toxicArrowTiming,
+                                        () -> config.kuudra.toxicArrowTiming,
+                                        v -> config.kuudra.toxicArrowTiming = v)
+                                .controller(ConfigUtils.createEnumController(m ->
+                                        Component.translatable("config.babyzombieaddons.option.toxicArrowTiming." + m.name())))
+                                .build())
                         .option(Option.<Integer>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.toxicArrowThreshold"))
                                 .description(Component.translatable("config.babyzombieaddons.option.toxicArrowThreshold.desc"))
@@ -121,6 +142,15 @@ public final class KuudraCategory {
                                         () -> config.kuudra.toxicArrowThreshold,
                                         v -> config.kuudra.toxicArrowThreshold = v)
                                 .controller(IntegerController.createBuilder().range(0, 32).slider(2).build())
+                                .build())
+                        .option(Option.<TwilightArrowTiming>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.twilightArrowTiming"))
+                                .description(Component.translatable("config.babyzombieaddons.option.twilightArrowTiming.desc"))
+                                .binding(defaults.kuudra.twilightArrowTiming,
+                                        () -> config.kuudra.twilightArrowTiming,
+                                        v -> config.kuudra.twilightArrowTiming = v)
+                                .controller(ConfigUtils.createEnumController(m ->
+                                        Component.translatable("config.babyzombieaddons.option.twilightArrowTiming." + m.name())))
                                 .build())
                         .option(Option.<Integer>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.twilightArrowThreshold"))

@@ -11,6 +11,8 @@ import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.HypixelLocationTracker;
 import top.babyzombie.addons.util.ServerTick;
 
+import java.util.regex.Pattern;
+
 public final class KuudraStunTimer {
     private KuudraStunTimer() {}
 
@@ -18,12 +20,15 @@ public final class KuudraStunTimer {
     private static long downEnd;
     private static long p4End;
 
+    private static final Pattern DESTROYED_POD = Pattern.compile(
+            "([0-9a-zA-Z_]{2,24}) destroyed one of Kuudra's pods");
+
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (!ModConfigManager.get().kuudra.stunTimer) return;
             if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
 
-            if (message.getString().contains("destroyed one of Kuudra's pods")) {
+            if (DESTROYED_POD.matcher(message.getString()).find()) {
                 var loc = HypixelLocationTracker.getInstance().getLocation();
                 if (loc == null) return;
                 int duration = loc.contains("T5") ? 8000 : (loc.contains("T3") ? 12000 : 10000);

@@ -86,7 +86,7 @@ public final class PartyModule {
         });
 
         // Party chat commands
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> onPartyChat(message, overlay));
+        ClientReceiveMessageEvents.GAME.register(PartyModule::onPartyChat);
 
         // DM party invite (!p in private message)
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
