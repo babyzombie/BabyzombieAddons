@@ -2,6 +2,7 @@ package top.babyzombie.addons;
 
 import net.fabricmc.api.ClientModInitializer;
 import org.lwjgl.glfw.GLFW;
+import top.babyzombie.addons.command.BabyzombieAddonsCommand;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.hud.HudRegistrar;
 import top.babyzombie.addons.config.ModConfigManager;

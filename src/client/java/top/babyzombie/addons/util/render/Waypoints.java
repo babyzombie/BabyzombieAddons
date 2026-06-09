@@ -47,10 +47,6 @@ public final class Waypoints {
                     WorldTextRenderer.renderString(ctx, "§6(" + (int) dist + "m)",
                             bx + 0.5, by + 0.5, bz + 0.5,
                             0xFFFFFF55, scale, true, 5.5f);
-                    WorldRenderUtils.drawWireframeBox(ctx,
-                            bx, by, bz,
-                            bx + 1, by + 1, bz + 1,
-                            0, 1, 0, 1, true, 4.0f);
                 }
             }
         });
