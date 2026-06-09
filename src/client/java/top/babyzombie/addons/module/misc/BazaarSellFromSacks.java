@@ -44,7 +44,7 @@ public final class BazaarSellFromSacks {
             int i = 0;
             for (Component line : itemLore.lines()) {
                 String text = ChatUtils.stripColor(line.getString());
-                if (i == 1) itemName = text;
+                if (i == 0) itemName = text;
                 if (text.equals("None in inventory!")) noneInInv = true;
                 i++;
             }
