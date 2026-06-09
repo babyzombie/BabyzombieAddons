@@ -30,12 +30,12 @@ public class ModConfig {
     }
 
     public enum TwilightArrowTiming {
-        P4_SHORTLY_AFTER,
         KUUDRA_START,
         SUPPLIES_DONE,
         BALLISTA_READY,
         KUUDRA_STUNNED,
         P4_START,
+        P4_SHORTLY_AFTER,
         P4_TRUE_LAIR
     }
 
@@ -64,6 +64,9 @@ public class ModConfig {
         public int skipSecondPerson = 0;
         public boolean useTpsAdjustedTime = false;
         public WorldRenderPhase renderPhase = WorldRenderPhase.AFTER_ENTITIES;
+        public boolean autoReconnectEnabled = false;
+        public int autoReconnectDelay = 5;
+        public int autoReconnectMaxRetries = 0;
     }
 
     // ---- Dungeon ----

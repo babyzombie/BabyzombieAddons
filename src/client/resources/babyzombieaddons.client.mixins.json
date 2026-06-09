@@ -15,7 +15,9 @@
     "BossHealthOverlayMixin",
     "ClientCommonPacketListenerImplMixin",
     "ConnectionMixin",
-    "PingDebugMonitorMixin"
+    "PingDebugMonitorMixin",
+    "DisconnectedScreenMixin",
+    "ScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

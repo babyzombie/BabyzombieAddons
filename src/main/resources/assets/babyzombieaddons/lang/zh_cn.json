@@ -79,6 +79,13 @@
   "config.babyzombieaddons.option.cakeBuffTracker.desc": "用已食用蛋糕清单替换默认蛋糕消息。",
   "config.babyzombieaddons.option.skipSecondPerson": "跳过第二人称视角",
   "config.babyzombieaddons.option.skipSecondPerson.desc": "按 F5 时跳过第二人称视角，仅在第一人称和第三人称后方之间切换。长按超过设定 tick 数后松手时切换至第二人称视角。调为 0 关闭，20 tick = 1 秒。",
+  "config.babyzombieaddons.group.autoReconnect": "断线自动重连",
+  "config.babyzombieaddons.option.autoReconnectEnabled": "启用",
+  "config.babyzombieaddons.option.autoReconnectEnabled.desc": "与服务器断开连接后自动重连。",
+  "config.babyzombieaddons.option.autoReconnectDelay": "重连延迟（秒）",
+  "config.babyzombieaddons.option.autoReconnectDelay.desc": "断线后等待多少秒再重连。",
+  "config.babyzombieaddons.option.autoReconnectMaxRetries": "失败重试次数",
+  "config.babyzombieaddons.option.autoReconnectMaxRetries.desc": "重连失败后最多尝试几次，设为 0 则不限次数。每次成功进服后重置计数。",
   "config.babyzombieaddons.option.useTpsAdjustedTime": "TPS 校准计时",
   "config.babyzombieaddons.option.useTpsAdjustedTime.desc": "使用服务器 tick 速率调整计时器速度。在卡顿的服务器上，冷却时间会跟随实际游戏时间变慢，而非使用真实墙上时间。",
   "config.babyzombieaddons.option.renderPhase": "世界渲染阶段",
@@ -477,5 +484,7 @@
   "babyzombieaddons.sendcoords.no_target": "§c视线内没有目标方块",
 
   "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §a发现新版本 §e%s §a(当前: §7%s§a)  §b§n[点击下载]",
-  "babyzombieaddons.update.open_url": "§7点击打开 §f%s"
+  "babyzombieaddons.update.open_url": "§7点击打开 §f%s",
+  "babyzombieaddons.reconnect.countdown": "将在 %d 秒后自动重连...",
+  "babyzombieaddons.reconnect.attempt": "（第 %d 次）"
 }

@@ -3,6 +3,7 @@ package top.babyzombie.addons.config.categories;
 import net.azureaaron.dandelion.api.ButtonOption;
 import net.azureaaron.dandelion.api.ConfigCategory;
 import net.azureaaron.dandelion.api.Option;
+import net.azureaaron.dandelion.api.OptionGroup;
 import net.azureaaron.dandelion.api.controllers.IntegerController;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -49,6 +50,28 @@ public final class GeneralCategory {
                                 v -> config.general.renderPhase = v)
                         .controller(ConfigUtils.createEnumController(m ->
                                 Component.translatable("config.babyzombieaddons.option.renderPhase." + m.name())))
+                        .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.autoReconnect"))
+                        .collapsed(true)
+                        .option(createBool("autoReconnectEnabled", defaults.general.autoReconnectEnabled,
+                                () -> config.general.autoReconnectEnabled, v -> config.general.autoReconnectEnabled = v))
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.autoReconnectDelay"))
+                                .description(Component.translatable("config.babyzombieaddons.option.autoReconnectDelay.desc"))
+                                .binding(defaults.general.autoReconnectDelay,
+                                        () -> config.general.autoReconnectDelay,
+                                        v -> config.general.autoReconnectDelay = v)
+                                .controller(IntegerController.createBuilder().range(1, 60).slider(1).build())
+                                .build())
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.autoReconnectMaxRetries"))
+                                .description(Component.translatable("config.babyzombieaddons.option.autoReconnectMaxRetries.desc"))
+                                .binding(defaults.general.autoReconnectMaxRetries,
+                                        () -> config.general.autoReconnectMaxRetries,
+                                        v -> config.general.autoReconnectMaxRetries = v)
+                                .controller(IntegerController.createBuilder().range(0, 10).slider(1).build())
+                                .build())
                         .build())
                 .build();
     }
