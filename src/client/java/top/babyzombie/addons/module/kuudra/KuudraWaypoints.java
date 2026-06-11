@@ -87,7 +87,7 @@ public final class KuudraWaypoints {
                             String[] parts = ChatUtils.stripColor(s.getName().getString()).split(" ");
                             String key = "p2_" + s.getId(); seenKeys.add(key);
                             textEntries.put(key, new TextData(parts.length > 1 ? parts[parts.length - 1] : "",
-                                    x + 1.5, y + 1.2, z + 1.5, cfg.ballistaTextColor));
+                                    x, y + 1.2, z, cfg.ballistaTextColor));
                         }
                     }
                 }

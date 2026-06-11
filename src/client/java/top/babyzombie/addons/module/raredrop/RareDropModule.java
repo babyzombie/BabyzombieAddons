@@ -17,19 +17,19 @@ import java.util.*;
 public final class RareDropModule {
 
     private static final String DATA_FILE = "raredrop.json";
-    private static final Set<String> blacklist = new LinkedHashSet<>();
+    private static final Map<String, Boolean> blacklist = new LinkedHashMap<>();
     private static final Map<String, ShareMode> shareList = new LinkedHashMap<>();
     private static long ignoreSoundTime;
 
     static {
-        blacklist.add("potato");
-        blacklist.add("carrot");
-        blacklist.add("cropie");
-        blacklist.add("squash");
-        blacklist.add("compost");
-        blacklist.add("tasty cheese");
-        blacklist.add("enchanted bone");
-        blacklist.add("enchanted ender pearl");
+        blacklist.put("potato", true);
+        blacklist.put("carrot", true);
+        blacklist.put("cropie", true);
+        blacklist.put("squash", true);
+        blacklist.put("compost", true);
+        blacklist.put("tasty cheese", true);
+        blacklist.put("enchanted bone", true);
+        blacklist.put("enchanted ender pearl", true);
 
         shareList.put("phoenix", new ShareMode(false, false, false, false, false));
         shareList.put("warden heart", new ShareMode(false, false, false, false, false));
@@ -52,7 +52,7 @@ public final class RareDropModule {
             String itemName = extractName(text);
             if (itemName == null) return true;
 
-            if (blacklist.contains(itemName.toLowerCase())) {
+            if (blacklist.getOrDefault(itemName.toLowerCase(), false)) {
                 ignoreSoundTime = ServerTick.getTime();
                 return false; // Cancel the message
             }
@@ -94,11 +94,14 @@ public final class RareDropModule {
 
     // ---- accessors ----
 
-    public static Set<String> getBlacklist() { return blacklist; }
+    public static Map<String, Boolean> getBlacklist() { return blacklist; }
     public static Map<String, ShareMode> getShareList() { return shareList; }
 
-    public static void addToBlacklist(String item) { blacklist.add(item.toLowerCase()); }
+    public static void addToBlacklist(String item) { blacklist.put(item.toLowerCase(), true); }
     public static void removeFromBlacklist(String item) { blacklist.remove(item.toLowerCase()); }
+    public static void toggleBlacklist(String item) {
+        blacklist.computeIfPresent(item, (k, v) -> !v);
+    }
 
     public static void addToShareList(String item) {
         shareList.putIfAbsent(item.toLowerCase(), new ShareMode(false, false, false, false, false));
@@ -120,16 +123,27 @@ public final class RareDropModule {
     // ---- persistence ----
 
     private static void loadLists() {
-        var saved = DataPersistence.load(DATA_FILE, RareDropData.class);
-        if (saved != null) {
-            if (saved.blacklist != null) { blacklist.clear(); blacklist.addAll(saved.blacklist); }
-            if (saved.share != null) { shareList.clear(); shareList.putAll(saved.share); }
+        try {
+            var saved = DataPersistence.load(DATA_FILE, RareDropData.class);
+            if (saved != null) {
+                if (saved.blacklist != null) { blacklist.clear(); blacklist.putAll(saved.blacklist); }
+                if (saved.share != null) { shareList.clear(); shareList.putAll(saved.share); }
+            }
+        } catch (Exception e) {
+            // Migration: old format stored blacklist as array, convert to Map
+            var legacy = DataPersistence.load(DATA_FILE, RareDropDataLegacy.class);
+            if (legacy != null) {
+                if (legacy.blacklist != null)
+                    legacy.blacklist.forEach(item -> blacklist.put(item, true));
+                if (legacy.share != null) { shareList.clear(); shareList.putAll(legacy.share); }
+                saveLists(); // persist in new format
+            }
         }
     }
 
     public static void saveLists() {
         DataPersistence.save(DATA_FILE, new RareDropData(
-                new LinkedHashSet<>(blacklist), new LinkedHashMap<>(shareList)));
+                new LinkedHashMap<>(blacklist), new LinkedHashMap<>(shareList)));
     }
 
     // ---- helpers ----
@@ -138,6 +152,7 @@ public final class RareDropModule {
         text = text.replaceAll(".*?(RARE|VERY RARE|CRAZY RARE|INSANE|PET) (DROP|CROP)!", "").trim();
         text = text.replaceAll("\\(.*Magic Find.*\\)", "").trim();
         text = text.replaceAll("\\(.*[✯✦].*\\)", "").trim();
+        if(text.startsWith("(") && text.endsWith(")")) text = text.substring(1, text.length() - 1).trim();
         return text.isEmpty() ? null : text;
     }
 
@@ -150,5 +165,6 @@ public final class RareDropModule {
 
     public record ShareMode(boolean copy, boolean ac, boolean pc, boolean gc, boolean cc) {}
 
-    private record RareDropData(Set<String> blacklist, Map<String, ShareMode> share) {}
+    private record RareDropData(Map<String, Boolean> blacklist, Map<String, ShareMode> share) {}
+    private record RareDropDataLegacy(Set<String> blacklist, Map<String, ShareMode> share) {}
 }

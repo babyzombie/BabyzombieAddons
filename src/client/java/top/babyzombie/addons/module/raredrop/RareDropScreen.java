@@ -49,11 +49,21 @@ public class RareDropScreen extends Screen {
         g.drawString(font, "§c§l" + Component.translatable("rareropscreen.blacklist").getString(), PAD, y, 0xFFFFFFFF);
         y += 14;
 
-        var bl = new ArrayList<>(RareDropModule.getBlacklist());
+        var bl = new ArrayList<>(RareDropModule.getBlacklist().entrySet());
         for (int i = 0; i < bl.size(); i++) {
-            String item = bl.get(i);
+            var e = bl.get(i);
+            String item = e.getKey();
+            boolean enabled = e.getValue();
             if (mx >= PAD && mx <= leftW && my >= y && my < y + 20) { hoverIdx = i; hoverLeft = true; }
+
             g.drawString(font, "§b" + item, PAD + 4, y + 4, 0xFFFFFFFF);
+
+            // Toggle button
+            int tx = leftW - 60;
+            g.fill(tx, y, tx + 26, y + 20, enabled ? 0x4000FF00 : 0x20FFFFFF);
+            g.drawCenteredString(font, enabled ? "§aON" : "§8--", tx + 13, y + 4, 0xFFFFFFFF);
+
+            // Delete button
             int dx = leftW - 30;
             if (mx >= dx && mx <= leftW && my >= y && my < y + 20) g.fill(dx, y, leftW, y + 20, 0x40FF0000);
             g.drawString(font, "§c✕", dx + 8, y + 4, 0xFFFFFFFF);
@@ -128,11 +138,19 @@ public class RareDropScreen extends Screen {
 
         // === LEFT: Blacklist ===
         int y = startY + 14;
-        var bl = new ArrayList<>(RareDropModule.getBlacklist());
+        var bl = new ArrayList<>(RareDropModule.getBlacklist().entrySet());
         for (int i = 0; i < bl.size(); i++) {
+            String item = bl.get(i).getKey();
+            // Toggle button
+            int tx = leftW - 60;
+            if (mx >= tx && mx <= tx + 26 && my >= y && my < y + 20) {
+                RareDropModule.toggleBlacklist(item);
+                saveAndRefresh(); return true;
+            }
+            // Delete button
             int dx = leftW - 30;
             if (mx >= dx && mx <= leftW && my >= y && my < y + 20) {
-                RareDropModule.removeFromBlacklist(bl.get(i));
+                RareDropModule.removeFromBlacklist(item);
                 saveAndRefresh(); return true;
             }
             y += 22;
