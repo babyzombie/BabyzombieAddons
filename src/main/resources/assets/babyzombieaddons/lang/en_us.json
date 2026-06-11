@@ -431,6 +431,7 @@
   "playcmd.cat.Classic": "Classic",
   "playcmd.title": "Play",
 
+  "babyzombieaddons.raredrop.copied": "§6§l§aCopied to clipboard",
   "rareropscreen.title": "Rare Drop Manager",
   "rareropscreen.input.hint": "Item name...",
   "rareropscreen.blacklist": "Blacklist (Ignore)",

@@ -86,11 +86,13 @@ public class RareDropScreen extends Screen {
 
             g.drawString(font, "§b" + item, rightX + 4, y + 4, 0xFFFFFFFF);
 
-            int bx = rightX + leftW - 130;
-            // AC
-            g.fill(bx, y, bx + 24, y + 20, mode.ac() ? 0x4000FF00 : 0x20FFFFFF);
+            int bx = rightX + leftW - 156;
+            // Copy
+            g.fill(bx, y, bx + 24, y + 20, mode.copy() ? 0x4000FF00 : 0x20FFFFFF);
+            g.drawCenteredString(font, mode.copy() ? "§aCP" : "§8CP", bx + 12, y + 4, 0xFFFFFFFF);
+            // AC, PC, GC, CC
+            bx += 26; g.fill(bx, y, bx + 24, y + 20, mode.ac() ? 0x4000FF00 : 0x20FFFFFF);
             g.drawCenteredString(font, mode.ac() ? "§aAC" : "§8AC", bx + 12, y + 4, 0xFFFFFFFF);
-            // PC, GC, CC, Del
             bx += 26; g.fill(bx, y, bx + 24, y + 20, mode.pc() ? 0x4000FF00 : 0x20FFFFFF);
             g.drawCenteredString(font, mode.pc() ? "§aPC" : "§8PC", bx + 12, y + 4, 0xFFFFFFFF);
             bx += 26; g.fill(bx, y, bx + 24, y + 20, mode.gc() ? 0x4000FF00 : 0x20FFFFFF);
@@ -166,7 +168,9 @@ public class RareDropScreen extends Screen {
         var sl = new ArrayList<>(RareDropModule.getShareList().entrySet());
         for (int i = 0; i < sl.size(); i++) {
             String item = sl.get(i).getKey();
-            int bx = rightX + leftW - 130;
+            int bx = rightX + leftW - 156;
+            if (mx >= bx && mx <= bx + 24 && my >= y && my < y + 20) { RareDropModule.toggleShareMode(item, 'c'); saveAndRefresh(); return true; }
+            bx += 26;
             if (mx >= bx && mx <= bx + 24 && my >= y && my < y + 20) { RareDropModule.toggleShareMode(item, 'a'); saveAndRefresh(); return true; }
             bx += 26;
             if (mx >= bx && mx <= bx + 24 && my >= y && my < y + 20) { RareDropModule.toggleShareMode(item, 'p'); saveAndRefresh(); return true; }

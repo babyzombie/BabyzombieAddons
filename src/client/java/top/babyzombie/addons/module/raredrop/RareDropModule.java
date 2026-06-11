@@ -61,7 +61,7 @@ public final class RareDropModule {
             if (mode != null) {
                 String original = message.getString();
                 if (mode.copy()) copyToClipboard(original);
-                if (mode.ac()) ChatUtils.sendMessage(original);
+                if (mode.ac()) ChatUtils.sendCommand("ac " + original);
                 if (mode.pc()) ChatUtils.sendCommand("pc " + original);
                 if (mode.gc()) ChatUtils.sendCommand("gc " + original);
                 if (mode.cc()) ChatUtils.sendCommand("cc " + original);
@@ -158,9 +158,7 @@ public final class RareDropModule {
 
     private static void copyToClipboard(String text) {
         Minecraft.getInstance().keyboardHandler.setClipboard(text);
-        var p = Minecraft.getInstance().player;
-        if (p != null) p.displayClientMessage(
-                net.minecraft.network.chat.Component.literal("§6§l§aCopied to clipboard"), false);
+        ChatUtils.showMessage(ChatUtils.translate("babyzombieaddons.raredrop.copied"));
     }
 
     public record ShareMode(boolean copy, boolean ac, boolean pc, boolean gc, boolean cc) {}

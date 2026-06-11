@@ -34,6 +34,7 @@ public final class WitherCloakTimer {
                     cooldown = calcCooldown(ServerTick.getTime() - 5000, 5000);
                     break;
                 case "Not enough mana! Creeper Veil De-activated!":
+                case "Not enough vitality! Creeper Veil De-activated!":
                 case "Creeper Veil De-activated! (Expired)":
                     active = false;
                     duration = 0;

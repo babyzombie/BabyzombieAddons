@@ -49,7 +49,7 @@ public final class HudRegistrar {
         HudManager.register("KuudraHP", 200, 20, 2.0f,
                 "§4§l100,000§c/100,000",
                 "config.babyzombieaddons.option.hpDisplay",
-                () -> get().kuudra.hpDisplay != ModConfig.HpDisplayMode.OFF);
+                () -> get().kuudra.hpDisplay == ModConfig.HpDisplayMode.HUD);
         HudManager.register("EnergyCharge", 400, 120, 1.0f,
                 "§fEnergy Charge: §a100%",
                 "config.babyzombieaddons.option.energyDisplay",
