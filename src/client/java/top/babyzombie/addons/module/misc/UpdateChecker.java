@@ -60,7 +60,7 @@ public final class UpdateChecker {
                                             Component.translatable("babyzombieaddons.update.open_url", RELEASES_URL))));
                     client.execute(() -> {
                         var player = client.player;
-                        if (player != null) player.displayClientMessage(msg, false);
+                        if (player != null) player.sendSystemMessage(msg);
                     });
                 }
             } catch (Exception ignored) {

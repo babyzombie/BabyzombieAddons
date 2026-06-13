@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
@@ -178,7 +178,7 @@ public final class PopupEventsModule {
         };
     }
 
-    private static void renderHUD(GuiGraphics gui) {
+    private static void renderHUD(GuiGraphicsExtractor gui) {
         long remaining = expireTime - ServerTick.getTime();
         if (remaining <= 0) { close(); return; }
         var font = Minecraft.getInstance().font;
@@ -206,11 +206,11 @@ public final class PopupEventsModule {
         ps.pushMatrix();
         ps.translate(x + 76, y + titleH / 2f);
         ps.scale(titleScale, titleScale);
-        gui.drawCenteredString(font, title.getString(), 0, -lh / 2, titleColor());
+        gui.centeredText(font, title.getString(), 0, -lh / 2, titleColor());
         ps.popMatrix();
 
         for (int i = 0; i < bodyLines.size(); i++) {
-            gui.drawString(font, bodyLines.get(i), x + 1, bodyY + i * lh, 0xFFFFFFFF, false);
+            gui.text(font, bodyLines.get(i), x + 1, bodyY + i * lh, 0xFFFFFFFF, false);
         }
 
         int bottomY = y + boxH - 6;
@@ -223,8 +223,8 @@ public final class PopupEventsModule {
         Component ignore = Component.translatable("babyzombieaddons.popup.ignore", kbNo);
         String hint = "§a" + accept.getString() + "   §e" + ignore.getString();
         int hintY = bottomY - lh + 1;
-        gui.drawString(font, "§7" + (remaining / 1000 + 1) + "s", x + 1, hintY, 0xFFFFFFFF, false);
-        gui.drawString(font, hint, x + 150 - font.width(hint), hintY, 0xFFFFFFFF, false);
+        gui.text(font, "§7" + (remaining / 1000 + 1) + "s", x + 1, hintY, 0xFFFFFFFF, false);
+        gui.text(font, hint, x + 150 - font.width(hint), hintY, 0xFFFFFFFF, false);
 
         if (s != 1f) gui.pose().popMatrix();
     }

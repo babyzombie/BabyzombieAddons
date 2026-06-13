@@ -53,12 +53,12 @@ public final class SlayerBossDetector {
     }
     static final Map<String, BossDef> BOSS_DEFS = new LinkedHashMap<>();
     static {
-        BOSS_DEFS.put("Revenant Horror",         new BossDef(EntityType.ZOMBIE,  0.7, 1.0, 1.0, 2.0, "Revenant Horror"));
-        BOSS_DEFS.put("Tarantula Broodfather",   new BossDef(EntityType.SPIDER,  1.2, 1.8, 1.8, 0.6, "Tarantula Broodfather"));
-        BOSS_DEFS.put("Sven Packmaster",         new BossDef(EntityType.WOLF,    0.5, 1.0, 1.0, 1.0, "Sven Packmaster"));
-        BOSS_DEFS.put("Voidgloom Seraph",        new BossDef(EntityType.ENDERMAN,0.5, 1.0, 1.0, 3.0, "Voidgloom Seraph"));
-        BOSS_DEFS.put("Inferno Demonlord",       new BossDef(EntityType.BLAZE,   0.5, 1.0, 1.0, 2.0, "Inferno Demonlord"));
-        BOSS_DEFS.put("Riftstalker Bloodfiend",  new BossDef(EntityType.PLAYER,  0.5, 1.0, 1.0, 2.0, "Bloodfiend"));
+        BOSS_DEFS.put("Revenant Horror",         new BossDef(EntityTypes.ZOMBIE,  0.7, 1.0, 1.0, 2.0, "Revenant Horror"));
+        BOSS_DEFS.put("Tarantula Broodfather",   new BossDef(EntityTypes.SPIDER,  1.2, 1.8, 1.8, 0.6, "Tarantula Broodfather"));
+        BOSS_DEFS.put("Sven Packmaster",         new BossDef(EntityTypes.WOLF,    0.5, 1.0, 1.0, 1.0, "Sven Packmaster"));
+        BOSS_DEFS.put("Voidgloom Seraph",        new BossDef(EntityTypes.ENDERMAN,0.5, 1.0, 1.0, 3.0, "Voidgloom Seraph"));
+        BOSS_DEFS.put("Inferno Demonlord",       new BossDef(EntityTypes.BLAZE,   0.5, 1.0, 1.0, 2.0, "Inferno Demonlord"));
+        BOSS_DEFS.put("Riftstalker Bloodfiend",  new BossDef(EntityTypes.PLAYER,  0.5, 1.0, 1.0, 2.0, "Bloodfiend"));
     }
 
     // State
@@ -267,20 +267,20 @@ public final class SlayerBossDetector {
 
         for (Entity e : level.entitiesForRendering()) {
             if (infernoMinions.size() >= 2) break;
-            if (e.getType() == EntityType.ZOMBIFIED_PIGLIN
+            if (e.getType() == EntityTypes.ZOMBIFIED_PIGLIN
                     && e.distanceTo(bossEntity) < 3.5
                     && e.getY() > bossEntity.getY() - 0.5
-                    && infernoMinions.stream().noneMatch(m -> m.getType() == EntityType.ZOMBIFIED_PIGLIN)) {
+                    && infernoMinions.stream().noneMatch(m -> m.getType() == EntityTypes.ZOMBIFIED_PIGLIN)) {
                 infernoMinions.add(e);
             }
         }
         for (Entity e : level.entitiesForRendering()) {
             if (infernoMinions.size() >= 2) break;
-            if (e.getType() == EntityType.SKELETON
+            if (e.getType() == EntityTypes.SKELETON
                     && e instanceof LivingEntity le && le.isBaby()
                     && e.distanceTo(bossEntity) < 3.5
                     && e.getY() > bossEntity.getY() - 0.5
-                    && infernoMinions.stream().noneMatch(m -> m.getType() == EntityType.SKELETON)) {
+                    && infernoMinions.stream().noneMatch(m -> m.getType() == EntityTypes.SKELETON)) {
                 infernoMinions.add(e);
             }
         }
@@ -299,7 +299,7 @@ public final class SlayerBossDetector {
         String currentlyShield = "";
         List<String> infernoMobsStr = new ArrayList<>();
         for (Entity e : infernoMinions) {
-            String marker = e.getType() == EntityType.SKELETON ? "ⓆⓊⒶⓏⒾⒾ" : "ⓉⓎⓅⒽⓄⒺⓊⓈ";
+            String marker = e.getType() == EntityTypes.SKELETON ? "ⓆⓊⒶⓏⒾⒾ" : "ⓉⓎⓅⒽⓄⒺⓊⓈ";
 
             for (Entity a : level.entitiesForRendering()) {
                 if (!(a instanceof ArmorStand as)) continue;
@@ -307,7 +307,7 @@ public final class SlayerBossDetector {
                 String nm = ChatUtils.toLegacyString(as.getName());
                 if (nm.contains("❤") && nm.contains(marker)) {
                     String[] hpParts = nm.split(" ");
-                    String separator = e.getType() == EntityType.SKELETON ? "     " : " ";
+                    String separator = e.getType() == EntityTypes.SKELETON ? "     " : " ";
                     infernoMobsStr.add('\n' + String.join(separator,
                             java.util.Arrays.copyOfRange(hpParts, 1, hpParts.length)));
                 }
@@ -349,7 +349,7 @@ public final class SlayerBossDetector {
             if (enderman.getVehicle() != null) {
                 boolean hasGuardian = false;
                 for (Entity e : level.entitiesForRendering()) {
-                    if (e.getType() == EntityType.GUARDIAN && e.distanceTo(enderman) < 3) {
+                    if (e.getType() == EntityTypes.GUARDIAN && e.distanceTo(enderman) < 3) {
                         hasGuardian = true;
                         break;
                     }

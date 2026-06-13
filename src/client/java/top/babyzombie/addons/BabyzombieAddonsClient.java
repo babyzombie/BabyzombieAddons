@@ -32,8 +32,9 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.tracker.PartyTracker;
 import top.babyzombie.addons.util.ServerTickCounter;
+import top.babyzombie.addons.util.render.BzaRenderer;
+import top.babyzombie.addons.util.render.RenderTest;
 import top.babyzombie.addons.util.render.Waypoints;
-import top.babyzombie.addons.util.render.WorldRenderUtils;
 
 public class BabyzombieAddonsClient implements ClientModInitializer {
 
@@ -55,6 +56,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         DungeonCooldown.init();
         ServerTickCounter.init();
         Waypoints.init();
+        RenderTest.init();
         IncomingCallHandler.register();
 
         BabyzombieAddonsCommand.init();
@@ -77,6 +79,6 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         SlayerModule.init();
         WitherCloakModule.init();
 
-        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> WorldRenderUtils.close());
+        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> BzaRenderer.close());
     }
 }

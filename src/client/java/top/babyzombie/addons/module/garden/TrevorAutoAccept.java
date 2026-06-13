@@ -77,8 +77,8 @@ public final class TrevorAutoAccept {
                             .withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/bza trevorautocall"))
                             .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
                                     Component.translatable("babyzombieaddons.trevor.auto_call_disable_hover"))));
-            player.displayClientMessage(
-                    Component.translatable("babyzombieaddons.trevor.auto_call").append(" ").append(btn), false);
+            player.sendSystemMessage(
+                    Component.translatable("babyzombieaddons.trevor.auto_call").append(" ").append(btn));
         }
     }
 

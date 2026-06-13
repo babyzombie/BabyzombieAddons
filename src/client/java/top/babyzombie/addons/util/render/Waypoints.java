@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
+import top.babyzombie.addons.event.WorldChangeCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
@@ -17,10 +17,8 @@ public final class Waypoints {
     private Waypoints() {}
 
     public static void init() {
-        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
-            synchronized (list) {
-                list.removeIf(e -> e.time == 0);
-            }
+        WorldChangeCallback.register((client, world) -> {
+            synchronized (list) { list.removeIf(e -> e.time == 0); }
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -35,79 +33,44 @@ public final class Waypoints {
                 if (list.isEmpty()) return;
                 var player = Minecraft.getInstance().player;
                 if (player == null) return;
+                var cam = ctx.levelState().cameraRenderState;
 
                 for (var wp : list) {
                     int bx = wp.x, by = wp.y, bz = wp.z;
                     double dist = player.position().distanceTo(new Vec3(bx + 0.5, by + 0.5, bz + 0.5));
-
                     float scale = 0.025f + Math.min((float) dist / 50f, 1f) * 0.095f;
-                    WorldTextRenderer.renderString(ctx, wp.name,
-                            bx + 0.5, by + 0.5, bz + 0.5,
-                            0xFFFFFF55, scale, true, -5.5f);
-                    WorldTextRenderer.renderString(ctx, "§6(" + (int) dist + "m)",
-                            bx + 0.5, by + 0.5, bz + 0.5,
-                            0xFFFFFF55, scale, true, 5.5f);
+                    WorldTextRenderer.renderString(cam, wp.name, bx + 0.5, by + 0.5, bz + 0.5, 0xFFFFFF55, scale, true, -5.5f);
+                    WorldTextRenderer.renderString(cam, "§6(" + (int) dist + "m)", bx + 0.5, by + 0.5, bz + 0.5, 0xFFFFFF55, scale, true, 5.5f);
                 }
             }
         });
     }
 
-    /**
-     * 添加一个坐标点
-     * @param name 名字
-     * @param x x 坐标
-     * @param y y 坐标
-     * @param z z 坐标
-     * @param timeSeconds 标点的持续时间(s) 填-1或不填则只会在重载时清除 填0会在世界加载时清除
-     * @param showMsg 是否为指令添加,如果是则会在聊天栏显示 已添加坐标点 消息
-     */
     public static void addWaypoint(String name, int x, int y, int z, int timeSeconds, boolean showMsg) {
         name = name.replace('&', '§');
         long timeMs = timeSeconds * 1000L;
-        synchronized (list) {
-            list.add(new Waypoint(name, x, y, z, timeMs, ServerTick.getTime()));
-        }
-        if (showMsg) {
-            ChatUtils.showMessage(Component.translatable(
-                    "babyzombieaddons.waypoint.added", x, y, z, name).getString());
-        }
+        synchronized (list) { list.add(new Waypoint(name, x, y, z, timeMs, ServerTick.getTime())); }
+        if (showMsg) ChatUtils.showMessage(Component.translatable("babyzombieaddons.waypoint.added", x, y, z, name).getString());
     }
 
-    /**
-     * 删除一个已有的坐标点
-     * @param name 坐标点名字
-     * @param showMsg 是否在聊天栏显示删除结果
-     */
     public static void deleteWaypoint(String name, boolean showMsg) {
         String search = ChatUtils.stripColor(name).toLowerCase();
         int removed;
         synchronized (list) {
-            var toRemove = list.stream()
-                    .filter(e -> ChatUtils.stripColor(e.name).toLowerCase().equals(search))
-                    .toList();
+            var toRemove = list.stream().filter(e -> ChatUtils.stripColor(e.name).toLowerCase().equals(search)).toList();
             removed = toRemove.size();
             list.removeAll(toRemove);
         }
         if (showMsg) {
-            if (removed > 0) {
-                ChatUtils.showMessage(Component.translatable(
-                        "babyzombieaddons.waypoint.deleted", removed, name).getString());
-            } else {
-                ChatUtils.showMessage(Component.translatable(
-                        "babyzombieaddons.waypoint.not_found", name).getString());
-            }
+            if (removed > 0) ChatUtils.showMessage(Component.translatable("babyzombieaddons.waypoint.deleted", removed, name).getString());
+            else ChatUtils.showMessage(Component.translatable("babyzombieaddons.waypoint.not_found", name).getString());
         }
     }
 
     public static List<WaypointInfo> getWaypoints() {
-        synchronized (list) {
-            return list.stream()
-                    .map(wp -> new WaypointInfo(wp.name, wp.x, wp.y, wp.z, wp.time, wp.timestamp))
-                    .toList();
-        }
+        synchronized (list) { return list.stream().map(wp -> new WaypointInfo(wp.name, wp.x, wp.y, wp.z, wp.time, wp.timestamp)).toList(); }
     }
 
     private record Waypoint(String name, int x, int y, int z, long time, long timestamp) {}
-
     public record WaypointInfo(String name, int x, int y, int z, long time, long timestamp) {}
 }

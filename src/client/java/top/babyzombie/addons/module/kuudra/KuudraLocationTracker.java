@@ -3,7 +3,8 @@ package top.babyzombie.addons.module.kuudra;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.MagmaCube;
+import net.minecraft.world.entity.monster.cubemob.MagmaCube;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.util.ChatUtils;
@@ -54,7 +55,7 @@ public final class KuudraLocationTracker {
         if (kuudraEntity == null) {
             var cubes = client.player.level().getEntitiesOfClass(MagmaCube.class,
                     new AABB(client.player.blockPosition()).inflate(128),
-                    e -> e.getSize() == 30);
+                    e -> e instanceof MagmaCube mc && mc.getSize() == 30);
             if (!cubes.isEmpty()) {
                 cubes.sort((a, b) -> Double.compare(b.getY(), a.getY()));
                 kuudraEntity = cubes.getFirst();

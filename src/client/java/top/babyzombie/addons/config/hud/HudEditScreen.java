@@ -1,6 +1,6 @@
 package top.babyzombie.addons.config.hud;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -19,7 +19,7 @@ public final class HudEditScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         gui.fill(0, 0, width, height, 0xC0101010);
 
         var font = minecraft.font;
@@ -48,7 +48,7 @@ public final class HudEditScreen extends Screen {
             ps.translate(textX, textY);
             ps.scale(textScale, textScale);
             for (int i = 0; i < parts.length; i++) {
-                gui.drawString(font, parts[i], 0, i * font.lineHeight, 0xFFFFFFFF, true);
+                gui.text(font, parts[i], 0, i * font.lineHeight, 0xFFFFFFFF, true);
             }
             ps.popMatrix();
 
@@ -142,7 +142,7 @@ public final class HudEditScreen extends Screen {
     @Override
     public void onClose() {
         HudManager.save();
-        minecraft.setScreen(parent);
+        minecraft.setScreenAndShow(parent);
     }
 
     @Override
