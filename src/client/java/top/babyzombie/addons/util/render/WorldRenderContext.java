@@ -1,5 +1,6 @@
 package top.babyzombie.addons.util.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 
@@ -11,8 +12,11 @@ public final class WorldRenderContext {
     }
 
     public WorldState worldState() { return worldState; }
-    // Legacy compatibility
     public WorldState levelState() { return worldState; }
+
+    public PoseStack matrices() {
+        return new PoseStack();
+    }
 
     public static WorldRenderContext from(LevelRenderContext ctx) {
         return new WorldRenderContext(ctx.levelState().cameraRenderState);

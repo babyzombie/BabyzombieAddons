@@ -3,7 +3,7 @@ package top.babyzombie.addons.module.slayer;
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
@@ -21,7 +21,7 @@ public final class BloodfiendLowHPBox {
             if (level == null) return;
 
             for (Entity e : level.entitiesForRendering()) {
-                if (e.getType() != EntityTypes.PLAYER) continue;
+                if (e.getType() != EntityType.PLAYER) continue;
                 if (!e.isAlive()) continue;
                 if (!"Bloodfiend ".equals(e.getName().getString())) continue;
 

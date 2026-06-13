@@ -1,75 +1,53 @@
 package top.babyzombie.addons.util.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.font.TextRenderable;
-import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.renderer.StagedVertexBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.vertex.*;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
 
+/** Renders floating text in the world at the given coordinates. */
 public final class WorldTextRenderer {
-    private static final StagedVertexBuffer VB = new StagedVertexBuffer(
-        () -> "bza_text", net.minecraft.client.renderer.rendertype.RenderType.SMALL_BUFFER_SIZE);
-    private static final Matrix4f mat = new Matrix4f();
 
-    public static void renderString(WorldRenderContext ctx, String text, double x,double y,double z, int color, float scale, boolean throughWalls){
-        renderString(ctx.worldState().cameraRenderState, text, x, y, z, color, scale, throughWalls, 0);
+    private static final ByteBufferBuilder ALLOCATOR = new ByteBufferBuilder(256);
+
+    private WorldTextRenderer() {}
+
+    /** Render a string at world coordinates (x,y,z) with the given ARGB color and scale. */
+    public static void renderString(WorldRenderContext context, String text, double x, double y, double z,
+                                     int color, float scale, boolean throughWalls) {
+        renderString(context, text, x, y, z, color, scale, throughWalls, 0);
     }
-    public static void renderString(WorldRenderContext ctx, String text, double x,double y,double z, int color, float scale, boolean throughWalls, float yOff){
-        renderString(ctx.worldState().cameraRenderState, text, x, y, z, color, scale, throughWalls, yOff);
-    }
-    public static void renderString(CameraRenderState cam, String text, double x,double y,double z, int color, float scale, boolean throughWalls){
-        renderString(cam, text, x, y, z, color, scale, throughWalls, 0);
-    }
-    public static void renderString(CameraRenderState cam, String t, double x,double y,double z, int color, float s, boolean tw, float yOff){
-        var f = Minecraft.getInstance().font; if(f==null)return;
-        mat.identity().translate((float)(x-cam.pos.x),(float)(y-cam.pos.y),(float)(z-cam.pos.z))
-            .rotate(cam.orientation).scale(s,-s,s);
-        var prep = f.prepareText(Component.literal(t).getVisualOrderText(),0,0,color,false,false,0);
-        var sampler = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST);
 
-        final RenderPipeline[] lastP = {null};
-        final TextureSetup[] lastT = {null};
-        StagedVertexBuffer.Draw[] d = new StagedVertexBuffer.Draw[1];
+    /** Render a string at world coordinates (x,y,z) with a screen-space vertical offset. */
+    public static void renderString(WorldRenderContext context, String text, double x, double y, double z,
+                                     int color, float scale, boolean throughWalls, float fontYOffset) {
+        var font = Minecraft.getInstance().font;
+        var matrices = context.matrices();
+        Vec3 camera = context.worldState().cameraRenderState.pos;
+        var bufferSource = MultiBufferSource.immediate(ALLOCATOR);
+        var displayMode = throughWalls ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL;
 
-        prep.visit(new Font.GlyphVisitor() {
-            public void acceptGlyph(TextRenderable.Styled g) { draw(g); }
-            public void acceptEffect(TextRenderable g) { draw(g); }
-            void draw(TextRenderable g) {
-                RenderPipeline pipe = tw ? RenderPipelines.TEXT_SEE_THROUGH
-                    : (g.guiPipeline() == RenderPipelines.GUI_TEXT_GRAYSCALE ? RenderPipelines.TEXT_GRAYSCALE : RenderPipelines.TEXT);
-                TextureSetup ts = TextureSetup.singleTextureWithLightmap(g.textureView(), sampler);
-                // Simple: just use one pipeline. Use the first seen glyph's pipeline.
-                if (lastP[0] == null) { lastP[0] = pipe; lastT[0] = ts;
-                    d[0] = VB.appendDraw(pipe.getVertexFormatBinding(0), PrimitiveTopology.QUADS);
-                }
-                g.render(mat, VB.getVertexBuilder(d[0]), 0xF000F0, false);
-            }
-        });
-        if (d[0] == null) return;
+        matrices.pushPose();
+        matrices.translate(-camera.x, -camera.y, -camera.z);
+        matrices.translate(x, y, z);
+        matrices.mulPose(context.worldState().cameraRenderState.orientation);
+        matrices.scale(scale, -scale, scale);
 
-        VB.upload();
-        var info = VB.getExecuteInfo(d[0]); if(info==null)return;
-        var main = Minecraft.getInstance().gameRenderer.mainRenderTarget();
-        if(main.getColorTextureView()==null)return;
-        var enc = RenderSystem.getDevice().createCommandEncoder();
-        try(var rp = enc.createRenderPass(()->"bza_txt",main.getColorTextureView(),
-                java.util.Optional.empty(),main.getDepthTextureView(),java.util.OptionalDouble.empty())){
-            rp.setPipeline(lastP[0]); RenderSystem.bindDefaultUniforms(rp);
-            if(lastT[0].texure0()!=null) rp.bindTexture("Sampler0", lastT[0].texure0(), lastT[0].sampler0());
-            rp.setUniform("DynamicTransforms",RenderSystem.getDynamicUniforms().writeTransform(RenderSystem.getModelViewMatrixCopy(),new Vector4f(1,1,1,1)));
-            rp.setVertexBuffer(0,info.vertexBuffer().slice()); rp.setIndexBuffer(info.indexBuffer(),info.indexType());
-            rp.drawIndexed(info.indexCount(),1,info.firstIndex(),info.baseVertex(),0);
-        }
-        enc.submit(); VB.endDraw(); VB.endFrame();
+        font.drawInBatch(
+            Component.literal(text).getVisualOrderText(),
+            -font.width(text) / 2f, fontYOffset,
+            color, false,
+            new Matrix4f(matrices.last().pose()),
+            bufferSource,
+            displayMode,
+            0xF000F0,
+            0
+        );
+
+        matrices.popPose();
+        bufferSource.endBatch();
     }
 }
