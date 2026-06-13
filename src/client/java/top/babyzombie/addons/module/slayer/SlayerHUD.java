@@ -4,10 +4,12 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
+import com.google.common.collect.LinkedHashMultimap;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.resources.Identifier;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
@@ -29,23 +31,17 @@ public final class SlayerHUD {
 
     private SlayerHUD() {}
 
+    private static final String GUMMY_BEAR_SKIN_URL = "http://textures.minecraft.net/texture/4306587ec38c2446d389a581e0691556fa58fce0a02d0846d23fd68e3656a249";
+
     private static ItemStack createGummyBearIcon() {
         var stack = new ItemStack(Items.PLAYER_HEAD);
-        var tag = new CompoundTag();
-        tag.putString("name", "");
         var uuid = UUID.fromString("74ddb947-f95e-3d16-bfb8-8d7fdadba323");
-        tag.putIntArray("id", new int[] {
-            (int)(uuid.getMostSignificantBits() >> 32), (int)(uuid.getMostSignificantBits()),
-            (int)(uuid.getLeastSignificantBits() >> 32), (int)(uuid.getLeastSignificantBits())});
-        var props = new CompoundTag();
-        var textures = new ListTag();
-        var tex = new CompoundTag();
-        tex.putString("Value", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDMwNjU4N2VjMzhjMjQ0NmQzODlhNTgxZTA2OTE1NTZmYTU4ZmNlMGEwMmQwODQ2ZDIzZmQ2OGUzNjU2YTI0OSJ9fX0=");
-        textures.add(tex);
-        props.put("textures", textures);
-        tag.put("properties", props);
-        var profile = ResolvableProfile.CODEC.parse(NbtOps.INSTANCE, tag).result().orElse(null);
-        stack.set(DataComponents.PROFILE, profile);
+        var textureData = "{\"textures\":{\"SKIN\":{\"url\":\"" + GUMMY_BEAR_SKIN_URL + "\"}}}";
+        var encoded = java.util.Base64.getEncoder().encodeToString(textureData.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        var multimap = LinkedHashMultimap.<String, Property>create();
+        multimap.put("textures", new Property("textures", encoded, null));
+        var gp = new GameProfile(uuid, "", new PropertyMap(multimap));
+        stack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(gp));
         return stack;
     }
 
