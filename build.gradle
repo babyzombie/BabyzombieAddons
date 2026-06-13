@@ -22,7 +22,7 @@ loom {
 
     runs {
         client {
-            runDir = file("run-${project.minecraft_version}")
+            runDir = "run-${project.minecraft_version}"
         }
     }
 }
