@@ -4,8 +4,6 @@ import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -35,16 +33,10 @@ public final class BeamRenderer {
 
     private static final String MOD_ID = "babyzombieaddons";
     private static final Identifier BEAM_TEXTURE_ID =
-            Identifier.fromNamespaceAndPath("minecraft", "textures/entity/beacon_beam.png");
+            Identifier.fromNamespaceAndPath("minecraft", "textures/entity/beacon/beacon_beam.png");
     private static final int FULLBRIGHT = 0xF000F0;
 
-    // ── Pipeline (BEACON_BEAM_SNIPPET, depthWrite=true for proper depth sorting) ──
-    private static final RenderPipeline BEAM_PIPELINE = RenderPipelines.register(
-        RenderPipeline.builder(RenderPipelines.BEACON_BEAM_SNIPPET)
-            .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/bza_beam"))
-            .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-            .build()
-    );
+    private static final RenderPipeline BEAM_PIPELINE = RenderPipelines.BEACON_BEAM_TRANSLUCENT;
 
     // ── Buffer management ─────────────────────────────────────────
     private static final ByteBufferBuilder ALLOCATOR = new ByteBufferBuilder(1536);
