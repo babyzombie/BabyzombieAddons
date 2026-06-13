@@ -19,6 +19,12 @@ loom {
             sourceSet sourceSets.client
         }
     }
+
+    runs {
+        client {
+            runDir = file("run-${project.minecraft_version}")
+        }
+    }
 }
 
 repositories {
