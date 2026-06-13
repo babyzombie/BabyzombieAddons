@@ -39,15 +39,13 @@ public final class ReheatedGummyPolarBearTimer {
 
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            var cfg = ModConfigManager.get().slayer;
-            if (cfg.reheatedGummyPolarBear == ModConfig.GummyPolarBearMode.OFF) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
 
             String text = ChatUtils.stripColor(message.getString()).trim();
             if (text.startsWith("You ate a Re-heated Gummy Polar Bear")) {
                 String profileId = HypixelLocationTracker.getInstance().getProfileId();
                 if (profileId != null) {
-                    profileTimers.put(profileId, 3600); // 60 minutes * 60 seconds
+                    profileTimers.put(profileId, profileTimers.getOrDefault(profileId, 0) + 3600); // Add 60 minutes
                     alerted5min = false; alerted2min = false; alerted1min = false;
                     save();
                 }
@@ -82,26 +80,26 @@ public final class ReheatedGummyPolarBearTimer {
                 case 300 -> {
                     if (!alerted5min) {
                         alerted5min = true;
-                        ChatUtils.showTranslatableTitle("slayer.gummybear.5min", 0, 90, 10);
+                        ChatUtils.showTranslatableTitle("", "slayer.gummybear.5min", 0, 50, 10);
                         playSound();
                     }
                 }
                 case 120 -> {
                     if (!alerted2min) {
                         alerted2min = true;
-                        ChatUtils.showTranslatableTitle("slayer.gummybear.2min", 0, 90, 10);
+                        ChatUtils.showTranslatableTitle("", "slayer.gummybear.2min", 0, 50, 10);
                         playSound();
                     }
                 }
                 case 60 -> {
                     if (!alerted1min) {
                         alerted1min = true;
-                        ChatUtils.showTranslatableTitle("slayer.gummybear.1min", 0, 90, 10);
+                        ChatUtils.showTranslatableTitle("", "slayer.gummybear.1min", 0, 50, 10);
                         playSound();
                     }
                 }
                 case 0 -> {
-                    ChatUtils.showTranslatableTitle("slayer.gummybear.expired", 0, 90, 10);
+                    ChatUtils.showTranslatableTitle("", "slayer.gummybear.expired", 0, 50, 10);
                     playAnvilSound();
                     profileTimers.remove(profileId);
                     alerted5min = false; alerted2min = false; alerted1min = false;
