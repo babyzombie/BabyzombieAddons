@@ -33,7 +33,6 @@ import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.tracker.PartyTracker;
 import top.babyzombie.addons.util.ServerTickCounter;
 import top.babyzombie.addons.util.render.BzaRenderer;
-import top.babyzombie.addons.util.render.RenderTest;
 import top.babyzombie.addons.util.render.Waypoints;
 
 public class BabyzombieAddonsClient implements ClientModInitializer {
@@ -56,7 +55,6 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         DungeonCooldown.init();
         ServerTickCounter.init();
         Waypoints.init();
-        RenderTest.init();
         IncomingCallHandler.register();
 
         BabyzombieAddonsCommand.init();

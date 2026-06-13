@@ -10,19 +10,28 @@ permissions:
   pull-requests: read
 
 jobs:
-  release:
+  build:
+    strategy:
+      matrix:
+        include:
+          - branch: main
+            java: '21'
+          - branch: 26.1.2
+            java: '25'
+          - branch: 26.2
+            java: '25'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout ${{ matrix.branch }}
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: ${{ matrix.branch }}
 
-      - name: Set up JDK 25
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
-          java-version: '25'
+          java-version: ${{ matrix.java }}
           distribution: 'zulu'
 
       - name: Setup Gradle
@@ -31,8 +40,37 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
+      - name: Set release version
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          sed -i "s/^mod_version=.*/mod_version=$VERSION/" gradle.properties
+
       - name: Build
         run: ./gradlew build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BabyzombieAddons-${{ matrix.branch }}
+          path: build/libs/*.jar
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (for changelog)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
 
       - name: Generate Changelog
         run: |
@@ -62,5 +100,5 @@ jobs:
         with:
           name: Release ${{ github.ref_name }}
           body_path: changelog.md
-          files: build/libs/*.jar
+          files: artifacts/**/*
           generate_release_notes: false
