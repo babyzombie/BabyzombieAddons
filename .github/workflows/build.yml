@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, 26.1.2, 26.2]
   pull_request:
-    branches: [main]
+    branches: [main, 26.1.2, 26.2]
 
 jobs:
   build:
@@ -32,5 +32,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: BabyzombieAddons
+          name: BabyzombieAddons-${{ github.ref_name }}
           path: build/libs/*.jar
