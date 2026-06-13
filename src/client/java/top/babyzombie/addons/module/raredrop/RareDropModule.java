@@ -46,7 +46,7 @@ public final class RareDropModule {
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             if (overlay || !HypixelLocationTracker.getInstance().isInSkyblock()) return true;
             String text = ChatUtils.stripColor(message.getString());
-            if (!text.matches(".*(RARE|VERY RARE|CRAZY RARE|INSANE|PET) (DROP|CROP)!.*"))
+            if (!text.matches("^(RARE|VERY RARE|CRAZY RARE|INSANE|PET) (DROP|CROP)!.*"))
                 return true;
 
             String itemName = extractName(text);
