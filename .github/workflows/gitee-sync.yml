@@ -27,6 +27,7 @@ jobs:
           dst_key: ${{ secrets.GITEE_PRIVATE }}
           dst_token: ${{ secrets.GITEE }}
           static_list: "${{ github.event.repository.name }}"
+          force_update: true
 
   sync-release:
     if: github.event_name == 'release'
