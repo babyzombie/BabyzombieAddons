@@ -32,5 +32,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: BabyzombieAddons-${{ github.ref_name }}
+          name: BabyzombieAddons-${{ github.ref_name | replace('/', '-') }}
           path: build/libs/*.jar
