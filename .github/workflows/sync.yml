@@ -24,10 +24,10 @@ jobs:
 
       - name: Create sync PR
         run: |
-          set -euo pipefail
-
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          set -euo pipefail
 
           TARGET="${{ matrix.target }}"
           TRACKING_TAG="_sync/main-to-${TARGET}"
@@ -36,28 +36,18 @@ jobs:
           # Determine the last synced main commit
           git fetch origin "refs/tags/${TRACKING_TAG}" 2>/dev/null && LAST_SYNC="$(git rev-parse FETCH_HEAD)" || LAST_SYNC=""
           if [ -z "$LAST_SYNC" ]; then
-            # First sync: start from merge base
             LAST_SYNC="$(git merge-base origin/main origin/${TARGET})"
-            echo "First sync for ${TARGET}, merge-base: ${LAST_SYNC}"
-          else
-            echo "Last sync point for ${TARGET}: ${LAST_SYNC}"
           fi
 
-          # Collect new commits since last sync
           NEW_COMMITS="$(git log --reverse --format='%H' ${LAST_SYNC}..origin/main)" || true
           if [ -z "$NEW_COMMITS" ]; then
             echo "No new commits to sync"
             exit 0
           fi
-          echo "Commits to sync:"
-          git log --oneline ${LAST_SYNC}..origin/main
 
-          # Create branch from target and cherry-pick
           git checkout -b "$SYNC_BRANCH" "origin/${TARGET}"
           git cherry-pick --allow-empty --strategy=recursive -X theirs $NEW_COMMITS || {
-            # On conflict, abort and fall back to merge
             git cherry-pick --abort
-            echo "Cherry-pick had conflicts, falling back to merge"
             git merge origin/main --no-commit --no-ff --strategy=recursive -X theirs || true
           }
 
@@ -71,16 +61,16 @@ jobs:
           git add -A
           git commit -m "sync: merge main into ${TARGET}" || exit 0
 
-          git push origin "$SYNC_BRANCH"
-
-          # Update tracking tag to current main HEAD
+          # Update tracking tag
           git tag -f "${TRACKING_TAG}" origin/main
           git push origin "refs/tags/${TRACKING_TAG}" --force
 
+          git push origin "$SYNC_BRANCH"
+
           gh pr create \
-            --base "${TARGET}" \
+            --base ${{ matrix.target }} \
             --head "$SYNC_BRANCH" \
-            --title "sync: main → ${TARGET}" \
-            --body "自动从 main 分支同步。版本配置文件（gradle.properties, build.gradle, fabric.mod.json）已保留 ${TARGET} 版本。"
+            --title "sync: main → ${{ matrix.target }}" \
+            --body "自动从 main 分支同步。版本配置文件（gradle.properties, build.gradle, fabric.mod.json）已保留 ${{ matrix.target }} 版本。"
         env:
           GH_TOKEN: ${{ github.token }}
