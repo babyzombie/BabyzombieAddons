@@ -1,8 +1,6 @@
 package top.babyzombie.addons.module.mining;
 
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -35,7 +33,7 @@ public final class GlaciteMineshaftWaypoints {
             "[-]+\\n(.+) entered Glacite Mineshafts!\\n[-]+");
 
     private static long portalTimer;
-    private static final List<Waypoint> corpses = new ArrayList<>();
+    private static int lastCorpseScanTick;
     private static boolean inMineshaft;
     private static boolean mineshaftOwner;
     private static long enterMineshaftTime;
@@ -70,32 +68,7 @@ public final class GlaciteMineshaftWaypoints {
                     );
                 }
             }
-            if (!nowIn) corpses.clear();
             inMineshaft = nowIn;
-        });
-
-        // Corpses
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!ModConfigManager.get().mining.mineshaftWaypoints) return;
-            if (!isInMineshaft() || client.player == null || client.player.tickCount % 20 != 0) return;
-            var level = client.player.level();
-            var stands = level.getEntitiesOfClass(ArmorStand.class,
-                    new AABB(client.player.blockPosition()).inflate(96),
-                    e -> !e.isDeadOrDying());
-            for (var stand : stands) {
-                var helm = stand.getItemBySlot(EquipmentSlot.LEGS);
-                if (helm.isEmpty()) continue;
-                String id = ItemUtils.getSkyblockId(helm);
-                if (id == null) continue;
-                String name = switch (id) {
-                    case "LAPIS_ARMOR_LEGGINGS" -> "§bLapis";
-                    case "ARMOR_OF_YOG_LEGGINGS" -> "§6Umber";
-                    case "MINERAL_LEGGINGS" -> "§fTungsten";
-                    case "VANGUARD_LEGGINGS" -> "§bVanguard";
-                    default -> null;
-                };
-                if (name != null) corpses.add(new Waypoint(stand.getX(), stand.getY() + 2, stand.getZ(), name));
-            }
         });
 
         // Portal detection
@@ -178,16 +151,39 @@ public final class GlaciteMineshaftWaypoints {
         RenderPhaseRegister.register(ctx -> {
             var t = HypixelLocationTracker.getInstance();
 
-            // Corpse waypoints in mineshaft
+            // Corpse waypoints in mineshaft — detect and render
             if (t.isInSkyblock() && "Mineshaft".equals(t.getMap())) {
-                for (var e : corpses) {
-                    var color = mcColorToAwt(e.label);
-                    WorldRenderUtils.drawWireframeBox(ctx,
-                            e.x - 0.4, e.y - 2.0, e.z - 0.4,
-                            e.x + 0.4, e.y + 0.2, e.z + 0.4,
-                            color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 0.6f,
-                            false, 4.0f);
-                    WorldTextRenderer.renderString(ctx, e.label, e.x, e.y, e.z, 0xFFFFFF55, 0.05f, true);
+                var player = Minecraft.getInstance().player;
+                if (player != null && player.tickCount != lastCorpseScanTick) {
+                    lastCorpseScanTick = player.tickCount;
+                    var level = player.level();
+                    var stands = level.getEntitiesOfClass(ArmorStand.class,
+                            new AABB(player.blockPosition()).inflate(96),
+                            e -> !e.isDeadOrDying());
+                    for (var stand : stands) {
+                        var helm = stand.getItemBySlot(EquipmentSlot.LEGS);
+                        if (helm.isEmpty()) continue;
+                        String id = ItemUtils.getSkyblockId(helm);
+                        if (id == null) continue;
+                        String name = switch (id) {
+                            case "LAPIS_ARMOR_LEGGINGS" -> "§bLapis";
+                            case "ARMOR_OF_YOG_LEGGINGS" -> "§6Umber";
+                            case "MINERAL_LEGGINGS" -> "§fTungsten";
+                            case "VANGUARD_LEGGINGS" -> "§bVanguard";
+                            default -> null;
+                        };
+                        if (name == null) continue;
+                        var x = stand.getX();
+                        var y = stand.getY() + 2;
+                        var z = stand.getZ();
+                        var color = mcColorToAwt(name);
+                        WorldRenderUtils.drawWireframeBox(ctx,
+                                x - 0.4, y - 2.0, z - 0.4,
+                                x + 0.4, y + 0.2, z + 0.4,
+                                color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 0.6f,
+                                false, 4.0f);
+                        WorldTextRenderer.renderString(ctx, name, x, y, z, 0xFFFFFF55, 0.05f, true);
+                    }
                 }
             }
 
@@ -211,7 +207,7 @@ public final class GlaciteMineshaftWaypoints {
         });
 
         ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
-            corpses.clear(); portalTimer = 0; inMineshaft = false;
+            portalTimer = 0; inMineshaft = false;
             mineshaftOwner = false; waitingPartyTransfer = false; ownServerName = null;
         });
     }
@@ -259,6 +255,4 @@ public final class GlaciteMineshaftWaypoints {
         }
         return new Color(0xFFFFFF);
     }
-
-    private record Waypoint(double x, double y, double z, String label) {}
 }
