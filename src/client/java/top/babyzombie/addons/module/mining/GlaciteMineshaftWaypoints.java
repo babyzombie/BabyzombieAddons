@@ -206,11 +206,7 @@ public final class GlaciteMineshaftWaypoints {
             }
         });
 
-<<<<<<< HEAD
         WorldChangeCallback.register((client, world) -> {
-            corpses.clear(); portalTimer = 0; inMineshaft = false;
-=======
-        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
             portalTimer = 0; inMineshaft = false;
 >>>>>>> origin/main
             mineshaftOwner = false; waitingPartyTransfer = false; ownServerName = null;
