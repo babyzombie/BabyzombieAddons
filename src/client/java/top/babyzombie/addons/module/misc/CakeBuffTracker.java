@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -82,8 +81,8 @@ public final class CakeBuffTracker {
             ChatUtils.showMessage(
                     Component.translatable("babyzombieaddons.cake.all_eaten").getString());
         } else {
-            Minecraft.getInstance().gui.getChat().addMessage(
-                    Component.literal(msg), null, GuiMessageTag.system());
+            var player = Minecraft.getInstance().player;
+            if (player != null) player.sendSystemMessage(Component.literal(msg));
         }
     }
 

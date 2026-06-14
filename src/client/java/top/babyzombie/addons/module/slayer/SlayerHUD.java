@@ -2,6 +2,7 @@ package top.babyzombie.addons.module.slayer;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import com.google.common.collect.LinkedHashMultimap;
@@ -25,9 +26,19 @@ import java.util.UUID;
 
 public final class SlayerHUD {
 
-    // Item icons
-    private static final ItemStack GUMMY_BEAR_ICON = createGummyBearIcon();
-    private static final ItemStack END_STONE_SWORD_ICON = createEndStoneSwordIcon();
+    // Lazy-initialized item icons (must delay to avoid "Components not bound yet")
+    private static ItemStack gummyBearIcon;
+    private static ItemStack endStoneSwordIcon;
+
+    private static ItemStack getGummyBearIcon() {
+        if (gummyBearIcon == null) gummyBearIcon = createGummyBearIcon();
+        return gummyBearIcon;
+    }
+
+    private static ItemStack getEndStoneSwordIcon() {
+        if (endStoneSwordIcon == null) endStoneSwordIcon = createEndStoneSwordIcon();
+        return endStoneSwordIcon;
+    }
 
     private SlayerHUD() {}
 
@@ -65,7 +76,7 @@ public final class SlayerHUD {
         });
     }
 
-    private static void render(net.minecraft.client.gui.GuiGraphics gui) {
+    private static void render(GuiGraphicsExtractor gui) {
         var font = Minecraft.getInstance().font;
         var config = ModConfigManager.get().slayer;
         long now = ServerTick.getTime();
@@ -134,7 +145,7 @@ public final class SlayerHUD {
                 long rem = EndStoneSwordTimer.time - now;
 
                 // Draw sword icon
-                gui.renderItem(END_STONE_SWORD_ICON, x, y);
+                gui.item(getEndStoneSwordIcon(), x, y);
 
                 // Draw resistance + time text beside the icon
                 int tx = x + 18, ty = y + 4;
@@ -142,8 +153,8 @@ public final class SlayerHUD {
                 ps.pushMatrix();
                 ps.translate((float)tx, (float)ty);
                 ps.scale(s, s);
-                gui.drawString(font, String.format("§a❈ %d%%", EndStoneSwordTimer.resistance), 0, 0, 0xFFFFFFFF, true);
-                gui.drawString(font, "§e" + ChatUtils.formatTime(rem), 0, (int)(9 * s), 0xFFFFFFFF, true);
+                gui.text(font, String.format("§a❈ %d%%", EndStoneSwordTimer.resistance), 0, 0, 0xFFFFFFFF, true);
+                gui.text(font, "§e" + ChatUtils.formatTime(rem), 0, (int)(9 * s), 0xFFFFFFFF, true);
                 ps.popMatrix();
             }
         }
@@ -165,7 +176,7 @@ public final class SlayerHUD {
                                 float s = HudManager.scale("ReheatedGummyPolarBear");
 
                                 // Draw the skull icon
-                                gui.renderItem(GUMMY_BEAR_ICON, x, y);
+                                gui.item(getGummyBearIcon(), x, y);
 
                                 // Draw time text offset to the right of the icon
                                 int textX = x + 18; // 16px icon + 2px gap
@@ -174,7 +185,7 @@ public final class SlayerHUD {
                                 ps2.pushMatrix();
                                 ps2.translate((float)textX, (float)textY);
                                 ps2.scale(s, s);
-                                gui.drawString(font, "§a" + timeStr, 0, 0, 0xFFFFFFFF, true);
+                                gui.text(font, "§a" + timeStr, 0, 0, 0xFFFFFFFF, true);
                                 ps2.popMatrix();
                             }
                         }

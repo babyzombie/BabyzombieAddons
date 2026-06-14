@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -183,9 +183,9 @@ public class AbiphoneContactScreen extends Screen {
     // ---- render ----
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         try {
-            renderBackground(gui, mouseX, mouseY, delta);
+            extractBackground(gui, mouseX, mouseY, delta);
         } catch (IllegalStateException e) {
             gui.fill(0, 0, width, height, 0xC0101010);
         }
@@ -275,8 +275,8 @@ public class AbiphoneContactScreen extends Screen {
             var pose = gui.pose();
             pose.pushMatrix();
             pose.scale(iconScale, iconScale);
-            gui.renderItem(stack, (int)(iconX / iconScale), (int)(iconY / iconScale));
-            gui.renderItemDecorations(font, stack, (int)(iconX / iconScale), (int)(iconY / iconScale));
+            gui.item(stack, (int)(iconX / iconScale), (int)(iconY / iconScale));
+            gui.itemDecorations(font, stack, (int)(iconX / iconScale), (int)(iconY / iconScale));
             pose.popMatrix();
 
             String name = entryName;
@@ -290,17 +290,17 @@ public class AbiphoneContactScreen extends Screen {
                 String remainder = name.substring(line1.length());
                 String line2 = font.plainSubstrByWidth(remainder, (int)maxWidth);
                 if (!line2.equals(remainder)) line2 = line2 + "..";
-                gui.drawCenteredString(font, line1, nameX, textY, textColor);
-                gui.drawCenteredString(font, line2, nameX, textY + font.lineHeight, textColor);
+                gui.centeredText(font, line1, nameX, textY, textColor);
+                gui.centeredText(font, line2, nameX, textY + font.lineHeight, textColor);
             } else {
-                gui.drawCenteredString(font, name, nameX, textY, textColor);
+                gui.centeredText(font, name, nameX, textY, textColor);
             }
 
             if (autoAnswer.contains(entryName)) {
                 String phone = "✆";
                 int px = itemX + 3;
                 int pyIconBottom = itemY + 2 + (int)(16 * iconScale);
-                gui.drawString(font, phone, px, pyIconBottom - font.lineHeight, 0xFF55AAFF, false);
+                gui.text(font, phone, px, pyIconBottom - font.lineHeight, 0xFF55AAFF, false);
             }
         }
 
@@ -313,8 +313,8 @@ public class AbiphoneContactScreen extends Screen {
             var pose = gui.pose();
             pose.pushMatrix();
             pose.scale(1.5f, 1.5f);
-            gui.renderItem(dragStack, (int)(sx / 1.5f), (int)(sy / 1.5f));
-            gui.renderItemDecorations(font, dragStack, (int)(sx / 1.5f), (int)(sy / 1.5f));
+            gui.item(dragStack, (int)(sx / 1.5f), (int)(sy / 1.5f));
+            gui.itemDecorations(font, dragStack, (int)(sx / 1.5f), (int)(sy / 1.5f));
             pose.popMatrix();
         }
 
@@ -332,18 +332,18 @@ public class AbiphoneContactScreen extends Screen {
 
         renderPanel(gui, mouseX, mouseY);
 
-        gui.drawCenteredString(font, "Abiphone Contacts (" + contacts.size() + ")", width / 2, 8, 0xFFFFFF);
+        gui.centeredText(font, "Abiphone Contacts (" + contacts.size() + ")", width / 2, 8, 0xFFFFFF);
     }
 
     // ---- left panel ----
 
-    private void renderPanel(GuiGraphics gui, int mouseX, int mouseY) {
+    private void renderPanel(GuiGraphicsExtractor gui, int mouseX, int mouseY) {
         int px = 4, py = 70;
         int pw = panelWidth - 2;
 
         // color toggle
         int toggleX = px + 4, toggleY = py, toggleW = 10, toggleH = 10;
-        gui.drawString(font, Component.translatable("babyzombieaddons.panel.color"), px + 4 + toggleW + 4, py, 0xFFAAAAAA, false);
+        gui.text(font, Component.translatable("babyzombieaddons.panel.color"), px + 4 + toggleW + 4, py, 0xFFAAAAAA, false);
         gui.fill(toggleX, toggleY, toggleX + toggleW, toggleY + toggleH, 0xFF555555);
         if (colorBarVisible) {
             gui.fill(toggleX + 2, toggleY + 2, toggleX + toggleW - 2, toggleY + toggleH - 2, 0xFF00CC00);
@@ -369,7 +369,7 @@ public class AbiphoneContactScreen extends Screen {
         if (searchFilterMode) {
             gui.fill(sToggleX + 2, sToggleY + 2, sToggleX + toggleW - 2, sToggleY + toggleH - 2, 0xFF00CC00);
         }
-        gui.drawString(font, Component.translatable("babyzombieaddons.panel.search"), px + 4 + toggleW + 4, py, 0xFFAAAAAA, false);
+        gui.text(font, Component.translatable("babyzombieaddons.panel.search"), px + 4 + toggleW + 4, py, 0xFFAAAAAA, false);
         py += 14;
         int sbX = px + 4, sbY = py, sbW = pw - 10, sbH = 14;
         int sbColor = searchFocused ? 0xFFAAAAAA : 0xFF666666;
@@ -386,7 +386,7 @@ public class AbiphoneContactScreen extends Screen {
                 while (!trimmed.isEmpty() && font.width(trimmed) > sbW - 8)
                     trimmed = trimmed.substring(1);
             }
-            gui.drawString(font, trimmed, sbX + 4, sbY + 3, 0xFFFFFFFF, false);
+            gui.text(font, trimmed, sbX + 4, sbY + 3, 0xFFFFFFFF, false);
             cursorX = sbX + 4 + font.width(trimmed);
         }
         if (searchFocused && (searchCursorTicks / 20) % 2 == 0) {
