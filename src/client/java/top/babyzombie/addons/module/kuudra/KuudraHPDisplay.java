@@ -24,9 +24,8 @@ public final class KuudraHPDisplay {
                 Identifier.fromNamespaceAndPath("babyzombieaddons", "kuudra_hp"),
                 (context, tickCounter) -> {
             if (ModConfigManager.get().kuudra.hpDisplay != ModConfig.HpDisplayMode.HUD) return;
-            var t = KuudraLocationTracker.kuudraEntity;
             float h = KuudraLocationTracker.hp;
-            if (t == null || t.isDeadOrDying() || h < 2) return;
+            if (h < 2) return;
 
             var font = Minecraft.getInstance().font;
             int x = HudManager.x("KuudraHP"), y = HudManager.y("KuudraHP");
