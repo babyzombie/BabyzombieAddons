@@ -24,17 +24,20 @@ public final class RareDropModule {
     static {
         blacklist.put("potato", true);
         blacklist.put("carrot", true);
-        blacklist.put("cropie", true);
-        blacklist.put("squash", true);
         blacklist.put("compost", true);
         blacklist.put("tasty cheese", true);
         blacklist.put("enchanted bone", true);
+        blacklist.put("enchanted spider eye", true);
         blacklist.put("enchanted ender pearl", true);
 
         shareList.put("phoenix", new ShareMode(false, false, false, false, false));
+        shareList.put("scatha", new ShareMode(false, false, false, false, false));
         shareList.put("warden heart", new ShareMode(false, false, false, false, false));
+        shareList.put("primordial eye", new ShareMode(false, false, false, false, false));
         shareList.put("overflux capacitor", new ShareMode(false, false, false, false, false));
         shareList.put("judgement core", new ShareMode(false, false, false, false, false));
+        shareList.put("unfanged vampire part", new ShareMode(false, false, false, false, false));
+        shareList.put("high class archfiend dice", new ShareMode(false, false, false, false, false));
     }
 
     private RareDropModule() {}
@@ -150,8 +153,9 @@ public final class RareDropModule {
 
     private static String extractName(String text) {
         text = text.replaceAll(".*?(RARE|VERY RARE|CRAZY RARE|INSANE|PET) (DROP|CROP)!", "").trim();
-        text = text.replaceAll("\\(.*Magic Find.*\\)", "").trim();
-        text = text.replaceAll("\\(.*[✯✦].*\\)", "").trim();
+        text = text.replaceAll("\\([^)]*Magic Find[^)]*\\)", "").trim();
+        text = text.replaceAll("\\([^)]*[✯✦][^)]*\\)", "").trim();
+        text = text.replaceAll("([0-9]+x )","").trim();
         if(text.startsWith("(") && text.endsWith(")")) text = text.substring(1, text.length() - 1).trim();
         return text.isEmpty() ? null : text;
     }

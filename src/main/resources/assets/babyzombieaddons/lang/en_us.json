@@ -345,8 +345,8 @@
   "config.babyzombieaddons.option.glaciteMineshaftWarp.TITLE_AND_SOUND": "Title + Sound",
   "config.babyzombieaddons.option.glaciteMineshaftWarp.SEND_PTME": "Send !ptme",
   "config.babyzombieaddons.option.glaciteMineshaftWarp.PTME_AND_WARP": "!ptme and p warp",
-  "config.babyzombieaddons.option.mineshaftWaypoints": "Mineshaft Waypoints",
-  "config.babyzombieaddons.option.mineshaftWaypoints.desc": "Corpse and exit waypoints in mineshafts.",
+  "config.babyzombieaddons.option.mineshaftWaypoints": "Mineshaft Corpse Display",
+  "config.babyzombieaddons.option.mineshaftWaypoints.desc": "Show corpse locations in mineshafts.",
   "config.babyzombieaddons.option.suspiciousScrapCounter": "Suspicious Scrap Counter",
   "config.babyzombieaddons.option.suspiciousScrapCounter.desc": "Show suspicious scrap count on HUD.",
 
