@@ -5,11 +5,18 @@
 
   "name": "BabyzombieAddons",
   "description": "Hypixel SkyBlock QoL utilities",
-  "authors": ["baby__zombie"],
+  "authors": ["baby__zombie","TryToFeel"],
   "contact": {
     "homepage": "https://github.com/babyzombie/BabyzombieAddons",
     "sources": "https://github.com/babyzombie/BabyzombieAddons",
     "issues": "https://github.com/babyzombie/BabyzombieAddons/issues"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.gitee": "https://gitee.com/Bluesky-kk/BabyzombieAddons"
+      }
+    }
   },
 
   "license": "All-Rights-Reserved",
