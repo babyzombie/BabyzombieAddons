@@ -1,0 +1,41 @@
+name: Sync to Gitee
+
+on:
+  push:
+    branches: [main, 26.1.2, 26.2]
+    tags:
+      - 'v*'
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  mirror-repo:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Mirror the Github organization repos to Gitee.
+        uses: Yikun/hub-mirror-action@master
+        with:
+          src: github/BlueSkyyer
+          dst: gitee/Bluesky-kk
+          dst_key: ${{ secrets.GITEE_PRIVATE }}
+          dst_token: ${{ secrets.GITEE }}
+          static_list: "BabyzombieAddons"
+
+  sync-release:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sync GitHub Release to Gitee
+        uses: trustedinster/sync-release-gitee@v1.3
+        with:
+          gitee_owner: Bluesky-kk
+          gitee_repo: BabyzombieAddons
+          gitee_token: ${{ secrets.GITEE }}
+          github_owner: BlueSkyyer
+          github_repo: BabyzombieAddons
+          gitee_upload_retry_times: 3
+          debug: false
