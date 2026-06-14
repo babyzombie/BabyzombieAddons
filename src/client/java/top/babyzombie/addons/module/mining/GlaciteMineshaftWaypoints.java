@@ -205,11 +205,6 @@ public final class GlaciteMineshaftWaypoints {
                 }
             }
         });
-
-        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
-            portalTimer = 0; inMineshaft = false;
-            mineshaftOwner = false; waitingPartyTransfer = false; ownServerName = null;
-        });
     }
 
     private static boolean isInMineshaft() {
