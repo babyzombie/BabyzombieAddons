@@ -21,12 +21,12 @@ jobs:
       - name: Mirror the Github organization repos to Gitee.
         uses: Yikun/hub-mirror-action@master
         with:
-          src: github/BlueSkyyer
+          src: github/${{ github.repository_owner }}
           dst: gitee/Bluesky-kk
           src_token: ${{ github.token }}
           dst_key: ${{ secrets.GITEE_PRIVATE }}
           dst_token: ${{ secrets.GITEE }}
-          static_list: "BabyzombieAddons"
+          static_list: "${{ github.event.repository.name }}"
 
   sync-release:
     if: github.event_name == 'release'
@@ -39,7 +39,7 @@ jobs:
           gitee_owner: Bluesky-kk
           gitee_repo: BabyzombieAddons
           gitee_token: ${{ secrets.GITEE }}
-          github_owner: BlueSkyyer
-          github_repo: BabyzombieAddons
+          github_owner: ${{ github.repository_owner }}
+          github_repo: ${{ github.event.repository.name }}
           gitee_upload_retry_times: 3
           debug: false
