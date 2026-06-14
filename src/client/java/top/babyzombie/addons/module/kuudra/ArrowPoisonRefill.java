@@ -49,7 +49,7 @@ public final class ArrowPoisonRefill {
 
             long now = System.currentTimeMillis();
 
-            if (toxicMatches && toxicCooldown <= now) {
+            if (toxicMatches && toxicCooldown <= now && !"p3".equals(KuudraLocationTracker.area)) {
                 int current = countArrow("TOXIC_ARROW_POISON");
                 if (current < cfg.toxicArrowThreshold) {
                     ChatUtils.sendCommand("gfs Toxic Arrow Poison " + (cfg.toxicArrowThreshold - current));
