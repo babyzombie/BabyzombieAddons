@@ -3,7 +3,7 @@ package top.babyzombie.addons.module.misc;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.component.ItemLore;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
@@ -60,9 +60,9 @@ public final class BazaarSellFromSacks {
                 Scheduler.schedule(10, () -> { // 500ms = 10 ticks
                     var client = Minecraft.getInstance();
                     if (client.player != null && client.gameMode != null) {
-                        client.gameMode.handleContainerInput(
+                        client.gameMode.handleInventoryMouseClick(
                                 containerId, slotIndex, 0,
-                                ContainerInput.PICKUP, client.player);
+                                ClickType.PICKUP, client.player);
                     }
                 });
             }

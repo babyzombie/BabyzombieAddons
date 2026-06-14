@@ -2,7 +2,7 @@ package top.babyzombie.addons.mixin;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.DisconnectedScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -24,8 +24,8 @@ public class ScreenMixin {
         }
     }
 
-    @Inject(method = "extractRenderState", at = @At("RETURN"))
-    private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    @Inject(method = "render", at = @At("RETURN"))
+    private void onRender(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!isDisconnectedScreen(this)) return;
         int remaining = AutoReconnectHelper.getCountdownRemaining();
         if (remaining <= 0) return;
@@ -39,10 +39,10 @@ public class ScreenMixin {
         // 倒计时 — 粗体 + 金色
         var countdown = Component.translatable("babyzombieaddons.reconnect.countdown", remaining)
                 .withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.GOLD));
-        graphics.centeredText(font, countdown, x, sh - 60, 0xFFFFAA00);
+        graphics.drawCenteredString(font, countdown, x, sh - 60, 0xFFFFAA00);
 
         // IP
-        graphics.centeredText(font,
+        graphics.drawCenteredString(font,
                 Component.literal(AutoReconnectHelper.getLastServerIp()).withColor(0xFF888888),
                 x, sh - 38, 0xFF888888);
 
@@ -51,7 +51,7 @@ public class ScreenMixin {
             var retry = Component.translatable("babyzombieaddons.reconnect.attempt",
                     AutoReconnectHelper.getRetryCount() + 1)
                     .withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
-            graphics.centeredText(font, retry, x, sh - 49, 0xFFAAAAAA);
+            graphics.drawCenteredString(font, retry, x, sh - 49, 0xFFAAAAAA);
         }
     }
 

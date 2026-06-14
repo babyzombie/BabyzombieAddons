@@ -124,7 +124,7 @@ public class HypixelLocationTracker {
 
         if (newLocation != null) {
             var prev = currentLocation;
-            int day = (int)(world.getOverworldClockTime() / 24000L);
+            int day = (int)(world.getDayTime() / 24000L);
             currentLocation = new HypixelLocationData(
                     prev.serverName(), prev.serverType(),
                     prev.lobbyName(), prev.mode(), prev.map(),

@@ -40,7 +40,7 @@ public final class SkyblockCategory {
                         .name(Component.translatable("config.babyzombieaddons.option.raredropManage"))
                         .description(Component.translatable("config.babyzombieaddons.option.raredropManage.desc"))
                         .prompt(Component.translatable("config.babyzombieaddons.prompt.open"))
-                        .action(screen -> Minecraft.getInstance().setScreenAndShow(new RareDropScreen(screen)))
+                        .action(screen -> Minecraft.getInstance().setScreen(new RareDropScreen(screen)))
                         .build())
                 .option(createBool("cakeBuffTracker", defaults.general.cakeBuffTracker,
                         () -> config.general.cakeBuffTracker, v -> config.general.cakeBuffTracker = v))

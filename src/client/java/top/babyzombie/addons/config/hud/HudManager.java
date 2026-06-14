@@ -5,8 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.io.IOException;
@@ -56,11 +54,11 @@ public final class HudManager {
         return e != null && e.showCondition.getAsBoolean();
     }
 
-    public static void drawScaled(GuiGraphicsExtractor gui, Font font, String text, int x, int y, String name) {
+    public static void drawScaled(net.minecraft.client.gui.GuiGraphics gui, net.minecraft.client.gui.Font font, String text, int x, int y, String name) {
         drawScaled(gui, font, text, x, y, scale(name));
     }
 
-    public static void drawScaled(GuiGraphicsExtractor gui, Font font, String text, int x, int y, float s) {
+    public static void drawScaled(net.minecraft.client.gui.GuiGraphics gui, net.minecraft.client.gui.Font font, String text, int x, int y, float s) {
         String[] lines = text.split("\n", -1);
         if (s != 1f) {
             var ps = gui.pose();
@@ -69,13 +67,13 @@ public final class HudManager {
             ps.scale(s, s);
             int lineH = font.lineHeight;
             for (int i = 0; i < lines.length; i++) {
-                gui.text(font, lines[i], 0, i * lineH, 0xFFFFFFFF, true);
+                gui.drawString(font, lines[i], 0, i * lineH, 0xFFFFFFFF, true);
             }
             ps.popMatrix();
         } else {
             int lineH = font.lineHeight;
             for (int i = 0; i < lines.length; i++) {
-                gui.text(font, lines[i], x, y + i * lineH, 0xFFFFFFFF, true);
+                gui.drawString(font, lines[i], x, y + i * lineH, 0xFFFFFFFF, true);
             }
         }
     }
@@ -91,7 +89,7 @@ public final class HudManager {
     }
 
     public static void openEditScreen(Screen parent) {
-        Minecraft.getInstance().setScreenAndShow(new HudEditScreen(parent));
+        Minecraft.getInstance().setScreen(new HudEditScreen(parent));
     }
 
     private static Map<String, float[]> loadRaw() {

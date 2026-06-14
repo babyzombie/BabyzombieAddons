@@ -8,8 +8,8 @@ import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.util.ChatUtils;
 
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 final class SoundCommand {
     private static boolean monitor;
@@ -48,7 +48,7 @@ final class SoundCommand {
                             .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
                                     Component.translatable("babyzombieaddons.sound.hover", id))));
             var player = Minecraft.getInstance().player;
-            if (player != null) player.sendSystemMessage(comp);
+            if (player != null) player.displayClientMessage(comp, false);
             return false;
         });
     }

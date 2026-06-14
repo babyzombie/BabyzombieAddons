@@ -1,7 +1,7 @@
 package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import top.babyzombie.addons.event.WorldChangeCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -24,7 +24,7 @@ public final class KuudraEnergyDisplay {
     private static int fuel = -1;
 
     public static void init() {
-        WorldChangeCallback.register((client, world) -> fuel = -1);
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> fuel = -1);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfigManager.get().kuudra.energyDisplay) return;
