@@ -18,7 +18,9 @@ public final class Waypoints {
 
     public static void init() {
         WorldChangeCallback.register((client, world) -> {
-            synchronized (list) { list.removeIf(e -> e.time == 0); }
+            synchronized (list) {
+                list.removeIf(e -> e.time == 0);
+            }
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {

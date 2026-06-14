@@ -26,7 +26,6 @@ import top.babyzombie.addons.module.raredrop.RareDropModule;
 import top.babyzombie.addons.module.slayer.SlayerModule;
 import top.babyzombie.addons.module.misc.UpdateChecker;
 import top.babyzombie.addons.module.withercloak.WitherCloakModule;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import top.babyzombie.addons.util.DungeonCooldown;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
@@ -76,7 +75,5 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         RareDropModule.init();
         SlayerModule.init();
         WitherCloakModule.init();
-
-        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> BzaRenderer.close());
     }
 }
