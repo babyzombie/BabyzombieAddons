@@ -29,8 +29,11 @@ jobs:
       - name: Build
         run: ./gradlew build
 
+      - name: Set artifact name
+        run: echo "ARTIFACT_NAME=BabyzombieAddons-${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: BabyzombieAddons-${{ github.ref_name | replace('/', '-') }}
+          name: ${{ env.ARTIFACT_NAME }}
           path: build/libs/*.jar
