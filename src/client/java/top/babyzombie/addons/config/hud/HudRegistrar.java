@@ -58,11 +58,6 @@ public final class HudRegistrar {
                 "§aKuudra is stunned, §4§l0:10 §aleft\n§4§lPHASE 4 - TRUE LAIR",
                 "config.babyzombieaddons.option.stunTimer",
                 () -> get().kuudra.stunTimer);
-        HudManager.register("KuudraDir", 360, 360, 1.0f,
-                " §4§l►§c∆§4§l◄ ",
-                "config.babyzombieaddons.option.directionIndicator",
-                () -> get().kuudra.directionIndicator);
-
         // --- Wither Cloak ---
         HudManager.register("WitherCloakTimer", 120, 100, 1.0f,
                 "§a§lWither Cloak\n§aactivated 5.00s",
