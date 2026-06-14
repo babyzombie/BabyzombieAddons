@@ -484,7 +484,9 @@
 
   "babyzombieaddons.sendcoords.no_target": "§c视线内没有目标方块",
 
-  "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §a发现新版本 §e%s §a(当前: §7%s§a)  §b§n[点击下载]",
+  "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §a发现新版本 §e%s §a(当前: §7%s§a)",
+  "babyzombieaddons.update.download.github": "§b§n[GitHub 下载]",
+  "babyzombieaddons.update.download.gitee": "§d§n[Gitee 下载]",
   "babyzombieaddons.update.open_url": "§7点击打开 §f%s",
   "babyzombieaddons.reconnect.countdown": "将在 %d 秒后自动重连...",
   "babyzombieaddons.reconnect.attempt": "（第 %d 次）",

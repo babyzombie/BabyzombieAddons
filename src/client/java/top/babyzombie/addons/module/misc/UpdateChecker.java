@@ -19,8 +19,10 @@ public final class UpdateChecker {
     private static boolean checked;
     private static final String API_URL =
             "https://api.github.com/repos/babyzombie/BabyzombieAddons/releases/latest";
-    private static final String RELEASES_URL =
+    private static final String RELEASES_GITHUB_URL =
             "https://github.com/babyzombie/BabyzombieAddons/releases/latest";
+    private static final String RELEASES_GITEE_URL =
+            "https://gitee.com/Bluesky-kk/BabyzombieAddons/releases/latest";
 
     private UpdateChecker() {}
 
@@ -53,11 +55,13 @@ public final class UpdateChecker {
 
                 if (isNewer(latest, currentVersion)) {
                     var msg = Component.translatable(
-                            "babyzombieaddons.update.new_version", latest, currentVersion)
-                            .withStyle(style -> style
-                                    .withClickEvent(new ClickEvent.OpenUrl(URI.create(RELEASES_URL)))
-                                    .withHoverEvent(new HoverEvent.ShowText(
-                                            Component.translatable("babyzombieaddons.update.open_url", RELEASES_URL))));
+                                    "babyzombieaddons.update.new_version", latest, currentVersion)
+                            .append(" ")
+                            .append(createDownloadLink(
+                                    "babyzombieaddons.update.download.github", RELEASES_GITHUB_URL))
+                            .append(" ")
+                            .append(createDownloadLink(
+                                    "babyzombieaddons.update.download.gitee", RELEASES_GITEE_URL));
                     client.execute(() -> {
                         var player = client.player;
                         if (player != null) player.displayClientMessage(msg, false);
@@ -69,6 +73,14 @@ public final class UpdateChecker {
         }, "BZA-UpdateCheck");
         thread.setDaemon(true);
         thread.start();
+    }
+
+    private static Component createDownloadLink(String translationKey, String url) {
+        return Component.translatable(translationKey)
+                .withStyle(style -> style
+                        .withClickEvent(new ClickEvent.OpenUrl(URI.create(url)))
+                        .withHoverEvent(new HoverEvent.ShowText(
+                                Component.translatable("babyzombieaddons.update.open_url", url))));
     }
 
     private static boolean isNewer(String latest, String current) {

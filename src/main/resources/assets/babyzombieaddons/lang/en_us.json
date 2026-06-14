@@ -484,7 +484,9 @@
 
   "babyzombieaddons.sendcoords.no_target": "§cNo block in sight",
 
-  "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §aNew version available: §e%s §a(current: §7%s§a)  §b§n[Download]",
+  "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §aNew version available: §e%s §a(current: §7%s§a)",
+  "babyzombieaddons.update.download.github": "§b§n[GitHub]",
+  "babyzombieaddons.update.download.gitee": "§d§n[Gitee]",
   "babyzombieaddons.update.open_url": "§7Click to open §f%s",
   "babyzombieaddons.reconnect.countdown": "Auto-reconnecting in %d s...",
   "babyzombieaddons.reconnect.attempt": "(attempt %d)",
