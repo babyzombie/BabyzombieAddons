@@ -10,10 +10,8 @@ public final class KuudraModule {
         KuudraHPDisplay.init();
         KuudraPhaseTimer.init();
         KuudraBoxRenderer.init();
-        KuudraDirectionIndicator.init();
         KuudraEnergyDisplay.init();
         KuudraStunTimer.init();
-        KuudraStunProgress.init();
         KuudraWaypoints.init();
         KuudraPerkShopBlacklist.init();
         EnderPearlRefill.init();

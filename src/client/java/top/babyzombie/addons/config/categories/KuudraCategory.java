@@ -108,8 +108,6 @@ public final class KuudraCategory {
                         .build())
                 .option(bool("energyDisplay", defaults.kuudra.energyDisplay,
                         () -> config.kuudra.energyDisplay, v -> config.kuudra.energyDisplay = v))
-                .option(bool("directionIndicator", defaults.kuudra.directionIndicator,
-                        () -> config.kuudra.directionIndicator, v -> config.kuudra.directionIndicator = v))
                 .option(bool("boxKuudra", defaults.kuudra.boxKuudra,
                         () -> config.kuudra.boxKuudra, v -> config.kuudra.boxKuudra = v))
                 .option(bool("enderPearlRefill", defaults.kuudra.enderPearlRefill,
