@@ -46,31 +46,26 @@ public final class KuudraLocationTracker {
     }
 
     private static void findKuudra(Minecraft client) {
-        if (kuudraEntity != null && kuudraEntity.isDeadOrDying()) {
+        if (client.player == null) return;
+
+        var cubes = client.player.level().getEntitiesOfClass(MagmaCube.class,
+                new AABB(client.player.blockPosition()).inflate(128),
+                e -> e.getSize() == 30);
+        if (!cubes.isEmpty()) {
+            cubes.sort((a, b) -> Double.compare(b.getY(), a.getY()));
+            kuudraEntity = cubes.getFirst();
+        } else {
             kuudraEntity = null;
         }
 
-        if (client.player == null) return;
-
-        if (kuudraEntity == null) {
-            var cubes = client.player.level().getEntitiesOfClass(MagmaCube.class,
-                    new AABB(client.player.blockPosition()).inflate(128),
-                    e -> e instanceof MagmaCube mc && mc.getSize() == 30);
-            if (!cubes.isEmpty()) {
-                cubes.sort((a, b) -> Double.compare(b.getY(), a.getY()));
-                kuudraEntity = cubes.getFirst();
-            }
-        }
-
-        // HP优先从岩浆怪取；岩浆怪死了则从凋零BossBar反算
-        if (kuudraEntity != null) {
+        if (kuudraEntity != null && !kuudraEntity.isDeadOrDying()) {
             hp = kuudraEntity.getHealth();
         } else {
             var withers = client.player.level().getEntitiesOfClass(WitherBoss.class,
                     new AABB(client.player.blockPosition()).inflate(128),
                     e -> {
                         String name = ChatUtils.stripColor(e.getName().getString());
-                        return name.contains("\uDCC0 Kuudra \uDCFF");
+                        return name.contains("Kuudra");
                     });
             if (!withers.isEmpty())
                 hp = withers.get(0).getHealth() / 300f * 100000f;

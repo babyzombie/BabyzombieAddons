@@ -102,7 +102,6 @@ public class ModConfig {
         public boolean fuelOrbBeacons = false;
         public int fuelOrbBeaconColor = 0xFFFF0000;
         public boolean energyDisplay = false;
-        public boolean directionIndicator = false;
         public boolean boxKuudra = false;
         public boolean enderPearlRefill = false;
         public boolean perkShopBlacklist = false;
