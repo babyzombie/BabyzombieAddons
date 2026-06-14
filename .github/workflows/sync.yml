@@ -24,30 +24,63 @@ jobs:
 
       - name: Create sync PR
         run: |
+          set -euo pipefail
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          SYNC_BRANCH="sync/main-to-${{ matrix.target }}-$(date +%Y%m%d%H%M%S)"
+          TARGET="${{ matrix.target }}"
+          TRACKING_TAG="_sync/main-to-${TARGET}"
+          SYNC_BRANCH="sync/main-to-${TARGET}-$(date +%Y%m%d%H%M%S)"
 
-          git checkout -b "$SYNC_BRANCH" origin/${{ matrix.target }}
-          git merge origin/main --no-commit --no-ff || true
+          # Determine the last synced main commit
+          git fetch origin "refs/tags/${TRACKING_TAG}" 2>/dev/null && LAST_SYNC="$(git rev-parse FETCH_HEAD)" || LAST_SYNC=""
+          if [ -z "$LAST_SYNC" ]; then
+            # First sync: start from merge base
+            LAST_SYNC="$(git merge-base origin/main origin/${TARGET})"
+            echo "First sync for ${TARGET}, merge-base: ${LAST_SYNC}"
+          else
+            echo "Last sync point for ${TARGET}: ${LAST_SYNC}"
+          fi
+
+          # Collect new commits since last sync
+          NEW_COMMITS="$(git log --reverse --format='%H' ${LAST_SYNC}..origin/main)" || true
+          if [ -z "$NEW_COMMITS" ]; then
+            echo "No new commits to sync"
+            exit 0
+          fi
+          echo "Commits to sync:"
+          git log --oneline ${LAST_SYNC}..origin/main
+
+          # Create branch from target and cherry-pick
+          git checkout -b "$SYNC_BRANCH" "origin/${TARGET}"
+          git cherry-pick --allow-empty --strategy=recursive -X theirs $NEW_COMMITS || {
+            # On conflict, abort and fall back to merge
+            git cherry-pick --abort
+            echo "Cherry-pick had conflicts, falling back to merge"
+            git merge origin/main --no-commit --no-ff --strategy=recursive -X theirs || true
+          }
 
           # Revert version-specific files to target branch versions
           for f in gradle.properties build.gradle src/main/resources/fabric.mod.json; do
             if [ -f "$f" ]; then
-              git checkout origin/${{ matrix.target }} -- "$f"
+              git checkout "origin/${TARGET}" -- "$f"
             fi
           done
 
           git add -A
-          git commit -m "sync: merge main into ${{ matrix.target }}" || exit 0
+          git commit -m "sync: merge main into ${TARGET}" || exit 0
 
           git push origin "$SYNC_BRANCH"
 
+          # Update tracking tag to current main HEAD
+          git tag -f "${TRACKING_TAG}" origin/main
+          git push origin "refs/tags/${TRACKING_TAG}" --force
+
           gh pr create \
-            --base ${{ matrix.target }} \
+            --base "${TARGET}" \
             --head "$SYNC_BRANCH" \
-            --title "sync: main → ${{ matrix.target }}" \
-            --body "自动从 main 分支同步。版本配置文件（gradle.properties, build.gradle, fabric.mod.json）已保留 ${{ matrix.target }} 版本。"
+            --title "sync: main → ${TARGET}" \
+            --body "自动从 main 分支同步。版本配置文件（gradle.properties, build.gradle, fabric.mod.json）已保留 ${TARGET} 版本。"
         env:
           GH_TOKEN: ${{ github.token }}
