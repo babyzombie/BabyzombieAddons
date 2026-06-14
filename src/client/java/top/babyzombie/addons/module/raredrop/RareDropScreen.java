@@ -1,7 +1,7 @@
 package top.babyzombie.addons.module.raredrop;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -29,9 +29,9 @@ public class RareDropScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float d) {
+    public void render(GuiGraphics g, int mx, int my, float d) {
         g.fill(0, 0, width, height, 0xC0101010);
-        g.centeredText(font, Component.translatable("rareropscreen.title").getString(), width / 2, 8, 0xFFFFFF);
+        g.drawCenteredString(font, Component.translatable("rareropscreen.title").getString(), width / 2, 8, 0xFFFFFF);
 
         int sy = (int)scroll;
         g.pose().pushMatrix();
@@ -46,7 +46,7 @@ public class RareDropScreen extends Screen {
 
         // === LEFT: Blacklist ===
         int y = startY;
-        g.text(font, "§c§l" + Component.translatable("rareropscreen.blacklist").getString(), PAD, y, 0xFFFFFFFF);
+        g.drawString(font, "§c§l" + Component.translatable("rareropscreen.blacklist").getString(), PAD, y, 0xFFFFFFFF);
         y += 14;
 
         var bl = new ArrayList<>(RareDropModule.getBlacklist().entrySet());
@@ -56,25 +56,25 @@ public class RareDropScreen extends Screen {
             boolean enabled = e.getValue();
             if (mx >= PAD && mx <= leftW && my >= y && my < y + 20) { hoverIdx = i; hoverLeft = true; }
 
-            g.text(font, "§b" + item, PAD + 4, y + 4, 0xFFFFFFFF);
+            g.drawString(font, "§b" + item, PAD + 4, y + 4, 0xFFFFFFFF);
 
             // Toggle button
             int tx = leftW - 60;
             g.fill(tx, y, tx + 26, y + 20, enabled ? 0x4000FF00 : 0x20FFFFFF);
-            g.centeredText(font, enabled ? "§aON" : "§8--", tx + 13, y + 4, 0xFFFFFFFF);
+            g.drawCenteredString(font, enabled ? "§aON" : "§8--", tx + 13, y + 4, 0xFFFFFFFF);
 
             // Delete button
             int dx = leftW - 30;
             if (mx >= dx && mx <= leftW && my >= y && my < y + 20) g.fill(dx, y, leftW, y + 20, 0x40FF0000);
-            g.text(font, "§c✕", dx + 8, y + 4, 0xFFFFFFFF);
+            g.drawString(font, "§c✕", dx + 8, y + 4, 0xFFFFFFFF);
             y += 22;
         }
         g.fill(PAD, y, leftW, y + 20, 0x30FFFFFF);
-        g.text(font, "§a" + Component.translatable("rareropscreen.blacklist.add").getString(), PAD + 4, y + 4, 0xFFFFFFFF);
+        g.drawString(font, "§a" + Component.translatable("rareropscreen.blacklist.add").getString(), PAD + 4, y + 4, 0xFFFFFFFF);
 
         // === RIGHT: Share List ===
         y = startY;
-        g.text(font, "§d§l" + Component.translatable("rareropscreen.sharelist").getString(), rightX, y, 0xFFFFFFFF);
+        g.drawString(font, "§d§l" + Component.translatable("rareropscreen.sharelist").getString(), rightX, y, 0xFFFFFFFF);
         y += 14;
 
         var sl = new ArrayList<>(RareDropModule.getShareList().entrySet());
@@ -84,29 +84,29 @@ public class RareDropScreen extends Screen {
             RareDropModule.ShareMode mode = e.getValue();
             if (mx >= rightX && mx <= width - PAD - 8 && my >= y && my < y + 20) { hoverIdx = i; hoverLeft = false; }
 
-            g.text(font, "§b" + item, rightX + 4, y + 4, 0xFFFFFFFF);
+            g.drawString(font, "§b" + item, rightX + 4, y + 4, 0xFFFFFFFF);
 
             int bx = rightX + leftW - 156;
             // Copy
             g.fill(bx, y, bx + 24, y + 20, mode.copy() ? 0x4000FF00 : 0x20FFFFFF);
-            g.centeredText(font, mode.copy() ? "§aCP" : "§8CP", bx + 12, y + 4, 0xFFFFFFFF);
+            g.drawCenteredString(font, mode.copy() ? "§aCP" : "§8CP", bx + 12, y + 4, 0xFFFFFFFF);
             // AC, PC, GC, CC
             bx += 26; g.fill(bx, y, bx + 24, y + 20, mode.ac() ? 0x4000FF00 : 0x20FFFFFF);
-            g.centeredText(font, mode.ac() ? "§aAC" : "§8AC", bx + 12, y + 4, 0xFFFFFFFF);
+            g.drawCenteredString(font, mode.ac() ? "§aAC" : "§8AC", bx + 12, y + 4, 0xFFFFFFFF);
             bx += 26; g.fill(bx, y, bx + 24, y + 20, mode.pc() ? 0x4000FF00 : 0x20FFFFFF);
-            g.centeredText(font, mode.pc() ? "§aPC" : "§8PC", bx + 12, y + 4, 0xFFFFFFFF);
+            g.drawCenteredString(font, mode.pc() ? "§aPC" : "§8PC", bx + 12, y + 4, 0xFFFFFFFF);
             bx += 26; g.fill(bx, y, bx + 24, y + 20, mode.gc() ? 0x4000FF00 : 0x20FFFFFF);
-            g.centeredText(font, mode.gc() ? "§aGC" : "§8GC", bx + 12, y + 4, 0xFFFFFFFF);
+            g.drawCenteredString(font, mode.gc() ? "§aGC" : "§8GC", bx + 12, y + 4, 0xFFFFFFFF);
             bx += 26; g.fill(bx, y, bx + 24, y + 20, mode.cc() ? 0x4000FF00 : 0x20FFFFFF);
-            g.centeredText(font, mode.cc() ? "§aCC" : "§8CC", bx + 12, y + 4, 0xFFFFFFFF);
+            g.drawCenteredString(font, mode.cc() ? "§aCC" : "§8CC", bx + 12, y + 4, 0xFFFFFFFF);
             bx += 26;
             if (mx >= bx && mx <= bx + 24 && my >= y && my < y + 20)
                 g.fill(bx, y, bx + 24, y + 20, 0x40FF0000);
-            g.centeredText(font, "§c✕", bx + 12, y + 4, 0xFFFFFFFF);
+            g.drawCenteredString(font, "§c✕", bx + 12, y + 4, 0xFFFFFFFF);
             y += 22;
         }
         g.fill(rightX, y, width - PAD - 8, y + 20, 0x30FFFFFF);
-        g.text(font, "§a" + Component.translatable("rareropscreen.sharelist.add").getString(), rightX + 4, y + 4, 0xFFFFFFFF);
+        g.drawString(font, "§a" + Component.translatable("rareropscreen.sharelist.add").getString(), rightX + 4, y + 4, 0xFFFFFFFF);
 
         g.pose().popMatrix();
 
@@ -119,7 +119,7 @@ public class RareDropScreen extends Screen {
         g.fill(width - 6, barY, width, barY + barH, 0x90FFFFFF);
 
         // Render input widget on top
-        input.extractRenderState(g, mx, my - sy, d);
+        input.render(g, mx, my - sy, d);
     }
 
     @Override public boolean isPauseScreen() { return false; }
@@ -202,7 +202,7 @@ public class RareDropScreen extends Screen {
     @Override
     public void onClose() {
         RareDropModule.saveLists();
-        if (parent != null) Minecraft.getInstance().setScreenAndShow(parent);
+        if (parent != null) Minecraft.getInstance().setScreen(parent);
         else super.onClose();
     }
 }

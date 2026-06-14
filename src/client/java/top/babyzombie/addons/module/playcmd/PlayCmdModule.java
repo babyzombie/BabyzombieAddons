@@ -1,7 +1,7 @@
 package top.babyzombie.addons.module.playcmd;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -12,7 +12,7 @@ public final class PlayCmdModule {
     public static void init() {}
 
     public static void openGUI() {
-        Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreenAndShow(new PlayScreen()));
+        Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(new PlayScreen()));
     }
 
     // Each game: {en, cmd, zh}
@@ -111,7 +111,7 @@ public final class PlayCmdModule {
         }
 
         @Override
-        public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float d) {
+        public void render(GuiGraphics g, int mx, int my, float d) {
             g.fill(0, 0, width, height, 0xC0101010);
             int sy = (int)scroll;
             g.pose().pushMatrix();
@@ -125,7 +125,7 @@ public final class PlayCmdModule {
                 // Category label
                 String color = catColor(cat[0][0]);
                 String catName = isChinese() && cat[0].length > 1 ? (String)cat[0][1] : (String)cat[0][0];
-                g.text(font, color + catName, PAD, y, 0xFFFFFFFF);
+                g.drawString(font, color + catName, PAD, y, 0xFFFFFFFF);
                 y += 14;
                 int rowStartY = y;
                 for (int i = 1; i < cat.length; i++) {
@@ -139,7 +139,7 @@ public final class PlayCmdModule {
                         g.fill(bx, by, bx + bw, by + BTN_H, 0x60FFAA00);
                         hoverCmd = (String)cat[i][1];
                     }
-                    g.centeredText(font, label, bx + bw / 2, by + (BTN_H - 8) / 2, 0xFFFFFFFF);
+                    g.drawCenteredString(font, label, bx + bw / 2, by + (BTN_H - 8) / 2, 0xFFFFFFFF);
                 }
                 int rows = (cat.length - 1 + colN - 1) / colN;
                 y = rowStartY + rows * (BTN_H + GAP) + 8;

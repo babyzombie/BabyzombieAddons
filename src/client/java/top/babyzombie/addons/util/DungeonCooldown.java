@@ -1,6 +1,6 @@
 package top.babyzombie.addons.util;
 
-import top.babyzombie.addons.event.WorldChangeCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 
@@ -25,7 +25,7 @@ public final class DungeonCooldown {
             }
         });
 
-        WorldChangeCallback.register((client, world) -> {
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
             if (world != null) nodupeMage = false;
         });
     }

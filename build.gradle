@@ -1,5 +1,5 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.16-SNAPSHOT'
+    id 'fabric-loom' version '1.15-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -61,28 +61,28 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    clientImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    clientImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     //Hypixel Mod Api
-    clientImplementation "net.hypixel:mod-api:${project.hm_api_version}"
+    modImplementation "net.hypixel:mod-api:${project.hypixel_mod_api_version}"
 
     // Dandelion (bundled)
-    include(clientImplementation("net.azureaaron:dandelion:${project.dandelion_version}"))
+    include modImplementation("net.azureaaron:dandelion:${project.dandelion_version}")
 
     // YACL (Dandelion rendering backend)
-    clientImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric"
+    modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_mod_version}+${project.minecraft_version}-fabric"
 
     // ModMenu
-    clientImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
+    modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
     // Fabric Language Kotlin (required by Dandelion/MoulConfig)
-    clientImplementation "net.fabricmc:fabric-language-kotlin:${project.flk_version}"
+    modImplementation "net.fabricmc:fabric-language-kotlin:${project.flk_version}"
 
     // Gson (config persistence)
-    clientImplementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 processResources {
@@ -93,15 +93,15 @@ processResources {
 
     filesMatching("fabric.mod.json") {
         expand "version": project.mod_version,
-                "minecraft_version": project.minecraft_version.replace("-rc-", "-rc."),
+                "minecraft_version": project.minecraft_version,
                 "loader_version": project.loader_version,
-                "fabric_version": project.fabric_api_version,
-                "yacl_mod_version": project.yacl_version,
+                "fabric_version": project.fabric_version,
+                "yacl_mod_version": project.yacl_mod_version,
                 "mod_menu_mod_version": project.mod_menu_version.split('-')[0]
     }
 }
 
-def targetJavaVersion = 25
+def targetJavaVersion = 21
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {

@@ -1,6 +1,6 @@
 package top.babyzombie.addons.module.withercloak;
 
-import top.babyzombie.addons.event.WorldChangeCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 
 public final class WitherCloakModule {
     private WitherCloakModule() {}
@@ -14,7 +14,7 @@ public final class WitherCloakModule {
         WitherCloakHUD.init();
 
         // Reset on world load
-        WorldChangeCallback.register((client, world) -> {
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
             if (world == null) return;
             WitherCloakTimer.duration = 0;
             WitherCloakTimer.cooldown = 0;

@@ -27,7 +27,7 @@ public class SendCommandMixin {
             var tracker = HypixelLocationTracker.getInstance();
             var contacts = AbiphoneTracker.getInstance()
                 .loadItems(tracker.getUuid(), tracker.getProfileId());
-            client.execute(() -> client.setScreenAndShow(new AbiphoneContactScreen(contacts)));
+            client.execute(() -> client.setScreen(new AbiphoneContactScreen(contacts)));
             return;
         }
 

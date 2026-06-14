@@ -2,7 +2,6 @@ package top.babyzombie.addons.module.withercloak;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.hud.HudManager;
@@ -22,7 +21,7 @@ public final class WitherCloakHUD {
         });
     }
 
-    private static void render(GuiGraphicsExtractor gui) {
+    private static void render(net.minecraft.client.gui.GuiGraphics gui) {
         var font = Minecraft.getInstance().font;
         long now = ServerTick.getTime();
 
@@ -69,7 +68,7 @@ public final class WitherCloakHUD {
         }
     }
 
-    private static void draw(GuiGraphicsExtractor gui, net.minecraft.client.gui.Font font, String text, int x, int y, float s) {
+    private static void draw(net.minecraft.client.gui.GuiGraphics gui, net.minecraft.client.gui.Font font, String text, int x, int y, float s) {
         HudManager.drawScaled(gui, font, text, x, y, s);
     }
 
