@@ -344,8 +344,8 @@
   "config.babyzombieaddons.option.glaciteMineshaftWarp.TITLE_AND_SOUND": "标题+音效",
   "config.babyzombieaddons.option.glaciteMineshaftWarp.SEND_PTME": "发送 !ptme",
   "config.babyzombieaddons.option.glaciteMineshaftWarp.PTME_AND_WARP": "!ptme 并 p warp",
-  "config.babyzombieaddons.option.mineshaftWaypoints": "矿井路径点",
-  "config.babyzombieaddons.option.mineshaftWaypoints.desc": "矿井中的尸体和出口路径点。",
+  "config.babyzombieaddons.option.mineshaftWaypoints": "矿井尸体显示",
+  "config.babyzombieaddons.option.mineshaftWaypoints.desc": "显示矿井中的尸体位置。",
   "config.babyzombieaddons.option.suspiciousScrapCounter": "可疑碎片计数",
   "config.babyzombieaddons.option.suspiciousScrapCounter.desc": "在 HUD 显示可疑碎片数量。",
 
