@@ -23,7 +23,6 @@ jobs:
         with:
           src: github/${{ github.repository_owner }}
           dst: gitee/Bluesky-kk
-          # src_token: ${{ github.token }}
           dst_key: ${{ secrets.GITEE_PRIVATE }}
           dst_token: ${{ secrets.GITEE }}
           static_list: "${{ github.event.repository.name }}"

@@ -102,3 +102,14 @@ jobs:
           body_path: changelog.md
           files: artifacts/**/*
           generate_release_notes: false
+
+      - name: Sync GitHub Release to Gitee
+        uses: trustedinster/sync-release-gitee@v1.3
+        with:
+          gitee_owner: Bluesky-kk
+          gitee_repo: BabyzombieAddons
+          gitee_token: ${{ secrets.GITEE }}
+          github_owner: ${{ github.repository_owner }}
+          github_repo: ${{ github.event.repository.name }}
+          gitee_upload_retry_times: 3
+          debug: false
