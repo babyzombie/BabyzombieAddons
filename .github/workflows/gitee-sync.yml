@@ -1,5 +1,8 @@
 name: Sync to Gitee
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main, 26.1.2, 26.2]
@@ -20,6 +23,7 @@ jobs:
         with:
           src: github/BlueSkyyer
           dst: gitee/Bluesky-kk
+          src_token: ${{ github.token }}
           dst_key: ${{ secrets.GITEE_PRIVATE }}
           dst_token: ${{ secrets.GITEE }}
           static_list: "BabyzombieAddons"
