@@ -64,7 +64,7 @@ dependencies {
 
     clientImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    clientImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    clientImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     //Hypixel Mod Api
     clientImplementation "net.hypixel:mod-api:${project.hm_api_version}"
@@ -73,7 +73,7 @@ dependencies {
     include(clientImplementation("net.azureaaron:dandelion:${project.dandelion_version}"))
 
     // YACL (Dandelion rendering backend)
-    clientImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric"
+    clientImplementation "dev.isxander:yet-another-config-lib:${project.yacl_mod_version}-fabric"
 
     // ModMenu
     clientImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
@@ -95,8 +95,8 @@ processResources {
         expand "version": project.mod_version,
                 "minecraft_version": project.minecraft_version.replace("-rc-", "-rc."),
                 "loader_version": project.loader_version,
-                "fabric_version": project.fabric_api_version,
-                "yacl_mod_version": project.yacl_version,
+                "fabric_version": project.fabric_version,
+                "yacl_mod_version": project.yacl_mod_version,
                 "mod_menu_mod_version": project.mod_menu_version.split('-')[0]
     }
 }
