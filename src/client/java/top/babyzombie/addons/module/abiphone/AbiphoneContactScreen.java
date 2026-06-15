@@ -30,11 +30,7 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 public class AbiphoneContactScreen extends Screen {
 
@@ -76,6 +72,16 @@ public class AbiphoneContactScreen extends Screen {
     private int cols, slotSize, rowHeight;
     private int cachedGridStartX, cachedEffectiveSlot, cachedColGap;
     private boolean layoutDirty = true;
+
+    //contact
+    private final Map<String,String> contactsHasDiffNameInCMD = Map.of(
+            "Maddox the Slayer", "slayer",
+            "Jotrealine Greatforge", "jotrealine",
+            "St. Jerry" ,"stjerry",
+            "Fear Mongerer", "fearmongerer",
+            "Queen Nyx", "nyx",
+            "Tia the Fairy", "tiathefairy"
+    );
 
     public AbiphoneContactScreen(List<AbiphoneTracker.ItemEntry> contacts) {
         super(Component.literal("Abiphone Contacts"));
@@ -522,6 +528,7 @@ public class AbiphoneContactScreen extends Screen {
                 AbiphoneTracker.ItemEntry entry = contacts.get(dragIndex);
                 String rawName = stripColor(entry.name());
                 var conn = Minecraft.getInstance().getConnection();
+                if(contactsHasDiffNameInCMD.containsKey(rawName)) rawName = contactsHasDiffNameInCMD.get(rawName);
                 if (conn != null) conn.sendCommand("call " + rawName);
                 onClose();
             }
