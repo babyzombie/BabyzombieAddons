@@ -17,6 +17,8 @@ public final class PartyCategory {
         return ConfigCategory.createBuilder()
                 .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/party"))
                 .name(Component.translatable("config.babyzombieaddons.category.party"))
+                .option(bool("autoAcceptReparty", defaults.party.autoAcceptReparty,
+                        () -> config.party.autoAcceptReparty, v -> config.party.autoAcceptReparty = v))
                 .option(bool("partySelfExecute", defaults.party.partySelfExecute,
                         () -> config.party.partySelfExecute, v -> config.party.partySelfExecute = v))
                 .option(bool("partyAllinvite", defaults.party.partyAllinvite,

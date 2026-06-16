@@ -14,6 +14,8 @@
   "babyzombieaddons.panel.color": "颜色：",
   "babyzombieaddons.panel.search": "搜索：",
 
+  "babyzombieaddons.acceptparty.scheduled_any": "§a将在 2 分钟内自动接受下一个组队邀请",
+  "babyzombieaddons.acceptparty.scheduled_player": "§a将在 2 分钟内自动接受来自 §6%s §a的组队邀请",
   "babyzombieaddons.party.accepted": "已自动接受队伍邀请",
   "babyzombieaddons.party.executed": "正在执行指令：%s",
   "babyzombieaddons.party.dm_invited": "已邀请 %s 加入队伍",
@@ -50,6 +52,8 @@
   "config.babyzombieaddons.option.partyTransfer.desc": "回应队伍聊天中的 !pt 或 !ptme，转让队长给发送者。\n正则: ^[!！][ ]?pt(?:me)?$",
   "config.babyzombieaddons.option.dmPartyInvite": "私信 !p - 邀请",
   "config.babyzombieaddons.option.dmPartyInvite.desc": "私信用 !p 的玩家自动邀请。\n正则: ^From (.+): [!！][ ]?p(?:arty)?(?: .*)?$",
+  "config.babyzombieaddons.option.autoAcceptReparty": "自动接受重组邀请",
+  "config.babyzombieaddons.option.autoAcceptReparty.desc": "队伍解散后，若 2 分钟内解散者重新邀请你，自动接受。",
   "config.babyzombieaddons.option.partySelfExecute": "响应自己的指令",
   "config.babyzombieaddons.option.partySelfExecute.desc": "开启后，自己在队伍聊天中发送的指令也会触发执行。",
   "config.babyzombieaddons.category.party": "队伍",

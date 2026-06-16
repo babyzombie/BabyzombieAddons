@@ -1,14 +1,18 @@
 package top.babyzombie.addons.command;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.module.party.PartyModule;
 import top.babyzombie.addons.module.playcmd.PlayCmdModule;
 import top.babyzombie.addons.util.ChatUtils;
 
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public final class BabyzombieAddonsCommand {
@@ -30,6 +34,21 @@ public final class BabyzombieAddonsCommand {
                                 Component.translatable("babyzombieaddons.trevor.auto_call_disabled"));
                         return 1;
                     }))
+                    .then(literal("acceptpartyinvite")
+                            .executes(ctx -> acceptPartyInvite(ctx, null))
+                            .then(argument("player", StringArgumentType.word())
+                                    .executes(ctx -> acceptPartyInvite(ctx,
+                                            StringArgumentType.getString(ctx, "player")))))
+                    .then(literal("ap")
+                            .executes(ctx -> acceptPartyInvite(ctx, null))
+                            .then(argument("player", StringArgumentType.word())
+                                    .executes(ctx -> acceptPartyInvite(ctx,
+                                            StringArgumentType.getString(ctx, "player")))))
+                    .then(literal("acceptparty")
+                            .executes(ctx -> acceptPartyInvite(ctx, null))
+                            .then(argument("player", StringArgumentType.word())
+                                    .executes(ctx -> acceptPartyInvite(ctx,
+                                            StringArgumentType.getString(ctx, "player")))))
                     ;
 
             var debug = literal("debug");
@@ -60,6 +79,18 @@ public final class BabyzombieAddonsCommand {
 
     private static int play(CommandContext<FabricClientCommandSource> ctx) {
         PlayCmdModule.openGUI();
+        return 1;
+    }
+
+    private static int acceptPartyInvite(CommandContext<FabricClientCommandSource> ctx, @Nullable String player) {
+        PartyModule.scheduleAutoAccept(player);
+        if (player != null) {
+            ctx.getSource().sendFeedback(
+                    Component.translatable("babyzombieaddons.acceptparty.scheduled_player", player));
+        } else {
+            ctx.getSource().sendFeedback(
+                    Component.translatable("babyzombieaddons.acceptparty.scheduled_any"));
+        }
         return 1;
     }
 }

@@ -199,6 +199,7 @@ public class ModConfig {
     // ---- Party ----
 
     public static class PartyConfig {
+        public boolean autoAcceptReparty = false;
         public boolean partyAllinvite = false;
         public boolean partyInvite = false;
         public boolean partyWarp = false;

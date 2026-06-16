@@ -14,6 +14,8 @@
   "babyzombieaddons.panel.color": "Color:",
   "babyzombieaddons.panel.search": "Search:",
 
+  "babyzombieaddons.acceptparty.scheduled_any": "§aWill auto-accept the next party invite within 2 minutes",
+  "babyzombieaddons.acceptparty.scheduled_player": "§aWill auto-accept the next party invite from §6%s §awithin 2 minutes",
   "babyzombieaddons.party.accepted": "Auto-accepted party invite",
   "babyzombieaddons.party.executed": "Executing command: %s",
   "babyzombieaddons.party.dm_invited": "Invited %s to party",
@@ -50,6 +52,8 @@
   "config.babyzombieaddons.option.partyTransfer.desc": "Respond to !pt or !ptme in party chat to transfer party leader.\nRegex: ^[!！][ ]?pt(?:me)?$",
   "config.babyzombieaddons.option.dmPartyInvite": "DM !p - Invite",
   "config.babyzombieaddons.option.dmPartyInvite.desc": "Auto-invite players who send you a DM with !p.\nRegex: ^From (.+): [!！][ ]?p(?:arty)?(?: .*)?$",
+  "config.babyzombieaddons.option.autoAcceptReparty": "Auto-Accept Reparty",
+  "config.babyzombieaddons.option.autoAcceptReparty.desc": "After the party is disbanded, auto-accept if the disbander re-invites you within 2 minutes.",
   "config.babyzombieaddons.option.partySelfExecute": "Respond to Own Commands",
   "config.babyzombieaddons.option.partySelfExecute.desc": "When enabled, party chat commands sent by yourself will also be executed.",
   "config.babyzombieaddons.category.party": "Party",

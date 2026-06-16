@@ -7,7 +7,6 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.PartyTracker;
-import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.util.ServerTick;
 
 import java.util.HashMap;
@@ -46,10 +45,15 @@ public final class PartyModule {
     /** Strip rank prefix like "[MVP+] " from a player name. */
     private static final Pattern RANK_PREFIX = Pattern.compile("^\\[[\\w+\\+-]+] ");
 
-    private static boolean partyDisbanded;
+    // Match "PlayerName has disbanded the party!" / "玩家名解散了组队！"
+    private static final Pattern PARTY_DISBAND = Pattern.compile(
+            "(.+)( has disbanded the party!|解散了组队！)", Pattern.CASE_INSENSITIVE);
+
     private static long warpDelayUntil;
     private static String nextCommand;
     private static final Map<String, Long> dmInvitePending = new HashMap<>();
+    private static final Map<String, Long> repartyPlayers = new HashMap<>();
+    static final Map<String, Long> pendingAutoAccept = new HashMap<>();
 
     private PartyModule() {}
 
@@ -58,30 +62,54 @@ public final class PartyModule {
         // Auto-accept party invite
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().party.dmPartyInvite) return;
+            var cfg = ModConfigManager.get().party;
+            if (!cfg.dmPartyInvite && !cfg.autoAcceptReparty) return;
             String text = message.getString();
             long now = ServerTick.getTime();
             dmInvitePending.values().removeIf(t -> t < now);
+            repartyPlayers.values().removeIf(t -> t < now);
+            pendingAutoAccept.values().removeIf(t -> t < now);
 
             var m = PARTY_INVITE.matcher(text);
             if (!m.find()) return;
 
-            // Only auto-accept if inviter was recently sent DM !p by us
             String inviter = m.group(1);
-            if (inviter != null && dmInvitePending.containsKey(inviter.toLowerCase())) {
-                dmInvitePending.remove(inviter.toLowerCase());
-                ChatUtils.sendCommand("party accept");
-                showMsg("party.accepted");
+            if (inviter == null) return;
+            String key = inviter.toLowerCase();
+
+            // DM-triggered auto-accept
+            if (cfg.dmPartyInvite && dmInvitePending.containsKey(key)) {
+                dmInvitePending.remove(key);
+                ChatUtils.sendCommand("party accept " + inviter);
+                return;
+            }
+
+            // Reparty auto-accept
+            if (cfg.autoAcceptReparty && repartyPlayers.containsKey(key)) {
+                repartyPlayers.remove(key);
+                ChatUtils.sendCommand("party accept " + inviter);
+                return;
+            }
+
+            // /bza acceptpartyinvite auto-accept
+            String matchKey = pendingAutoAccept.containsKey(key) ? key
+                    : pendingAutoAccept.containsKey("*") ? "*" : null;
+            if (matchKey != null) {
+                pendingAutoAccept.remove(matchKey);
+                ChatUtils.sendCommand("party accept " + inviter);
             }
         });
 
-        // Detect party disband for reparty context
+        // Detect party disband for reparty tracking
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
+            if (!ModConfigManager.get().party.autoAcceptReparty) return;
             String text = ChatUtils.stripColor(message.getString());
-            if (text.contains("disbanded the party") || text.contains("解散了组队")) {
-                partyDisbanded = true;
-                Scheduler.schedule(2400, () -> partyDisbanded = false);
+            var m = PARTY_DISBAND.matcher(text);
+            if (m.find()) {
+                String raw = m.group(1);
+                String player = RANK_PREFIX.matcher(raw).replaceFirst("").trim();
+                repartyPlayers.put(player.toLowerCase(), ServerTick.getTime() + 120000);
             }
         });
 
@@ -186,6 +214,11 @@ public final class PartyModule {
                 ChatUtils.sendCommand("pc x: " + pos.getX() + ", y: " + pos.getY() + ", z: " + pos.getZ());
             }
         }
+    }
+
+    public static void scheduleAutoAccept(String player) {
+        String key = player != null ? player.toLowerCase() : "*";
+        pendingAutoAccept.put(key, ServerTick.getTime() + 120000);
     }
 
     private static void runWhenLeader() {
