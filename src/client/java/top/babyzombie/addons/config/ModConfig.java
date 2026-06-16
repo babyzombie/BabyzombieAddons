@@ -8,6 +8,7 @@ public class ModConfig {
     public enum RequeueMode { OFF, ON_FAIL, ON_WIN, ALWAYS }
     public enum CrowdHideMode { OFF, HIDE, REMOVE }
     public enum DailyCounterMode { OFF, FIRST_5, ALWAYS }
+    public enum DeathMessageAction { OFF, COPY, SEND, COPY_AND_SEND }
     public enum HpDisplayMode { OFF, HUD, BOSSBAR }
     public enum MineshaftWarpMode { OFF, TITLE_ONLY, TITLE_AND_SOUND, SEND_PTME, PTME_AND_WARP }
 
@@ -87,6 +88,7 @@ public class ModConfig {
         public boolean autoChestClose = false;
         public boolean muteStormThunder = false;
         public DailyCounterMode dailyRunsCounter = DailyCounterMode.OFF;
+        public DeathMessageAction deathMessageAction = DeathMessageAction.OFF;
     }
 
     // ---- Kuudra ----

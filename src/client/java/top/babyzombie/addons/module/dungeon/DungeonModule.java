@@ -4,6 +4,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.party.PartyModule;
@@ -11,15 +12,19 @@ import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.PartyTracker;
 
+import java.util.regex.Pattern;
+
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 /**
  * Dungeon orchestration: instance start/end detection, auto requeue cancellation keywords,
- * and initialization of submodules.
+ * death message copy/send, and initialization of submodules.
  */
 public final class DungeonModule {
 
     private static boolean instanceStarted;
+    private static final Pattern DEATH_MSG = Pattern.compile(
+            "☠ (.+) and became a ghost\\.");
 
     private DungeonModule() {}
 
@@ -56,6 +61,24 @@ public final class DungeonModule {
                     DailyRunsCounter.incrementAndShow();
                 }
                 AutoRequeue.schedule(win);
+            }
+        });
+
+        // Death message copy/send
+        ClientReceiveMessageEvents.GAME.register((m, o) -> {
+            if (o) return;
+            var mode = ModConfigManager.get().dungeon.deathMessageAction;
+            if (mode == ModConfig.DeathMessageAction.OFF) return;
+            if (!HypixelLocationTracker.getInstance().isInDungeon()) return;
+            String text = ChatUtils.stripColor(m.getString());
+            var dm = DEATH_MSG.matcher(text);
+            if (!dm.find()) return;
+            String msg = dm.group(0);
+            if (mode == ModConfig.DeathMessageAction.COPY || mode == ModConfig.DeathMessageAction.COPY_AND_SEND) {
+                Minecraft.getInstance().keyboardHandler.setClipboard(msg);
+            }
+            if (mode == ModConfig.DeathMessageAction.COPY_AND_SEND || mode == ModConfig.DeathMessageAction.SEND) {
+                ChatUtils.sendCommand("pc " + msg);
             }
         });
 

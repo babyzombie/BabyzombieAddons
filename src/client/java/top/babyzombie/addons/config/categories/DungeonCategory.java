@@ -10,6 +10,7 @@ import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfig.CrowdHideMode;
 import top.babyzombie.addons.config.ModConfig.DailyCounterMode;
+import top.babyzombie.addons.config.ModConfig.DeathMessageAction;
 import top.babyzombie.addons.config.ModConfig.RequeueMode;
 
 import java.util.function.Supplier;
@@ -30,6 +31,15 @@ public final class DungeonCategory {
                                 v -> config.dungeon.f4CrowdHiding = v)
                         .controller(ConfigUtils.createEnumController(m ->
                                 Component.translatable("config.babyzombieaddons.option.f4CrowdHiding." + m.name())))
+                        .build())
+                .option(Option.<DeathMessageAction>createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.deathMessageAction"))
+                        .description(Component.translatable("config.babyzombieaddons.option.deathMessageAction.desc"))
+                        .binding(defaults.dungeon.deathMessageAction,
+                                () -> config.dungeon.deathMessageAction,
+                                v -> config.dungeon.deathMessageAction = v)
+                        .controller(ConfigUtils.createEnumController(m ->
+                                Component.translatable("config.babyzombieaddons.option.deathMessageAction." + m.name())))
                         .build())
                 .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.requeue"))
