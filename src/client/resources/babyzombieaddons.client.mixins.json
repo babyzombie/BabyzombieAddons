@@ -17,7 +17,8 @@
     "ConnectionMixin",
     "PingDebugMonitorMixin",
     "DisconnectedScreenMixin",
-    "ScreenMixin"
+    "ScreenMixin",
+    "PlayerScaleMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -67,6 +67,9 @@ public class ModConfig {
         public boolean autoReconnectEnabled = false;
         public int autoReconnectDelay = 5;
         public int autoReconnectMaxRetries = 0;
+        public float playerScaleX = 1.0f;
+        public float playerScaleY = 1.0f;
+        public float playerScaleZ = 1.0f;
     }
 
     // ---- Dungeon ----

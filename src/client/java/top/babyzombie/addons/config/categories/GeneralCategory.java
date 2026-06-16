@@ -4,6 +4,7 @@ import net.azureaaron.dandelion.api.ButtonOption;
 import net.azureaaron.dandelion.api.ConfigCategory;
 import net.azureaaron.dandelion.api.Option;
 import net.azureaaron.dandelion.api.OptionGroup;
+import net.azureaaron.dandelion.api.controllers.FloatController;
 import net.azureaaron.dandelion.api.controllers.IntegerController;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -71,6 +72,34 @@ public final class GeneralCategory {
                                         () -> config.general.autoReconnectMaxRetries,
                                         v -> config.general.autoReconnectMaxRetries = v)
                                 .controller(IntegerController.createBuilder().range(0, 10).slider(1).build())
+                                .build())
+                        .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.playerScale"))
+                        .collapsed(true)
+                        .option(Option.<Float>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.playerScaleX"))
+                                .description(Component.translatable("config.babyzombieaddons.option.playerScaleX.desc"))
+                                .binding(defaults.general.playerScaleX,
+                                        () -> config.general.playerScaleX,
+                                        v -> config.general.playerScaleX = v)
+                                .controller(FloatController.createBuilder().range(0.01f, 1.0f).slider(0.01f).build())
+                                .build())
+                        .option(Option.<Float>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.playerScaleY"))
+                                .description(Component.translatable("config.babyzombieaddons.option.playerScaleY.desc"))
+                                .binding(defaults.general.playerScaleY,
+                                        () -> config.general.playerScaleY,
+                                        v -> config.general.playerScaleY = v)
+                                .controller(FloatController.createBuilder().range(0.01f, 1.0f).slider(0.01f).build())
+                                .build())
+                        .option(Option.<Float>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.playerScaleZ"))
+                                .description(Component.translatable("config.babyzombieaddons.option.playerScaleZ.desc"))
+                                .binding(defaults.general.playerScaleZ,
+                                        () -> config.general.playerScaleZ,
+                                        v -> config.general.playerScaleZ = v)
+                                .controller(FloatController.createBuilder().range(0.01f, 1.0f).slider(0.01f).build())
                                 .build())
                         .build())
                 .build();
