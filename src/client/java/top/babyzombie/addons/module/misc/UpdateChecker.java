@@ -1,6 +1,7 @@
 package top.babyzombie.addons.module.misc;
 
 import com.google.gson.JsonParser;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
@@ -17,8 +18,10 @@ import java.time.Duration;
 
 public final class UpdateChecker {
     private static boolean checked;
-    private static final String API_URL =
+    private static final String GITHUB_API_URL =
             "https://api.github.com/repos/babyzombie/BabyzombieAddons/releases/latest";
+    private static final String GITEE_API_URL =
+            "https://gitee.com/api/v5/repos/Bluesky-kk/BabyzombieAddons/releases?per_page=1&page=1&direction=desc";
     private static final String RELEASES_GITHUB_URL =
             "https://github.com/babyzombie/BabyzombieAddons/releases/latest";
     private static final String RELEASES_GITEE_URL =
@@ -27,7 +30,7 @@ public final class UpdateChecker {
     private UpdateChecker() {}
 
     public static void init() {
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, level) -> {
             if (checked) return;
             if (!ModConfigManager.get().general.updateChecker) return;
             checked = true;
@@ -41,38 +44,58 @@ public final class UpdateChecker {
 
     private static void check(Minecraft client, String currentVersion) {
         var thread = new Thread(() -> {
-            try (var http = HttpClient.newHttpClient()) {
-                var req = HttpRequest.newBuilder()
-                        .uri(URI.create(API_URL))
-                        .header("User-Agent", "BabyzombieAddons-UpdateChecker")
-                        .timeout(Duration.ofSeconds(10))
-                        .build();
-                var res = http.send(req, HttpResponse.BodyHandlers.ofString());
-                if (res.statusCode() != 200) return;
-                var tag = JsonParser.parseString(res.body())
-                        .getAsJsonObject().get("tag_name").getAsString();
-                var latest = tag.startsWith("v") ? tag.substring(1) : tag;
-
-                if (isNewer(latest, currentVersion)) {
-                    var msg = Component.translatable(
-                                    "babyzombieaddons.update.new_version", latest, currentVersion)
-                            .append(" ")
-                            .append(createDownloadLink(
-                                    "babyzombieaddons.update.download.github", RELEASES_GITHUB_URL))
-                            .append(" ")
-                            .append(createDownloadLink(
-                                    "babyzombieaddons.update.download.gitee", RELEASES_GITEE_URL));
-                    client.execute(() -> {
-                        var player = client.player;
-                        if (player != null) player.displayClientMessage(msg, false);
-                    });
+            try {
+                String tag = fetchLatestFrom(GITHUB_API_URL, false);
+                String latest = tag.startsWith("v") ? tag.substring(1) : tag;
+                notifyIfNewer(client, latest, currentVersion);
+            } catch (Exception e) {
+                try {
+                    String tag = fetchLatestFrom(GITEE_API_URL, true);
+                    String latest = tag.startsWith("v") ? tag.substring(1) : tag;
+                    notifyIfNewer(client, latest, currentVersion);
+                } catch (Exception ignored) {
+                    // Both GitHub and Gitee unreachable
                 }
-            } catch (Exception ignored) {
-                // Network errors silently ignored
             }
         }, "BZA-UpdateCheck");
         thread.setDaemon(true);
         thread.start();
+    }
+
+    private static String fetchLatestFrom(String url, boolean isArrayResponse) throws Exception {
+        try (var http = HttpClient.newHttpClient()) {
+            var req = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("User-Agent", "BabyzombieAddons-UpdateChecker")
+                    .timeout(Duration.ofSeconds(15))
+                    .build();
+            var res = http.send(req, HttpResponse.BodyHandlers.ofString());
+            if (res.statusCode() != 200)
+                throw new RuntimeException("HTTP " + res.statusCode());
+            var json = JsonParser.parseString(res.body());
+            if (isArrayResponse) {
+                var arr = json.getAsJsonArray();
+                if (arr.isEmpty()) throw new RuntimeException("Empty release list");
+                return arr.get(0).getAsJsonObject().get("tag_name").getAsString();
+            }
+            return json.getAsJsonObject().get("tag_name").getAsString();
+        }
+    }
+
+    private static void notifyIfNewer(Minecraft client, String latest, String currentVersion) {
+        if (!isNewer(latest, currentVersion)) return;
+        var msg = Component.translatable(
+                        "babyzombieaddons.update.new_version", latest, currentVersion)
+                .append(" ")
+                .append(createDownloadLink(
+                        "babyzombieaddons.update.download.github", RELEASES_GITHUB_URL))
+                .append(" ")
+                .append(createDownloadLink(
+                        "babyzombieaddons.update.download.gitee", RELEASES_GITEE_URL));
+        client.execute(() -> {
+            var player = client.player;
+            if (player != null) player.displayClientMessage(msg, false);
+        });
     }
 
     private static Component createDownloadLink(String translationKey, String url) {
