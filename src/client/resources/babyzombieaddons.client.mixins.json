@@ -18,7 +18,8 @@
     "PingDebugMonitorMixin",
     "DisconnectedScreenMixin",
     "ScreenMixin",
-    "PlayerScaleMixin"
+    "PlayerScaleMixin",
+    "ThirdPersonCrosshairMixin"
   ],
   "injectors": {
     "defaultRequire": 1

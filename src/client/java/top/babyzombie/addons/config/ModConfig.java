@@ -70,6 +70,7 @@ public class ModConfig {
         public float playerScaleX = 1.0f;
         public float playerScaleY = 1.0f;
         public float playerScaleZ = 1.0f;
+        public boolean showCrosshairInThirdPerson = false;
     }
 
     // ---- Dungeon ----

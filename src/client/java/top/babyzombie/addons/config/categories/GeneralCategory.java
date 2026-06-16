@@ -101,6 +101,8 @@ public final class GeneralCategory {
                                         v -> config.general.playerScaleZ = v)
                                 .controller(FloatController.createBuilder().range(0.01f, 1.0f).slider(0.01f).build())
                                 .build())
+                        .option(createBool("showCrosshairInThirdPerson", defaults.general.showCrosshairInThirdPerson,
+                                () -> config.general.showCrosshairInThirdPerson, v -> config.general.showCrosshairInThirdPerson = v))
                         .build())
                 .build();
     }

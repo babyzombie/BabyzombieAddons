@@ -134,9 +134,12 @@ public final class PopupEventsModule {
         eventType = type;
         String pre = "babyzombieaddons.popup.";
         title = Component.translatable(pre + "title." + type.key);
-        if (extra != null)
-            body = Component.translatable(pre + "body." + type.key, "§6" + player + "§f", "§6" + extra + "§f");
-        else
+        if (extra != null) {
+            if ("their".equals(extra))
+                body = Component.translatable(pre + "body." + type.key + "_their", "§6" + player + "§f");
+            else
+                body = Component.translatable(pre + "body." + type.key, "§6" + player + "§f", "§6" + extra + "§f");
+        } else
             body = Component.translatable(pre + "body." + type.key, "§6" + player + "§f");
         command = type == EventType.PARTY || type == EventType.GUILD_PARTY ? "party accept " + player
                 : type == EventType.FRIEND ? "friend accept " + player

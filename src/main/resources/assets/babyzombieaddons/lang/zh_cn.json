@@ -90,6 +90,9 @@
   "config.babyzombieaddons.option.autoReconnectMaxRetries.desc": "重连失败后最多尝试几次，设为 0 则不限次数。每次成功进服后重置计数。",
   "config.babyzombieaddons.option.useTpsAdjustedTime": "TPS 校准计时",
   "config.babyzombieaddons.option.useTpsAdjustedTime.desc": "使用服务器 tick 速率调整计时器速度。在卡顿的服务器上，冷却时间会跟随实际游戏时间变慢，而非使用真实墙上时间。",
+  "config.babyzombieaddons.option.showCrosshairInThirdPerson": "非第一人称显示准星",
+  "config.babyzombieaddons.option.showCrosshairInThirdPerson.desc": "在第三人称视角下也显示屏幕中央的准星。",
+
   "config.babyzombieaddons.group.playerScale": "玩家渲染缩放",
   "config.babyzombieaddons.option.playerScaleX": "X 轴缩放",
   "config.babyzombieaddons.option.playerScaleX.desc": "仅影响自己看到的自身模型，在 X 轴（宽度）方向的缩放比例。",
@@ -461,6 +464,8 @@
   "babyzombieaddons.popup.title.restart_request": "重开请求",
   "babyzombieaddons.popup.body.party_invite": "%s 邀请你加入 %s 组队",
   "babyzombieaddons.popup.body.guild_party_invite": "%s 邀请公会成员加入 %s 组队",
+  "babyzombieaddons.popup.body.party_invite_their": "%s 邀请你加入 他的 组队",
+  "babyzombieaddons.popup.body.guild_party_invite_their": "%s 邀请公会成员加入 他的 组队",
   "babyzombieaddons.popup.body.friend_request": "%s 请求添加你为好友",
   "babyzombieaddons.popup.body.trade_request": "%s 想要和你交易",
   "babyzombieaddons.popup.body.position_swap": "%s 想要和你交换位置",
