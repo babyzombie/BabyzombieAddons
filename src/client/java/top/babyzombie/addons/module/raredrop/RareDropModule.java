@@ -24,6 +24,8 @@ public final class RareDropModule {
     static {
         blacklist.put("potato", true);
         blacklist.put("carrot", true);
+        blacklist.put("cropie", true);
+        blacklist.put("squash", true);
         blacklist.put("compost", true);
         blacklist.put("tasty cheese", true);
         blacklist.put("enchanted bone", true);
@@ -154,7 +156,7 @@ public final class RareDropModule {
     private static String extractName(String text) {
         text = text.replaceAll(".*?(RARE|VERY RARE|CRAZY RARE|INSANE|PET) (DROP|CROP)!", "").trim();
         text = text.replaceAll("\\([^)]*Magic Find[^)]*\\)", "").trim();
-        text = text.replaceAll("\\([^)]*[✯✦][^)]*\\)", "").trim();
+        text = text.replaceAll("\\([^)]*[✯✦☀][^)]*\\)", "").trim();
         text = text.replaceAll("([0-9]+x )","").trim();
         if(text.startsWith("(") && text.endsWith(")")) text = text.substring(1, text.length() - 1).trim();
         return text.isEmpty() ? null : text;
