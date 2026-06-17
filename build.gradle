@@ -66,8 +66,8 @@ dependencies {
 
     clientImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    //Hypixel Mod Api
-    clientImplementation "net.hypixel:mod-api:${project.hm_api_version}"
+    //Hypixel Mod Api (bundled)
+    include(clientImplementation("net.hypixel:mod-api:${project.hm_api_version}"))
 
     // Dandelion (bundled)
     include(clientImplementation("net.azureaaron:dandelion:${project.dandelion_version}"))
