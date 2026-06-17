@@ -28,9 +28,7 @@ public final class KuudraLocationTracker {
             }
             if (!inKuudra) inKuudra = true;
 
-            if (client.player != null && client.player.tickCount % 20 == 0)
-                checkPlayerLocation(client);
-
+            checkPlayerLocation(client);
             findKuudra(client);
         });
     }
