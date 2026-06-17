@@ -1,5 +1,7 @@
 package top.babyzombie.addons.module.dungeon;
 
+import top.babyzombie.addons.util.ScreenHelper;
+
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -21,7 +23,7 @@ public final class AutoChestClose {
                 String title = cs.getTitle().getString();
                 if (title.equals("Chest") || title.equals("箱子")) {
                     Scheduler.schedule(4, () -> {
-                        if (client.screen == screen && HypixelLocationTracker.getInstance().isInDungeon())
+                        if (ScreenHelper.getCurrent() == screen && HypixelLocationTracker.getInstance().isInDungeon())
                             client.execute(() -> { if (client.player != null) client.player.closeContainer(); });
                     });
                 }

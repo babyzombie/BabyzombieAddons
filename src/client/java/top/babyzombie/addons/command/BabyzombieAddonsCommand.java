@@ -12,8 +12,8 @@ import top.babyzombie.addons.module.party.PartyModule;
 import top.babyzombie.addons.module.playcmd.PlayCmdModule;
 import top.babyzombie.addons.util.ChatUtils;
 
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 
 public final class BabyzombieAddonsCommand {
     private BabyzombieAddonsCommand() {}
@@ -68,7 +68,7 @@ public final class BabyzombieAddonsCommand {
 
     static int settings(CommandContext<FabricClientCommandSource> ctx) {
         Minecraft.getInstance().execute(() ->
-                Minecraft.getInstance().setScreen(ModConfigManager.createGUI(null)));
+                Minecraft.getInstance().setScreenAndShow(ModConfigManager.createGUI(null)));
         return 1;
     }
 

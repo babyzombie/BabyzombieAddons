@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "top.babyzombie.addons.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "client": [
     "KeyMappingMixin",
     "SendCommandMixin",
@@ -18,13 +18,13 @@
     "PingDebugMonitorMixin",
     "DisconnectedScreenMixin",
     "ScreenMixin",
+    "ScreenTracker",
+    "ClientWorldChangeMixin",
+    "ScreenMixin",
     "PlayerScaleMixin",
     "ThirdPersonCrosshairMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "overwrites": {
-    "requireAnnotations": true
   }
 }

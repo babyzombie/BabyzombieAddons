@@ -4,7 +4,7 @@ package top.babyzombie.addons.module.mining;
 import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
+import top.babyzombie.addons.event.WorldChangeCallback;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
@@ -206,7 +206,7 @@ public final class GlaciteMineshaftWaypoints {
             }
         });
 
-        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
+        WorldChangeCallback.register((client, world) -> {
             portalTimer = 0; inMineshaft = false;
             mineshaftOwner = false; waitingPartyTransfer = false; ownServerName = null;
         });

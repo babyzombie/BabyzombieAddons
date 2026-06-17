@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
+import top.babyzombie.addons.event.WorldChangeCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
@@ -17,7 +17,7 @@ public final class Waypoints {
     private Waypoints() {}
 
     public static void init() {
-        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, world) -> {
+        WorldChangeCallback.register((client, world) -> {
             synchronized (list) {
                 list.removeIf(e -> e.time == 0);
             }
