@@ -1,6 +1,6 @@
 package top.babyzombie.addons.module.kuudra;
 
-import top.babyzombie.addons.event.WorldChangeCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 
 public final class KuudraModule {
     private KuudraModule() {}
@@ -18,7 +18,7 @@ public final class KuudraModule {
         KuudraFollowerHelmetPrice.init();
         CrimsonArmorPistonMute.init();
 
-        WorldChangeCallback.register((client, world) -> {
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             if (world != null) KuudraLocationTracker.reset();
         });
     }

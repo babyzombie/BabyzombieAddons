@@ -1,7 +1,7 @@
 package top.babyzombie.addons.module.slayer;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
-import top.babyzombie.addons.event.WorldChangeCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.util.ChatUtils;
@@ -63,7 +63,7 @@ public final class SlayerModule {
         });
 
         // ---- Reset on world load ----
-        WorldChangeCallback.register((client, world) -> {
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             if (world == null) return;
             PigmanSwordTimer.time = 0;
             HolyIceTimer.time = 0;

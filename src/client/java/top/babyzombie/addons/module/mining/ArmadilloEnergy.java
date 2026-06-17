@@ -3,7 +3,7 @@ package top.babyzombie.addons.module.mining;
 import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import top.babyzombie.addons.event.WorldChangeCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -22,7 +22,7 @@ public final class ArmadilloEnergy {
     private ArmadilloEnergy() {}
 
     public static void init() {
-        WorldChangeCallback.register((client, world) -> {
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             hasDillo = false;
             energyNow = 0;
             energyMax = 0;

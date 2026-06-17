@@ -1,6 +1,6 @@
 package top.babyzombie.addons.module.mining;
 
-import top.babyzombie.addons.event.WorldChangeCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 
 public final class MiningModule {
     private MiningModule() {}
@@ -22,7 +22,7 @@ public final class MiningModule {
         PowderMiningSounds.init();
         DrillSwingSuppression.init();
 
-        WorldChangeCallback.register((client, world) -> {
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             if (world == null) return;
             MiningAbilityAlerts.readyTime = 0;
             ScathaCooldown.time = 0;

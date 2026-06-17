@@ -10,7 +10,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 @Mixin(Gui.class)
 public abstract class ThirdPersonCrosshairMixin {
 
-    @Redirect(method = "renderCrosshair", at = @At(value = "INVOKE",
+    @Redirect(method = "extractCrosshair", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/CameraType;isFirstPerson()Z"))
     private boolean bypassIsFirstPerson(CameraType cameraType) {
         if (ModConfigManager.get().general.showCrosshairInThirdPerson) {

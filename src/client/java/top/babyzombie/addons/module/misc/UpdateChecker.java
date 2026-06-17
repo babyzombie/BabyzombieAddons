@@ -1,14 +1,13 @@
 package top.babyzombie.addons.module.misc;
 
 import com.google.gson.JsonParser;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import top.babyzombie.addons.config.ModConfigManager;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -30,7 +29,7 @@ public final class UpdateChecker {
     private UpdateChecker() {}
 
     public static void init() {
-        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client, level) -> {
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> {
             if (checked) return;
             if (!ModConfigManager.get().general.updateChecker) return;
             checked = true;
@@ -94,7 +93,7 @@ public final class UpdateChecker {
                         "babyzombieaddons.update.download.gitee", RELEASES_GITEE_URL));
         client.execute(() -> {
             var player = client.player;
-            if (player != null) player.displayClientMessage(msg, false);
+            if (player != null) player.sendSystemMessage(msg);
         });
     }
 

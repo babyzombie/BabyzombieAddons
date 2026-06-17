@@ -19,7 +19,6 @@
     "DisconnectedScreenMixin",
     "ScreenMixin",
     "ScreenTracker",
-    "ClientWorldChangeMixin",
     "ScreenMixin",
     "PlayerScaleMixin",
     "ThirdPersonCrosshairMixin"
