@@ -25,9 +25,8 @@ public final class ModConfigManager {
             ModConfig.class, CONFIG_FILE, UnaryOperator.identity()
     );
 
-    private static final boolean YACL_LOADED = FabricLoader.getInstance().isModLoaded("yet-another-config-lib");
+    private static final boolean YACL_LOADED = FabricLoader.getInstance().isModLoaded("yet_another_config_lib_v3");
     private static final boolean FLK_LOADED = FabricLoader.getInstance().isModLoaded("fabric-language-kotlin");
-    private static final boolean DEPS_OK = YACL_LOADED && FLK_LOADED;
 
     private ModConfigManager() {}
 
@@ -52,35 +51,37 @@ public final class ModConfigManager {
     }
 
     public static Screen createGUI(@Nullable Screen parent, String search) {
-        if (!DEPS_OK) {
-            return new MissingDepScreen(parent);
+        try {
+            ConfigType configType = get().debug.configBackend == ConfigBackend.YACL ? ConfigType.YACL : ConfigType.MOUL_CONFIG;
+
+            return DandelionConfigScreen.create(CONFIG_MANAGER, (defaults, config, builder) -> builder
+                    .title(Component.translatable("config.babyzombieaddons.title"))
+                    .category(GeneralCategory.create(defaults, config))
+                    .category(SkyblockCategory.create(defaults, config))
+                    .category(DungeonCategory.create(defaults, config))
+                    .category(KuudraCategory.create(defaults, config))
+                    .category(SlayerCategory.create(defaults, config))
+                    .category(MiningCategory.create(defaults, config))
+                    .category(GardenCategory.create(defaults, config))
+                    .category(PartyCategory.create(defaults, config))
+                    .category(PopupCategory.create(defaults, config))
+                    .category(EventsCategory.create(defaults, config))
+                    .category(MiscCategory.create(defaults, config))
+                    .search(search)
+            ).generateScreen(parent, configType);
+        } catch (Exception e) {
+            return new MissingDepScreen(parent, e);
         }
-
-        ConfigType configType = get().debug.configBackend == ConfigBackend.YACL ? ConfigType.YACL : ConfigType.MOUL_CONFIG;
-
-        return DandelionConfigScreen.create(CONFIG_MANAGER, (defaults, config, builder) -> builder
-                .title(Component.translatable("config.babyzombieaddons.title"))
-                .category(GeneralCategory.create(defaults, config))
-                .category(SkyblockCategory.create(defaults, config))
-                .category(DungeonCategory.create(defaults, config))
-                .category(KuudraCategory.create(defaults, config))
-                .category(SlayerCategory.create(defaults, config))
-                .category(MiningCategory.create(defaults, config))
-                .category(GardenCategory.create(defaults, config))
-                .category(PartyCategory.create(defaults, config))
-                .category(PopupCategory.create(defaults, config))
-                .category(EventsCategory.create(defaults, config))
-                .category(MiscCategory.create(defaults, config))
-                .search(search)
-        ).generateScreen(parent, configType);
     }
 
     private static final class MissingDepScreen extends Screen {
         private final Screen parent;
+        private final Exception error;
 
-        MissingDepScreen(Screen parent) {
+        MissingDepScreen(Screen parent, Exception error) {
             super(Component.translatable("babyzombieaddons.missing_deps.title"));
             this.parent = parent;
+            this.error = error;
         }
 
         @Override
@@ -96,6 +97,16 @@ public final class ModConfigManager {
             int y = height / 4 - 20;
             graphics.centeredText(font, title, width / 2, y, 0xFF5555);
             y += 24;
+            if (error != null) {
+                String errorMsg = error.toString();
+                if (errorMsg.length() > 80) {
+                    errorMsg = errorMsg.substring(0, 77) + "...";
+                }
+                graphics.centeredText(font,
+                        Component.translatable("babyzombieaddons.missing_deps.error", errorMsg),
+                        width / 2, y, 0xFFAAAAAA);
+                y += 18;
+            }
             graphics.centeredText(font,
                     Component.translatable("babyzombieaddons.missing_deps.hint"),
                     width / 2, y, 0xCCCCCC);

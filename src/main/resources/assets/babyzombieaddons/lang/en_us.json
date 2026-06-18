@@ -532,5 +532,6 @@
   "babyzombieaddons.missing_deps.title": "Cannot Open Settings",
   "babyzombieaddons.missing_deps.hint": "Install the following mods to access settings:",
   "babyzombieaddons.missing_deps.yacl": "• Yet Another Config Lib (YACL)",
-  "babyzombieaddons.missing_deps.flk": "• Fabric Language Kotlin"
+  "babyzombieaddons.missing_deps.flk": "• Fabric Language Kotlin",
+  "babyzombieaddons.missing_deps.error": "Error: %s"
 }

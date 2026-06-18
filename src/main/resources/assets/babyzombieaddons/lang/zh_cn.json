@@ -532,5 +532,6 @@
   "babyzombieaddons.missing_deps.title": "无法打开设置",
   "babyzombieaddons.missing_deps.hint": "请安装以下前置模组后重试：",
   "babyzombieaddons.missing_deps.yacl": "• Yet Another Config Lib (YACL)",
-  "babyzombieaddons.missing_deps.flk": "• Fabric Language Kotlin"
+  "babyzombieaddons.missing_deps.flk": "• Fabric Language Kotlin",
+  "babyzombieaddons.missing_deps.error": "错误详情：%s"
 }
