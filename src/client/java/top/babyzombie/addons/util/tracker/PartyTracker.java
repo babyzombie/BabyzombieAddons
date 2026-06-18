@@ -71,7 +71,7 @@ public final class PartyTracker {
                     }
                     var action = pendingLeaderAction;
                     pendingLeaderAction = null;
-                    if (action != null) action.run();
+                    if (action != null && isLeader) action.run();
                 }
             } catch (Exception ignored) {}
 
@@ -125,7 +125,7 @@ public final class PartyTracker {
             action.run();
             return;
         }
-        if (leaderName != null && myName != null && !myName.equals(leaderName)) {
+        if (leaderName != null) {
             return;
         }
         pendingLeaderAction = action;
