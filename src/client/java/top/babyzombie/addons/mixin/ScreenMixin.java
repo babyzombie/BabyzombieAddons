@@ -20,7 +20,7 @@ public class ScreenMixin {
         if (!isDisconnectedScreen(this)) return;
         int remaining = AutoReconnectHelper.tickCountdown();
         if (remaining == 0) {
-            AutoReconnectHelper.reconnect((net.minecraft.client.gui.screens.Screen) (Object) this);
+            AutoReconnectHelper.reconnect();
         }
     }
 

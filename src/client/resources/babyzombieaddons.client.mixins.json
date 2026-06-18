@@ -6,6 +6,7 @@
   "client": [
     "KeyMappingMixin",
     "SendCommandMixin",
+    "EntityRenderDispatcherScaleMixin",
     "EntityRenderMixin",
     "PlaySoundMixin",
     "PerkShopMixin",

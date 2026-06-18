@@ -19,6 +19,7 @@ public final class AutoReconnectHelper {
     private static int tickCounter;
     private static boolean pendingReconnect;
     private static Screen pendingParentScreen;
+    private static Screen firstDisconnectParent;
 
     private AutoReconnectHelper() {}
 
@@ -31,6 +32,7 @@ public final class AutoReconnectHelper {
                     lastServerIp = server.ip;
                     lastServerName = server.name;
                     retryCount = 0;
+                    firstDisconnectParent = null;
                 }
                 lastJoinTimeNanos = now;
             }
@@ -105,17 +107,23 @@ public final class AutoReconnectHelper {
         return retryCount;
     }
 
+    public static void setFirstDisconnectParent(Screen parent) {
+        if (firstDisconnectParent == null) {
+            firstDisconnectParent = parent;
+        }
+    }
+
     public static void cancelCountdown() {
         reconnectSecondsRemaining = -1;
         tickCounter = 0;
     }
 
-    public static void reconnect(Screen parentScreen) {
+    public static void reconnect() {
         var ip = lastServerIp;
         if (ip == null) return;
         retryCount++;
         cancelCountdown();
         pendingReconnect = true;
-        pendingParentScreen = parentScreen;
+        pendingParentScreen = firstDisconnectParent;
     }
 }
