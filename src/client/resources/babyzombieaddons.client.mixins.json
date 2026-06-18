@@ -9,7 +9,7 @@
     "EntityRenderDispatcherScaleMixin",
     "EntityRenderMixin",
     "PlaySoundMixin",
-    "PerkShopMixin",
+    "ContainerClickMixin",
     "EntityGlowMixin",
     "GlowAppearMixin",
     "BossHealthOverlayAccessor",

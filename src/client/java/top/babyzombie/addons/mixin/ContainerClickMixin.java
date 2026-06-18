@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.babyzombie.addons.event.ContainerClickEvents;
 
 @Mixin(AbstractContainerScreen.class)
-public abstract class PerkShopMixin {
+public abstract class ContainerClickMixin {
 
     @Shadow
     protected Slot hoveredSlot;
@@ -19,7 +19,7 @@ public abstract class PerkShopMixin {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void beforeMouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl, CallbackInfoReturnable<Boolean> cir) {
         if (ContainerClickEvents.BEFORE_MOUSE_CLICK.invoker()
-                .beforeMouseClick((AbstractContainerScreen<?>) (Object) this, hoveredSlot)) {
+                .beforeMouseClick((AbstractContainerScreen<?>) (Object) this, hoveredSlot, mouseButtonEvent.button())) {
             cir.setReturnValue(false);
         }
     }

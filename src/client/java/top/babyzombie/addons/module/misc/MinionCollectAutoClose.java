@@ -16,7 +16,7 @@ public final class MinionCollectAutoClose {
     private static final Pattern MINION_TITLE = Pattern.compile("\\bMinion\\b");
 
     public static void init() {
-        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot) -> {
+        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, button) -> {
             if (!ModConfigManager.get().general.minionCollectAutoClose) return false;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
 

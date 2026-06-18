@@ -12,15 +12,15 @@ import net.minecraft.world.inventory.Slot;
 public final class ContainerClickEvents {
 
     public static final Event<BeforeMouseClick> BEFORE_MOUSE_CLICK =
-            EventFactory.createArrayBacked(BeforeMouseClick.class, callbacks -> (screen, slot) -> {
+            EventFactory.createArrayBacked(BeforeMouseClick.class, callbacks -> (screen, slot, button) -> {
                 for (BeforeMouseClick cb : callbacks) {
-                    if (cb.beforeMouseClick(screen, slot)) return true;
+                    if (cb.beforeMouseClick(screen, slot, button)) return true;
                 }
                 return false;
             });
 
     @FunctionalInterface
     public interface BeforeMouseClick {
-        boolean beforeMouseClick(AbstractContainerScreen<?> screen, Slot slot);
+        boolean beforeMouseClick(AbstractContainerScreen<?> screen, Slot slot, int button);
     }
 }
