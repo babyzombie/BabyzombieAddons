@@ -76,6 +76,9 @@
   "config.babyzombieaddons.option.autoisDest.desc": "传送到哪个地点。",
   "config.babyzombieaddons.option.autoisDest.ISLAND": "私人岛屿",
   "config.babyzombieaddons.option.autoisDest.GARDEN": "花园",
+  "config.babyzombieaddons.option.hideEntities": "隐藏所有实体",
+  "config.babyzombieaddons.option.hideEntities.desc": "我都来挂机了还要看这些实体干嘛。仅在启用自动回岛时生效。",
+
   "config.babyzombieaddons.option.autoBackToSkyblock": "踢出后恢复",
   "config.babyzombieaddons.option.autoBackToSkyblock.desc": "被踢后的操作。",
   "config.babyzombieaddons.option.autoBackToSkyblock.OFF": "关闭",

@@ -76,6 +76,9 @@
   "config.babyzombieaddons.option.autoisDest.desc": "Which location to warp to.",
   "config.babyzombieaddons.option.autoisDest.ISLAND": "Private Island",
   "config.babyzombieaddons.option.autoisDest.GARDEN": "Garden",
+  "config.babyzombieaddons.option.hideEntities": "Hide All Entities",
+  "config.babyzombieaddons.option.hideEntities.desc": "I'm here to AFK, why would I need to see these entities. Only effective when AutoIS is on.",
+
   "config.babyzombieaddons.option.autoBackToSkyblock": "After Kick Recovery",
   "config.babyzombieaddons.option.autoBackToSkyblock.desc": "What to do after being kicked.",
   "config.babyzombieaddons.option.autoBackToSkyblock.OFF": "Off",
