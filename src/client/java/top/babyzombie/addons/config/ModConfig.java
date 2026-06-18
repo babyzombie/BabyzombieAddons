@@ -62,6 +62,7 @@ public class ModConfig {
         public AutoISDest autoisDest = AutoISDest.GARDEN;
         public KickRecovery autoBackToSkyblock = KickRecovery.LOBBY_ONLY;
         public boolean cakeBuffTracker = false;
+        public boolean minionCollectAutoClose = false;
         public int skipSecondPerson = 0;
         public boolean useTpsAdjustedTime = false;
         public WorldRenderPhase renderPhase = WorldRenderPhase.AFTER_ENTITIES;

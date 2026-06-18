@@ -44,6 +44,8 @@ public final class SkyblockCategory {
                         .build())
                 .option(createBool("cakeBuffTracker", defaults.general.cakeBuffTracker,
                         () -> config.general.cakeBuffTracker, v -> config.general.cakeBuffTracker = v))
+                .option(createBool("minionCollectAutoClose", defaults.general.minionCollectAutoClose,
+                        () -> config.general.minionCollectAutoClose, v -> config.general.minionCollectAutoClose = v))
                 .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.autois"))
                         .collapsed(true)

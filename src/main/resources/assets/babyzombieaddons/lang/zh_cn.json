@@ -83,6 +83,8 @@
   "config.babyzombieaddons.option.autoBackToSkyblock.LOBBY_AND_SKYBLOCK": "大厅+重连 SkyBlock",
   "config.babyzombieaddons.option.cakeBuffTracker": "蛋糕 Buff 追踪",
   "config.babyzombieaddons.option.cakeBuffTracker.desc": "用已食用蛋糕清单替换默认蛋糕消息。",
+  "config.babyzombieaddons.option.minionCollectAutoClose": "收小人自动关闭界面",
+  "config.babyzombieaddons.option.minionCollectAutoClose.desc": "在小人（Minion）界面点击“Collect All”后自动关闭容器界面。",
   "config.babyzombieaddons.option.skipSecondPerson": "跳过第二人称视角",
   "config.babyzombieaddons.option.skipSecondPerson.desc": "按 F5 时跳过第二人称视角，仅在第一人称和第三人称后方之间切换。长按超过设定 tick 数后松手时切换至第二人称视角。调为 0 关闭，20 tick = 1 秒。",
   "config.babyzombieaddons.group.autoReconnect": "断线自动重连",
