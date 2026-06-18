@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.EntityRenderEvents;
+import top.babyzombie.addons.event.ParticleRenderEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.Scheduler;
@@ -19,6 +20,11 @@ public final class AutoISModule {
 
     public static void init() {
         EntityRenderEvents.BEFORE_RENDER.register(entity -> {
+            var cfg = ModConfigManager.get().general;
+            return cfg.autois && cfg.hideEntities;
+        });
+
+        ParticleRenderEvents.BEFORE_ADD.register(particle -> {
             var cfg = ModConfigManager.get().general;
             return cfg.autois && cfg.hideEntities;
         });
