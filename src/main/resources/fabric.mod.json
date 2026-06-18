@@ -42,6 +42,7 @@
   },
   "suggests": {
     "yet-another-config-lib": ">=${yacl_mod_version}",
+    "fabric-language-kotlin": ">=1.0",
     "modmenu": ">=${mod_menu_mod_version}",
     "hypixel-mod-api": ">=1.0"
   }

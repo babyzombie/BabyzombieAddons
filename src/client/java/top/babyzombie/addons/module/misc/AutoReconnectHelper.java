@@ -58,6 +58,18 @@ public final class AutoReconnectHelper {
         return lastServerIp;
     }
 
+    /**
+     * 在连接尝试发起时记录目标服务器信息，确保即使初始连接失败也能自动重连。
+     */
+    public static void onConnectionAttempt(String ip, String name) {
+        if (ip == null || ip.isEmpty()) return;
+        if (!ip.equals(lastServerIp)) {
+            retryCount = 0;
+        }
+        lastServerIp = ip;
+        lastServerName = name != null ? name : ip;
+    }
+
     public static boolean shouldStartCountdown() {
         var config = ModConfigManager.get();
         if (!config.general.autoReconnectEnabled) return false;
