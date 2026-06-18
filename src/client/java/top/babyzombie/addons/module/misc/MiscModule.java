@@ -5,6 +5,7 @@ public final class MiscModule {
 
     public static void init() {
         CakeBuffTracker.init();
+        MinionCollectAutoClose.init();
         SecondPersonKey.init();
         SkipSecondPerson.init();
     }
