@@ -5,6 +5,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.event.SendCommandEvents;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.List;
 import java.util.Set;
@@ -18,6 +21,20 @@ public class IncomingCallHandler {
 
     public static void register() {
         ClientReceiveMessageEvents.GAME.register(IncomingCallHandler::onGameMessage);
+        SendCommandEvents.BEFORE_SEND.register(command -> {
+            if (!HypixelLocationTracker.getInstance().isOnHypixel()) return false;
+            if (command.equals("call")
+                    && HypixelLocationTracker.getInstance().isInSkyblock()
+                    && ModConfigManager.get().misc.abiphoneGui) {
+                var client = Minecraft.getInstance();
+                var tracker = HypixelLocationTracker.getInstance();
+                var contacts = AbiphoneTracker.getInstance()
+                        .loadItems(tracker.getUuid(), tracker.getProfileId());
+                client.execute(() -> client.setScreenAndShow(new AbiphoneContactScreen(contacts)));
+                return true;
+            }
+            return false;
+        });
     }
 
     private static void onGameMessage(Component message, boolean overlay) {

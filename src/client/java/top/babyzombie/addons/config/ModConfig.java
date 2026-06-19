@@ -199,6 +199,8 @@ public class ModConfig {
         public boolean popupDuelsRequest = false;
         public boolean popupSkyblockTrade = false;
         public boolean popupDungeonRestart = false;
+        public top.babyzombie.addons.module.popup.PopupEventsModule.PopupSound popupSound =
+                top.babyzombie.addons.module.popup.PopupEventsModule.PopupSound.BELL;
     }
 
     // ---- Party ----

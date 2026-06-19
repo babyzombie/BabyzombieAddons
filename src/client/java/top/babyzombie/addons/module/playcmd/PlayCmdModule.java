@@ -5,11 +5,22 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.event.SendCommandEvents;
 import top.babyzombie.addons.util.ChatUtils;
 
 public final class PlayCmdModule {
     private PlayCmdModule() {}
-    public static void init() {}
+
+    public static void init() {
+        SendCommandEvents.BEFORE_SEND.register(command -> {
+            if (command.equals("play") && ModConfigManager.get().misc.playCmd) {
+                openGUI();
+                return true;
+            }
+            return false;
+        });
+    }
 
     public static void openGUI() {
         Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreenAndShow(new PlayScreen()));

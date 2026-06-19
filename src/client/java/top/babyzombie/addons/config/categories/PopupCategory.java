@@ -5,6 +5,7 @@ import net.azureaaron.dandelion.api.Option;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
+import top.babyzombie.addons.module.popup.PopupEventsModule.PopupSound;
 
 import java.util.function.Supplier;
 import java.util.function.Consumer;
@@ -29,6 +30,8 @@ public final class PopupCategory {
                         () -> config.popup.popupSkyblockTrade, v -> config.popup.popupSkyblockTrade = v))
                 .option(bool("popupDungeonRestart", defaults.popup.popupDungeonRestart,
                         () -> config.popup.popupDungeonRestart, v -> config.popup.popupDungeonRestart = v))
+                .option(sound("popupSound", defaults.popup.popupSound,
+                        () -> config.popup.popupSound, v -> config.popup.popupSound = v))
                 .build();
     }
 
@@ -38,6 +41,17 @@ public final class PopupCategory {
                 .description(Component.translatable("config.babyzombieaddons.option." + key + ".desc"))
                 .binding(def, getter, setter)
                 .controller(ConfigUtils.createBooleanController())
+                .build();
+    }
+
+    private static Option<PopupSound> sound(String key, PopupSound def,
+                                            Supplier<PopupSound> getter, Consumer<PopupSound> setter) {
+        return Option.<PopupSound>createBuilder()
+                .name(Component.translatable("config.babyzombieaddons.option." + key))
+                .description(Component.translatable("config.babyzombieaddons.option." + key + ".desc"))
+                .binding(def, getter, setter)
+                .controller(ConfigUtils.createEnumDropdownController(
+                        v -> Component.translatable("babyzombieaddons.popup.sound." + v.key)))
                 .build();
     }
 }
