@@ -1,7 +1,6 @@
 package top.babyzombie.addons.util.pet;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -18,12 +17,18 @@ import org.jetbrains.annotations.Nullable;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
-import top.babyzombie.addons.util.ItemUtils;
-import top.babyzombie.addons.util.ScreenHelper;
+import top.babyzombie.addons.util.Scheduler;
+import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.fabricmc.loader.api.FabricLoader;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +52,7 @@ public final class PetManager {
     private String currentProfileKey;
     private final List<PetData> pets = new ArrayList<>();
     private PetData currentPet;
+    private Runnable pendingScan;
 
     private PetManager() {}
 
@@ -152,27 +158,56 @@ public final class PetManager {
         var customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return null;
         var tag = customData.copyTag();
+        String petInfo = tag.getString("petInfo").orElse(null);
+        if (petInfo != null) return petInfo;
         var extra = tag.getCompound("ExtraAttributes").orElse(null);
         if (extra == null) return null;
         return extra.getString("petInfo").orElse(null);
     }
 
-    /** Extract item UUID from ExtraAttributes. */
+    /** Extract item UUID from NBT. */
     @Nullable
     public static String getItemUuid(ItemStack stack) {
         var customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return null;
         var tag = customData.copyTag();
+        String uuid = tag.getString("uuid").orElse(null);
+        if (uuid != null) return uuid;
         var extra = tag.getCompound("ExtraAttributes").orElse(null);
         if (extra == null) return null;
         return extra.getString("uuid").orElse(null);
     }
 
-    /** Get the held item's display name from its SkyBlock ID. */
+    // ===== Item Repo =====
+
+    private static final Path ITEMS_DIR = FabricLoader.getInstance().getGameDir()
+        .resolve("config").resolve("skyblocker").resolve("item-repo").resolve("items");
+    private static final Map<String, String> displayNameCache = new HashMap<>();
+
+    /** Get the held item's display name from the skyblocker item repo, or fallback. */
     @Nullable
     private static String getHeldItemDisplayName(@Nullable String heldItem) {
         if (heldItem == null) return null;
-        return heldItem.replace("PET_ITEM_", "").replace("_", " ").toLowerCase(Locale.ROOT);
+        String cached = displayNameCache.get(heldItem);
+        if (cached != null) return cached;
+
+        String fallback = heldItem.replace("PET_ITEM_", "").replace("_", " ").toLowerCase(Locale.ROOT);
+
+        if (Files.isDirectory(ITEMS_DIR)) {
+            Path file = ITEMS_DIR.resolve(heldItem + ".json");
+            if (Files.exists(file)) {
+                try {
+                    String raw = Files.readString(file);
+                    JsonObject obj = JsonParser.parseString(raw).getAsJsonObject();
+                    String display = obj.get("displayname").getAsString();
+                    String name = ChatUtils.stripColor(display);
+                    displayNameCache.put(heldItem, name);
+                    return name;
+                } catch (IOException ignored) {}
+            }
+        }
+        displayNameCache.put(heldItem, fallback);
+        return fallback;
     }
 
     // ===== Event Handlers =====
@@ -224,12 +259,9 @@ public final class PetManager {
             if (!HypixelLocationTracker.getInstance().isInSkyblock())
                 return InteractionResult.PASS;
             ItemStack stack = player.getItemInHand(hand);
-            if (!"PET".equals(ItemUtils.getSkyblockId(stack)))
-                return InteractionResult.PASS;
             String petInfo = getPetInfoFromStack(stack);
-            if (petInfo != null) {
-                addPet(PetData.fromPetInfo(petInfo));
-            }
+            if (petInfo == null) return InteractionResult.PASS;
+            addPet(PetData.fromPetInfo(petInfo));
             return InteractionResult.PASS;
         });
     }
@@ -240,7 +272,7 @@ public final class PetManager {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
             if (slot == null || !slot.hasItem()) return false;
             ItemStack stack = slot.getItem();
-            if (!"PET".equals(ItemUtils.getSkyblockId(stack))) return false;
+            if (getPetInfoFromStack(stack) == null) return false;
 
             String uuid = getItemUuid(stack);
             if (uuid == null) return false;
@@ -259,20 +291,21 @@ public final class PetManager {
         });
     }
 
-    /** Scan the Pets menu when it opens to capture all pet items. */
+    /** Scan the Pets menu when it opens. Cancels previous pending scan on page refresh. */
     private void registerPetsMenuScan() {
         ScreenEvents.AFTER_INIT.register((client, screen, sw, sh) -> {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             if (!(screen instanceof AbstractContainerScreen<?> cs)) return;
             String title = ChatUtils.stripColor(cs.getTitle().getString());
-            if (!title.startsWith("Pets")) return;
+            if (!title.matches("(\\(\\d+/\\d+\\) )?Pets")) return;
 
-            AtomicBoolean done = new AtomicBoolean(false);
-            ClientTickEvents.END_CLIENT_TICK.register(tickClient -> {
-                if (done.getAndSet(true)) return;
-                if (ScreenHelper.getCurrent() != cs) return;
+            if (pendingScan != null) Scheduler.cancel(pendingScan);
+            pendingScan = () -> {
+                pendingScan = null;
                 scanPetsContainer(cs);
-            });
+            };
+            int delayTicks = Math.max((ServerTick.getPing() + 200) / 50, 4);
+            Scheduler.schedule(delayTicks, pendingScan);
         });
     }
 
@@ -315,7 +348,7 @@ public final class PetManager {
         for (Slot slot : screen.getMenu().slots) {
             ItemStack stack = slot.getItem();
             if (stack.isEmpty()) continue;
-            if (!"PET".equals(ItemUtils.getSkyblockId(stack))) continue;
+            if (getPetInfoFromStack(stack) == null) continue;
 
             ItemLore lore = stack.get(DataComponents.LORE);
             if (lore == null) continue;
