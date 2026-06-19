@@ -90,6 +90,12 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.scathaCooldown",
                 () -> get().mining.scathaCooldown);
 
+        // --- Chat Channel ---
+        HudManager.register("ChatChannelSwitcher", 410, 480, 1.0f,
+                "§aGC §7OC PC CC AC",
+                "config.babyzombieaddons.option.chatChannelSwitcher",
+                () -> get().chatChannel.chatChannelSwitcher);
+
         // --- Popup ---
         HudManager.register("Popup", 420, 50, 1.0f,
                 "§6Party Invite\n§fPlayer invites you to party\n§a[Y] Accept  §e[N] Ignore",

@@ -21,6 +21,7 @@ import top.babyzombie.addons.module.mining.MiningModule;
 import top.babyzombie.addons.module.misc.MiscModule;
 import top.babyzombie.addons.module.party.PartyModule;
 import top.babyzombie.addons.module.playcmd.PlayCmdModule;
+import top.babyzombie.addons.module.chat.ChatChannelModule;
 import top.babyzombie.addons.module.popup.PopupEventsModule;
 import top.babyzombie.addons.module.raredrop.RareDropModule;
 import top.babyzombie.addons.module.slayer.SlayerModule;
@@ -71,6 +72,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         MiscModule.init();
         PartyModule.init();
         PlayCmdModule.init();
+        ChatChannelModule.init();
         PopupEventsModule.init();
         RareDropModule.init();
         SlayerModule.init();

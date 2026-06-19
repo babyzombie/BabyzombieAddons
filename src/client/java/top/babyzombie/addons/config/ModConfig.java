@@ -51,6 +51,7 @@ public class ModConfig {
     public PopupConfig popup = new PopupConfig();
     public EventsConfig events = new EventsConfig();
     public MiscConfig misc = new MiscConfig();
+    public ChatChannelConfig chatChannel = new ChatChannelConfig();
     public DebugConfig debug = new DebugConfig();
 
     // ---- General ----
@@ -234,6 +235,12 @@ public class ModConfig {
         public boolean abiphoneGui = false;
         public boolean playCmd = false;
         public BzGetFromSacksMode bzGetFromSacks = BzGetFromSacksMode.OFF;
+    }
+
+    // ---- Chat Channel ----
+
+    public static class ChatChannelConfig {
+        public boolean chatChannelSwitcher = false;
     }
 
     // ---- Debug ----

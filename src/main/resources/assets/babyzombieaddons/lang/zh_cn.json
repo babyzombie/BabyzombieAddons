@@ -431,6 +431,8 @@
   "config.babyzombieaddons.option.abiphoneGui.desc": "用图形化联系人列表替换 /call 指令。",
   "config.babyzombieaddons.option.playCmd": "Play 命令界面",
   "config.babyzombieaddons.option.playCmd.desc": "用游戏模式选择界面替换 /play 指令。",
+  "config.babyzombieaddons.option.chatChannelSwitcher": "聊天频道快速切换",
+  "config.babyzombieaddons.option.chatChannelSwitcher.desc": "在聊天输入框上方显示 GC/OC/PC/CC/AC 可点击按钮，快速切换 Hypixel 聊天频道。",
   "config.babyzombieaddons.option.raredropManage": "管理稀有掉落",
   "config.babyzombieaddons.option.raredropManage.desc": "打开稀有掉落黑名单和分享列表管理器。",
 

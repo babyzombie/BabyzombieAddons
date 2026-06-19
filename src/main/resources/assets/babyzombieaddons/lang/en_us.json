@@ -431,6 +431,8 @@
   "config.babyzombieaddons.option.abiphoneGui.desc": "Replace /call with a graphical contact list.",
   "config.babyzombieaddons.option.playCmd": "Play Command GUI",
   "config.babyzombieaddons.option.playCmd.desc": "Replace /play with a game mode selection GUI.",
+  "config.babyzombieaddons.option.chatChannelSwitcher": "Chat Channel Switcher",
+  "config.babyzombieaddons.option.chatChannelSwitcher.desc": "Show clickable GC/OC/PC/CC/AC buttons above the chat input to quickly switch Hypixel chat channels.",
   "config.babyzombieaddons.option.raredropManage": "Manage Rare Drops",
   "config.babyzombieaddons.option.raredropManage.desc": "Open the rare drop blacklist and share list manager.",
 

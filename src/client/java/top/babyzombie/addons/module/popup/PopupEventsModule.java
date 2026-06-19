@@ -71,7 +71,8 @@ public final class PopupEventsModule {
 
             // System messages (not from chat channels) — skip messages
             // relayed through Guild/Party/Officer/Co-op/PM to avoid false triggers
-            boolean isSysMsg = !text.matches("^(公会|Guild|组队|Party|Officer|Co-op) > .+|From .+");
+            // 排除频道消息和玩家聊天消息（防止别人复制邀请内容到公聊触发误报）
+            boolean isSysMsg = !text.matches("^(公会|Guild|组队|Party|Officer|Co-op) > .+|From .+|(?:\\[[^]]+\\] )?\\w{2,16}: .+");
 
             if (isSysMsg) {
                 if (cfg.popupPartyInvite || cfg.popupGuildPartyInvite) {
