@@ -29,9 +29,9 @@ public final class RagnarockAxeTimer {
 
             if (overlay) {
                 // Action bar
-                if (text.contains("CASTING IN 3s")) {
-                    castTime = ServerTick.getTime() + 2800;
-                    cooldown = ServerTick.getTime() + 19800;
+                if (text.contains("CASTING IN 3s") && cooldown < ServerTick.getTime()) {
+                    castTime = ServerTick.getTime() + 3000 - ServerTick.getPing();
+                    cooldown = ServerTick.getTime() + 20000 - ServerTick.getPing();
                     cancelled = false;
                     finished = false;
                 }
@@ -39,7 +39,7 @@ public final class RagnarockAxeTimer {
                     cancelled = true;
                     castTime = 0;
                     duration = 0;
-                    cooldown = ServerTick.getTime() + 19800;
+                    cooldown = ServerTick.getTime() + 20000 - ServerTick.getPing();
                     finished = false;
                 }
             } else {
@@ -48,7 +48,7 @@ public final class RagnarockAxeTimer {
                     cancelled = true;
                     castTime = 0;
                     duration = 0;
-                    cooldown = ServerTick.getTime() + 19800;
+                    cooldown = ServerTick.getTime() + 20000 - ServerTick.getPing();
                     finished = false;
                 }
             }

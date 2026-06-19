@@ -11,8 +11,13 @@ import java.util.regex.Pattern;
 
 public final class ChatChannelModule {
 
+    // 完整匹配：You are now in the X channel / You're now in the X channel
     private static final Pattern CHANNEL_SWITCH_EN = Pattern.compile(
             "You (?:are|'re) now in the (GUILD|OFFICER|PARTY|SKYBLOCK CO-OP|ALL) channel!?",
+            Pattern.CASE_INSENSITIVE);
+    // 完整匹配两种 moved 消息
+    private static final Pattern MOVED_TO_CHANNEL = Pattern.compile(
+            "You (?:are no longer in .+? and have been moved back to the (?:ALL|所有)|are not in a party and were moved to the (?:ALL|所有)) channel[.!]",
             Pattern.CASE_INSENSITIVE);
     private static final Pattern CHANNEL_SWITCH_CN = Pattern.compile(
             "你正处于(公会|公会管理频道|组队|空岛生存合作模式|所有)频道中[！!]?");
@@ -36,12 +41,16 @@ public final class ChatChannelModule {
 
     private static void detectAndSetChannel(String text) {
         var m = CHANNEL_SWITCH_EN.matcher(text);
-        if (m.find()) {
+        if (m.matches()) {
             setChannel(m.group(1));
             return;
         }
+        if (MOVED_TO_CHANNEL.matcher(text).matches()) {
+            setChannel("ALL");
+            return;
+        }
         m = CHANNEL_SWITCH_CN.matcher(text);
-        if (m.find()) {
+        if (m.matches()) {
             setChannel(m.group(1));
         }
     }
