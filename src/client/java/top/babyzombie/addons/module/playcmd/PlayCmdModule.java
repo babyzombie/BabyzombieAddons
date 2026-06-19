@@ -1,25 +1,51 @@
 package top.babyzombie.addons.module.playcmd;
 
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.event.SendCommandEvents;
 import top.babyzombie.addons.util.ChatUtils;
 
 public final class PlayCmdModule {
     private PlayCmdModule() {}
 
     public static void init() {
-        SendCommandEvents.BEFORE_SEND.register(command -> {
-            if (command.equals("play") && ModConfigManager.get().misc.playCmd) {
-                openGUI();
-                return true;
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            var node = literal("play")
+                    .requires(s -> ModConfigManager.get().misc.playCmd)
+                    .executes(ctx -> {
+                        openGUI();
+                        return 1;
+                    });
+
+            for (Object[][] cat : GAMES) {
+                for (int i = 1; i < cat.length; i++) {
+                    String cmd = (String) cat[i][1];
+                    if (!cmd.startsWith("/play ")) continue;
+                    String sub = cmd.substring(6);
+                    node.then(literal(sub)
+                            .executes(ctx -> {
+                                sendRaw(cmd);
+                                return 1;
+                            }));
+                }
             }
-            return false;
+
+            dispatcher.register(node);
         });
+    }
+
+    private static void sendRaw(String cmd) {
+        var conn = Minecraft.getInstance().getConnection();
+        if (conn != null) {
+            if (cmd.startsWith("/")) cmd = cmd.substring(1);
+            conn.getConnection().send(new ServerboundChatCommandPacket(cmd));
+        }
     }
 
     public static void openGUI() {
