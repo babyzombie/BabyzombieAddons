@@ -102,7 +102,8 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.category.popup",
                 () -> get().popup.popupPartyInvite || get().popup.popupGuildPartyInvite
                         || get().popup.popupFriendRequest || get().popup.popupDuelsRequest
-                        || get().popup.popupSkyblockTrade || get().popup.popupDungeonRestart);
+                        || get().popup.popupSkyblockTrade || get().popup.popupDungeonRestart
+                        || get().popup.popupBaitLow > 0);
     }
 
     private static ModConfig get() {

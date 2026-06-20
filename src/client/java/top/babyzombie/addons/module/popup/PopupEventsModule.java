@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -12,11 +13,14 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.FishingRodItem;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.event.SendCommandEvents;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.ServerTick;
@@ -58,7 +62,7 @@ public final class PopupEventsModule {
     private enum EventType {
         PARTY("party_invite"), GUILD_PARTY("guild_party_invite"),
         FRIEND("friend_request"), TRADE("trade_request"),
-        POSITION_SWAP("position_swap"), DUEL("duel_request"), RESTART("restart_request");
+        POSITION_SWAP("position_swap"), DUEL("duel_request"), RESTART("restart_request"), BAIT("bait_low");
 
         final String key;
         EventType(String k) { this.key = k; }
@@ -151,6 +155,23 @@ public final class PopupEventsModule {
             }
             return false;
         });
+
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            var cfg = ModConfigManager.get().popup;
+            if (cfg.popupBaitLow <= 0) return InteractionResult.PASS;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return InteractionResult.PASS;
+            var held = player.getItemInHand(hand);
+            if (!(held.getItem() instanceof FishingRodItem)) return InteractionResult.PASS;
+            var baitStack = player.getInventory().getItem(8);
+            if (baitStack.isEmpty()) return InteractionResult.PASS;
+            String id = ItemUtils.getSkyblockId(baitStack);
+            if (id == null || !id.endsWith("_BAIT")) return InteractionResult.PASS;
+            int quantity = baitStack.getCount();
+            if (quantity >= cfg.popupBaitLow) return InteractionResult.PASS;
+            String baitName = ChatUtils.stripColor(baitStack.getHoverName().getString());
+            notify(EventType.BAIT, baitName, String.valueOf(cfg.popupBaitLow));
+            return InteractionResult.PASS;
+        });
     }
 
     private static void notify(EventType type, String player, String extra) {
@@ -168,6 +189,7 @@ public final class PopupEventsModule {
                 : type == EventType.FRIEND ? "friend accept " + player
                 : type == EventType.TRADE || type == EventType.POSITION_SWAP ? "trade " + player
                 : type == EventType.DUEL ? "duels accept " + player
+                : type == EventType.BAIT ? "bz " + player
                 : "";
         totalTime = 10000;
         expireTime = ServerTick.getTime() + totalTime;
@@ -202,6 +224,7 @@ public final class PopupEventsModule {
             case TRADE, POSITION_SWAP -> 0xFF55FFFF;
             case DUEL -> 0xFFFF5555;
             case RESTART -> 0xFFFFFF55;
+            case BAIT -> 0xFF55FF55;
         };
     }
 

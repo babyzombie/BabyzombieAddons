@@ -202,6 +202,7 @@ public class ModConfig {
         public boolean popupDungeonRestart = false;
         public top.babyzombie.addons.module.popup.PopupEventsModule.PopupSound popupSound =
                 top.babyzombie.addons.module.popup.PopupEventsModule.PopupSound.BELL;
+        public int popupBaitLow = 0;
     }
 
     // ---- Party ----

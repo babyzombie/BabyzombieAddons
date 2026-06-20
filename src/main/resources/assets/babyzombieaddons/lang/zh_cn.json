@@ -417,6 +417,8 @@
   "config.babyzombieaddons.option.popupSkyblockTrade.desc": "收到交易请求时弹出提示。",
   "config.babyzombieaddons.option.popupDungeonRestart": "地牢/Kuudra 重开",
   "config.babyzombieaddons.option.popupDungeonRestart.desc": "队长请求重开时弹出提示。",
+  "config.babyzombieaddons.option.popupBaitLow": "鱼饵不足提醒阈值",
+  "config.babyzombieaddons.option.popupBaitLow.desc": "手持鱼竿右键时检测第 9 格鱼饵数量，少于设定值时弹出提醒。设为 0 关闭。",
   "config.babyzombieaddons.option.popupSound": "提示音效",
   "config.babyzombieaddons.option.popupSound.desc": "弹出通知时播放的音效。",
 
@@ -488,6 +490,8 @@
   "babyzombieaddons.popup.title.position_swap": "位置交换",
   "babyzombieaddons.popup.title.duel_request": "决斗邀请",
   "babyzombieaddons.popup.title.restart_request": "重开请求",
+  "babyzombieaddons.popup.title.bait_low": "鱼饵不足",
+  "babyzombieaddons.popup.body.bait_low": "当前鱼饵：%s 不足%s个，是否打开集市购买",
   "babyzombieaddons.popup.body.party_invite": "%s 邀请你加入 %s 组队",
   "babyzombieaddons.popup.body.guild_party_invite": "%s 邀请公会成员加入 %s 组队",
   "babyzombieaddons.popup.body.party_invite_their": "%s 邀请你加入 他的 组队",

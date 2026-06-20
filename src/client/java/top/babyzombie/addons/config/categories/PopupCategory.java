@@ -2,6 +2,7 @@ package top.babyzombie.addons.config.categories;
 
 import net.azureaaron.dandelion.api.ConfigCategory;
 import net.azureaaron.dandelion.api.Option;
+import net.azureaaron.dandelion.api.controllers.IntegerController;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
@@ -32,6 +33,14 @@ public final class PopupCategory {
                         () -> config.popup.popupDungeonRestart, v -> config.popup.popupDungeonRestart = v))
                 .option(sound("popupSound", defaults.popup.popupSound,
                         () -> config.popup.popupSound, v -> config.popup.popupSound = v))
+                .option(Option.<Integer>createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.popupBaitLow"))
+                        .description(Component.translatable("config.babyzombieaddons.option.popupBaitLow.desc"))
+                        .binding(defaults.popup.popupBaitLow,
+                                () -> config.popup.popupBaitLow,
+                                v -> config.popup.popupBaitLow = v)
+                        .controller(IntegerController.createBuilder().range(0, 64).slider(2).build())
+                        .build())
                 .build();
     }
 

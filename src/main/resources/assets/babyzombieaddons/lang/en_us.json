@@ -417,6 +417,8 @@
   "config.babyzombieaddons.option.popupSkyblockTrade.desc": "Show a popup when someone sends a trade request.",
   "config.babyzombieaddons.option.popupDungeonRestart": "Dungeon/Kuudra Restart",
   "config.babyzombieaddons.option.popupDungeonRestart.desc": "Show a popup when party leader requests a restart.",
+  "config.babyzombieaddons.option.popupBaitLow": "Low Bait Alert Threshold",
+  "config.babyzombieaddons.option.popupBaitLow.desc": "When right-clicking a fishing rod, checks slot 9 bait quantity. Shows popup if below threshold. 0 = off.",
   "config.babyzombieaddons.option.popupSound": "Notification Sound",
   "config.babyzombieaddons.option.popupSound.desc": "Sound played when a popup notification appears.",
 
@@ -488,6 +490,8 @@
   "babyzombieaddons.popup.title.position_swap": "Position Swap",
   "babyzombieaddons.popup.title.duel_request": "Duel Request",
   "babyzombieaddons.popup.title.restart_request": "Restart Request",
+  "babyzombieaddons.popup.title.bait_low": "Low Bait",
+  "babyzombieaddons.popup.body.bait_low": "Current bait: %s is below %s. Open Bazaar?",
   "babyzombieaddons.popup.body.party_invite": "%s invites you to join %s party",
   "babyzombieaddons.popup.body.guild_party_invite": "%s invites guild to join %s party",
   "babyzombieaddons.popup.body.party_invite_their": "%s invites you to join their party",
