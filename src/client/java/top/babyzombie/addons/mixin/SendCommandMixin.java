@@ -16,4 +16,9 @@ public class SendCommandMixin {
             ci.cancel();
         }
     }
+
+    @Inject(method = "sendCommand", at = @At("TAIL"))
+    private void afterSendCommand(String command, CallbackInfo ci) {
+        SendCommandEvents.AFTER_SEND.invoker().afterSend(command.trim());
+    }
 }

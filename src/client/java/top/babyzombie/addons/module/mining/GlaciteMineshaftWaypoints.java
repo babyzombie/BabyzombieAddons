@@ -32,7 +32,6 @@ public final class GlaciteMineshaftWaypoints {
             "[-]+\\n(.+) entered Glacite Mineshafts!\\n[-]+");
 
     private static long portalTimer;
-    private static int lastCorpseScanTick;
     private static boolean inMineshaft;
     private static boolean mineshaftOwner;
     private static long enterMineshaftTime;
@@ -153,8 +152,7 @@ public final class GlaciteMineshaftWaypoints {
             // Corpse waypoints in mineshaft — detect and render
             if (t.isInSkyblock() && "Mineshaft".equals(t.getMap())) {
                 var player = Minecraft.getInstance().player;
-                if (player != null && player.tickCount != lastCorpseScanTick) {
-                    lastCorpseScanTick = player.tickCount;
+                if (player != null) {
                     var level = player.level();
                     var stands = level.getEntitiesOfClass(ArmorStand.class,
                             new AABB(player.blockPosition()).inflate(96),

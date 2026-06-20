@@ -147,13 +147,12 @@ public final class PopupEventsModule {
             renderHUD(context);
         });
 
-        SendCommandEvents.BEFORE_SEND.register(command -> {
-            if (expireTime == 0 || expireTime <= ServerTick.getTime()) return false;
-            if (PopupEventsModule.command.isEmpty()) return false;
+        SendCommandEvents.AFTER_SEND.register(command -> {
+            if (expireTime == 0 || expireTime <= ServerTick.getTime()) return;
+            if (PopupEventsModule.command.isEmpty()) return;
             if (command.equals(PopupEventsModule.command)) {
                 close();
             }
-            return false;
         });
 
         UseItemCallback.EVENT.register((player, world, hand) -> {

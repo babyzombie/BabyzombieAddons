@@ -17,8 +17,20 @@ public final class SendCommandEvents {
                 return false;
             });
 
+    public static final Event<AfterSend> AFTER_SEND =
+            EventFactory.createArrayBacked(AfterSend.class, callbacks -> command -> {
+                for (AfterSend cb : callbacks) {
+                    cb.afterSend(command);
+                }
+            });
+
     @FunctionalInterface
     public interface BeforeSend {
         boolean beforeSend(String command);
+    }
+
+    @FunctionalInterface
+    public interface AfterSend {
+        void afterSend(String command);
     }
 }

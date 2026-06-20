@@ -19,6 +19,8 @@ public final class PopupCategory {
                 .id(net.minecraft.resources.Identifier.fromNamespaceAndPath("babyzombieaddons", "config/popup"))
                 .name(Component.translatable("config.babyzombieaddons.category.popup"))
                 .description(Component.translatable("config.babyzombieaddons.category.popup.desc"))
+                .option(sound("popupSound", defaults.popup.popupSound,
+                        () -> config.popup.popupSound, v -> config.popup.popupSound = v))
                 .option(bool("popupPartyInvite", defaults.popup.popupPartyInvite,
                         () -> config.popup.popupPartyInvite, v -> config.popup.popupPartyInvite = v))
                 .option(bool("popupGuildPartyInvite", defaults.popup.popupGuildPartyInvite,
@@ -31,8 +33,6 @@ public final class PopupCategory {
                         () -> config.popup.popupSkyblockTrade, v -> config.popup.popupSkyblockTrade = v))
                 .option(bool("popupDungeonRestart", defaults.popup.popupDungeonRestart,
                         () -> config.popup.popupDungeonRestart, v -> config.popup.popupDungeonRestart = v))
-                .option(sound("popupSound", defaults.popup.popupSound,
-                        () -> config.popup.popupSound, v -> config.popup.popupSound = v))
                 .option(Option.<Integer>createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.option.popupBaitLow"))
                         .description(Component.translatable("config.babyzombieaddons.option.popupBaitLow.desc"))
