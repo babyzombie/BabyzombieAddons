@@ -8,6 +8,7 @@ import top.babyzombie.addons.config.hud.HudRegistrar;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.abiphone.AbiphoneTracker;
 import top.babyzombie.addons.module.abiphone.IncomingCallHandler;
+import top.babyzombie.addons.module.autoconnect.AutoJoinModule;
 import top.babyzombie.addons.module.autois.AutoISModule;
 import top.babyzombie.addons.module.misc.AutoReconnectHelper;
 import top.babyzombie.addons.module.misc.BazaarSellFromSacks;
@@ -59,6 +60,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
 
         BabyzombieAddonsCommand.init();
 
+        AutoJoinModule.init();
         AutoISModule.init();
         AutoReconnectHelper.init();
         BazaarSellFromSacks.init();

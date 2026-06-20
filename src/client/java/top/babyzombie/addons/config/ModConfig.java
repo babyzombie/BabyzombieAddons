@@ -53,6 +53,7 @@ public class ModConfig {
     public MiscConfig misc = new MiscConfig();
     public ChatChannelConfig chatChannel = new ChatChannelConfig();
     public DebugConfig debug = new DebugConfig();
+    public AutoJoinConfig autoJoin = new AutoJoinConfig();
 
     // ---- General ----
 
@@ -250,5 +251,12 @@ public class ModConfig {
     public static class DebugConfig {
         public boolean debugMode = false;
         public ConfigBackend configBackend = ConfigBackend.MOUL_CONFIG;
+    }
+
+    // ---- Auto Join ----
+
+    public static class AutoJoinConfig {
+        public boolean autoJoinServer = false;
+        public String autoJoinServerIP = "";
     }
 }

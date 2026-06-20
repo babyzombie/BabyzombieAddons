@@ -25,7 +25,8 @@
     "ScreenTracker",
     "ScreenMixin",
     "PlayerScaleMixin",
-    "ThirdPersonCrosshairMixin"
+    "ThirdPersonCrosshairMixin",
+    "CommandSuggestionsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

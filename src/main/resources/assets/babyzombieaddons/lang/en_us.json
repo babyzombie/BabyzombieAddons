@@ -97,6 +97,13 @@
   "config.babyzombieaddons.option.autoReconnectDelay.desc": "How many seconds to wait before reconnecting.",
   "config.babyzombieaddons.option.autoReconnectMaxRetries": "Max Retries",
   "config.babyzombieaddons.option.autoReconnectMaxRetries.desc": "Maximum retry attempts after a failed reconnect. Set to 0 for unlimited. Resets on successful join.",
+
+  "config.babyzombieaddons.group.autoJoinServer": "Auto Join Server on Launch",
+  "config.babyzombieaddons.option.autoJoinServer": "Enable",
+  "config.babyzombieaddons.option.autoJoinServer.desc": "Automatically connect to the server below when the game launches.",
+  "config.babyzombieaddons.option.autoJoinServerIP": "Server Address",
+  "config.babyzombieaddons.option.autoJoinServerIP.desc": "The server IP or hostname to auto-connect to on launch, e.g. mc.hypixel.net.",
+
   "config.babyzombieaddons.option.useTpsAdjustedTime": "TPS-Adjusted Timers",
   "config.babyzombieaddons.option.useTpsAdjustedTime.desc": "Use server tick rate to adjust timer speeds. On laggy servers, cooldowns will slow down to match actual game time instead of using real wall-clock time.",
   "config.babyzombieaddons.option.showCrosshairInThirdPerson": "Show Crosshair in Third Person",
@@ -432,7 +439,7 @@
   "config.babyzombieaddons.option.abiphoneGui": "Abiphone Contact GUI",
   "config.babyzombieaddons.option.abiphoneGui.desc": "Replace /call with a graphical contact list.",
   "config.babyzombieaddons.option.playCmd": "Play Command GUI",
-  "config.babyzombieaddons.option.playCmd.desc": "Replace /play with a game mode selection GUI and enable tab completion. Requires game/world reload for tab completion to update.",
+  "config.babyzombieaddons.option.playCmd.desc": "Replace /play with a game mode selection GUI and enable tab completion.",
   "config.babyzombieaddons.option.chatChannelSwitcher": "Chat Channel Switcher",
   "config.babyzombieaddons.option.chatChannelSwitcher.desc": "Show clickable GC/OC/PC/CC/AC buttons above the chat input to quickly switch Hypixel chat channels.",
   "config.babyzombieaddons.option.raredropManage": "Manage Rare Drops",

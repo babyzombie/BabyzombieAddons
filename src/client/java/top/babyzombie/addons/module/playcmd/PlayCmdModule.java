@@ -1,51 +1,62 @@
 package top.babyzombie.addons.module.playcmd;
 
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
+import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.event.SendCommandEvents;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class PlayCmdModule {
     private PlayCmdModule() {}
 
     public static void init() {
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            var node = literal("play")
-                    .requires(s -> ModConfigManager.get().misc.playCmd)
-                    .executes(ctx -> {
-                        openGUI();
-                        return 1;
-                    });
-
-            for (Object[][] cat : GAMES) {
-                for (int i = 1; i < cat.length; i++) {
-                    String cmd = (String) cat[i][1];
-                    if (!cmd.startsWith("/play ")) continue;
-                    String sub = cmd.substring(6);
-                    node.then(literal(sub)
-                            .executes(ctx -> {
-                                sendRaw(cmd);
-                                return 1;
-                            }));
-                }
+        SendCommandEvents.BEFORE_SEND.register(command -> {
+            if (command.trim().equals("play") && ModConfigManager.get().misc.playCmd
+                    && HypixelLocationTracker.getInstance().isOnHypixel()) {
+                openGUI();
+                return true;
             }
-
-            dispatcher.register(node);
+            return false;
         });
     }
 
-    private static void sendRaw(String cmd) {
-        var conn = Minecraft.getInstance().getConnection();
-        if (conn != null) {
-            if (cmd.startsWith("/")) cmd = cmd.substring(1);
-            conn.getConnection().send(new ServerboundChatCommandPacket(cmd));
+    public static boolean isPlayCmdEnabled() {
+        return ModConfigManager.get().misc.playCmd;
+    }
+
+    public static Suggestions enrichPlaySuggestions(String text, Suggestions existing) {
+        if (!ModConfigManager.get().misc.playCmd) return existing;
+        if (text.length() < 6) return existing;
+        List<Suggestion> list = new ArrayList<>(existing.getList());
+        String prefix = text.substring(6).trim().toLowerCase();
+
+        for (Object[][] cat : GAMES) {
+            for (int i = 1; i < cat.length; i++) {
+                String cmd = (String) cat[i][1];
+                if (!cmd.startsWith("/play ")) continue;
+                String sub = cmd.substring(6);
+                if (prefix.isEmpty() || sub.toLowerCase().startsWith(prefix)) {
+                    boolean dup = false;
+                    for (Suggestion s : list) {
+                        if (s.getText().equals(sub)) { dup = true; break; }
+                    }
+                    if (!dup) {
+                        list.add(new Suggestion(StringRange.between(6, text.length()), sub));
+                    }
+                }
+            }
         }
+        return new Suggestions(existing.getRange(), list);
     }
 
     public static void openGUI() {
@@ -53,7 +64,7 @@ public final class PlayCmdModule {
     }
 
     // Each game: {en, cmd, zh}
-    private static final Object[][][] GAMES = {
+    static final Object[][][] GAMES = {
         {{"Main","主分类"}, {"SkyBlock","/play skyblock","SkyBlock"}, {"Housing","/hub housing","Housing (家园)"}, {"Pit","/play pit","Pit (天坑乱斗)"}},
         {{"BedWars","起床战争"},
          {"Solo","/play bedwars_eight_one","单挑"},{"Doubles","/play bedwars_eight_two","双人"},{"3v3v3v3","/play bedwars_four_three"},

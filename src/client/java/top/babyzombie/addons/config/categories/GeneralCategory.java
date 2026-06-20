@@ -6,6 +6,7 @@ import net.azureaaron.dandelion.api.Option;
 import net.azureaaron.dandelion.api.OptionGroup;
 import net.azureaaron.dandelion.api.controllers.FloatController;
 import net.azureaaron.dandelion.api.controllers.IntegerController;
+import net.azureaaron.dandelion.api.controllers.StringController;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ConfigUtils;
@@ -74,6 +75,20 @@ public final class GeneralCategory {
                                         () -> config.general.autoReconnectMaxRetries,
                                         v -> config.general.autoReconnectMaxRetries = v)
                                 .controller(IntegerController.createBuilder().range(0, 10).slider(1).build())
+                                .build())
+                        .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.autoJoinServer"))
+                        .collapsed(true)
+                        .option(createBool("autoJoinServer", defaults.autoJoin.autoJoinServer,
+                                () -> config.autoJoin.autoJoinServer, v -> config.autoJoin.autoJoinServer = v))
+                        .option(Option.<String>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.autoJoinServerIP"))
+                                .description(Component.translatable("config.babyzombieaddons.option.autoJoinServerIP.desc"))
+                                .binding(defaults.autoJoin.autoJoinServerIP,
+                                        () -> config.autoJoin.autoJoinServerIP,
+                                        v -> config.autoJoin.autoJoinServerIP = v)
+                                .controller(StringController.createBuilder().build())
                                 .build())
                         .build())
                 .group(OptionGroup.createBuilder()
