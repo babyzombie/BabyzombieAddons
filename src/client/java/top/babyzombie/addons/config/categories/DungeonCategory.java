@@ -100,6 +100,8 @@ public final class DungeonCategory {
                         .option(bool("hideChargedCreepers", defaults.witherCloak.hideChargedCreepers,
                                 () -> config.witherCloak.hideChargedCreepers, v -> config.witherCloak.hideChargedCreepers = v))
                         .build())
+                .option(bool("dungeonEnderPearlRefill", defaults.dungeon.enderPearlRefill,
+                        () -> config.dungeon.enderPearlRefill, v -> config.dungeon.enderPearlRefill = v))
                 .option(bool("autoChestClose", defaults.dungeon.autoChestClose,
                         () -> config.dungeon.autoChestClose, v -> config.dungeon.autoChestClose = v))
                 .option(bool("muteStormThunder", defaults.dungeon.muteStormThunder,

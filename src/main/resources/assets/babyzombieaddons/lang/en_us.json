@@ -135,6 +135,8 @@
   "config.babyzombieaddons.option.deathMessageAction.SEND": "Send Only",
   "config.babyzombieaddons.option.muteStormThunder": "Mute Storm Thunder",
   "config.babyzombieaddons.option.muteStormThunder.desc": "Cancel all thunder sounds for 22 seconds after Storm dies.",
+  "config.babyzombieaddons.option.dungeonEnderPearlRefill": "Ender Pearl Refill",
+  "config.babyzombieaddons.option.dungeonEnderPearlRefill.desc": "Auto /gfs ender pearl on dungeon start or low count.",
   "config.babyzombieaddons.option.autoChestClose": "Auto Chest Close",
   "config.babyzombieaddons.option.autoChestClose.desc": "Automatically close chest GUIs after looting.",
   "config.babyzombieaddons.option.dailyRunsCounter": "Daily Counter",

@@ -135,6 +135,8 @@
   "config.babyzombieaddons.option.deathMessageAction.SEND": "仅发送",
   "config.babyzombieaddons.option.muteStormThunder": "静音Storm死后的雷声",
   "config.babyzombieaddons.option.muteStormThunder.desc": "在Storm死后22秒内取消所有雷声。",
+  "config.babyzombieaddons.option.dungeonEnderPearlRefill": "末影珍珠补充",
+  "config.babyzombieaddons.option.dungeonEnderPearlRefill.desc": "进入地牢时或不足时自动从袋子取末影珍珠。",
   "config.babyzombieaddons.option.autoChestClose": "自动关闭箱子",
   "config.babyzombieaddons.option.autoChestClose.desc": "开箱后自动关闭箱子界面。",
   "config.babyzombieaddons.option.dailyRunsCounter": "每日计数",

@@ -89,6 +89,7 @@ public class ModConfig {
         public String requeueMessage = "going in %delay%";
         public String requeueCancelMessage = "ok";
         public String requeueCancelKeywords = "c|cancel|n|nr|wait|stop|dt|don't|gtg|tyfr|tyfrs|gtg tyfr|gtg tyfrs|no key|别急|等会|等下|先别开";
+        public boolean enderPearlRefill = false;
         public boolean autoChestClose = false;
         public boolean muteStormThunder = false;
         public DailyCounterMode dailyRunsCounter = DailyCounterMode.OFF;

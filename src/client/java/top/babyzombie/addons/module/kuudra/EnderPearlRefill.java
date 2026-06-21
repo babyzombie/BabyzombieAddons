@@ -14,25 +14,34 @@ public final class EnderPearlRefill {
     private EnderPearlRefill() {}
 
     private static long lastRefill;
+    private static boolean initialized;
 
     public static void init() {
+        if (initialized) return;
+        initialized = true;
+
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!ModConfigManager.get().kuudra.enderPearlRefill) return;
             if (overlay) return;
+            var loc = HypixelLocationTracker.getInstance();
+            var cfg = ModConfigManager.get();
+            boolean dungeonOn = cfg.dungeon.enderPearlRefill && loc.isInDungeon();
+            boolean kuudraOn = cfg.kuudra.enderPearlRefill && loc.isInKuudra();
+            if (!dungeonOn && !kuudraOn) return;
+
             String text = ChatUtils.stripColor(message.getString());
-            if (HypixelLocationTracker.getInstance().isInKuudra()
-                    && (text.contains("Okay adventurers, I will go and fish up Kuudra")
-                    || text.contains("Starting in 1 second."))) {
-                var player = Minecraft.getInstance().player;
-                if (player == null) return;
-                int total = countEnderPearls(player);
-                if (total < 16) refill(16 - total);
-            }
+            if (!text.equals("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")
+                && !text.equals("Starting in 1 second.")) return;
+            var player = Minecraft.getInstance().player;
+            if (player == null) return;
+            int total = countEnderPearls(player);
+            if (total < 16) refill(16 - total);
         });
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
-            if (!ModConfigManager.get().kuudra.enderPearlRefill) return InteractionResult.PASS;
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return InteractionResult.PASS;
+            var cfg = ModConfigManager.get();
+            var loc = HypixelLocationTracker.getInstance();
+            if (!((cfg.dungeon.enderPearlRefill || cfg.kuudra.enderPearlRefill) && loc.isInSkyblock())) return InteractionResult.PASS;
+
             var held = player.getItemInHand(hand);
             if (held.getItem() != Items.ENDER_PEARL) return InteractionResult.PASS;
             if (ServerTick.getTime() - lastRefill < 2000) return InteractionResult.PASS;
