@@ -5,6 +5,7 @@
   "key.babyzombieaddons.cancel_key_release": "取消按键释放",
   "key.babyzombieaddons.second_person": "一键回头",
   "key.babyzombieaddons.popup_yes": "弹出通知 - 接受",
+  "key.babyzombieaddons.share_item": "分享物品到聊天栏",
   "key.babyzombieaddons.popup_no": "弹出通知 - 忽略",
 
   "babyzombieaddons.contact.lore.call": "左键呼叫联系人",
@@ -61,7 +62,7 @@
   "config.babyzombieaddons.category.popup.desc": "接受和忽略的快捷键可以在游戏的「控制」设置中修改。",
   "config.babyzombieaddons.category.events": "事件",
   "config.babyzombieaddons.group.greatSpook": "Great Spook",
-  "config.babyzombieaddons.group.carnival": "嘉年华",
+  "config.babyzombieaddons.group.chat": "聊天栏",
   "config.babyzombieaddons.category.misc": "杂项",
 
   "config.babyzombieaddons.group.autois": "AutoIS 设置",
@@ -108,6 +109,9 @@
   "config.babyzombieaddons.option.useTpsAdjustedTime.desc": "使用服务器 tick 速率调整计时器速度。在卡顿的服务器上，冷却时间会跟随实际游戏时间变慢，而非使用真实墙上时间。",
   "config.babyzombieaddons.option.showCrosshairInThirdPerson": "非第一人称显示准星",
   "config.babyzombieaddons.option.showCrosshairInThirdPerson.desc": "在第三人称视角下也显示屏幕中央的准星。",
+
+  "config.babyzombieaddons.option.chatInContainer": "容器内聊天",
+  "config.babyzombieaddons.option.chatInContainer.desc": "打开箱子/背包等容器时，可按聊天键（默认 T）在容器上方打开真正的聊天栏。ESC 关闭聊天但保留容器，再按 ESC 关闭容器。",
 
   "config.babyzombieaddons.group.playerScale": "玩家渲染缩放",
   "config.babyzombieaddons.option.playerScaleX": "X 轴缩放",

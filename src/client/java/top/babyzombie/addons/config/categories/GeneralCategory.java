@@ -32,8 +32,14 @@ public final class GeneralCategory {
                         .prompt(Component.translatable("config.babyzombieaddons.prompt.open"))
                         .action(HudManager::openEditScreen)
                         .build())
-                .option(createBool("chatChannelSwitcher", defaults.chatChannel.chatChannelSwitcher,
-                        () -> config.chatChannel.chatChannelSwitcher, v -> config.chatChannel.chatChannelSwitcher = v))
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.chat"))
+                        .collapsed(true)
+                        .option(createBool("chatChannelSwitcher", defaults.chatChannel.chatChannelSwitcher,
+                                () -> config.chatChannel.chatChannelSwitcher, v -> config.chatChannel.chatChannelSwitcher = v))
+                        .option(createBool("chatInContainer", defaults.general.chatInContainer,
+                                () -> config.general.chatInContainer, v -> config.general.chatInContainer = v))
+                        .build())
                 .option(createBool("playCmd", defaults.misc.playCmd,
                         () -> config.misc.playCmd, v -> config.misc.playCmd = v))
                 .option(Option.<Integer>createBuilder()

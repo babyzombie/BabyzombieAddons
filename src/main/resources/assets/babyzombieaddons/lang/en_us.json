@@ -5,6 +5,7 @@
   "key.babyzombieaddons.cancel_key_release": "Cancel Key Release",
   "key.babyzombieaddons.second_person": "Quick Look Behind",
   "key.babyzombieaddons.popup_yes": "Popup - Accept",
+  "key.babyzombieaddons.share_item": "Share Item to Chat",
   "key.babyzombieaddons.popup_no": "Popup - Ignore",
 
   "babyzombieaddons.contact.lore.call": "Left-click to call",
@@ -61,7 +62,7 @@
   "config.babyzombieaddons.category.popup.desc": "Accept and Ignore keybinds can be changed in the game's Controls settings.",
   "config.babyzombieaddons.category.events": "Events",
   "config.babyzombieaddons.group.greatSpook": "Great Spook",
-  "config.babyzombieaddons.group.carnival": "Carnival",
+  "config.babyzombieaddons.group.chat": "Chat Bar",
   "config.babyzombieaddons.category.misc": "Misc",
 
   "config.babyzombieaddons.group.autois": "AutoIS Settings",
@@ -108,6 +109,9 @@
   "config.babyzombieaddons.option.useTpsAdjustedTime.desc": "Use server tick rate to adjust timer speeds. On laggy servers, cooldowns will slow down to match actual game time instead of using real wall-clock time.",
   "config.babyzombieaddons.option.showCrosshairInThirdPerson": "Show Crosshair in Third Person",
   "config.babyzombieaddons.option.showCrosshairInThirdPerson.desc": "Show the crosshair in the center of the screen even when in third-person view.",
+
+  "config.babyzombieaddons.option.chatInContainer": "Chat in Containers",
+  "config.babyzombieaddons.option.chatInContainer.desc": "When opening chests/inventory, press the chat key (default T) to open the real chat screen on top of the container. ESC closes chat but keeps the container. ESC again closes the container.",
 
   "config.babyzombieaddons.group.playerScale": "Player Render Scale",
   "config.babyzombieaddons.option.playerScaleX": "X Scale",

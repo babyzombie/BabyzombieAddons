@@ -15,6 +15,7 @@ import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.module.chat.ChatChannel;
 import top.babyzombie.addons.module.chat.ChatChannelModule;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 @Mixin(ChatScreen.class)
 public class ChatScreenMixin {
@@ -24,8 +25,9 @@ public class ChatScreenMixin {
     private static final int GAP = 2;
 
     @Inject(method = "extractRenderState", at = @At("RETURN"))
-    private void onRender(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         if (!ModConfigManager.get().chatChannel.chatChannelSwitcher) return;
+        if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
         if (!HudManager.shouldShow("ChatChannelSwitcher")) return;
 
         var font = Minecraft.getInstance().font;
@@ -33,7 +35,7 @@ public class ChatScreenMixin {
         int y = HudManager.y("ChatChannelSwitcher");
         float scale = HudManager.scale("ChatChannelSwitcher");
 
-        var pose = gui.pose();
+        var pose = graphics.pose();
         pose.pushMatrix();
         pose.translate(x, y);
         pose.scale(scale, scale);
@@ -45,9 +47,9 @@ public class ChatScreenMixin {
             int bg = 0x60000000;
             int tc = active ? ch.activeColor : 0xFFAAAAAA;
 
-            gui.fill(bx, 0, bx + BTN_W, BTN_H, bg);
+            graphics.fill(bx, 0, bx + BTN_W, BTN_H, bg);
             int tw = font.width(ch.label);
-            gui.text(font, ch.label, bx + (BTN_W - tw) / 2, (BTN_H - font.lineHeight) / 2, tc, false);
+            graphics.text(font, ch.label, bx + (BTN_W - tw) / 2, (BTN_H - font.lineHeight) / 2, tc, false);
 
             bx += BTN_W + GAP;
         }
@@ -58,7 +60,8 @@ public class ChatScreenMixin {
     @Inject(method = "mouseClicked", at = @At("HEAD"))
     private void onMouseClicked(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
         if (event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return;
-        if (!ModConfigManager.get().chatChannel.chatChannelSwitcher) return;
+        if (!ModConfigManager.get().chatChannel.chatChannelSwitcher) return;;
+        if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
         if (!HudManager.shouldShow("ChatChannelSwitcher")) return;
 
         int mouseX = (int) event.x();

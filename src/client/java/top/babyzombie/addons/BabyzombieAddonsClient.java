@@ -23,6 +23,7 @@ import top.babyzombie.addons.module.misc.MiscModule;
 import top.babyzombie.addons.module.party.PartyModule;
 import top.babyzombie.addons.module.playcmd.PlayCmdModule;
 import top.babyzombie.addons.module.chat.ChatChannelModule;
+import top.babyzombie.addons.module.chat.ContainerChatModule;
 import top.babyzombie.addons.module.popup.PopupEventsModule;
 import top.babyzombie.addons.module.raredrop.RareDropModule;
 import top.babyzombie.addons.module.slayer.SlayerModule;
@@ -39,6 +40,7 @@ import top.babyzombie.addons.util.render.Waypoints;
 public class BabyzombieAddonsClient implements ClientModInitializer {
 
     public static net.minecraft.client.KeyMapping cancelKeyBindingRelease;
+    public static net.minecraft.client.KeyMapping shareItemKey;
 
     @Override
     public void onInitializeClient() {
@@ -49,6 +51,9 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
 
         cancelKeyBindingRelease = KeyBindingUtil.register(
                 "key.babyzombieaddons.cancel_key_release", GLFW.GLFW_KEY_LEFT_ALT);
+
+        shareItemKey = KeyBindingUtil.register(
+                "key.babyzombieaddons.share_item", GLFW.GLFW_KEY_LEFT_ALT);
 
         HypixelLocationTracker.getInstance().init();
         AbiphoneTracker.getInstance().init();
@@ -75,6 +80,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         PartyModule.init();
         PlayCmdModule.init();
         ChatChannelModule.init();
+        ContainerChatModule.init();
         PopupEventsModule.init();
         RareDropModule.init();
         SlayerModule.init();
