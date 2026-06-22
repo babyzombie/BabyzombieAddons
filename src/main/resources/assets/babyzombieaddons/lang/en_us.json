@@ -405,9 +405,11 @@
   "config.babyzombieaddons.option.pestDisplay": "Pest Display",
   "config.babyzombieaddons.option.pestDisplay.desc": "Show beacon beams on garden pests.",
   "config.babyzombieaddons.option.xpOrbSoundRemoval": "XP Orb Sound Volume",
-  "config.babyzombieaddons.option.xpOrbSoundRemoval.desc": "XP orb sound volume when breaking crops while holding an axe or hoe in the Garden. 0 = fully muted, 100 = unchanged.",
+  "config.babyzombieaddons.option.xpOrbSoundRemoval.desc": "XP orb sound volume when breaking crops while holding a farming tool in the Garden. 0 = fully muted, 100 = unchanged.",
   "config.babyzombieaddons.option.signAutoRotate": "Sign Auto Rotate",
-  "config.babyzombieaddons.option.signAutoRotate.desc": "Right-click a sign while holding a hoe or axe to auto-rotate and cancel interaction. Write \"yaw: value\" and \"pitch: value\" on any sign line (case-insensitive).",
+  "config.babyzombieaddons.option.signAutoRotate.desc": "Right-click a sign while holding a farming tool to auto-rotate and cancel interaction. Write \"yaw: value\" and \"pitch: value\" on any sign line (case-insensitive).",
+  "config.babyzombieaddons.option.farmingToolSwingSuppression": "Farming Tool Swing Suppression",
+  "config.babyzombieaddons.option.farmingToolSwingSuppression.desc": "Prevent arm swinging animation while holding a farming tool in the Garden.",
   "config.babyzombieaddons.group.trevor": "Trevor",
 
   "config.babyzombieaddons.option.trevorAutoAccept": "Trevor Auto Accept",

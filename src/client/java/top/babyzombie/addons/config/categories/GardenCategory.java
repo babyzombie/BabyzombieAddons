@@ -30,6 +30,8 @@ public final class GardenCategory {
                         .build())
                 .option(bool("signAutoRotate", defaults.garden.signAutoRotate,
                         () -> config.garden.signAutoRotate, v -> config.garden.signAutoRotate = v))
+                .option(bool("farmingToolSwingSuppression", defaults.garden.farmingToolSwingSuppression,
+                        () -> config.garden.farmingToolSwingSuppression, v -> config.garden.farmingToolSwingSuppression = v))
                 .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.trevor"))
                         .option(bool("trevorAutoAccept", defaults.garden.trevorAutoAccept,

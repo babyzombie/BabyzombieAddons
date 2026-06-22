@@ -2,10 +2,9 @@ package top.babyzombie.addons.module.garden;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.HoeItem;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
+import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 public final class XpOrbSoundReducer {
@@ -46,6 +45,6 @@ public final class XpOrbSoundReducer {
         var player = Minecraft.getInstance().player;
         if (player == null) return false;
         var held = player.getMainHandItem();
-        return !held.isEmpty() && (held.getItem() instanceof HoeItem || held.getItem() instanceof AxeItem);
+        return ItemUtils.isFarmingTool(held);
     }
 }

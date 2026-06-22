@@ -192,6 +192,7 @@ public class ModConfig {
         public boolean signAutoRotate = false;
         public boolean trevorAutoAccept = false;
         public boolean trevorAutoCall = false;
+        public boolean farmingToolSwingSuppression = false;
     }
 
     // ---- Popup Events ----
