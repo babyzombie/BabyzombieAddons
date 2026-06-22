@@ -11,7 +11,7 @@ import top.babyzombie.addons.module.kuudra.KuudraHPDisplay;
 @Mixin(BossHealthOverlay.class)
 public class BossHealthOverlayMixin {
 
-    @Inject(method = "extractRenderState", at = @At("HEAD"))
+    @Inject(method = "extractRenderState*", at = @At("HEAD"))
     private void onRender(GuiGraphicsExtractor graphics, CallbackInfo ci) {
         KuudraHPDisplay.onBossbarRender((BossHealthOverlay) (Object) this);
     }

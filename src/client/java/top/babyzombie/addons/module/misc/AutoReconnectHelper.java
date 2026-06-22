@@ -76,8 +76,7 @@ public final class AutoReconnectHelper {
         var config = ModConfigManager.get();
         if (!config.general.autoReconnectEnabled) return false;
         if (lastServerIp == null) return false;
-        if (retryCount >= config.general.autoReconnectMaxRetries && config.general.autoReconnectMaxRetries != 0) return false;
-        return true;
+        return retryCount < config.general.autoReconnectMaxRetries || config.general.autoReconnectMaxRetries == 0;
     }
 
     public static int getDelay() {

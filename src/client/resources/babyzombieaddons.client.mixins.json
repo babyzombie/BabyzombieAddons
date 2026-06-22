@@ -31,7 +31,11 @@
     "PlayerScaleMixin",
     "ThirdPersonCrosshairMixin",
     "CommandSuggestionsMixin",
-    "RenderHandMixin"
+    "RenderHandMixin",
+    "ChannelAccessor",
+    "ChannelHandleAccessor",
+    "SoundEngineAccessor",
+    "SoundManagerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

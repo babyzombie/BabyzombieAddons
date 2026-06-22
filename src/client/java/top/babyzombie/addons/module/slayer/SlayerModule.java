@@ -10,7 +10,7 @@ public final class SlayerModule {
     private SlayerModule() {}
 
     public static void init() {
-        // Initialize sub-modules (register their event listeners)
+        // Initialize submodules (register their event listeners)
         PigmanSwordTimer.init();
         RagnarockAxeTimer.init();
         ReaperArmorTimer.init();

@@ -8,6 +8,8 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
@@ -21,6 +23,7 @@ import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.event.SendCommandEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.ItemUtils;
+import top.babyzombie.addons.util.PlaySoundHelper;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.ServerTick;
@@ -48,7 +51,8 @@ public final class PopupEventsModule {
         LEVEL_UP("level_up", SoundEvents.PLAYER_LEVELUP),
         DRAGON("dragon", SoundEvents.ENDER_DRAGON_GROWL),
         ANVIL("anvil", SoundEvents.ANVIL_LAND),
-        GOAT_HORN("goat_horn", SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(2).value());
+        GOAT_HORN("goat_horn", SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(2).value()),
+        LAVA_CHICKEN("lava_chicken", SoundEvents.MUSIC_DISC_LAVA_CHICKEN.value());
 
         public final String key;
         public final SoundEvent sound;
@@ -198,9 +202,21 @@ public final class PopupEventsModule {
     private static void playSound() {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
-        var sound = ModConfigManager.get().popup.popupSound.sound;
-        player.level().playSound(player, player.blockPosition(),
-                sound, SoundSource.MASTER, 1f, 1f);
+        var popupSound = ModConfigManager.get().popup.popupSound;
+        if (popupSound == PopupSound.LAVA_CHICKEN) {
+            var instance = new SimpleSoundInstance(
+                    popupSound.sound.location(), SoundSource.MASTER,
+                    1f, 1f,
+                    SoundInstance.createUnseededRandom(),
+                    false, 0,
+                    SoundInstance.Attenuation.NONE,
+                    0, 0, 0, true
+            );
+            PlaySoundHelper.playSeeked(instance, 0.9f, 3.5f);
+        } else {
+            player.level().playSound(player, player.blockPosition(),
+                    popupSound.sound, SoundSource.MASTER, 1f, 1f);
+        }
     }
 
     private static void accept() {

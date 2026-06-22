@@ -14,8 +14,8 @@ import top.babyzombie.addons.module.garden.XpOrbSoundReducer;
 public class PlaySoundMixin {
 
     @Inject(method = "play", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/sounds/SoundInstance;getIdentifier()Lnet/minecraft/resources/Identifier;"), cancellable = true)
-    private void beforePlay(SoundInstance soundInstance, CallbackInfoReturnable<SoundEngine.PlayResult> cir) {
-        if (PlaySoundEvents.BEFORE_PLAY.invoker().beforePlay(soundInstance)) {
+    private void beforePlay(SoundInstance instance, CallbackInfoReturnable<SoundEngine.PlayResult> cir) {
+        if (PlaySoundEvents.BEFORE_PLAY.invoker().beforePlay(instance)) {
             cir.cancel();
         }
     }

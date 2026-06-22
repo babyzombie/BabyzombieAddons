@@ -85,8 +85,10 @@ public final class ContainerChatHelper {
     public static void deactivate() {
         if (overlay != null) {
             long window = Minecraft.getInstance().getWindow().handle();
-            GLFW.glfwSetCharCallback(window, previousCharCallback);
-            GLFW.glfwSetScrollCallback(window, previousScrollCallback);
+            var cb = GLFW.glfwSetCharCallback(window, previousCharCallback);
+            var scb = GLFW.glfwSetScrollCallback(window, previousScrollCallback);
+            if (cb != null) cb.free();
+            if (scb != null) scb.free();
             previousCharCallback = null;
             previousScrollCallback = null;
 

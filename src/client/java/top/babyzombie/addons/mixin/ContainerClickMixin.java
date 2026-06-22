@@ -17,9 +17,9 @@ public abstract class ContainerClickMixin {
     protected Slot hoveredSlot;
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void beforeMouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl, CallbackInfoReturnable<Boolean> cir) {
+    private void beforeMouseClicked(MouseButtonEvent event, boolean bl, CallbackInfoReturnable<Boolean> cir) {
         if (ContainerClickEvents.BEFORE_MOUSE_CLICK.invoker()
-                .beforeMouseClick((AbstractContainerScreen<?>) (Object) this, hoveredSlot, mouseButtonEvent.button())) {
+                .beforeMouseClick((AbstractContainerScreen<?>) (Object) this, hoveredSlot, event.button())) {
             cir.setReturnValue(false);
         }
     }

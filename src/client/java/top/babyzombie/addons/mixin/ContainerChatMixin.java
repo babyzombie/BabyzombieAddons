@@ -54,7 +54,7 @@ public abstract class ContainerChatMixin extends Screen {
 
     // ========== extractRenderState ==========
 
-    @Inject(method = "extractRenderState", at = @At("TAIL"))
+    @Inject(method = "extractRenderState*", at = @At("TAIL"))
     private void onRender(GuiGraphicsExtractor g, int mouseX, int mouseY, float a, CallbackInfo ci) {
         if (ContainerChatHelper.isActive()) {
             ContainerChatHelper.getOverlay().extractRenderState(g, mouseX, mouseY, a);

@@ -24,7 +24,7 @@ public class ChatScreenMixin {
     private static final int BTN_H = 14;
     private static final int GAP = 2;
 
-    @Inject(method = "extractRenderState", at = @At("RETURN"))
+    @Inject(method = "extractRenderState*", at = @At("RETURN"))
     private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         if (!ModConfigManager.get().chatChannel.chatChannelSwitcher) return;
         if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;

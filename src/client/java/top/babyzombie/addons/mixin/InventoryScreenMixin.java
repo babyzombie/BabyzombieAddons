@@ -15,7 +15,7 @@ import top.babyzombie.addons.module.chat.ContainerChatHelper;
 @Mixin(InventoryScreen.class)
 public class InventoryScreenMixin {
 
-    @Inject(method = "extractRenderState", at = @At("TAIL"))
+    @Inject(method = "extractRenderState*", at = @At("TAIL"))
     private void onRender(GuiGraphicsExtractor g, int mouseX, int mouseY, float a, CallbackInfo ci) {
         if (ContainerChatHelper.isActive()) {
             ContainerChatHelper.getOverlay().extractRenderState(g, mouseX, mouseY, a);

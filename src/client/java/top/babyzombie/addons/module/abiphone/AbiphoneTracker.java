@@ -120,9 +120,7 @@ public class AbiphoneTracker {
             Files.createDirectories(configDir);
             Files.writeString(getFile(uuid, profileId), GSON.toJson(items),
                 StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException _) {}
     }
 
     public List<ItemEntry> loadItems(String uuid, String profileId) {
@@ -134,7 +132,6 @@ public class AbiphoneTracker {
             List<ItemEntry> list = GSON.fromJson(raw, ITEM_LIST_TYPE);
             return list != null ? list : Collections.emptyList();
         } catch (IOException e) {
-            e.printStackTrace();
             return Collections.emptyList();
         }
     }
@@ -158,9 +155,7 @@ public class AbiphoneTracker {
             }
 
             Files.writeString(file, GSON.toJson(items), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException _) {}
     }
 
     public record ItemEntry(String name, String material, String nbt, @Nullable String description) {

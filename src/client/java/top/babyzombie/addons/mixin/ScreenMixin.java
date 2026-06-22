@@ -24,7 +24,7 @@ public class ScreenMixin {
         }
     }
 
-    @Inject(method = "extractRenderState", at = @At("RETURN"))
+    @Inject(method = "extractRenderState*", at = @At("RETURN"))
     private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!isDisconnectedScreen(this)) return;
         int remaining = AutoReconnectHelper.getCountdownRemaining();
