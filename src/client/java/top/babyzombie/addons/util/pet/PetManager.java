@@ -1,6 +1,7 @@
 package top.babyzombie.addons.util.pet;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -10,15 +11,12 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
-import top.babyzombie.addons.util.Scheduler;
-import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import com.google.gson.JsonObject;
@@ -52,7 +50,6 @@ public final class PetManager {
     private String currentProfileKey;
     private final List<PetData> pets = new ArrayList<>();
     private PetData currentPet;
-    private Runnable pendingScan;
 
     private PetManager() {}
 
@@ -291,7 +288,7 @@ public final class PetManager {
         });
     }
 
-    /** Scan the Pets menu when it opens. Cancels previous pending scan on page refresh. */
+    /** Scan the Pets menu — poll until slot 44's glass pane signals the row has loaded. */
     private void registerPetsMenuScan() {
         ScreenEvents.AFTER_INIT.register((client, screen, sw, sh) -> {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
@@ -299,13 +296,15 @@ public final class PetManager {
             String title = ChatUtils.stripColor(cs.getTitle().getString());
             if (!title.matches("(\\(\\d+/\\d+\\) )?Pets")) return;
 
-            if (pendingScan != null) Scheduler.cancel(pendingScan);
-            pendingScan = () -> {
-                pendingScan = null;
+            final boolean[] scanned = {false};
+            ClientTickEvents.END_CLIENT_TICK.register(tickClient -> {
+                if (scanned[0]) return;
+                if (client.screen != cs) return;
+                if (cs.getMenu().slots.get(44).getItem().isEmpty()) return;
+
+                scanned[0] = true;
                 scanPetsContainer(cs);
-            };
-            int delayTicks = Math.max((ServerTick.getPing() + 200) / 50, 4);
-            Scheduler.schedule(delayTicks, pendingScan);
+            });
         });
     }
 
@@ -345,8 +344,9 @@ public final class PetManager {
 
     /** Scan the Pets container for summoned pet items and add them to the list. */
     private void scanPetsContainer(AbstractContainerScreen<?> screen) {
-        for (Slot slot : screen.getMenu().slots) {
-            ItemStack stack = slot.getItem();
+        var slots = screen.getMenu().slots;
+        for (int i = 10; i < 44; i++) {
+            ItemStack stack = slots.get(i).getItem();
             if (stack.isEmpty()) continue;
             if (getPetInfoFromStack(stack) == null) continue;
 
