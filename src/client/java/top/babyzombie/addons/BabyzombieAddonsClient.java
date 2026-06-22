@@ -1,6 +1,7 @@
 package top.babyzombie.addons;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.command.BabyzombieAddonsCommand;
 import top.babyzombie.addons.config.hud.HudManager;
@@ -41,6 +42,8 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
 
     public static net.minecraft.client.KeyMapping cancelKeyBindingRelease;
     public static net.minecraft.client.KeyMapping shareItemKey;
+    public static net.minecraft.client.KeyMapping toggleHandRenderKey;
+    public static boolean handRenderSwapActive;
 
     @Override
     public void onInitializeClient() {
@@ -54,6 +57,18 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
 
         shareItemKey = KeyBindingUtil.register(
                 "key.babyzombieaddons.share_item", GLFW.GLFW_KEY_LEFT_ALT);
+
+        toggleHandRenderKey = KeyBindingUtil.register(
+                "key.babyzombieaddons.toggle_hand_render", GLFW.GLFW_KEY_UNKNOWN);
+
+        handRenderSwapActive = ModConfigManager.get().handRender.swapHands;
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (client.player == null) return;
+            while (toggleHandRenderKey.consumeClick()) {
+                handRenderSwapActive = !handRenderSwapActive;
+            }
+        });
 
         HypixelLocationTracker.getInstance().init();
         AbiphoneTracker.getInstance().init();

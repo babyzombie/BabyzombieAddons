@@ -54,6 +54,7 @@ public class ModConfig {
     public ChatChannelConfig chatChannel = new ChatChannelConfig();
     public DebugConfig debug = new DebugConfig();
     public AutoJoinConfig autoJoin = new AutoJoinConfig();
+    public HandRenderConfig handRender = new HandRenderConfig();
 
     // ---- General ----
 
@@ -261,5 +262,14 @@ public class ModConfig {
     public static class AutoJoinConfig {
         public boolean autoJoinServer = false;
         public String autoJoinServerIP = "";
+    }
+
+    // ---- Hand Render ----
+
+    public static class HandRenderConfig {
+        public boolean disableAll = false;
+        public boolean swapHands = false;
+        public float swingSpeed = 1.0f;
+        public float itemScale = 1.0f;
     }
 }

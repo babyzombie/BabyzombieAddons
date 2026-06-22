@@ -7,6 +7,7 @@
   "key.babyzombieaddons.popup_yes": "弹出通知 - 接受",
   "key.babyzombieaddons.share_item": "分享物品到聊天栏",
   "key.babyzombieaddons.popup_no": "弹出通知 - 忽略",
+  "key.babyzombieaddons.toggle_hand_render": "主副手交换",
 
   "babyzombieaddons.contact.lore.call": "左键呼叫联系人",
   "babyzombieaddons.contact.lore.auto_answer": "右键开关自动接听",
@@ -121,6 +122,15 @@
   "config.babyzombieaddons.option.playerScaleZ": "Z 轴缩放",
   "config.babyzombieaddons.option.playerScaleZ.desc": "仅影响自己看到的自身模型，在 Z 轴（深度）方向的缩放比例。",
 
+  "config.babyzombieaddons.group.handRender": "手臂渲染",
+  "config.babyzombieaddons.option.disableHandRender": "取消手臂渲染",
+  "config.babyzombieaddons.option.disableHandRender.desc": "完全关闭第一人称手臂和手持物品的渲染。",
+  "config.babyzombieaddons.option.swapHands": "主副手交换",
+  "config.babyzombieaddons.option.swapHands.desc": "仅设置默认值。请在「按键设置」中绑定「主副手交换」按键来实时开关。",
+  "config.babyzombieaddons.option.swingSpeed": "挥动速度",
+  "config.babyzombieaddons.option.swingSpeed.desc": "手臂/物品挥动动画的速度倍率。",
+  "config.babyzombieaddons.option.itemScale": "物品缩放",
+  "config.babyzombieaddons.option.itemScale.desc": "手持物品和手臂的统一缩放比例。",
   "config.babyzombieaddons.option.renderPhase": "世界渲染阶段",
   "config.babyzombieaddons.option.renderPhase.desc": "控制框、光柱、悬浮字的渲染时机。",
   "config.babyzombieaddons.option.renderPhase.AFTER_ENTITIES": "实体之后（默认）",

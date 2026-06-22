@@ -127,6 +127,16 @@ public final class GeneralCategory {
                         .option(createBool("showCrosshairInThirdPerson", defaults.general.showCrosshairInThirdPerson,
                                 () -> config.general.showCrosshairInThirdPerson, v -> config.general.showCrosshairInThirdPerson = v))
                         .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.handRender"))
+                        .collapsed(true)
+                        .option(createBool("disableHandRender", defaults.handRender.disableAll,
+                                () -> config.handRender.disableAll, v -> config.handRender.disableAll = v))
+                        .option(createBool("swapHands", defaults.handRender.swapHands,
+                                () -> config.handRender.swapHands, v -> config.handRender.swapHands = v))
+                        .option(createFloat("itemScale", defaults.handRender.itemScale,
+                                () -> config.handRender.itemScale, v -> config.handRender.itemScale = v, 0.1f, 1.0f))
+                        .build())
                 .build();
     }
 
@@ -136,6 +146,15 @@ public final class GeneralCategory {
                 .description(Component.translatable("config.babyzombieaddons.option." + key + ".desc"))
                 .binding(def, getter, setter)
                 .controller(ConfigUtils.createBooleanController())
+                .build();
+    }
+
+    private static Option<Float> createFloat(String key, float def, Supplier<Float> getter, Consumer<Float> setter, float min, float max) {
+        return Option.<Float>createBuilder()
+                .name(Component.translatable("config.babyzombieaddons.option." + key))
+                .description(Component.translatable("config.babyzombieaddons.option." + key + ".desc"))
+                .binding(def, getter, setter)
+                .controller(FloatController.createBuilder().range(min, max).slider(0.05f).build())
                 .build();
     }
 }

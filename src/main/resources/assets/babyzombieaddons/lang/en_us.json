@@ -7,6 +7,7 @@
   "key.babyzombieaddons.popup_yes": "Popup - Accept",
   "key.babyzombieaddons.share_item": "Share Item to Chat",
   "key.babyzombieaddons.popup_no": "Popup - Ignore",
+  "key.babyzombieaddons.toggle_hand_render": "Swap Hands",
 
   "babyzombieaddons.contact.lore.call": "Left-click to call",
   "babyzombieaddons.contact.lore.auto_answer": "Right-click to toggle auto-answer",
@@ -121,6 +122,15 @@
   "config.babyzombieaddons.option.playerScaleZ": "Z Scale",
   "config.babyzombieaddons.option.playerScaleZ.desc": "Only affects how you see your own model. Scale factor on the Z (depth) axis.",
 
+  "config.babyzombieaddons.group.handRender": "Hand Render",
+  "config.babyzombieaddons.option.disableHandRender": "Disable Hand Render",
+  "config.babyzombieaddons.option.disableHandRender.desc": "Completely disable first-person arm and item rendering.",
+  "config.babyzombieaddons.option.swapHands": "Swap Hands",
+  "config.babyzombieaddons.option.swapHands.desc": "Default value only. Bind \"Swap Hands\" in Controls to toggle at runtime.",
+  "config.babyzombieaddons.option.swingSpeed": "Swing Speed",
+  "config.babyzombieaddons.option.swingSpeed.desc": "Speed multiplier for arm/item swing animation.",
+  "config.babyzombieaddons.option.itemScale": "Item Scale",
+  "config.babyzombieaddons.option.itemScale.desc": "Uniform scale for held items and arms.",
   "config.babyzombieaddons.option.renderPhase": "World Render Phase",
   "config.babyzombieaddons.option.renderPhase.desc": "Controls when boxes, beams, and floating text are rendered.",
   "config.babyzombieaddons.option.renderPhase.AFTER_ENTITIES": "After Entities (Default)",
