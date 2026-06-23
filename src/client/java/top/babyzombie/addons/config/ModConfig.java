@@ -19,6 +19,7 @@ public class ModConfig {
     public enum SlayerBossBoxMode { OFF, WIREFRAME, BOX }
     public enum WorldRenderPhase { AFTER_ENTITIES, END_MAIN }
     public enum BzGetFromSacksMode { OFF, GET_ONLY, GET_AND_RECLICK }
+    public enum AutoPotionsMode { OFF, M4, M5, M6, M7 }
 
     public enum ToxicArrowMinTier { T1, T2, T3, T4, T5 }
 
@@ -94,6 +95,7 @@ public class ModConfig {
         public boolean enderPearlRefill = false;
         public boolean autoChestClose = false;
         public boolean muteStormThunder = false;
+        public AutoPotionsMode autoOpenPotions = AutoPotionsMode.OFF;
         public DailyCounterMode dailyRunsCounter = DailyCounterMode.OFF;
         public DeathMessageAction deathMessageAction = DeathMessageAction.OFF;
     }

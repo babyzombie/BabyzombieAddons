@@ -47,12 +47,10 @@ public final class DungeonModule {
         ClientReceiveMessageEvents.GAME.register((m, o) -> {
             if (o || !instanceStarted) return;
             String t = ChatUtils.stripColor(m.getString());
-            boolean win = t.equals("          "
-                    + "          "
-                    + "         > EXTRA STATS <")
-                    || t.equals("                               KUUDRA DOWN!");
+            boolean win = (t.startsWith("     ") && t.contains("   ☠ Defeated ") && t.contains(" in ")
+                    || t.equals("                               KUUDRA DOWN!"));
             boolean fail = t.equals("                                   DEFEAT")
-                    || (t.startsWith("     ") && t.contains("   ☠ Defeated ") && t.contains(" in "));
+                    || t.equals("                             > EXTRA STATS <");
 
             if (win || fail) {
                 instanceStarted = false;
@@ -104,6 +102,8 @@ public final class DungeonModule {
                 }
             }
         });
+
+        DungeonAutoPB.init();
     }
 
     private static int dtCancel(CommandContext<FabricClientCommandSource> ctx) {

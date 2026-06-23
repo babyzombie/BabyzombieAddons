@@ -1,5 +1,6 @@
 package top.babyzombie.addons.util.tracker;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -55,6 +56,20 @@ public class HypixelLocationTracker {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             currentLocation = new HypixelLocationData(null, null, null, null, null, getUuid(), getProfileId());
         });
+
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> clearScoreboardLocation());
+    }
+
+    /** Clear scoreboard-derived fields (location) on world change, so stale data
+     *  doesn't leak into the new world before the scoreboard is re-read. */
+    public void clearScoreboardLocation() {
+        var prev = currentLocation;
+        currentLocation = new HypixelLocationData(
+            prev.serverName(), prev.serverType(),
+            prev.lobbyName(), prev.mode(), prev.map(),
+            prev.uuid(), prev.profileId(), null,
+            prev.inSkyblock(), prev.inDungeon(), prev.inKuudra(), prev.inLimbo(), prev.skyblockDay()
+        );
     }
 
     private void onLocationUpdate(ClientboundLocationPacket packet) {

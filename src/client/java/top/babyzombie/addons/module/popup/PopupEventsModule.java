@@ -212,7 +212,7 @@ public final class PopupEventsModule {
                     SoundInstance.Attenuation.NONE,
                     0, 0, 0, true
             );
-            PlaySoundHelper.playSeeked(instance, 0.9f, 3.5f);
+            PlaySoundHelper.playSeeked(instance, 0.9f, 1.5f);
         } else {
             player.level().playSound(player, player.blockPosition(),
                     popupSound.sound, SoundSource.MASTER, 1f, 1f);

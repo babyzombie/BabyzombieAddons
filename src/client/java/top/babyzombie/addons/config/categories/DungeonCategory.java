@@ -8,6 +8,7 @@ import net.azureaaron.dandelion.api.controllers.StringController;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
+import top.babyzombie.addons.config.ModConfig.AutoPotionsMode;
 import top.babyzombie.addons.config.ModConfig.CrowdHideMode;
 import top.babyzombie.addons.config.ModConfig.DailyCounterMode;
 import top.babyzombie.addons.config.ModConfig.DeathMessageAction;
@@ -106,6 +107,15 @@ public final class DungeonCategory {
                         () -> config.dungeon.autoChestClose, v -> config.dungeon.autoChestClose = v))
                 .option(bool("muteStormThunder", defaults.dungeon.muteStormThunder,
                         () -> config.dungeon.muteStormThunder, v -> config.dungeon.muteStormThunder = v))
+                .option(Option.<AutoPotionsMode>createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.autoOpenPotions"))
+                        .description(Component.translatable("config.babyzombieaddons.option.autoOpenPotions.desc"))
+                        .binding(defaults.dungeon.autoOpenPotions,
+                                () -> config.dungeon.autoOpenPotions,
+                                v -> config.dungeon.autoOpenPotions = v)
+                        .controller(ConfigUtils.createEnumController(m ->
+                                Component.translatable("config.babyzombieaddons.option.autoOpenPotions." + m.name())))
+                        .build())
                 .option(Option.<DailyCounterMode>createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.option.dailyRunsCounter"))
                         .description(Component.translatable("config.babyzombieaddons.option.dailyRunsCounter.desc"))
