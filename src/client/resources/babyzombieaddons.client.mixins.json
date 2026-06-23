@@ -35,7 +35,8 @@
     "ChannelAccessor",
     "ChannelHandleAccessor",
     "SoundEngineAccessor",
-    "SoundManagerAccessor"
+    "SoundManagerAccessor",
+    "ModernUITextRenderTypeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

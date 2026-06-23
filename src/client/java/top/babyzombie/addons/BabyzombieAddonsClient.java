@@ -2,6 +2,11 @@ package top.babyzombie.addons;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.command.BabyzombieAddonsCommand;
 import top.babyzombie.addons.config.hud.HudManager;
@@ -47,6 +52,14 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // 内置 Chroma x Modern UI 兼容材质包
+        ResourceLoader.registerBuiltinPack(
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "chroma_modernui"),
+                FabricLoader.getInstance().getModContainer("babyzombieaddons").orElseThrow(),
+                Component.translatable("resourcepack.babyzombieaddons.chroma_modernui.name"),
+                PackActivationType.ALWAYS_ENABLED
+        );
+
         ModConfigManager.init();
         UpdateChecker.init();
         HudManager.init();

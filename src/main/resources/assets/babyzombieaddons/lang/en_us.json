@@ -1,5 +1,8 @@
 {
   "modmenu.gitee": "Gitee Page",
+
+  "resourcepack.babyzombieaddons.chroma_modernui.name": "§bChroma × Modern UI Compat",
+  "resourcepack.babyzombieaddons.chroma_modernui.description": "Makes Aaron Mod's animated chroma fonts work under Modern UI's text engine",
   
   "key.category.babyzombieaddons.main": "BabyzombieAddons",
   "key.babyzombieaddons.cancel_key_release": "Cancel Key Release",

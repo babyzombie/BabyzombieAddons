@@ -1,6 +1,9 @@
 {
   "modmenu.gitee": "Gitee 仓库",
 
+  "resourcepack.babyzombieaddons.chroma_modernui.name": "§bChroma × Modern UI 兼容",
+  "resourcepack.babyzombieaddons.chroma_modernui.description": "让 Aaron Mod 的动态彩色字体在 Modern UI 文字引擎下生效",
+
   "key.category.babyzombieaddons.main": "BabyzombieAddons",
   "key.babyzombieaddons.cancel_key_release": "取消按键释放",
   "key.babyzombieaddons.second_person": "一键回头",
