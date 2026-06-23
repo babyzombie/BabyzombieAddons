@@ -25,9 +25,10 @@ public final class ItemUtils {
     }
 
     public static boolean isFarmingTool(ItemStack stack) {
+        if(stack == null) return false;
         var lore = stack.get(DataComponents.LORE);
         if (lore == null) return false;
         var lines = lore.lines().iterator();
-        return lines.hasNext() && "Farming Tool".equals(lines.next().getString());
+        return lines.hasNext() && "Farming Tool".equals(ChatUtils.stripColor(lines.next().getString()));
     }
 }

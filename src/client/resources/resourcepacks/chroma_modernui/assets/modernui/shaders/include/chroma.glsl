@@ -26,9 +26,11 @@ vec3 hsv2rgb_smooth(vec3 c) {
 }
 
 vec4 applyChromaColourInternal(vec4 textColour, float v) {
-    float size  = clamp(ChromaSize, 1.0, 200.0);
-    float speed = clamp(ChromaSpeed, 1.0, 64.0);
-    float sat   = clamp(ChromaSaturation, 0.0, 1.0);
+    // Fallback defaults when Chroma UBO is not bound (Aaron Mod not installed)
+    bool uboSet = ChromaSize + ChromaSpeed + ChromaSaturation + Ticks > 0.01;
+    float size  = uboSet ? clamp(ChromaSize, 1.0, 200.0)       : 100.0;
+    float speed = uboSet ? clamp(ChromaSpeed, 1.0, 64.0)       : 4.0;
+    float sat   = uboSet ? clamp(ChromaSaturation, 0.0, 1.0)   : 0.85;
 
     float scale = size * 10.0;
     vec2 uv = gl_FragCoord.xy / scale;
