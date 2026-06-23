@@ -8,5 +8,6 @@ public final class GardenModule {
         SignAutoRotate.init();
         XpOrbSoundReducer.init();
         TrevorAutoAccept.init();
+        FarmingToolSwingSuppression.init();
     }
 }

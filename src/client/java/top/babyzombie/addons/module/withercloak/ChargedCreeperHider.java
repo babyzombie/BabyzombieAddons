@@ -35,6 +35,11 @@ public final class ChargedCreeperHider {
                 }
                 wasActive = active;
             }
+
+            // 定期清理已死亡或消失的 Creeper，防止 Set 无限增长
+            if (active && client.player != null && client.player.tickCount % 20 == 0) {
+                nearbyChargedCreepers.removeIf(c -> !c.isAlive() || c.isRemoved());
+            }
         });
 
         EntityRenderEvents.BEFORE_RENDER.register(entity -> {

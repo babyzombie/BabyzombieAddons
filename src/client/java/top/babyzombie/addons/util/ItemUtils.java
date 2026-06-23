@@ -23,4 +23,12 @@ public final class ItemUtils {
         if (extra == null) return null;
         return extra.getString("id").orElse(null);
     }
+
+    public static boolean isFarmingTool(ItemStack stack) {
+        if(stack == null) return false;
+        var lore = stack.get(DataComponents.LORE);
+        if (lore == null) return false;
+        var lines = lore.lines().iterator();
+        return lines.hasNext() && "Farming Tool".equals(ChatUtils.stripColor(lines.next().getString()));
+    }
 }

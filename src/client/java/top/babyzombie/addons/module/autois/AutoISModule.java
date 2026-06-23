@@ -1,9 +1,11 @@
 package top.babyzombie.addons.module.autois;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.event.EntityRenderEvents;
+import top.babyzombie.addons.event.ParticleRenderEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.Scheduler;
@@ -17,7 +19,17 @@ public final class AutoISModule {
     private AutoISModule() {}
 
     public static void init() {
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+        EntityRenderEvents.BEFORE_RENDER.register(entity -> {
+            var cfg = ModConfigManager.get().general;
+            return cfg.autois && cfg.hideEntities;
+        });
+
+        ParticleRenderEvents.BEFORE_ADD.register(particle -> {
+            var cfg = ModConfigManager.get().general;
+            return cfg.autois && cfg.hideEntities;
+        });
+
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((minecraft, level) -> {
             if (!ModConfigManager.get().general.autois) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             int delayTicks = ModConfigManager.get().general.autoisDelay * 20;
@@ -26,8 +38,8 @@ public final class AutoISModule {
 
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay || !ModConfigManager.get().general.autois) return;
-            if (message.getString().contains("You were kicked")
-                    || message.getString().contains("Oops! You are not on SkyBlock")) {
+            if (message.getString().equals("You were kicked while joining that server!")
+                    || message.getString().equals("Oops! You are not on SkyBlock so we couldn't warp you!")) {
                 kickTime = ServerTick.getTime();
                 var mode = ModConfigManager.get().general.autoBackToSkyblock;
                 if (mode != ModConfig.KickRecovery.OFF) {
@@ -35,7 +47,7 @@ public final class AutoISModule {
                     ChatUtils.sendCommand("lobby");
                 }
                 if (mode == ModConfig.KickRecovery.LOBBY_AND_SKYBLOCK) {
-                    Scheduler.schedule(1200, () -> {
+                    Scheduler.schedule(1300, () -> {
                         if (ServerTick.getTime() - kickTime < 1300 * 50)
                             ChatUtils.sendCommand("play skyblock");
                     });
@@ -45,8 +57,7 @@ public final class AutoISModule {
 
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay || !lobbyConfirmRegistered) return;
-            if (message.getString().contains("Are you sure?")
-                    || message.getString().contains("Type /lobby again")) {
+            if (message.getString().equals("Are you sure? Type /lobby again if you really want to quit.")) {
                 ChatUtils.sendCommand("lobby");
                 lobbyConfirmRegistered = false;
             }
@@ -66,13 +77,6 @@ public final class AutoISModule {
                 ChatUtils.sendCommand("is");
             else if (dest == ModConfig.AutoISDest.GARDEN && !"Garden".equals(island))
                 ChatUtils.sendCommand("warp garden");
-        } else {
-            var recovery = ModConfigManager.get().general.autoBackToSkyblock;
-            if (recovery != ModConfig.KickRecovery.OFF) {
-                ChatUtils.sendCommand("lobby");
-                if (recovery == ModConfig.KickRecovery.LOBBY_AND_SKYBLOCK)
-                    Scheduler.schedule(100, () -> ChatUtils.sendCommand("play skyblock"));
-            }
-        }
+        } else ChatUtils.sendCommand("play skyblock");
     }
 }

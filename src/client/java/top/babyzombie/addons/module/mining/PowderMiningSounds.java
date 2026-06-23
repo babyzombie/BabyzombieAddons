@@ -1,6 +1,9 @@
 package top.babyzombie.addons.module.mining;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.sounds.SoundEvents;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
@@ -24,14 +27,23 @@ public final class PowderMiningSounds {
             if (!ModConfigManager.get().mining.powderMiningSounds) return false;
             if (!isInCrystalHollows()) return false;
             if (blockBreakTimer < ServerTick.getTime()) return false;
+            if(Minecraft.getInstance().player == null) return false;
 
             var snd = sound.getSound();
             if (snd == null) return false;
             String path = snd.getLocation().getPath();
-            if (path.equals("random/orb")) {
-                return true; // cancel XP orb sounds
-            }
-            return false;
+            return switch (path) {
+                case "random/orb" -> true;
+                case "block/chest/open" -> {
+                    Minecraft.getInstance().player.playSound(SoundEvents.VAULT_OPEN_SHUTTER, sound.getVolume(), sound.getPitch());
+                    yield true;
+                }
+                case "random/levelup" -> {
+                    Minecraft.getInstance().player.playSound(SoundEvents.VAULT_ACTIVATE, sound.getVolume(), sound.getPitch());
+                    yield true;
+                }
+                default -> false;
+            };
         });
     }
 

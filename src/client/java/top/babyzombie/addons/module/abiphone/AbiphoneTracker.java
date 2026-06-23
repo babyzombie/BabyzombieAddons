@@ -24,7 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+
 import java.util.regex.Pattern;
 
 public class AbiphoneTracker {
@@ -61,46 +61,52 @@ public class AbiphoneTracker {
             String profileId = tracker.getProfileId();
             if (uuid == null || profileId == null) return;
 
-            // Container contents arrive after screen init — wait 2 ticks
-            AtomicBoolean done = new AtomicBoolean(false);
+            // Items may arrive in batches — slot 44's glass pane signals the row has loaded
+            final Set<ItemEntry> collected = new LinkedHashSet<>();
+            final boolean[] persisted = {false};
             ClientTickEvents.END_CLIENT_TICK.register(tickClient -> {
-                if (done.getAndSet(true)) return;
-                if (ScreenHelper.getCurrent() != containerScreen) return;
+                if (persisted[0]) return;
 
-                List<ItemEntry> newItems = new ArrayList<>();
-                for (int i = 10; i < 44; i++) {
-                    ItemStack stack = menu.slots.get(i).getItem();
-                    if (stack.isEmpty()) continue;
+                if (ScreenHelper.getCurrent() == containerScreen) {
+                    for (int i = 10; i < 44; i++) {
+                        ItemStack stack = menu.slots.get(i).getItem();
+                        if (stack.isEmpty()) continue;
 
-                    String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-                    if (itemId.contains("glass_pane")) continue;
+                        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+                        if (itemId.contains("glass_pane")) continue;
 
-                    String name = stack.getHoverName().getString();
-                    String nbt = null;
-                    var profileComp = stack.get(DataComponents.PROFILE);
-                    if (profileComp != null) {
-                        nbt = ResolvableProfile.CODEC.encodeStart(NbtOps.INSTANCE, profileComp)
-                            .result().map(Tag::toString).orElse(null);
-                    }
-                    String description = null;
-                    var loreComp = stack.get(DataComponents.LORE);
-                    if (loreComp != null) {
-                        List<String> descLines = new ArrayList<>();
-                        for (var line : loreComp.lines()) {
-                            String text = line.getString();
-                            if (text.isBlank()) break;
-                            descLines.add(text);
+                        String name = stack.getHoverName().getString();
+                        String nbt = null;
+                        var profileComp = stack.get(DataComponents.PROFILE);
+                        if (profileComp != null) {
+                            nbt = ResolvableProfile.CODEC.encodeStart(NbtOps.INSTANCE, profileComp)
+                                .result().map(Tag::toString).orElse(null);
                         }
-                        if (!descLines.isEmpty()) {
-                            description = String.join("\n", descLines);
+                        String description = null;
+                        var loreComp = stack.get(DataComponents.LORE);
+                        if (loreComp != null) {
+                            List<String> descLines = new ArrayList<>();
+                            for (var line : loreComp.lines()) {
+                                String text = line.getString();
+                                if (text.isBlank()) break;
+                                descLines.add(text);
+                            }
+                            if (!descLines.isEmpty()) {
+                                description = String.join("\n", descLines);
+                            }
                         }
+                        collected.add(new ItemEntry(name, itemId, nbt, description));
                     }
-                    newItems.add(new ItemEntry(name, itemId, nbt, description));
+
+                    // Glass pane at slot 44 loaded = all rows have arrived
+                    if (!collected.isEmpty() && !menu.slots.get(44).getItem().isEmpty()) {
+                        persisted[0] = true;
+                        saveItems(uuid, profileId, new ArrayList<>(collected));
+                    }
+                } else if (!collected.isEmpty()) {
+                    persisted[0] = true;
+                    saveItems(uuid, profileId, new ArrayList<>(collected));
                 }
-
-                if (newItems.isEmpty()) return;
-
-                saveItems(uuid, profileId, newItems);
             });
         });
     }
@@ -114,9 +120,7 @@ public class AbiphoneTracker {
             Files.createDirectories(configDir);
             Files.writeString(getFile(uuid, profileId), GSON.toJson(items),
                 StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException _) {}
     }
 
     public List<ItemEntry> loadItems(String uuid, String profileId) {
@@ -128,7 +132,6 @@ public class AbiphoneTracker {
             List<ItemEntry> list = GSON.fromJson(raw, ITEM_LIST_TYPE);
             return list != null ? list : Collections.emptyList();
         } catch (IOException e) {
-            e.printStackTrace();
             return Collections.emptyList();
         }
     }
@@ -152,9 +155,7 @@ public class AbiphoneTracker {
             }
 
             Files.writeString(file, GSON.toJson(items), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException _) {}
     }
 
     public record ItemEntry(String name, String material, String nbt, @Nullable String description) {

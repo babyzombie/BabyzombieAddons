@@ -20,11 +20,11 @@ public class ScreenMixin {
         if (!isDisconnectedScreen(this)) return;
         int remaining = AutoReconnectHelper.tickCountdown();
         if (remaining == 0) {
-            AutoReconnectHelper.reconnect((net.minecraft.client.gui.screens.Screen) (Object) this);
+            AutoReconnectHelper.reconnect();
         }
     }
 
-    @Inject(method = "extractRenderState", at = @At("RETURN"))
+    @Inject(method = "extractRenderState*", at = @At("RETURN"))
     private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!isDisconnectedScreen(this)) return;
         int remaining = AutoReconnectHelper.getCountdownRemaining();

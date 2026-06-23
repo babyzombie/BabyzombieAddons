@@ -4,26 +4,31 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.FishingRodItem;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.event.SendCommandEvents;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ItemUtils;
+import top.babyzombie.addons.util.PlaySoundHelper;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.ServerTick;
 
 import java.util.regex.Pattern;
-
-/**
- * On-screen popup notifications with translatable strings.
- */
 
 public final class PopupEventsModule {
 
@@ -39,10 +44,29 @@ public final class PopupEventsModule {
             "(?:组队|組隊|Party) > (?:\\[[\\w+\\+-]+] )?([0-9a-zA-Z_]+)(?: [♲Ⓑ☀⚒ቾ]+)?: rs",
             Pattern.CASE_INSENSITIVE);
 
+    public enum PopupSound {
+        BELL("bell", SoundEvents.BELL_BLOCK),
+        NOTE_BLOCK("note_block", SoundEvents.NOTE_BLOCK_PLING.value()),
+        EXPERIENCE("experience", SoundEvents.EXPERIENCE_ORB_PICKUP),
+        LEVEL_UP("level_up", SoundEvents.PLAYER_LEVELUP),
+        DRAGON("dragon", SoundEvents.ENDER_DRAGON_GROWL),
+        ANVIL("anvil", SoundEvents.ANVIL_LAND),
+        GOAT_HORN("goat_horn", SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(2).value()),
+        LAVA_CHICKEN("lava_chicken", SoundEvents.MUSIC_DISC_LAVA_CHICKEN.value());
+
+        public final String key;
+        public final SoundEvent sound;
+
+        PopupSound(String key, SoundEvent sound) {
+            this.key = key;
+            this.sound = sound;
+        }
+    }
+
     private enum EventType {
         PARTY("party_invite"), GUILD_PARTY("guild_party_invite"),
         FRIEND("friend_request"), TRADE("trade_request"),
-        POSITION_SWAP("position_swap"), DUEL("duel_request"), RESTART("restart_request");
+        POSITION_SWAP("position_swap"), DUEL("duel_request"), RESTART("restart_request"), BAIT("bait_low");
 
         final String key;
         EventType(String k) { this.key = k; }
@@ -69,9 +93,7 @@ public final class PopupEventsModule {
             var cfg = ModConfigManager.get().popup;
             String text = message.getString();
 
-            // System messages (not from chat channels) — skip messages
-            // relayed through Guild/Party/Officer/Co-op/PM to avoid false triggers
-            boolean isSysMsg = !text.matches("^(公会|Guild|组队|Party|Officer|Co-op) > .+|From .+");
+            boolean isSysMsg = !text.matches("^(公会|Guild|组队|Party|Officer|Co-op) > .+|From .+|(?:\\[[^]]+\\] )?\\w{2,16}: .+");
 
             if (isSysMsg) {
                 if (cfg.popupPartyInvite || cfg.popupGuildPartyInvite) {
@@ -128,6 +150,31 @@ public final class PopupEventsModule {
             if (expireTime <= ServerTick.getTime()) { close(); return; }
             renderHUD(context);
         });
+
+        SendCommandEvents.AFTER_SEND.register(command -> {
+            if (expireTime == 0 || expireTime <= ServerTick.getTime()) return;
+            if (PopupEventsModule.command.isEmpty()) return;
+            if (command.equals(PopupEventsModule.command)) {
+                close();
+            }
+        });
+
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            var cfg = ModConfigManager.get().popup;
+            if (cfg.popupBaitLow <= 0) return InteractionResult.PASS;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return InteractionResult.PASS;
+            var held = player.getItemInHand(hand);
+            if (!(held.getItem() instanceof FishingRodItem)) return InteractionResult.PASS;
+            var baitStack = player.getInventory().getItem(8);
+            if (baitStack.isEmpty()) return InteractionResult.PASS;
+            String id = ItemUtils.getSkyblockId(baitStack);
+            if (id == null || !id.endsWith("_BAIT")) return InteractionResult.PASS;
+            int quantity = baitStack.getCount();
+            if (quantity >= cfg.popupBaitLow) return InteractionResult.PASS;
+            String baitName = ChatUtils.stripColor(baitStack.getHoverName().getString());
+            notify(EventType.BAIT, baitName, String.valueOf(cfg.popupBaitLow));
+            return InteractionResult.PASS;
+        });
     }
 
     private static void notify(EventType type, String player, String extra) {
@@ -145,17 +192,31 @@ public final class PopupEventsModule {
                 : type == EventType.FRIEND ? "friend accept " + player
                 : type == EventType.TRADE || type == EventType.POSITION_SWAP ? "trade " + player
                 : type == EventType.DUEL ? "duels accept " + player
+                : type == EventType.BAIT ? "bz " + player
                 : "";
         totalTime = 10000;
         expireTime = ServerTick.getTime() + totalTime;
-        playBell();
+        playSound();
     }
 
-    private static void playBell() {
+    private static void playSound() {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
-        player.level().playSound(player, player.blockPosition(),
-                SoundEvents.BELL_BLOCK, SoundSource.MASTER, 1f, 1f);
+        var popupSound = ModConfigManager.get().popup.popupSound;
+        if (popupSound == PopupSound.LAVA_CHICKEN) {
+            var instance = new SimpleSoundInstance(
+                    popupSound.sound.location(), SoundSource.MASTER,
+                    1f, 1f,
+                    SoundInstance.createUnseededRandom(),
+                    false, 0,
+                    SoundInstance.Attenuation.NONE,
+                    0, 0, 0, true
+            );
+            PlaySoundHelper.playSeeked(instance, 0.9f, 3.5f);
+        } else {
+            player.level().playSound(player, player.blockPosition(),
+                    popupSound.sound, SoundSource.MASTER, 1f, 1f);
+        }
     }
 
     private static void accept() {
@@ -178,6 +239,7 @@ public final class PopupEventsModule {
             case TRADE, POSITION_SWAP -> 0xFF55FFFF;
             case DUEL -> 0xFFFF5555;
             case RESTART -> 0xFFFFFF55;
+            case BAIT -> 0xFF55FF55;
         };
     }
 
@@ -200,11 +262,10 @@ public final class PopupEventsModule {
         float titleScale = 1.5f;
         int titleH = (int) Math.ceil(lh * titleScale) + 2;
         int bodyY = y + titleH + 4;
-        int boxH = titleH + 6 + bodyLines.size() * lh + 10;
+        int boxH = titleH + 6 + bodyLines.size() * lh + 4 + lh + 6;
 
         gui.fill(x, y, x + 152, y + boxH, 0x96000000);
 
-        // Scaled colored title
         var ps = gui.pose();
         ps.pushMatrix();
         ps.translate(x + 76, y + titleH / 2f);

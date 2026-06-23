@@ -68,6 +68,8 @@ public final class SkyblockCategory {
                                 .controller(ConfigUtils.createEnumController(m ->
                                         Component.translatable("config.babyzombieaddons.option.autoisDest." + m.name())))
                                 .build())
+                        .option(createBool("hideEntities", defaults.general.hideEntities,
+                                () -> config.general.hideEntities, v -> config.general.hideEntities = v))
                         .option(Option.<KickRecovery>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.autoBackToSkyblock"))
                                 .description(Component.translatable("config.babyzombieaddons.option.autoBackToSkyblock.desc"))

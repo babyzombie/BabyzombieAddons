@@ -12,6 +12,7 @@ import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.pet.PetManager;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 public final class ArmadilloEnergy {
@@ -34,6 +35,11 @@ public final class ArmadilloEnergy {
             var player = client.player;
             if (player == null) return;
 
+            // 如果当前宠物已知且不是 Armadillo，重置状态
+            var currentPet = PetManager.getInstance().getCurrentPet();
+            if (currentPet != null && !"ARMADILLO".equals(currentPet.type())) {
+                hasDillo = false;
+            }
             hasDillo = player.isPassenger() || hasDillo;
             if (energyMax == 0 || !hasDillo || player.isPassenger()) return;
 

@@ -19,6 +19,7 @@ public final class AutoReconnectHelper {
     private static int tickCounter;
     private static boolean pendingReconnect;
     private static Screen pendingParentScreen;
+    private static Screen firstDisconnectParent;
 
     private AutoReconnectHelper() {}
 
@@ -31,6 +32,7 @@ public final class AutoReconnectHelper {
                     lastServerIp = server.ip;
                     lastServerName = server.name;
                     retryCount = 0;
+                    firstDisconnectParent = null;
                 }
                 lastJoinTimeNanos = now;
             }
@@ -58,12 +60,23 @@ public final class AutoReconnectHelper {
         return lastServerIp;
     }
 
+    /**
+     * 在连接尝试发起时记录目标服务器信息，确保即使初始连接失败也能自动重连。
+     */
+    public static void onConnectionAttempt(String ip, String name) {
+        if (ip == null || ip.isEmpty()) return;
+        if (!ip.equals(lastServerIp)) {
+            retryCount = 0;
+        }
+        lastServerIp = ip;
+        lastServerName = name != null ? name : ip;
+    }
+
     public static boolean shouldStartCountdown() {
         var config = ModConfigManager.get();
         if (!config.general.autoReconnectEnabled) return false;
         if (lastServerIp == null) return false;
-        if (retryCount >= config.general.autoReconnectMaxRetries && config.general.autoReconnectMaxRetries != 0) return false;
-        return true;
+        return retryCount < config.general.autoReconnectMaxRetries || config.general.autoReconnectMaxRetries == 0;
     }
 
     public static int getDelay() {
@@ -93,17 +106,23 @@ public final class AutoReconnectHelper {
         return retryCount;
     }
 
+    public static void setFirstDisconnectParent(Screen parent) {
+        if (firstDisconnectParent == null) {
+            firstDisconnectParent = parent;
+        }
+    }
+
     public static void cancelCountdown() {
         reconnectSecondsRemaining = -1;
         tickCounter = 0;
     }
 
-    public static void reconnect(Screen parentScreen) {
+    public static void reconnect() {
         var ip = lastServerIp;
         if (ip == null) return;
         retryCount++;
         cancelCountdown();
         pendingReconnect = true;
-        pendingParentScreen = parentScreen;
+        pendingParentScreen = firstDisconnectParent;
     }
 }

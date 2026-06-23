@@ -115,6 +115,7 @@ public final class KuudraWaypoints {
     }
 
     private static String getScoreboardPhase(Minecraft client) {
+        if (client.player == null) return "";
         var obj = client.player.level().getScoreboard().getDisplayObjective(DisplaySlot.BY_ID.apply(1));
         if (obj == null) return "";
         for (var holder : client.player.level().getScoreboard().getTrackedPlayers()) {

@@ -1,6 +1,7 @@
 package top.babyzombie.addons.util;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
 
@@ -16,7 +17,8 @@ public final class KeyBindingUtil {
     private KeyBindingUtil() {}
 
     public static KeyMapping register(String translationKey, int defaultKey) {
-        var km = new KeyMapping(translationKey, InputConstants.Type.KEYSYM, defaultKey, CATEGORY);
+        var km = KeyMappingHelper.registerKeyMapping(
+                new KeyMapping(translationKey, InputConstants.Type.KEYSYM, defaultKey, CATEGORY));
         all.add(km);
         return km;
     }

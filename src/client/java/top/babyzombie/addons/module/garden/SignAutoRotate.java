@@ -3,12 +3,11 @@ package top.babyzombie.addons.module.garden;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.regex.Matcher;
@@ -46,7 +45,7 @@ public final class SignAutoRotate {
 
             if (ym.find() && pm.find()) {
                 ItemStack held = player.getItemInHand(hand);
-                if (held.getItem() instanceof HoeItem || held.getItem() instanceof AxeItem) {
+                if (ItemUtils.isFarmingTool(held)) {
                     try {
                         float yaw = Float.parseFloat(ym.group(1));
                         float pitch = Float.parseFloat(pm.group(1));

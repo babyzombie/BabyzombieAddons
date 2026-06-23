@@ -8,7 +8,7 @@ public final class KuudraPerkShopBlacklist {
     private KuudraPerkShopBlacklist() {}
 
     public static void init() {
-        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot) -> {
+        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, button) -> {
             if (!ModConfigManager.get().kuudra.perkShopBlacklist) return false;
 
             String title = ChatUtils.stripColor(screen.getTitle().getString());

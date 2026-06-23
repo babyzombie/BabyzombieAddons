@@ -1,22 +1,70 @@
 package top.babyzombie.addons.module.playcmd;
 
+import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.event.SendCommandEvents;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class PlayCmdModule {
     private PlayCmdModule() {}
-    public static void init() {}
+
+    public static void init() {
+        SendCommandEvents.BEFORE_SEND.register(command -> {
+            if (command.trim().equals("play") && ModConfigManager.get().misc.playCmd
+                    && HypixelLocationTracker.getInstance().isOnHypixel()) {
+                openGUI();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    public static boolean isPlayCmdEnabled() {
+        return ModConfigManager.get().misc.playCmd;
+    }
+
+    public static Suggestions enrichPlaySuggestions(String text, Suggestions existing) {
+        if (!ModConfigManager.get().misc.playCmd) return existing;
+        if (text.length() < 6) return existing;
+        List<Suggestion> list = new ArrayList<>(existing.getList());
+        String prefix = text.substring(6).trim().toLowerCase();
+
+        for (Object[][] cat : GAMES) {
+            for (int i = 1; i < cat.length; i++) {
+                String cmd = (String) cat[i][1];
+                if (!cmd.startsWith("/play ")) continue;
+                String sub = cmd.substring(6);
+                if (prefix.isEmpty() || sub.toLowerCase().startsWith(prefix)) {
+                    boolean dup = false;
+                    for (Suggestion s : list) {
+                        if (s.getText().equals(sub)) { dup = true; break; }
+                    }
+                    if (!dup) {
+                        list.add(new Suggestion(StringRange.between(6, text.length()), sub));
+                    }
+                }
+            }
+        }
+        return new Suggestions(existing.getRange(), list);
+    }
 
     public static void openGUI() {
         Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreenAndShow(new PlayScreen()));
     }
 
     // Each game: {en, cmd, zh}
-    private static final Object[][][] GAMES = {
+    static final Object[][][] GAMES = {
         {{"Main","主分类"}, {"SkyBlock","/play skyblock","SkyBlock"}, {"Housing","/hub housing","Housing (家园)"}, {"Pit","/play pit","Pit (天坑乱斗)"}},
         {{"BedWars","起床战争"},
          {"Solo","/play bedwars_eight_one","单挑"},{"Doubles","/play bedwars_eight_two","双人"},{"3v3v3v3","/play bedwars_four_three"},

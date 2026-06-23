@@ -1,11 +1,14 @@
 package top.babyzombie.addons.module.mining;
 
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.minecraft.core.BlockPos;
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -32,12 +35,12 @@ public final class GlaciteMineshaftWaypoints {
             "[-]+\\n(.+) entered Glacite Mineshafts!\\n[-]+");
 
     private static long portalTimer;
-    private static int lastCorpseScanTick;
     private static boolean inMineshaft;
     private static boolean mineshaftOwner;
     private static long enterMineshaftTime;
     private static boolean waitingPartyTransfer;
     private static String ownServerName;
+    private static final Set<BlockPos> visitedCorpses = new HashSet<>();
 
     private GlaciteMineshaftWaypoints() {}
 
@@ -151,10 +154,10 @@ public final class GlaciteMineshaftWaypoints {
             var t = HypixelLocationTracker.getInstance();
 
             // Corpse waypoints in mineshaft — detect and render
-            if (t.isInSkyblock() && "Mineshaft".equals(t.getMap())) {
+            if (ModConfigManager.get().mining.mineshaftWaypoints
+                    && t.isInSkyblock() && "Mineshaft".equals(t.getMap())) {
                 var player = Minecraft.getInstance().player;
-                if (player != null && player.tickCount != lastCorpseScanTick) {
-                    lastCorpseScanTick = player.tickCount;
+                if (player != null) {
                     var level = player.level();
                     var stands = level.getEntitiesOfClass(ArmorStand.class,
                             new AABB(player.blockPosition()).inflate(96),
@@ -172,6 +175,11 @@ public final class GlaciteMineshaftWaypoints {
                             default -> null;
                         };
                         if (name == null) continue;
+                        var pos = stand.blockPosition();
+                        if (player.distanceTo(stand) <= 3) {
+                            visitedCorpses.add(pos);
+                        }
+                        if (visitedCorpses.contains(pos)) continue;
                         var x = stand.getX();
                         var y = stand.getY() + 2;
                         var z = stand.getZ();
@@ -208,6 +216,7 @@ public final class GlaciteMineshaftWaypoints {
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             portalTimer = 0; inMineshaft = false;
             mineshaftOwner = false; waitingPartyTransfer = false; ownServerName = null;
+            visitedCorpses.clear();
         });
     }
 

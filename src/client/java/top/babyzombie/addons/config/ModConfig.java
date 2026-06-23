@@ -51,7 +51,10 @@ public class ModConfig {
     public PopupConfig popup = new PopupConfig();
     public EventsConfig events = new EventsConfig();
     public MiscConfig misc = new MiscConfig();
+    public ChatChannelConfig chatChannel = new ChatChannelConfig();
     public DebugConfig debug = new DebugConfig();
+    public AutoJoinConfig autoJoin = new AutoJoinConfig();
+    public HandRenderConfig handRender = new HandRenderConfig();
 
     // ---- General ----
 
@@ -61,6 +64,7 @@ public class ModConfig {
         public int autoisDelay = 5;
         public AutoISDest autoisDest = AutoISDest.GARDEN;
         public KickRecovery autoBackToSkyblock = KickRecovery.LOBBY_ONLY;
+        public boolean hideEntities = false;
         public boolean cakeBuffTracker = false;
         public boolean minionCollectAutoClose = false;
         public int skipSecondPerson = 0;
@@ -73,6 +77,7 @@ public class ModConfig {
         public float playerScaleY = 1.0f;
         public float playerScaleZ = 1.0f;
         public boolean showCrosshairInThirdPerson = false;
+        public boolean chatInContainer = false;
     }
 
     // ---- Dungeon ----
@@ -86,6 +91,7 @@ public class ModConfig {
         public String requeueMessage = "going in %delay%";
         public String requeueCancelMessage = "ok";
         public String requeueCancelKeywords = "c|cancel|n|nr|wait|stop|dt|don't|gtg|tyfr|tyfrs|gtg tyfr|gtg tyfrs|no key|别急|等会|等下|先别开";
+        public boolean enderPearlRefill = false;
         public boolean autoChestClose = false;
         public boolean muteStormThunder = false;
         public DailyCounterMode dailyRunsCounter = DailyCounterMode.OFF;
@@ -186,6 +192,7 @@ public class ModConfig {
         public boolean signAutoRotate = false;
         public boolean trevorAutoAccept = false;
         public boolean trevorAutoCall = false;
+        public boolean farmingToolSwingSuppression = false;
     }
 
     // ---- Popup Events ----
@@ -197,6 +204,9 @@ public class ModConfig {
         public boolean popupDuelsRequest = false;
         public boolean popupSkyblockTrade = false;
         public boolean popupDungeonRestart = false;
+        public top.babyzombie.addons.module.popup.PopupEventsModule.PopupSound popupSound =
+                top.babyzombie.addons.module.popup.PopupEventsModule.PopupSound.BELL;
+        public int popupBaitLow = 0;
     }
 
     // ---- Party ----
@@ -235,10 +245,32 @@ public class ModConfig {
         public BzGetFromSacksMode bzGetFromSacks = BzGetFromSacksMode.OFF;
     }
 
+    // ---- Chat Channel ----
+
+    public static class ChatChannelConfig {
+        public boolean chatChannelSwitcher = false;
+    }
+
     // ---- Debug ----
 
     public static class DebugConfig {
         public boolean debugMode = false;
         public ConfigBackend configBackend = ConfigBackend.MOUL_CONFIG;
+    }
+
+    // ---- Auto Join ----
+
+    public static class AutoJoinConfig {
+        public boolean autoJoinServer = false;
+        public String autoJoinServerIP = "";
+    }
+
+    // ---- Hand Render ----
+
+    public static class HandRenderConfig {
+        public boolean disableAll = false;
+        public boolean swapHands = false;
+        public float swingSpeed = 1.0f;
+        public float itemScale = 1.0f;
     }
 }

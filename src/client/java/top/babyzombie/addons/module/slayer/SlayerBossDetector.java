@@ -291,7 +291,7 @@ public final class SlayerBossDetector {
         List<String> bossStatus = new ArrayList<>();
         String[] parts = timeLeft != null ? timeLeft.split(" ") : new String[0];
         if (parts.length > 1) {
-            for (int i = 0; i < parts.length - 1; i++) bossStatus.add(parts[i]);
+            bossStatus.addAll(Arrays.asList(parts).subList(0, parts.length - 1));
             bossStatus.add("§7→§r");
             bossStatus.add(NEXT_BLAZE_ATTUNED.getOrDefault(ChatUtils.stripColor(parts[0]), ""));
         }
@@ -463,7 +463,7 @@ public final class SlayerBossDetector {
                 String[] parts = timeLeft != null ? timeLeft.split(" ") : new String[0];
                 List<String> bossStatus = new ArrayList<>();
                 if (parts.length > 1) {
-                    for (int i = 0; i < parts.length - 1; i++) bossStatus.add(parts[i]);
+                    bossStatus.addAll(Arrays.asList(parts).subList(0, parts.length - 1));
                     bossStatus.add("§7→§r");
                     bossStatus.add(NEXT_BLAZE_ATTUNED.getOrDefault(
                             ChatUtils.stripColor(parts[0]), ""));

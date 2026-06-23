@@ -6,6 +6,7 @@ import net.azureaaron.dandelion.api.Option;
 import net.azureaaron.dandelion.api.OptionGroup;
 import net.azureaaron.dandelion.api.controllers.FloatController;
 import net.azureaaron.dandelion.api.controllers.IntegerController;
+import net.azureaaron.dandelion.api.controllers.StringController;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ConfigUtils;
@@ -30,6 +31,14 @@ public final class GeneralCategory {
                         .description(Component.translatable("config.babyzombieaddons.option.hudEdit.desc"))
                         .prompt(Component.translatable("config.babyzombieaddons.prompt.open"))
                         .action(HudManager::openEditScreen)
+                        .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.chat"))
+                        .collapsed(true)
+                        .option(createBool("chatChannelSwitcher", defaults.chatChannel.chatChannelSwitcher,
+                                () -> config.chatChannel.chatChannelSwitcher, v -> config.chatChannel.chatChannelSwitcher = v))
+                        .option(createBool("chatInContainer", defaults.general.chatInContainer,
+                                () -> config.general.chatInContainer, v -> config.general.chatInContainer = v))
                         .build())
                 .option(createBool("playCmd", defaults.misc.playCmd,
                         () -> config.misc.playCmd, v -> config.misc.playCmd = v))
@@ -75,6 +84,20 @@ public final class GeneralCategory {
                                 .build())
                         .build())
                 .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.autoJoinServer"))
+                        .collapsed(true)
+                        .option(createBool("autoJoinServer", defaults.autoJoin.autoJoinServer,
+                                () -> config.autoJoin.autoJoinServer, v -> config.autoJoin.autoJoinServer = v))
+                        .option(Option.<String>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.autoJoinServerIP"))
+                                .description(Component.translatable("config.babyzombieaddons.option.autoJoinServerIP.desc"))
+                                .binding(defaults.autoJoin.autoJoinServerIP,
+                                        () -> config.autoJoin.autoJoinServerIP,
+                                        v -> config.autoJoin.autoJoinServerIP = v)
+                                .controller(StringController.createBuilder().build())
+                                .build())
+                        .build())
+                .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.playerScale"))
                         .collapsed(true)
                         .option(Option.<Float>createBuilder()
@@ -83,7 +106,7 @@ public final class GeneralCategory {
                                 .binding(defaults.general.playerScaleX,
                                         () -> config.general.playerScaleX,
                                         v -> config.general.playerScaleX = v)
-                                .controller(FloatController.createBuilder().range(0.01f, 1.0f).slider(0.01f).build())
+                                .controller(FloatController.createBuilder().range(0.00f, 1.0f).slider(0.05f).build())
                                 .build())
                         .option(Option.<Float>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.playerScaleY"))
@@ -91,7 +114,7 @@ public final class GeneralCategory {
                                 .binding(defaults.general.playerScaleY,
                                         () -> config.general.playerScaleY,
                                         v -> config.general.playerScaleY = v)
-                                .controller(FloatController.createBuilder().range(0.01f, 1.0f).slider(0.01f).build())
+                                .controller(FloatController.createBuilder().range(0.00f, 1.0f).slider(0.05f).build())
                                 .build())
                         .option(Option.<Float>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.playerScaleZ"))
@@ -99,10 +122,20 @@ public final class GeneralCategory {
                                 .binding(defaults.general.playerScaleZ,
                                         () -> config.general.playerScaleZ,
                                         v -> config.general.playerScaleZ = v)
-                                .controller(FloatController.createBuilder().range(0.01f, 1.0f).slider(0.01f).build())
+                                .controller(FloatController.createBuilder().range(0.00f, 1.0f).slider(0.05f).build())
                                 .build())
                         .option(createBool("showCrosshairInThirdPerson", defaults.general.showCrosshairInThirdPerson,
                                 () -> config.general.showCrosshairInThirdPerson, v -> config.general.showCrosshairInThirdPerson = v))
+                        .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.handRender"))
+                        .collapsed(true)
+                        .option(createBool("disableHandRender", defaults.handRender.disableAll,
+                                () -> config.handRender.disableAll, v -> config.handRender.disableAll = v))
+                        .option(createBool("swapHands", defaults.handRender.swapHands,
+                                () -> config.handRender.swapHands, v -> config.handRender.swapHands = v))
+                        .option(createFloat("itemScale", defaults.handRender.itemScale,
+                                () -> config.handRender.itemScale, v -> config.handRender.itemScale = v, 0.1f, 1.0f))
                         .build())
                 .build();
     }
@@ -113,6 +146,15 @@ public final class GeneralCategory {
                 .description(Component.translatable("config.babyzombieaddons.option." + key + ".desc"))
                 .binding(def, getter, setter)
                 .controller(ConfigUtils.createBooleanController())
+                .build();
+    }
+
+    private static Option<Float> createFloat(String key, float def, Supplier<Float> getter, Consumer<Float> setter, float min, float max) {
+        return Option.<Float>createBuilder()
+                .name(Component.translatable("config.babyzombieaddons.option." + key))
+                .description(Component.translatable("config.babyzombieaddons.option." + key + ".desc"))
+                .binding(def, getter, setter)
+                .controller(FloatController.createBuilder().range(min, max).slider(0.05f).build())
                 .build();
     }
 }
