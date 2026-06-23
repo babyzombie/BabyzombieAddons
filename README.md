@@ -1,12 +1,14 @@
 # BabyzombieAddons
 
-Hypixel SkyBlock 生活质量工具模组，Fabric 客户端模组，适配 Minecraft 1.21.11。
+Hypixel SkyBlock 生活质量工具模组，[Fabric](https://fabricmc.net/) 客户端模组。
 
 [GitHub](https://github.com/babyzombie/BabyzombieAddons) · [Gitee](https://gitee.com/Bluesky-kk/BabyzombieAddons)
 
 ## 安装
 
-需要 Fabric Loader 0.18.5+、Fabric API、Fabric Language Kotlin 和 YetAnotherConfigLib。
+需要 [Fabric API](https://modrinth.com/mod/fabric-api)
+
+需要 [Fabric Language Kotlin](https://modrinth.com/mod/fabric-language-kotlin) 和 [YetAnotherConfigLib](https://modrinth.com/mod/yacl) 才能打开设置页面
 
 ## 主要功能
 
