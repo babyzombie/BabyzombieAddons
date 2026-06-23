@@ -101,28 +101,34 @@ jobs:
         run: |
           set -e
           BODY=$(cat changelog.md)
-          # 检查 Gitee 上是否已存在对应 tag 的 release
-          RELEASE_ID=$(curl -sS "https://gitee.com/api/v5/repos/$GITEE_OWNER/$GITEE_REPO/releases/tags/$TAG?access_token=$GITEE_TOKEN" | jq -r '.id // empty')
+          API="https://gitee.com/api/v5/repos/$GITEE_OWNER/$GITEE_REPO"
+          TOKEN="access_token=$GITEE_TOKEN"
+
+          # 查 Gitee 上是否已有同名 tag 的 release
+          RESP=$(curl -sS "$API/releases/tags/$TAG?$TOKEN")
+          RELEASE_ID=$(echo "$RESP" | jq -r '.id // empty')
+
           if [ -z "$RELEASE_ID" ]; then
             echo "在 Gitee 上创建 release: $TAG"
-            RELEASE_ID=$(curl -sS -X POST "https://gitee.com/api/v5/repos/$GITEE_OWNER/$GITEE_REPO/releases" \
+            PAYLOAD=$(jq -n --arg tag "$TAG" --arg name "Release $TAG" --arg body "$BODY" \
+              '{tag_name: $tag, name: $name, body: $body, target_commitish: "main"}')
+            RESP=$(curl -sS -X POST "$API/releases?$TOKEN" \
               -H "Content-Type: application/json" \
-              -d "$(jq -n --arg tag "$TAG" --arg name "Release $TAG" --arg body "$BODY" \
-                '{tag_name: $tag, name: $name, body: $body, target_commitish: "main"}')" \
-              "?access_token=$GITEE_TOKEN" | jq -r '.id')
+              -d "$PAYLOAD")
+            RELEASE_ID=$(echo "$RESP" | jq -r '.id')
             echo "创建的 release ID: $RELEASE_ID"
           else
             echo "Gitee 上已存在 release (ID: $RELEASE_ID)，更新描述"
-            curl -sS -X PATCH "https://gitee.com/api/v5/repos/$GITEE_OWNER/$GITEE_REPO/releases/$RELEASE_ID" \
+            PAYLOAD=$(jq -n --arg body "$BODY" '{body: $body}')
+            curl -sS -X PATCH "$API/releases/$RELEASE_ID?$TOKEN" \
               -H "Content-Type: application/json" \
-              -d "$(jq -n --arg body "$BODY" '{body: $body}')" \
-              "?access_token=$GITEE_TOKEN" > /dev/null
+              -d "$PAYLOAD" > /dev/null
           fi
-          # 上传 JAR 文件
+
+          # 上传 JAR 附件
           for f in artifacts/*.jar; do
             echo "上传: $f"
-            curl -sS -X POST "https://gitee.com/api/v5/repos/$GITEE_OWNER/$GITEE_REPO/releases/$RELEASE_ID/attach_files" \
-              -F "file=@$f" \
-              "?access_token=$GITEE_TOKEN" | jq -r '.name + " -> " + (.browser_download_url // "失败")'
+            curl -sS -X POST "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
+              -F "file=@$f" | jq -r '.name + " -> " + (.browser_download_url // "失败")'
           done
           echo "Gitee release 同步完成"
