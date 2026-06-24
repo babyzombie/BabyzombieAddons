@@ -5,7 +5,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.Scheduler;
-import top.babyzombie.addons.util.ScreenHelper;
+import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.regex.Pattern;
@@ -25,12 +25,15 @@ public final class MinionCollectAutoClose {
 
             if (slot == null || !slot.hasItem()) return false;
 
-            String name = ChatUtils.stripColor(slot.getItem().getDisplayName().getString()).trim();
+            String name = ChatUtils.stripColor(slot.getItem().getHoverName().getString()).trim();
             if (!name.equals("Collect All")) return false;
 
-            Scheduler.schedule(1, () -> {
+            Scheduler.schedule(ServerTick.getPing() / 50 + 4, () -> {
                 var client = Minecraft.getInstance();
-                if (ScreenHelper.getCurrent() != screen) return;
+                var cur = client.screen;
+                if (cur == null) return;
+                String curTitle = ChatUtils.stripColor(cur.getTitle().getString());
+                if (!MINION_TITLE.matcher(curTitle).find()) return;
                 client.execute(() -> { if (client.player != null) client.player.closeContainer(); });
             });
             return false;
