@@ -14,12 +14,17 @@ public class GitHubUpdateChecker implements UpdateChecker {
     private static final Pattern PRERELEASE_PATTERN = Pattern.compile("[.\\-](?:alpha|beta|pre|rc)\\d*", Pattern.CASE_INSENSITIVE);
 
     private final String currentVersion;
+    private final String mcVersion;
 
     public GitHubUpdateChecker(String modId) {
         this.currentVersion = FabricLoader.getInstance()
                 .getModContainer(modId)
                 .map(c -> c.getMetadata().getVersion().getFriendlyString())
                 .orElse(null);
+        this.mcVersion = FabricLoader.getInstance()
+                .getModContainer("minecraft")
+                .map(c -> c.getMetadata().getVersion().getFriendlyString())
+                .orElse("");
     }
 
     @Override
@@ -27,7 +32,7 @@ public class GitHubUpdateChecker implements UpdateChecker {
         if (currentVersion == null) return null;
 
         try {
-            var release = UpdateCheckUtil.fetchLatest();
+            var release = UpdateCheckUtil.fetchLatest(mcVersion);
             if (release == null) return null;
 
             if (UpdateCheckUtil.isNewer(release.tag(), currentVersion)) {

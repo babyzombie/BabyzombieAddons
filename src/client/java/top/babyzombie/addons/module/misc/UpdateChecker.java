@@ -29,13 +29,17 @@ public final class UpdateChecker {
                     .getModContainer("babyzombieaddons")
                     .map(c -> c.getMetadata().getVersion().getFriendlyString())
                     .orElse("0.0.0");
-            check(client, version);
+            var mcVersion = FabricLoader.getInstance()
+                    .getModContainer("minecraft")
+                    .map(c -> c.getMetadata().getVersion().getFriendlyString())
+                    .orElse("");
+            check(client, version, mcVersion);
         });
     }
 
-    private static void check(Minecraft client, String currentVersion) {
+    private static void check(Minecraft client, String currentVersion, String mcVersion) {
         var thread = new Thread(() -> {
-            var release = UpdateCheckUtil.fetchLatest();
+            var release = UpdateCheckUtil.fetchLatest(mcVersion);
             if (release == null) return;
             if (!UpdateCheckUtil.isNewer(release.tag(), currentVersion)) return;
 
