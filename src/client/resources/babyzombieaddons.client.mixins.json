@@ -27,7 +27,6 @@
     "ContainerChatMixin",
     "ChatOverlaySetScreenMixin",
     "ScreenMixin",
-    "ScreenTracker",
     "PlayerScaleMixin",
     "ThirdPersonCrosshairMixin",
     "CommandSuggestionsMixin",

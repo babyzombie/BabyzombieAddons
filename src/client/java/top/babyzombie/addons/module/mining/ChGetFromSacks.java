@@ -1,7 +1,5 @@
 package top.babyzombie.addons.module.mining;
 
-import top.babyzombie.addons.util.ScreenHelper;
-
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -71,8 +69,7 @@ public final class ChGetFromSacks {
             if (!gettingApparatus) return;
             if (ChatUtils.stripColor(message.getString()).equals("You Supercrafted Precursor Apparatus!")) {
                 var client = Minecraft.getInstance();
-                var screen = ScreenHelper.getCurrent();
-                if (screen != null) screen.onClose();
+                if (client.screen != null) client.screen.onClose();
                 gettingApparatus = false;
             }
         });

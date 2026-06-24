@@ -1,7 +1,5 @@
 package top.babyzombie.addons.module.abiphone;
 
-import top.babyzombie.addons.util.ScreenHelper;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -67,7 +65,7 @@ public class AbiphoneTracker {
             ClientTickEvents.END_CLIENT_TICK.register(tickClient -> {
                 if (persisted[0]) return;
 
-                if (ScreenHelper.getCurrent() == containerScreen) {
+                if (tickClient.screen == containerScreen) {
                     for (int i = 10; i < 44; i++) {
                         ItemStack stack = menu.slots.get(i).getItem();
                         if (stack.isEmpty()) continue;
