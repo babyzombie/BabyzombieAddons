@@ -164,7 +164,7 @@ public final class SlayerHUD {
             var cfg = config.reheatedGummyPolarBear;
             if (cfg != ModConfig.GummyPolarBearMode.OFF) {
                 var tracker2 = HypixelLocationTracker.getInstance();
-                if (!tracker2.isInDungeon() && !"The Rift".equals(tracker2.getMap())) {
+                if (!tracker2.isInDungeon() && !tracker2.isIn("The Rift")) {
                     if (cfg == ModConfig.GummyPolarBearMode.EVERYWHERE_EXCEPT_DUNGEON
                             || "Smoldering Tomb".equals(tracker2.getLocation())) {
                         String profileId = tracker2.getProfileId();

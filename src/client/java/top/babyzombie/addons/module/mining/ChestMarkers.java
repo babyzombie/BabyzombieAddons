@@ -56,6 +56,6 @@ public final class ChestMarkers {
 
     private static boolean isInCrystalHollows() {
         var t = HypixelLocationTracker.getInstance();
-        return t.isInSkyblock() && "Crystal Hollows".equals(t.getMap());
+        return t.isIn("Crystal Hollows");
     }
 }

@@ -21,7 +21,7 @@ public final class SuspiciousScrapCounter {
             if (overlay) return;
             if (!ModConfigManager.get().mining.suspiciousScrapCounter) return;
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInSkyblock() || !"Mineshaft".equals(tracker.getMap())) return;
+            if (!tracker.isIn("Mineshaft")) return;
             if (ChatUtils.stripColor(message.getString()).startsWith("EXCAVATOR! You found a Suspicious Scrap!")) {
                 count++;
             }

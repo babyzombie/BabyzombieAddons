@@ -17,8 +17,8 @@ public final class CreeperVisibility {
 
             var t = HypixelLocationTracker.getInstance();
             var loc = t.getLocation();
-            boolean inGunpowder = "Deep Caverns".equals(t.getMap()) && "Gunpowder Mines".equals(loc);
-            boolean inMist = "Dwarven Mines".equals(t.getMap()) && "The Mist".equals(loc);
+            boolean inGunpowder = t.isIn("Deep Caverns") && "Gunpowder Mines".equals(loc);
+            boolean inMist = t.isIn("Dwarven Mines") && "The Mist".equals(loc);
 
             if (!inGunpowder && !inMist) return;
 

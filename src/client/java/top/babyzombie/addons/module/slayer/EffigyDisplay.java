@@ -2,7 +2,6 @@ package top.babyzombie.addons.module.slayer;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.scores.*;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -12,7 +11,6 @@ import top.babyzombie.addons.util.render.WorldRenderUtils;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,7 +41,7 @@ public final class EffigyDisplay {
 
             active.clear();
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInSkyblock() || !"The Rift".equals(tracker.getMap())) return;
+            if (!tracker.isIn("The Rift")) return;
 
             var level = client.player.level();
             if (level == null) return;
@@ -70,7 +68,7 @@ public final class EffigyDisplay {
         RenderPhaseRegister.register(ctx -> {
             if (!ModConfigManager.get().slayer.showEffigies) return;
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInSkyblock() || !"The Rift".equals(tracker.getMap())) return;
+            if (!tracker.isIn("The Rift")) return;
             if (active.isEmpty()) return;
 
             for (int idx : active) {

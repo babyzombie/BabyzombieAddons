@@ -18,7 +18,7 @@ public final class KuudraFollowerHelmetPrice {
             if (!ModConfigManager.get().kuudra.followerHelmetPrice) return;
             if (overlay) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
-            if (!Objects.equals(HypixelLocationTracker.getInstance().getMap(), "Crimson Isle")
+            if (!HypixelLocationTracker.getInstance().isIn("Crimson Isle")
                     || !Objects.equals(HypixelLocationTracker.getInstance().getLocation(), "Plhlegblast Pool")) return;
 
             String text = ChatUtils.stripColor(message.getString());

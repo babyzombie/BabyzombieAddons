@@ -2,7 +2,6 @@ package top.babyzombie.addons.module.mining;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvents;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
@@ -49,6 +48,6 @@ public final class PowderMiningSounds {
 
     private static boolean isInCrystalHollows() {
         var t = HypixelLocationTracker.getInstance();
-        return t.isInSkyblock() && "Crystal Hollows".equals(t.getMap());
+        return t.isIn("Crystal Hollows");
     }
 }

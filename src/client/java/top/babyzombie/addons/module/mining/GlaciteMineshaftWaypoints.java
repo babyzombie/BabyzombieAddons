@@ -49,7 +49,7 @@ public final class GlaciteMineshaftWaypoints {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var t = HypixelLocationTracker.getInstance();
             if (!t.isInSkyblock()) { inMineshaft = false; return; }
-            boolean nowIn = "Mineshaft".equals(t.getMap());
+            boolean nowIn = t.isIn("Mineshaft");
             if (nowIn && !inMineshaft) {
                 enterMineshaftTime = ServerTick.getTime();
                 // Auto warp if owner
@@ -155,7 +155,7 @@ public final class GlaciteMineshaftWaypoints {
 
             // Corpse waypoints in mineshaft — detect and render
             if (ModConfigManager.get().mining.mineshaftWaypoints
-                    && t.isInSkyblock() && "Mineshaft".equals(t.getMap())) {
+                    && t.isIn("Mineshaft")) {
                 var player = Minecraft.getInstance().player;
                 if (player != null) {
                     var level = player.level();
@@ -195,7 +195,7 @@ public final class GlaciteMineshaftWaypoints {
             }
 
             // Portal timer in Dwarven Mines
-            if (t.isInSkyblock() && "Dwarven Mines".equals(t.getMap()) && portalTimer > ServerTick.getTime()) {
+            if (t.isIn("Dwarven Mines") && portalTimer > ServerTick.getTime()) {
                 long remaining = portalTimer - ServerTick.getTime();
                 var player = Minecraft.getInstance().player;
                 if (player != null) {
@@ -221,13 +221,11 @@ public final class GlaciteMineshaftWaypoints {
     }
 
     private static boolean isInMineshaft() {
-        var t = HypixelLocationTracker.getInstance();
-        return t.isInSkyblock() && "Mineshaft".equals(t.getMap());
+        return HypixelLocationTracker.getInstance().isIn("Mineshaft");
     }
 
     private static boolean isInDwarvenMines() {
-        var t = HypixelLocationTracker.getInstance();
-        return t.isInSkyblock() && "Dwarven Mines".equals(t.getMap());
+        return HypixelLocationTracker.getInstance().isIn("Dwarven Mines");
     }
 
     private static String tr(String key) {

@@ -6,8 +6,6 @@ import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
-import java.util.Objects;
-
 public final class NucleusAutoWarp {
     private static long warpReady;
 
@@ -17,7 +15,7 @@ public final class NucleusAutoWarp {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
             if (!ModConfigManager.get().mining.nucleusAutoWarp) return;
-            if(!Objects.equals(HypixelLocationTracker.getInstance().getMap(), "Crystal Hollows")) return;
+            if(!HypixelLocationTracker.getInstance().isIn("Crystal Hollows")) return;
             if (!ChatUtils.stripColor(message.getString()).equals("You have already obtained this Crystal!")) return;
 
             if (warpReady == 0 || ServerTick.getTime() - warpReady > 10_000) {

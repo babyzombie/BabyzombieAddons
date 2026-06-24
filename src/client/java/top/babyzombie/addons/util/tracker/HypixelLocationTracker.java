@@ -31,7 +31,6 @@ public class HypixelLocationTracker {
     private static final int SIDEBAR_SLOT = 1;
 
     private volatile HypixelLocationData currentLocation;
-    private volatile boolean initialized;
 
     private HypixelLocationTracker() {
         this.currentLocation = new HypixelLocationData(null, null, null, null, null, null, null);
@@ -39,9 +38,6 @@ public class HypixelLocationTracker {
 
     /** Register Hypixel Mod API packet handler and tick listener. */
     public void init() {
-        if (initialized) return;
-        initialized = true;
-
         HypixelModAPI.getInstance().subscribeToEventPacket(ClientboundLocationPacket.class);
         HypixelModAPI.getInstance().createHandler(ClientboundLocationPacket.class, this::onLocationUpdate);
 
@@ -67,26 +63,19 @@ public class HypixelLocationTracker {
         currentLocation = new HypixelLocationData(
             prev.serverName(), prev.serverType(),
             prev.lobbyName(), prev.mode(), prev.map(),
-            prev.uuid(), prev.profileId(), null,
-            prev.inSkyblock(), prev.inDungeon(), prev.inKuudra(), prev.inLimbo(), prev.skyblockDay()
+            prev.uuid(), prev.profileId(), null
         );
     }
 
     private void onLocationUpdate(ClientboundLocationPacket packet) {
         var uuid = Minecraft.getInstance().getUser().getProfileId().toString();
         String serverType = Objects.requireNonNull(packet.getServerType().orElse(null)).getName();
-        String map = packet.getMap().orElse(null);
-        boolean inSb = "SkyBlock".equals(serverType);
         var prev = currentLocation;
         currentLocation = new HypixelLocationData(
             packet.getServerName(), serverType,
-            packet.getLobbyName().orElse(null), packet.getMode().orElse(null), map,
-            uuid, prev.profileId(), prev.location(),
-            inSb,
-            inSb && "Dungeon".equals(map),
-            inSb && "Kuudra".equals(map),
-            "limbo".equals(packet.getServerName()),
-            prev.skyblockDay()
+            packet.getLobbyName().orElse(null), packet.getMode().orElse(null),
+            packet.getMap().orElse(null),
+            uuid, prev.profileId(), prev.location()
         );
     }
 
@@ -100,10 +89,7 @@ public class HypixelLocationTracker {
             currentLocation = new HypixelLocationData(
                     prev.serverName(), prev.serverType(),
                     prev.lobbyName(), prev.mode(), prev.map(),
-                    uuid, profileId, prev.location(),
-                    prev.inSkyblock(),
-                    prev.inDungeon(), prev.inKuudra(),
-                    prev.inLimbo(), prev.skyblockDay());
+                    uuid, profileId, prev.location());
         }
     }
 
@@ -139,14 +125,10 @@ public class HypixelLocationTracker {
 
         if (newLocation != null) {
             var prev = currentLocation;
-            int day = (int)(world.getOverworldClockTime() / 24000L);
             currentLocation = new HypixelLocationData(
                     prev.serverName(), prev.serverType(),
                     prev.lobbyName(), prev.mode(), prev.map(),
-                    prev.uuid(), prev.profileId(), newLocation,
-                    prev.inSkyblock(),
-                    prev.inDungeon(), prev.inKuudra(),
-                    prev.inLimbo(), day);
+                    prev.uuid(), prev.profileId(), newLocation);
         }
     }
 
@@ -162,14 +144,28 @@ public class HypixelLocationTracker {
     @Nullable public String getMode() { return currentLocation.mode(); }
     @Nullable public String getMap() { return currentLocation.map(); }
     public boolean isOnHypixel() { return currentLocation.serverName() != null; }
-    public boolean isInSkyblock() { return currentLocation.inSkyblock(); }
+
+    public boolean isInSkyblock() { return "SkyBlock".equals(currentLocation.serverType()); }
+    public boolean isInDungeon() { return isInSkyblock() && "Dungeon".equals(currentLocation.map()); }
+    public boolean isInKuudra() { return isInSkyblock() && "Kuudra".equals(currentLocation.map()); }
+    public boolean isInLimbo() { return "limbo".equals(currentLocation.serverName()); }
+
     @Nullable public String getUuid() { return currentLocation.uuid(); }
     @Nullable public String getProfileId() { return currentLocation.profileId(); }
     @Nullable public String getLocation() { return currentLocation.location(); }
-    public boolean isInDungeon() { return currentLocation.inDungeon(); }
-    public boolean isInKuudra() { return currentLocation.inKuudra(); }
-    public boolean isInLimbo() { return currentLocation.inLimbo(); }
-    public int getSkyblockDay() { return currentLocation.skyblockDay(); }
+
+    /** Whether the player is currently in the given map. Null-safe: returns false when map is null. */
+    public boolean isIn(@Nullable String map) {
+        return Objects.equals(currentLocation.map(), map);
+    }
+
+    /** @return the current skyblock day from world time, or -1 if not in a world. */
+    public int getSkyblockDay() {
+        var world = Minecraft.getInstance().level;
+        if (world == null || !isInSkyblock()) return -1;
+        return (int)(world.getOverworldClockTime() / 24000L);
+    }
+
     /** @return the dungeon floor from the location string, or null. */
     @Nullable public String getFloor() { return currentLocation.getFloor(); }
 }

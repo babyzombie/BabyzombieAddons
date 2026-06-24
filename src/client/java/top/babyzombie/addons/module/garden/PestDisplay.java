@@ -17,7 +17,7 @@ public final class PestDisplay {
         RenderPhaseRegister.register(ctx -> {
             if (!ModConfigManager.get().garden.pestDisplay) return;
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInSkyblock() || !"Garden".equals(tracker.getMap())) return;
+            if (!tracker.isIn("Garden")) return;
             var player = Minecraft.getInstance().player;
             if (player == null) return;
 

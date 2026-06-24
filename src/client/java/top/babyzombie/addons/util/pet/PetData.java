@@ -11,7 +11,7 @@ import java.util.Set;
  * Immutable pet data parsed from Hypixel SkyBlock petInfo JSON.
  */
 public record PetData(
-    @Nullable String type,
+    String type,
     long exp,
     int tier,
     @Nullable String heldItem,

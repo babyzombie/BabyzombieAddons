@@ -70,12 +70,10 @@ public final class AutoISModule {
         if (!ModConfigManager.get().general.autois) return;
         var tracker = HypixelLocationTracker.getInstance();
         if (tracker.isInSkyblock()) {
-            String island = tracker.getMap();
-            if (island == null) return;
             var dest = ModConfigManager.get().general.autoisDest;
-            if (dest == ModConfig.AutoISDest.ISLAND && !"Private Island".equals(island))
+            if (dest == ModConfig.AutoISDest.ISLAND && !tracker.isIn("Private Island"))
                 ChatUtils.sendCommand("is");
-            else if (dest == ModConfig.AutoISDest.GARDEN && !"Garden".equals(island))
+            else if (dest == ModConfig.AutoISDest.GARDEN && !tracker.isIn("Garden"))
                 ChatUtils.sendCommand("warp garden");
         } else ChatUtils.sendCommand("play skyblock");
     }

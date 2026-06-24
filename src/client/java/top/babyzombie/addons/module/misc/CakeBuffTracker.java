@@ -50,7 +50,7 @@ public final class CakeBuffTracker {
             if (overlay) return true;
             if (!ModConfigManager.get().general.cakeBuffTracker) return true;
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInSkyblock() || !"Private Island".equals(tracker.getMap())) return true;
+            if (!tracker.isIn("Private Island")) return true;
 
             String text = ChatUtils.stripColor(message.getString());
             if (text.startsWith("Yum! You gain +") || text.startsWith("Big Yum! You refresh +")) {

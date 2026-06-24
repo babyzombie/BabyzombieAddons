@@ -13,8 +13,7 @@ public final class FarmingToolSwingSuppression {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfigManager.get().garden.farmingToolSwingSuppression) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
-            String location = HypixelLocationTracker.getInstance().getMap();
-            if (location == null || !location.equals("Garden")) return;
+            if (!HypixelLocationTracker.getInstance().isIn("Garden")) return;
             var player = Minecraft.getInstance().player;
             if (player == null) return;
             if (!ItemUtils.isFarmingTool(player.getMainHandItem())) return;

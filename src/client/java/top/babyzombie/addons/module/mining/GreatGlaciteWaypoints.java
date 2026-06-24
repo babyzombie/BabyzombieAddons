@@ -46,7 +46,7 @@ public final class GreatGlaciteWaypoints {
 
     private static boolean isInGlaciteArea() {
         var t = HypixelLocationTracker.getInstance();
-        if (!t.isInSkyblock() || !"Dwarven Mines".equals(t.getMap())) return false;
+        if (!t.isIn("Dwarven Mines")) return false;
         String loc = t.getLocation();
         return "Dwarven Base Camp".equals(loc) || "Glacite Tunnels".equals(loc) || "Great Glacite Lake".equals(loc);
     }
