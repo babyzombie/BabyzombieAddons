@@ -25,7 +25,7 @@ public final class BazaarSellFromSacks {
     private BazaarSellFromSacks() {}
 
     public static void init() {
-        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, button) -> {
+        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, event) -> {
             var mode = ModConfigManager.get().misc.bzGetFromSacks;
             if (mode == BzGetFromSacksMode.OFF) return false;
             if (cooldown > ServerTick.getTime()) return false;

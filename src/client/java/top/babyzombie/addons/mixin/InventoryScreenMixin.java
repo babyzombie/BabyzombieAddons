@@ -1,17 +1,17 @@
 package top.babyzombie.addons.mixin;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import org.lwjgl.glfw.GLFW;
+import top.babyzombie.addons.config.ModConfigManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.module.chat.ContainerChatHelper;
+import top.babyzombie.addons.util.StarIndicator;
 
-/**
- * InventoryScreen 覆写了 extractRenderState 且不调 super，
- * 导致 AbstractContainerScreen 的 overlay 注入不触发。
- */
 @Mixin(InventoryScreen.class)
 public class InventoryScreenMixin {
 
@@ -19,6 +19,10 @@ public class InventoryScreenMixin {
     private void onRender(GuiGraphicsExtractor g, int mouseX, int mouseY, float a, CallbackInfo ci) {
         if (ContainerChatHelper.isActive()) {
             ContainerChatHelper.getOverlay().extractRenderState(g, mouseX, mouseY, a);
+        }
+        if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS) {
+            boolean sharing = ContainerChatHelper.isActive() && ModConfigManager.get().general.chatInContainer;
+            StarIndicator.draw(g, mouseX, mouseY, sharing);
         }
     }
 }

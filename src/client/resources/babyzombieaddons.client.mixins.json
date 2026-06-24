@@ -25,6 +25,7 @@
     "ChatComponentMixin",
     "ChatScreenAccessor",
     "ContainerChatMixin",
+    "ReiScreenChatMixin",
     "ChatOverlaySetScreenMixin",
     "ScreenMixin",
     "PlayerScaleMixin",

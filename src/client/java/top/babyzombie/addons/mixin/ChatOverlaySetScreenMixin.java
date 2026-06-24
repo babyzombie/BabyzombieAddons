@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.chat.ContainerChatHelper;
+import top.babyzombie.addons.module.chat.ReiHelper;
 
 @Mixin(Minecraft.class)
 public class ChatOverlaySetScreenMixin {
@@ -36,10 +37,17 @@ public class ChatOverlaySetScreenMixin {
             return;
         }
 
+        // 情况 2.5: REI 配方页面上 overlay 活跃 → 关 overlay 但不切屏幕
+        if (ContainerChatHelper.isActive() && screen != null
+                && current != null && ReiHelper.isReiDisplayScreen(current)) {
+            ContainerChatHelper.deactivate();
+            ci.cancel();
+            return;
+        }
+
         // 情况 3: overlay 活跃 + 有人想换成别的屏幕 → 先清理 overlay，允许正常替换
         if (ContainerChatHelper.isActive() && screen != null) {
             ContainerChatHelper.deactivate();
-            // 不 cancel，让新屏幕正常替换（会走正常流程调用容器 removed/onClose）
         }
     }
 }

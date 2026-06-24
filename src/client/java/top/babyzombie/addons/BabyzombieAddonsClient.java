@@ -46,7 +46,6 @@ import top.babyzombie.addons.util.render.Waypoints;
 public class BabyzombieAddonsClient implements ClientModInitializer {
 
     public static net.minecraft.client.KeyMapping cancelKeyBindingRelease;
-    public static net.minecraft.client.KeyMapping shareItemKey;
     public static net.minecraft.client.KeyMapping toggleHandRenderKey;
     public static boolean handRenderSwapActive;
 
@@ -67,9 +66,6 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
 
         cancelKeyBindingRelease = KeyBindingUtil.register(
                 "key.babyzombieaddons.cancel_key_release", GLFW.GLFW_KEY_LEFT_ALT);
-
-        shareItemKey = KeyBindingUtil.register(
-                "key.babyzombieaddons.share_item", GLFW.GLFW_KEY_LEFT_ALT);
 
         toggleHandRenderKey = KeyBindingUtil.register(
                 "key.babyzombieaddons.toggle_hand_render", GLFW.GLFW_KEY_UNKNOWN);

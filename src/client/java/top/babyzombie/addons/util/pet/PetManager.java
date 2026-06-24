@@ -265,7 +265,7 @@ public final class PetManager {
 
     /** GUI mouse click: right-click removes pet, left-click selects it. */
     private void registerGuiClick() {
-        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, button) -> {
+        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, event) -> {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
             if (slot == null || !slot.hasItem()) return false;
             ItemStack stack = slot.getItem();
@@ -274,9 +274,9 @@ public final class PetManager {
             String uuid = getItemUuid(stack);
             if (uuid == null) return false;
 
-            if (button == 1) {
+            if (event.button() == 1) {
                 removePet(uuid);
-            } else if (button == 0) {
+            } else if (event.button() == 0) {
                 for (PetData p : pets) {
                     if (uuid.equals(p.uuid())) {
                         setCurrentPet(p);
