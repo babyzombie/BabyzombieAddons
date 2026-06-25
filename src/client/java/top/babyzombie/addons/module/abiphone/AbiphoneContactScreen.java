@@ -76,11 +76,12 @@ public class AbiphoneContactScreen extends Screen {
     //contact
     private final Map<String,String> contactsHasDiffNameInCMD = Map.of(
             "Maddox the Slayer", "slayer",
-            "Jotrealine Greatforge", "jotrealine",
+            "Jotraeline Greatforge", "jotraeline",
             "St. Jerry" ,"stjerry",
             "Fear Mongerer", "fearmongerer",
             "Queen Nyx", "nyx",
-            "Tia the Fairy", "tiathefairy"
+            "Tia the Fairy", "tiathefairy",
+            "Plumber Joe", "plumberjoe"
     );
 
     public AbiphoneContactScreen(List<AbiphoneTracker.ItemEntry> contacts) {
