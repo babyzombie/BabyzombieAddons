@@ -47,8 +47,8 @@ public final class DungeonModule {
         ClientReceiveMessageEvents.GAME.register((m, o) -> {
             if (o || !instanceStarted) return;
             String t = ChatUtils.stripColor(m.getString());
-            boolean win = (t.startsWith("     ") && t.contains("   ☠ Defeated ") && t.contains(" in ")
-                    || t.equals("                               KUUDRA DOWN!"));
+            boolean win = (t.startsWith("     ") && t.contains("   ☠ Defeated ") && t.contains(" in "))
+                    || t.equals("                               KUUDRA DOWN!");
             boolean fail = t.equals("                                   DEFEAT")
                     || t.equals("                             > EXTRA STATS <");
 
@@ -87,12 +87,12 @@ public final class DungeonModule {
         // Cancel keywords from party chat
         ClientReceiveMessageEvents.GAME.register((m, o) -> {
             if (o) return;
-            if(!HypixelLocationTracker.getInstance().isInKuudra() || !HypixelLocationTracker.getInstance().isInDungeon()) return;
+            if (!HypixelLocationTracker.getInstance().isInKuudra() && !HypixelLocationTracker.getInstance().isInDungeon()) return;
             if (ModConfigManager.get().dungeon.dungeonRequeue == ModConfig.RequeueMode.OFF && HypixelLocationTracker.getInstance().isInDungeon()) return;
             if (ModConfigManager.get().dungeon.kuudraRequeue == ModConfig.RequeueMode.OFF && HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (!PartyTracker.getInstance().isSelfLeader()) return;
             if (!AutoRequeue.canRequeue) return;
-            var pm = PartyModule.PARTY_CHAT.matcher(m.getString());
+            var pm = PartyModule.PARTY_CHAT.matcher(ChatUtils.stripColor(m.getString()));
             if (!pm.find()) return;
             String t = ChatUtils.stripColor(pm.group(2)).trim().toLowerCase();
             for (String kw : ModConfigManager.get().dungeon.requeueCancelKeywords.toLowerCase().split("\\|")) {

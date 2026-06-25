@@ -38,7 +38,7 @@ public final class AutoRequeue {
         if (mode == ModConfig.RequeueMode.ON_FAIL && win) return;
         if (mode == ModConfig.RequeueMode.ON_WIN && !win) return;
 
-        if (!canRequeue) return;
+        if (!canRequeue || cancelAutoJoin) return;
 
         ended = true;
         int delay = isKuudra ? cfg.kuudraRequeueDelay : cfg.dungeonRequeueDelay;
