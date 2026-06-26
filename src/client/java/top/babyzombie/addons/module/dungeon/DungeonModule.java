@@ -87,11 +87,11 @@ public final class DungeonModule {
         // Cancel keywords from party chat
         ClientReceiveMessageEvents.GAME.register((m, o) -> {
             if (o) return;
+            if (!AutoRequeue.canRequeue || AutoRequeue.cancelAutoJoin) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra() && !HypixelLocationTracker.getInstance().isInDungeon()) return;
             if (ModConfigManager.get().dungeon.dungeonRequeue == ModConfig.RequeueMode.OFF && HypixelLocationTracker.getInstance().isInDungeon()) return;
             if (ModConfigManager.get().dungeon.kuudraRequeue == ModConfig.RequeueMode.OFF && HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (!PartyTracker.getInstance().isSelfLeader()) return;
-            if (!AutoRequeue.canRequeue) return;
             var pm = PartyModule.PARTY_CHAT.matcher(ChatUtils.stripColor(m.getString()));
             if (!pm.find()) return;
             String t = ChatUtils.stripColor(pm.group(2)).trim().toLowerCase();

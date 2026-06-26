@@ -12,8 +12,24 @@ public final class AutoRequeue {
     static boolean cancelAutoJoin;
     static boolean ended;
     static boolean canRequeue;
+    static boolean waitingForRevive;
+    static boolean reviveCheckRegistered;
 
     private AutoRequeue() {}
+
+    private static final Runnable REVIVE_CHECK = () -> {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return;
+        if (cancelAutoJoin || !waitingForRevive) {
+            reviveCheckRegistered = false;
+            return;
+        }
+        if (!player.isInvisible()) {
+            waitingForRevive = false;
+            reviveCheckRegistered = false;
+            tryRequeue();
+        }
+    };
 
     static void init() {}
 
@@ -26,6 +42,28 @@ public final class AutoRequeue {
             canRequeue = members.isEmpty()
                     || (player != null && PartyTracker.getInstance().isSelfLeader());
         });
+    }
+
+    static void tryRequeue() {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return;
+        if (cancelAutoJoin) return;
+        if (!PartyTracker.getInstance().isSelfLeader()) return;
+        var loc = HypixelLocationTracker.getInstance();
+        if (!loc.isInSkyblock() || (!loc.isInDungeon() && !loc.isInKuudra())) return;
+
+        if (player.isInvisible()) {
+            if (!reviveCheckRegistered) {
+                waitingForRevive = true;
+                reviveCheckRegistered = true;
+                Scheduler.scheduleRepeating(1, REVIVE_CHECK);
+            }
+            return;
+        }
+
+        waitingForRevive = false;
+        ended = false;
+        ChatUtils.sendCommand("instancerequeue");
     }
 
     static void schedule(boolean win) {
@@ -48,23 +86,15 @@ public final class AutoRequeue {
         }
 
         if (delay > 0) {
-            Scheduler.schedule(delay * 20, () -> {
-                if (cancelAutoJoin) return;
-                if (!PartyTracker.getInstance().isSelfLeader()) return;
-                var loc = HypixelLocationTracker.getInstance();
-                if (!loc.isInSkyblock() || (!loc.isInDungeon() && !loc.isInKuudra())) return;
-                ended = false;
-                ChatUtils.sendCommand("instancerequeue");
-            });
+            Scheduler.schedule(delay * 20, AutoRequeue::tryRequeue);
         } else {
-            if (!PartyTracker.getInstance().isSelfLeader()) return;
-            ended = false;
-            ChatUtils.sendCommand("instancerequeue");
+            tryRequeue();
         }
     }
 
     static void cancel() {
         cancelAutoJoin = true;
+        waitingForRevive = false;
         String cancelMsg = ModConfigManager.get().dungeon.requeueCancelMessage;
         if (!cancelMsg.isEmpty()) ChatUtils.sendCommand("pc " + cancelMsg);
     }
