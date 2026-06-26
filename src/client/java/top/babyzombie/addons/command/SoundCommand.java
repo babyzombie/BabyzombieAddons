@@ -23,8 +23,7 @@ final class SoundCommand {
             var snd = sound.getSound();
             String id;
             if (snd != null) {
-                var loc = snd.getLocation();
-                id = loc.getNamespace() + ":" + loc.getPath();
+                id = snd.getLocation().toString();
             } else {
                 id = "?";
             }

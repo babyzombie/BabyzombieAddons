@@ -96,6 +96,12 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.chatChannelSwitcher",
                 () -> get().chatChannel.chatChannelSwitcher);
 
+        // --- AutoIS ---
+        HudManager.register("AutoIS", 10, 10, 1.0f,
+                "AutoIS §aEnabled",
+                "config.babyzombieaddons.option.autois",
+                () -> get().general.autois);
+
         // --- Popup ---
         HudManager.register("Popup", 420, 50, 1.0f,
                 "§6Party Invite\n§fPlayer invites you to party\n§a[Y] Accept  §e[N] Ignore",

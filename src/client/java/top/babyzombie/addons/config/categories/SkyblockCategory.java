@@ -70,6 +70,8 @@ public final class SkyblockCategory {
                                 .build())
                         .option(createBool("hideEntities", defaults.general.hideEntities,
                                 () -> config.general.hideEntities, v -> config.general.hideEntities = v))
+                        .option(createBool("backOnServerRestart", defaults.general.backOnServerRestart,
+                                () -> config.general.backOnServerRestart, v -> config.general.backOnServerRestart = v))
                         .option(Option.<KickRecovery>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.autoBackToSkyblock"))
                                 .description(Component.translatable("config.babyzombieaddons.option.autoBackToSkyblock.desc"))

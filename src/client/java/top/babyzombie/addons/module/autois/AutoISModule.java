@@ -2,8 +2,14 @@ package top.babyzombie.addons.module.autois;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.event.EntityRenderEvents;
 import top.babyzombie.addons.event.ParticleRenderEvents;
 import top.babyzombie.addons.util.ChatUtils;
@@ -19,6 +25,20 @@ public final class AutoISModule {
     private AutoISModule() {}
 
     public static void init() {
+        BackWhenServerRestart.init();
+
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "autois"),
+                (context, tickCounter) -> {
+                    if (!ModConfigManager.get().general.autois) return;
+                    var font = Minecraft.getInstance().font;
+                    int x = HudManager.x("AutoIS"), y = HudManager.y("AutoIS");
+                    float s = HudManager.scale("AutoIS");
+                    HudManager.drawScaled(context, font,
+                            Component.translatable("hud.babyzombieaddons.autois").getString(),
+                            x, y, s);
+                });
+
         EntityRenderEvents.BEFORE_RENDER.register(entity -> {
             var cfg = ModConfigManager.get().general;
             return cfg.autois && cfg.hideEntities;

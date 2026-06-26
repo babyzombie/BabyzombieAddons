@@ -66,6 +66,7 @@ public class ModConfig {
         public AutoISDest autoisDest = AutoISDest.GARDEN;
         public KickRecovery autoBackToSkyblock = KickRecovery.LOBBY_ONLY;
         public boolean hideEntities = false;
+        public boolean backOnServerRestart = false;
         public boolean cakeBuffTracker = false;
         public boolean minionCollectAutoClose = false;
         public int skipSecondPerson = 0;
