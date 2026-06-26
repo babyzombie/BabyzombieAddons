@@ -95,6 +95,7 @@ public final class DungeonModule {
             var pm = PartyModule.PARTY_CHAT.matcher(ChatUtils.stripColor(m.getString()));
             if (!pm.find()) return;
             String t = ChatUtils.stripColor(pm.group(2)).trim().toLowerCase();
+            if (t.startsWith("!")) t = t.replace("!", "");
             for (String kw : ModConfigManager.get().dungeon.requeueCancelKeywords.toLowerCase().split("\\|")) {
                 if (!kw.isEmpty() && t.equals(kw)) {
                     AutoRequeue.cancel();
