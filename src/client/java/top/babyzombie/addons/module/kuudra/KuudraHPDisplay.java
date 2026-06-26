@@ -10,7 +10,7 @@ import net.minecraft.world.scores.DisplaySlot;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
-import top.babyzombie.addons.mixin.BossHealthOverlayAccessor;
+import top.babyzombie.addons.mixin.render.BossHealthOverlayAccessor;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 

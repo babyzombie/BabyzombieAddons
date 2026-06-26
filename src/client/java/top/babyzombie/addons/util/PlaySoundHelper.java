@@ -5,10 +5,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundEngine;
-import top.babyzombie.addons.mixin.ChannelAccessor;
-import top.babyzombie.addons.mixin.ChannelHandleAccessor;
-import top.babyzombie.addons.mixin.SoundEngineAccessor;
-import top.babyzombie.addons.mixin.SoundManagerAccessor;
+import top.babyzombie.addons.mixin.sound.ChannelAccessor;
+import top.babyzombie.addons.mixin.sound.ChannelHandleAccessor;
+import top.babyzombie.addons.mixin.sound.SoundEngineAccessor;
+import top.babyzombie.addons.mixin.sound.SoundManagerAccessor;
 import org.lwjgl.openal.AL11;
 
 import java.util.Map;

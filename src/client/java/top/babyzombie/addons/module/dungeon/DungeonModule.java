@@ -110,6 +110,7 @@ public final class DungeonModule {
     private static int dtCancel(CommandContext<FabricClientCommandSource> ctx) {
         if (!AutoRequeue.canRequeue || AutoRequeue.cancelAutoJoin) return 1;
         AutoRequeue.cancelAutoJoin = true;
+        AutoRequeue.waitingForRevive = false;
         ctx.getSource().sendFeedback(
                 net.minecraft.network.chat.Component.translatable("babyzombieaddons.dt.cancelled"));
         return 1;

@@ -6,8 +6,8 @@ import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import top.babyzombie.addons.mixin.SoundEngineAccessor;
-import top.babyzombie.addons.mixin.SoundManagerAccessor;
+import top.babyzombie.addons.mixin.sound.SoundEngineAccessor;
+import top.babyzombie.addons.mixin.sound.SoundManagerAccessor;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;

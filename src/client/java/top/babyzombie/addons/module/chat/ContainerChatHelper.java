@@ -9,7 +9,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
 import org.lwjgl.glfw.GLFWScrollCallbackI;
-import top.babyzombie.addons.mixin.ChatScreenAccessor;
+import top.babyzombie.addons.mixin.chat.ChatScreenAccessor;
 
 public final class ContainerChatHelper {
 

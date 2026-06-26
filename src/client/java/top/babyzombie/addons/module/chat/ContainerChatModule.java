@@ -3,7 +3,7 @@ package top.babyzombie.addons.module.chat;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
-import top.babyzombie.addons.mixin.ChatScreenAccessor;
+import top.babyzombie.addons.mixin.chat.ChatScreenAccessor;
 
 public final class ContainerChatModule {
 
