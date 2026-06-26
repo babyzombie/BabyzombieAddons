@@ -50,6 +50,8 @@ public final class MiningCategory {
                                 () -> config.mining.armadilloEnergy, v -> config.mining.armadilloEnergy = v))
                         .option(bool("powderMiningSounds", defaults.mining.powderMiningSounds,
                                 () -> config.mining.powderMiningSounds, v -> config.mining.powderMiningSounds = v))
+                        .option(bool("jungleTempleThinWall", defaults.mining.jungleTempleThinWall,
+                                () -> config.mining.jungleTempleThinWall, v -> config.mining.jungleTempleThinWall = v))
                         .build())
                 .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.glaciteTunnels"))

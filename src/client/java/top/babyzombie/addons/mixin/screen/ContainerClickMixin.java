@@ -1,6 +1,8 @@
 package top.babyzombie.addons.mixin.screen;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
@@ -12,6 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.module.chat.ItemProtectBridge;
+import top.babyzombie.addons.module.misc.CopyItemInfoKey;
+import top.babyzombie.addons.util.ItemUtils;
 
 @Mixin(AbstractContainerScreen.class)
 public abstract class ContainerClickMixin {
@@ -39,5 +43,16 @@ public abstract class ContainerClickMixin {
         if (!ItemProtectBridge.isProtected(slot.getItem())) return;
 
         ci.cancel();
+    }
+
+    // 复制物品信息按键
+    @Inject(method = "keyPressed", at = @At("HEAD"))
+    private void onKeyPressed(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
+        if (CopyItemInfoKey.KEY.matches(event)) {
+            if (hoveredSlot != null && hoveredSlot.hasItem()) {
+                String text = ItemUtils.formatItemCopyText(hoveredSlot.getItem());
+                Minecraft.getInstance().keyboardHandler.setClipboard(text);
+            }
+        }
     }
 }

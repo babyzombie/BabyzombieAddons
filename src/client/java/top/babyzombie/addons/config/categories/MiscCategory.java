@@ -2,6 +2,7 @@ package top.babyzombie.addons.config.categories;
 
 import net.azureaaron.dandelion.api.ConfigCategory;
 import net.azureaaron.dandelion.api.Option;
+import net.azureaaron.dandelion.api.controllers.IntegerController;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
@@ -30,6 +31,14 @@ public final class MiscCategory {
                         .build())
                 .option(bool("debugMode", defaults.debug.debugMode,
                         () -> config.debug.debugMode, v -> config.debug.debugMode = v))
+                .option(Option.<Integer>createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.maxDebugEntities"))
+                        .description(Component.translatable("config.babyzombieaddons.option.maxDebugEntities.desc"))
+                        .binding(defaults.debug.maxDebugEntities,
+                                () -> config.debug.maxDebugEntities,
+                                v -> config.debug.maxDebugEntities = v)
+                        .controller(IntegerController.createBuilder().range(1, 100).build())
+                        .build())
                 .build();
     }
 

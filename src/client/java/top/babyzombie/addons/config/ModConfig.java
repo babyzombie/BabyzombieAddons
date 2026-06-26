@@ -186,6 +186,7 @@ public class ModConfig {
         public boolean suspiciousScrapCounter = false;
         public boolean creeperVisibility = false;
         public boolean greatGlaciteWaypoints = false;
+        public boolean jungleTempleThinWall = false;
     }
 
     // ---- Garden ----
@@ -260,6 +261,7 @@ public class ModConfig {
     public static class DebugConfig {
         public boolean debugMode = false;
         public ConfigBackend configBackend = ConfigBackend.MOUL_CONFIG;
+        public int maxDebugEntities = 20;
     }
 
     // ---- Auto Join ----

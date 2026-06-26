@@ -12,6 +12,7 @@ public final class MiningModule {
         SuspiciousScrapCounter.init();
         CrystalHollowsPassRenew.init();
         ChGetFromSacks.init();
+        JungleTempleThinWall.init();
         ChestMarkers.init();
         ArmadilloEnergy.init();
         GlaciteMineshaftWaypoints.init();
@@ -27,6 +28,7 @@ public final class MiningModule {
             MiningAbilityAlerts.readyTime = 0;
             ScathaCooldown.time = 0;
             SuspiciousScrapCounter.count = 0;
+            JungleTempleThinWall.shown = false;
         });
     }
 }

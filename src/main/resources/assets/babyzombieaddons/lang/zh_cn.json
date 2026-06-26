@@ -10,6 +10,7 @@
   "key.babyzombieaddons.popup_yes": "弹出通知 - 接受",
   "key.babyzombieaddons.share_item": "分享物品到聊天栏",
   "key.babyzombieaddons.popup_no": "弹出通知 - 忽略",
+  "key.babyzombieaddons.copy_item_info": "复制物品信息",
   "key.babyzombieaddons.toggle_hand_render": "主副手交换",
 
   "babyzombieaddons.contact.lore.call": "左键呼叫联系人",
@@ -400,6 +401,10 @@
   "config.babyzombieaddons.option.powderMiningSounds": "粉末挖矿音效",
   "config.babyzombieaddons.option.powderMiningSounds.desc": "移除经验球音效并替换箱子音效。",
 
+  "config.babyzombieaddons.option.jungleTempleThinWall": "丛林神庙宝藏房薄墙定位",
+  "config.babyzombieaddons.option.jungleTempleThinWall.desc": "与 Kalhuiki 门卫对话时，自动定位宝藏房墙壁最薄点并添加坐标点。",
+  "babyzombieaddons.jungleTemple.thinWall": "&6丛林神庙宝藏房",
+
 
   "config.babyzombieaddons.option.greatGlaciteWaypoints": "大块冰川路径点",
   "config.babyzombieaddons.option.greatGlaciteWaypoints.desc": "在冰川区域标记大块冰川位置。",
@@ -517,6 +522,8 @@
   "rareropscreen.done": "完成",
   "config.babyzombieaddons.option.debugMode": "调试模式",
   "config.babyzombieaddons.option.debugMode.desc": "启用后 HUD 编辑界面会显示全部元素（包括未开启的），方便调整布局。",
+  "config.babyzombieaddons.option.maxDebugEntities": "调试实体最大数量",
+  "config.babyzombieaddons.option.maxDebugEntities.desc": "/bza debug getentity 指令最多显示的实体数量。",
 
   "babyzombieaddons.popup.title.party_invite": "组队邀请",
   "babyzombieaddons.popup.title.guild_party_invite": "公会组队邀请",
@@ -589,6 +596,34 @@
   "babyzombieaddons.debug.playsound.played_seeked": "§a播放 §f%s §7vol=%s pit=%s seek=%ss dur=%ss",
   "babyzombieaddons.debug.stopsound.all": "§a已停止所有声音",
   "babyzombieaddons.debug.stopsound.one": "§a已停止: §f%s",
+
+  "babyzombieaddons.debug.entities.header": "§6§l=== 附近实体（找到 %s 个，范围 %.0f）===",
+  "babyzombieaddons.debug.entities.none": "§e[Debug] 在 %s 格内未找到实体%s",
+  "babyzombieaddons.debug.entities.none_filter": "（筛选条件：\"%s\"）",
+  "babyzombieaddons.debug.entities.truncated": "§7... 还有 %s 个（已截断）",
+
+  "babyzombieaddons.debug.entity.type": "§8[%s / %s]",
+
+  "babyzombieaddons.debug.entity.pos": "  §7坐标: §a%s %s %s",
+  "babyzombieaddons.debug.entity.exact": "  §7精确: §a%s %s %s",
+  "babyzombieaddons.debug.entity.uuid": "  §7UUID: %s",
+  "babyzombieaddons.debug.entity.eye_height": "  §7眼高: §e%s",
+  "babyzombieaddons.debug.entity.on_ground": "  §7着地: §e%s",
+  "babyzombieaddons.debug.entity.fire": "  §7着火: §e%st",
+  "babyzombieaddons.debug.entity.health": "  §7血量: §c%s/%s",
+  "babyzombieaddons.debug.entity.pose": "  §7姿态: §e%s",
+  "babyzombieaddons.debug.entity.equip": "  §7装备: %s",
+  "babyzombieaddons.debug.entity.riding": "  §7骑着: §e%s",
+  "babyzombieaddons.debug.entity.passengers": "  §7乘客: §e%s",
+  "babyzombieaddons.debug.entity.velocity": "  §7速度: §e%s %s %s",
+  "babyzombieaddons.debug.entity.bbox": "  §7碰撞箱: §e%s → %s",
+  "babyzombieaddons.debug.entity.rotation": "  §7朝向: §e%s / %s",
+  "babyzombieaddons.debug.entity.effects": "  §7效果: %s",
+  "babyzombieaddons.debug.entity.invisible": " §7[隐身]",
+  "babyzombieaddons.debug.entity.glowing": " §7[发光]",
+  "babyzombieaddons.debug.entity.armor": "  §7护甲: §e%s",
+  "babyzombieaddons.debug.entity.absorption": " §e+%s金血",
+
   "babyzombieaddons.help": "§6§lBabyzombieAddons 指令帮助\n§6/bza §7- 打开设置界面\n§6/bza play §7- 打开游戏模式菜单\n§6/bza sc [频道] [附言] §7- 发送自己的坐标\n§6/bza la [频道] [附言] §7- 发送指针指向的坐标\n§6/bza yaw <yaw> <pitch> §7- 设置视角朝向\n§6/bza l §7- 前往 Limbo\n§6/bza wp §7- 路径点管理，输入 /bza wp 查看用法",
   "babyzombieaddons.waypoint.usage": "§6/bza wp add <x> <y> <z> <名称> [秒数]  §7- 在指定坐标添加\n§6/bza wp add here <名称> [秒数]      §7- 在当前位置添加\n§6/bza wp add looking <名称> [秒数]   §7- 在指针位置添加\n§6/bza wp delete <名称>                §7- 删除坐标点\n§7持续时间填 -1 为永久, 0 为切换世界时清除, 大于 0 为到期清除",
 

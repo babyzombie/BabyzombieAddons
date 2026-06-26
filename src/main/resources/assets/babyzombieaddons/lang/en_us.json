@@ -10,6 +10,7 @@
   "key.babyzombieaddons.popup_yes": "Popup - Accept",
   "key.babyzombieaddons.share_item": "Share Item to Chat",
   "key.babyzombieaddons.popup_no": "Popup - Ignore",
+  "key.babyzombieaddons.copy_item_info": "Copy Item Info",
   "key.babyzombieaddons.toggle_hand_render": "Swap Hands",
 
   "babyzombieaddons.contact.lore.call": "Left-click to call",
@@ -401,6 +402,10 @@
   "config.babyzombieaddons.option.powderMiningSounds": "Powder Mining Sounds",
   "config.babyzombieaddons.option.powderMiningSounds.desc": "Remove XP orb sounds and replace chest sounds.",
 
+  "config.babyzombieaddons.option.jungleTempleThinWall": "Jungle Temple Thin Wall",
+  "config.babyzombieaddons.option.jungleTempleThinWall.desc": "When talking to a Kalhuiki Door Guardian, find the thin wall to the treasure room and mark it as a waypoint.",
+  "babyzombieaddons.jungleTemple.thinWall": "&6Jungle Temple Treasure Room",
+
 
   "config.babyzombieaddons.option.greatGlaciteWaypoints": "Great Glacite Waypoints",
   "config.babyzombieaddons.option.greatGlaciteWaypoints.desc": "Mark Great Glacite locations in the Glacite area.",
@@ -517,6 +522,8 @@
   "rareropscreen.done": "Done",
   "config.babyzombieaddons.option.debugMode": "Debug Mode",
   "config.babyzombieaddons.option.debugMode.desc": "Show all HUD elements in edit screen (including disabled ones) to help with layout.",
+  "config.babyzombieaddons.option.maxDebugEntities": "Max Debug Entities",
+  "config.babyzombieaddons.option.maxDebugEntities.desc": "Maximum number of entities shown by /bza debug getentity.",
 
   "babyzombieaddons.popup.title.party_invite": "Party Invite",
   "babyzombieaddons.popup.title.guild_party_invite": "Guild Party Invite",
@@ -589,6 +596,34 @@
   "babyzombieaddons.debug.playsound.played_seeked": "§aPlaying §f%s §7vol=%s pit=%s seek=%ss dur=%ss",
   "babyzombieaddons.debug.stopsound.all": "§aStopped all sounds",
   "babyzombieaddons.debug.stopsound.one": "§aStopped: §f%s",
+
+  "babyzombieaddons.debug.entities.header": "§6§l=== Nearby Entities (%s found, range: %.0f) ===",
+  "babyzombieaddons.debug.entities.none": "§e[Debug] No entities found within %s blocks%s",
+  "babyzombieaddons.debug.entities.none_filter": " matching \"%s\"",
+  "babyzombieaddons.debug.entities.truncated": "§7... and %s more (truncated)",
+
+  "babyzombieaddons.debug.entity.type": "§8[%s / %s]",
+
+  "babyzombieaddons.debug.entity.pos": "  §7Pos: §a%s %s %s",
+  "babyzombieaddons.debug.entity.exact": "  §7Exact: §a%s %s %s",
+  "babyzombieaddons.debug.entity.uuid": "  §7UUID: %s",
+  "babyzombieaddons.debug.entity.eye_height": "  §7EyeHeight: §e%s",
+  "babyzombieaddons.debug.entity.on_ground": "  §7OnGround: §e%s",
+  "babyzombieaddons.debug.entity.fire": "  §7Fire: §e%st",
+  "babyzombieaddons.debug.entity.health": "  §7Health: §c%s/%s",
+  "babyzombieaddons.debug.entity.pose": "  §7Pose: §e%s",
+  "babyzombieaddons.debug.entity.equip": "  §7Equip: %s",
+  "babyzombieaddons.debug.entity.riding": "  §7Riding: §e%s",
+  "babyzombieaddons.debug.entity.passengers": "  §7Passengers: §e%s",
+  "babyzombieaddons.debug.entity.velocity": "  §7Velocity: §e%s %s %s",
+  "babyzombieaddons.debug.entity.bbox": "  §7BBox: §e%s → %s",
+  "babyzombieaddons.debug.entity.rotation": "  §7Rotation: §e%s / %s",
+  "babyzombieaddons.debug.entity.effects": "  §7Effects: %s",
+  "babyzombieaddons.debug.entity.invisible": " §7[Invis]",
+  "babyzombieaddons.debug.entity.glowing": " §7[Glow]",
+  "babyzombieaddons.debug.entity.armor": "  §7Armor: §e%s",
+  "babyzombieaddons.debug.entity.absorption": " §e+%s abs",
+
   "babyzombieaddons.help": "§6§lBabyzombieAddons Commands\n§6/bza §7- Open settings GUI\n§6/bza play §7- Open game mode menu\n§6/bza sc [channel] [suffix] §7- Send your coordinates\n§6/bza la [channel] [suffix] §7- Send looked-at coordinates\n§6/bza yaw <yaw> <pitch> §7- Set player rotation\n§6/bza l §7- Go to Limbo\n§6/bza wp §7- Waypoint manager, type /bza wp for usage",
   "babyzombieaddons.waypoint.usage": "§6/bza wp add <x> <y> <z> <name> [seconds]  §7- Add at coords\n§6/bza wp add here <name> [seconds]      §7- Add at current position\n§6/bza wp add looking <name> [seconds]   §7- Add at looking-at position\n§6/bza wp delete <name>                  §7- Delete waypoint\n§7Seconds: -1 = permanent, 0 = clear on world change, >0 = auto-expire",
 

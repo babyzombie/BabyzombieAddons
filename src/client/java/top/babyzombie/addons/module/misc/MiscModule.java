@@ -8,5 +8,6 @@ public final class MiscModule {
         MinionCollectAutoClose.init();
         SecondPersonKey.init();
         SkipSecondPerson.init();
+        CopyItemInfoKey.init();
     }
 }

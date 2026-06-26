@@ -56,6 +56,7 @@ public final class BabyzombieAddonsCommand {
             InfoCommand.register(debug);
             DebugPlaySoundCommand.register(debug);
             DebugStopSoundCommand.register(debug);
+            DebugEntityCommand.register(debug);
 
             SendCoordsCommand.register(bza);
             RotationCommand.register(bza);
