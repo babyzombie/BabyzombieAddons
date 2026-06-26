@@ -175,6 +175,7 @@ public class ModConfig {
         public int chestLineWidth = 3;
         public boolean getFromSacks = false;
         public boolean scathaCooldown = false;
+        public boolean scathaReleaseKey = false;
         public boolean armadilloEnergy = false;
         public boolean drillSwingSuppression = false;
         public boolean powderMiningSounds = false;

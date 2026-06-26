@@ -3,6 +3,7 @@ package top.babyzombie.addons.module.mining;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.hud.HudManager;
@@ -25,6 +26,7 @@ public final class ScathaCooldown {
             if (!tracker.isIn("Crystal Hollows")) return;
             if (ChatUtils.stripColor(message.getString()).equals("You hear the sound of something approaching...")) {
                 time = ServerTick.getTime();
+                if (ModConfigManager.get().mining.scathaReleaseKey) KeyMapping.releaseAll();
             }
         });
 

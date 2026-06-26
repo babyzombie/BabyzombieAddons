@@ -390,6 +390,8 @@
   "config.babyzombieaddons.option.getFromSacks.desc": "自动从袋子提取钥匙、蛋和装置。",
   "config.babyzombieaddons.option.scathaCooldown": "Scatha 冷却",
   "config.babyzombieaddons.option.scathaCooldown.desc": "30 秒刷新冷却界面。",
+  "config.babyzombieaddons.option.scathaReleaseKey": "挖出 Scatha 时释放按键",
+  "config.babyzombieaddons.option.scathaReleaseKey.desc": "挖出 Scatha 后释放所有当前按下的按键。",
   "config.babyzombieaddons.option.armadilloEnergy": "犰狳能量",
   "config.babyzombieaddons.option.armadilloEnergy.desc": "显示当前/最大能量及颜色渐变。",
 

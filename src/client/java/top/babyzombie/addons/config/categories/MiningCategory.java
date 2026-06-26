@@ -44,6 +44,8 @@ public final class MiningCategory {
                                 () -> config.mining.getFromSacks, v -> config.mining.getFromSacks = v))
                         .option(bool("scathaCooldown", defaults.mining.scathaCooldown,
                                 () -> config.mining.scathaCooldown, v -> config.mining.scathaCooldown = v))
+                        .option(bool("scathaReleaseKey", defaults.mining.scathaReleaseKey,
+                                () -> config.mining.scathaReleaseKey, v -> config.mining.scathaReleaseKey = v))
                         .option(bool("armadilloEnergy", defaults.mining.armadilloEnergy,
                                 () -> config.mining.armadilloEnergy, v -> config.mining.armadilloEnergy = v))
                         .option(bool("powderMiningSounds", defaults.mining.powderMiningSounds,
