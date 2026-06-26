@@ -391,8 +391,8 @@
   "config.babyzombieaddons.option.getFromSacks.desc": "Auto-extract keys, eggs, and apparatus from sacks.",
   "config.babyzombieaddons.option.scathaCooldown": "Scatha Cooldown",
   "config.babyzombieaddons.option.scathaCooldown.desc": "30-second spawn cooldown GUI.",
-  "config.babyzombieaddons.option.scathaReleaseKey": "Release Keys on Scatha Spawn",
-  "config.babyzombieaddons.option.scathaReleaseKey.desc": "Release all currently pressed keys when a Scatha spawns.",
+  "config.babyzombieaddons.option.scathaReleaseKey": "Release Keys on Worm Spawn",
+  "config.babyzombieaddons.option.scathaReleaseKey.desc": "Release all currently pressed keys when a worm spawns while mining.",
   "config.babyzombieaddons.option.armadilloEnergy": "Armadillo Energy",
   "config.babyzombieaddons.option.armadilloEnergy.desc": "Show current/max energy with color transition.",
 

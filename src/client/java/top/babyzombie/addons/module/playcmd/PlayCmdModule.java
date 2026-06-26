@@ -34,29 +34,67 @@ public final class PlayCmdModule {
         return ModConfigManager.get().misc.playCmd;
     }
 
+    /**
+     * Returns the position where game arguments start, or -1 if not a recognized play command.
+     * Supports: /play, !play, /pc !play
+     */
+    public static int getGameArgsStart(String text) {
+        if (text.length() < 5) return -1;
+        String lower = text.toLowerCase();
+        int playEnd;
+        if (lower.startsWith("/play")) {
+            playEnd = 5;
+        } else if (lower.startsWith("!play")) {
+            playEnd = 5;
+        } else if (lower.startsWith("/pc !play")) {
+            playEnd = 9;
+        } else {
+            return -1;
+        }
+        if (text.length() > playEnd && text.charAt(playEnd) == ' ') {
+            return playEnd + 1;
+        }
+        return text.length();
+    }
+
     public static Suggestions enrichPlaySuggestions(String text, Suggestions existing) {
         if (!ModConfigManager.get().misc.playCmd) return existing;
-        if (text.length() < 6) return existing;
-        List<Suggestion> list = new ArrayList<>(existing.getList());
-        String prefix = text.substring(6).trim().toLowerCase();
 
+        int rangeStart = getGameArgsStart(text);
+        if (rangeStart < 0) return existing;
+
+        List<Suggestion> list = new ArrayList<>();
+        String prefix;
+        if (rangeStart < text.length()) {
+            prefix = text.substring(rangeStart).toLowerCase();
+        } else {
+            prefix = "";
+        }
+
+        StringRange range = StringRange.between(rangeStart, text.length());
+
+        // Collect all matching game suffixes
+        List<String> matched = new ArrayList<>();
         for (Object[][] cat : GAMES) {
             for (int i = 1; i < cat.length; i++) {
                 String cmd = (String) cat[i][1];
                 if (!cmd.startsWith("/play ")) continue;
                 String sub = cmd.substring(6);
                 if (prefix.isEmpty() || sub.toLowerCase().startsWith(prefix)) {
-                    boolean dup = false;
-                    for (Suggestion s : list) {
-                        if (s.getText().equals(sub)) { dup = true; break; }
-                    }
-                    if (!dup) {
-                        list.add(new Suggestion(StringRange.between(6, text.length()), sub));
+                    if (!matched.contains(sub)) {
+                        matched.add(sub);
                     }
                 }
             }
         }
-        return new Suggestions(existing.getRange(), list);
+
+        boolean needLeadingSpace = rangeStart == text.length();
+
+        for (String sub : matched) {
+            list.add(new Suggestion(range, needLeadingSpace ? " " + sub : sub));
+        }
+
+        return new Suggestions(range, list);
     }
 
     public static void openGUI() {

@@ -27,13 +27,23 @@ public abstract class CommandSuggestionsMixin {
     @Shadow
     private @Nullable CompletableFuture<Suggestions> pendingSuggestions;
 
+    @Shadow
+    private boolean keepSuggestions;
+
     @Inject(method = "updateCommandInfo", at = @At("RETURN"))
     private void injectPlayCompletions(CallbackInfo ci) {
-        String text = input.getValue().trim();
-        if (text.length() < 6 || !text.toLowerCase().startsWith("/play") || !PlayCmdModule.isPlayCmdEnabled()
+        // When keepSuggestions is true, the system is in the middle of Tab cycling
+        // and preserving the original SuggestionsList. Don't interfere.
+        if (keepSuggestions) return;
+
+        String text = input.getValue();
+        if (!PlayCmdModule.isPlayCmdEnabled()
                 || !HypixelLocationTracker.getInstance().isOnHypixel()) return;
 
-        Suggestions base = new Suggestions(StringRange.between(6, text.length()), List.of());
+        int rangeStart = PlayCmdModule.getGameArgsStart(text);
+        if (rangeStart < 0) return;
+
+        Suggestions base = new Suggestions(StringRange.between(rangeStart, text.length()), List.of());
         Suggestions enriched = PlayCmdModule.enrichPlaySuggestions(text, base);
         pendingSuggestions = CompletableFuture.completedFuture(enriched);
         showSuggestions(false);

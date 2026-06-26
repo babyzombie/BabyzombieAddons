@@ -37,7 +37,7 @@ public final class PartyModule {
     private static final Pattern CMD_WARP = Pattern.compile("^[!！][ ]?wa?r?p?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_WARP_CANCEL = Pattern.compile("^[!！][ ]?(?:wa?r?p?)?[ ]?c(?:ancel)?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_JOIN = Pattern.compile("^[!！][ ]?(?:join)?[ ]?([fmt])([e0-7])$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern CMD_PTME = Pattern.compile("^[!！][ ]?pt(?:me)?$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CMD_PTME = Pattern.compile("^[!！][ ]?(pt(?:me)?|[叫抢]地主)$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_SENDCOORDS = Pattern.compile("^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$", Pattern.CASE_INSENSITIVE);
     // !play <content> — execute /play <content>
     private static final Pattern CMD_PLAY = Pattern.compile("^[!！][ ]?play(?: (.+))?$", Pattern.CASE_INSENSITIVE);
@@ -145,7 +145,7 @@ public final class PartyModule {
         var self = Minecraft.getInstance().player;
         if (self != null && player.equals(self.getName().getString()) && !cfg.partySelfExecute) return;
 
-        // !pt / !ptme → transfer party leader to sender
+        // !pt / !ptme / !叫地主 / !抢地主 → transfer party leader to sender
         if (cfg.partyTransfer && CMD_PTME.matcher(msg).matches()) {
             nextCommand = "party transfer " + player;
             runWhenLeader();
