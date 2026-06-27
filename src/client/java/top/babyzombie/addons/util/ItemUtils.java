@@ -61,10 +61,10 @@ public final class ItemUtils {
         sb.append("stack: ").append(item.getCount()).append(" / ").append(item.getMaxStackSize()).append("\n");
 
         var cmd = item.get(DataComponents.CUSTOM_MODEL_DATA);
-        if (cmd != null) sb.append("\n\ncustom_model_data: ").append(cmd);
+        if (cmd != null) sb.append("custom_model_data: ").append(cmd).append("\n");
 
         var itemModel = item.get(DataComponents.ITEM_MODEL);
-        if (itemModel != null) sb.append("\n\nitem_model: ").append(itemModel);
+        if (itemModel != null) sb.append("item_model: ").append(itemModel).append("\n");
 
         var tooltip = item.getTooltipLines(
                 net.minecraft.world.item.Item.TooltipContext.of(mc.level),
