@@ -94,4 +94,18 @@ public record PetData(
                 ? obj.get("uniqueId").getAsString() : null
         );
     }
+
+    /** Return a copy of this PetData with the given exp value. */
+    public PetData withExp(long newExp) {
+        return new PetData(type, newExp, tier, heldItem, candyUsed, uuid, uniqueId);
+    }
+
+    /**
+     * Look up this pet's primary skill from PetConstants.
+     * Returns the SkillType, or null if the pet type is unknown or constants not loaded.
+     */
+    @Nullable
+    public SkillType getPrimarySkill() {
+        return PetConstants.getInstance().getPrimarySkill(this.type);
+    }
 }

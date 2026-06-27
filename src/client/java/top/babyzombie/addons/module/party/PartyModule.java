@@ -1,10 +1,12 @@
 package top.babyzombie.addons.module.party;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.PartyTracker;
 import top.babyzombie.addons.util.ServerTick;
@@ -53,6 +55,7 @@ public final class PartyModule {
 
     private static long warpDelayUntil;
     private static String nextCommand;
+    private static boolean pendingPlayWarp;
     private static final Map<String, Long> dmInvitePending = new HashMap<>();
     private static final Map<String, Long> repartyPlayers = new HashMap<>();
     static final Map<String, Long> pendingAutoAccept = new HashMap<>();
@@ -145,6 +148,17 @@ public final class PartyModule {
                 dmInvitePending.put(player.toLowerCase(), ServerTick.getTime() + 2000);
             }
         });
+
+        // !play pit/skyblock 后世界切换完成自动 /p warp
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> {
+            if (!pendingPlayWarp) return;
+            pendingPlayWarp = false;
+            Scheduler.schedule(60, () -> { // 3 秒延迟等服务器稳定
+                var player = Minecraft.getInstance().player;
+                if (player == null) return;
+                ChatUtils.sendCommand("party warp");
+            });
+        });
     }
 
     private static void onPartyChat(net.minecraft.network.chat.Component message, boolean overlay) {
@@ -212,16 +226,20 @@ public final class PartyModule {
         }
 
         // !play <content> → /play <content>
-        // pit/skyblock 不需要队长权限，直接执行
         if (cfg.partyPlay && CMD_PLAY.matcher(msg).matches()) {
             var pm = CMD_PLAY.matcher(msg);
             if (pm.find()) {
                 String content = pm.group(1);
                 nextCommand = "play" + (content != null ? " " + content : "");
                 if (content != null && (content.equalsIgnoreCase("pit") || content.equalsIgnoreCase("skyblock"))) {
-                    ChatUtils.sendCommand(nextCommand);
-                    showMsg("party.executed", "/" + nextCommand);
+                    // pit/skyblock 需要队长执行，且切换世界后自动 /p warp
+                    var cmd = nextCommand;
                     nextCommand = null;
+                    PartyTracker.getInstance().runWhenLeader(() -> {
+                        ChatUtils.sendCommand(cmd);
+                        showMsg("party.executed", "/" + cmd);
+                        pendingPlayWarp = true;
+                    });
                 } else {
                     runWhenLeader();
                 }

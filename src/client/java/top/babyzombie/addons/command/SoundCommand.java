@@ -43,7 +43,7 @@ final class SoundCommand {
 
             var comp = Component.literal(msg)
                     .withStyle(style -> style
-                            .withClickEvent(new ClickEvent.RunCommand("/bza debug sound " + id))
+                            .withClickEvent(new ClickEvent.RunCommand("/bza debug getsound " + id))
                             .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
                                     Component.translatable("babyzombieaddons.sound.hover", id))));
             var player = Minecraft.getInstance().player;
@@ -54,7 +54,7 @@ final class SoundCommand {
 
     static void register(
             com.mojang.brigadier.builder.ArgumentBuilder<FabricClientCommandSource, ?> parent) {
-        parent.then(literal("sound")
+        parent.then(literal("getsound")
                 .executes(ctx -> toggle(ctx.getSource()))
                 .then(literal("clear").executes(ctx -> clear(ctx.getSource())))
                 .then(argument("filter", StringArgumentType.greedyString())
