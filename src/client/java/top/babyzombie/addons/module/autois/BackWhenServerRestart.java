@@ -28,7 +28,7 @@ public class BackWhenServerRestart {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             if (!HypixelLocationTracker.getInstance().isIn("Private Island")) return;
             if (component.getStyle().getClickEvent() instanceof ClickEvent.RunCommand command) {
-                if (command.command().equals("/evacuate")) {
+                if (command.command().replace("/", "").equals("evacuate")) {
                     if (EVACUATE_MSG.matcher(component.getString()).matches()) {
                         restart = true;
                         var playerLocation = Minecraft.getInstance().player.getPosition(1);
@@ -47,9 +47,11 @@ public class BackWhenServerRestart {
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register(((client, level) -> {
             if (restart && afk && ModConfigManager.get().general.backOnServerRestart) {
-                if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
-                if (!HypixelLocationTracker.getInstance().isIn("Hub")) return;
-                Scheduler.schedule(200, () -> ChatUtils.sendCommand("is"));
+                Scheduler.schedule(200, () -> {
+                    if (HypixelLocationTracker.getInstance().isInSkyblock()
+                        && HypixelLocationTracker.getInstance().isIn("Hub")
+                        ) ChatUtils.sendCommand("is");
+                });
             }
             restart = false;
             afk = false;

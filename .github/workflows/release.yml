@@ -113,7 +113,7 @@ jobs:
           for f in artifacts/*.jar; do
             echo "上传: $f"
             UPLOAD_OK=0
-            for i in 1 2 3; do
+            for i in 1 2 3 4; do
               echo "  第 $i 次尝试..."
               RESP=$(curl -sS --retry 2 --connect-timeout 30 --max-time 120 \
                 -X POST "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
