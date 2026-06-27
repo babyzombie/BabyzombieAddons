@@ -108,10 +108,28 @@ jobs:
               -d "$PAYLOAD" > /dev/null
           fi
 
-          # 上传 JAR 附件
+          # 上传 JAR 附件（最多重试 3 次）
+          FAILED=0
           for f in artifacts/*.jar; do
             echo "上传: $f"
-            curl -sS -X POST "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
-              -F "file=@$f" | jq -r '.name + " -> " + (.browser_download_url // "失败")'
+            UPLOAD_OK=0
+            for i in 1 2 3; do
+              echo "  第 $i 次尝试..."
+              RESP=$(curl -sS --retry 2 --connect-timeout 30 --max-time 120 \
+                -X POST "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
+                -F "file=@$f" 2>&1) && UPLOAD_OK=1 && break
+              echo "  失败，${i}/3 次"
+              sleep 5
+            done
+            if [ "$UPLOAD_OK" -eq 1 ]; then
+              echo "$RESP" | jq -r '.name + " -> " + (.browser_download_url // "失败")'
+            else
+              echo "::warning ::$f 上传最终失败"
+              FAILED=1
+            fi
           done
+          if [ "$FAILED" -eq 1 ]; then
+            echo "::error ::部分 JAR 上传 Gitee 失败"
+            exit 1
+          fi
           echo "Gitee release 同步完成"
