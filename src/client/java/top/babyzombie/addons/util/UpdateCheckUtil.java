@@ -19,8 +19,8 @@ public final class UpdateCheckUtil {
 
     private UpdateCheckUtil() {}
 
-    /** Holds the latest release tag and where to download it. */
-    public record ReleaseInfo(String tag, String downloadUrl) {}
+    /** Holds the latest release tag, download URL, and release body (changelog). */
+    public record ReleaseInfo(String tag, String downloadUrl, String body) {}
 
     /**
      * Fetch the latest release that has an asset matching the given MC version.
@@ -59,7 +59,8 @@ public final class UpdateCheckUtil {
                 var found = findMatchingAsset(release.getAsJsonArray("assets"), mcVersion);
                 if (found != null) {
                     String tag = release.get("tag_name").getAsString();
-                    return new ReleaseInfo(stripV(tag), found);
+                    String body = getReleaseBody(release);
+                    return new ReleaseInfo(stripV(tag), found, body);
                 }
             }
             throw new RuntimeException("No release with asset matching MC " + mcVersion);
@@ -84,7 +85,8 @@ public final class UpdateCheckUtil {
                 var found = findMatchingAsset(release.getAsJsonArray("assets"), mcVersion);
                 if (found != null) {
                     String tag = release.get("tag_name").getAsString();
-                    return new ReleaseInfo(stripV(tag), found);
+                    String body = getReleaseBody(release);
+                    return new ReleaseInfo(stripV(tag), found, body);
                 }
             }
             throw new RuntimeException("No release with asset matching MC " + mcVersion);
@@ -104,6 +106,38 @@ public final class UpdateCheckUtil {
             }
         }
         return null;
+    }
+
+    @Nullable
+    private static String getReleaseBody(com.google.gson.JsonObject release) {
+        var bodyEl = release.get("body");
+        if (bodyEl == null || bodyEl.isJsonNull()) return null;
+        String raw = bodyEl.getAsString();
+        if (raw.isBlank()) return null;
+        return stripMarkdown(raw);
+    }
+
+    /** Convert GitHub-flavored markdown into plain text suitable for in-game hover display. */
+    private static String stripMarkdown(String md) {
+        var sb = new StringBuilder();
+        for (String line : md.split("\n", -1)) {
+            // Remove leading markdown headers (##, ###, etc.)
+            line = line.replaceAll("^#{1,6}\\s*", "");
+            // Remove bold/italic markers
+            line = line.replaceAll("\\*\\*?(.+?)\\*\\*?", "$1");
+            line = line.replaceAll("__(.+?)__", "$1");
+            // Remove inline code
+            line = line.replaceAll("`([^`]+)`", "$1");
+            // Remove links, keep text [text](url)
+            line = line.replaceAll("\\[([^]]+)]\\([^)]+\\)", "$1");
+            // Remove images ![alt](url)
+            line = line.replaceAll("!\\[([^]]*)]\\([^)]+\\)", "$1");
+            sb.append(line).append('\n');
+        }
+        // Strip leading/trailing whitespace and collapse excess blank lines
+        return sb.toString()
+                .replaceAll("\n{4,}", "\n\n\n")
+                .trim();
     }
 
     private static String stripV(String tag) {

@@ -62,27 +62,10 @@ jobs:
           merge-multiple: true
 
       - name: Generate Changelog
-        run: |
-          PREV_TAG=$(git tag --sort=-v:refname | grep -v "^${{ github.ref_name }}$" | head -1)
-          {
-            echo "## What's Changed"
-            echo ""
-            if [ -n "$PREV_TAG" ]; then
-              git log "$PREV_TAG..${{ github.ref_name }}" --pretty=format:"%s" \
-                | grep -v -E '^(v[0-9]|Bump version)' \
-                | sed 's/^/- /' \
-                || echo "- (no significant changes)"
-            else
-              git log --pretty=format:"- %s" \
-                | grep -v -E '^(v[0-9]|Bump version)' \
-                || echo "- Initial release"
-            fi
-            echo ""
-            echo ""
-            if [ -n "$PREV_TAG" ]; then
-              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREV_TAG...${{ github.ref_name }}"
-            fi
-          } > changelog.md
+        uses: orhun/git-cliff-action@v4
+        with:
+          args: --latest --strip header --output changelog.md
+          config: cliff.toml
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

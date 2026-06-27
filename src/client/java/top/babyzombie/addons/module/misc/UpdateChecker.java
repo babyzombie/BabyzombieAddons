@@ -44,8 +44,13 @@ public final class UpdateChecker {
             if (!UpdateCheckUtil.isNewer(release.tag(), currentVersion)) return;
 
             var msg = Component.translatable(
-                            "babyzombieaddons.update.new_version", release.tag(), currentVersion)
-                    .append(" ")
+                            "babyzombieaddons.update.new_version", release.tag(), currentVersion);
+            if (release.body() != null && !release.body().isBlank()) {
+                msg = msg.withStyle(style -> style
+                        .withHoverEvent(new HoverEvent.ShowText(
+                                Component.literal(release.body()))));
+            }
+            var finalMsg = msg.append(" ")
                     .append(createDownloadLink(
                             "babyzombieaddons.update.download.github", RELEASES_GITHUB_URL))
                     .append(" ")
@@ -53,7 +58,7 @@ public final class UpdateChecker {
                             "babyzombieaddons.update.download.gitee", RELEASES_GITEE_URL));
             client.execute(() -> {
                 var player = client.player;
-                if (player != null) player.sendSystemMessage(msg);
+                if (player != null) player.sendSystemMessage(finalMsg);
             });
         }, "BZA-UpdateCheck");
         thread.setDaemon(true);

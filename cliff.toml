@@ -1,0 +1,17 @@
+[git]
+conventional_commits = false
+commit_parsers = [
+    { message = '^\+ ', group = "新增" },
+    { message = '^\- ', group = "修复" },
+    { message = '^\* ', group = "优化" },
+    { message = ".*", group = "其他" },
+]
+
+[changelog]
+body = """{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group }}
+{% for commit in commits %}
+{{ commit.message }}
+{% endfor %}
+{% endfor %}"""
+trim = true
