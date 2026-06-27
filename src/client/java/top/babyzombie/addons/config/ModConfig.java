@@ -56,6 +56,7 @@ public class ModConfig {
     public DebugConfig debug = new DebugConfig();
     public AutoJoinConfig autoJoin = new AutoJoinConfig();
     public HandRenderConfig handRender = new HandRenderConfig();
+    public PetConfig pet = new PetConfig();
 
     // ---- General ----
 
@@ -270,6 +271,16 @@ public class ModConfig {
     public static class AutoJoinConfig {
         public boolean autoJoinServer = false;
         public String autoJoinServerIP = "";
+    }
+
+    // ---- Pet Display HUD ----
+
+    public static class PetConfig {
+        public boolean petDisplay = false;
+        public boolean petExpDisplay = true;
+        public boolean petItemDisplay = true;
+        public boolean petItemIconDisplay = true;
+        public boolean petSharedDisplay = true;
     }
 
     // ---- Hand Render ----

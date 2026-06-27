@@ -32,7 +32,7 @@ public final class SkillXPActionBarParser {
     private static final Pattern MAXED = Pattern.compile("\\(([0-9,.]+)/0\\)");
 
     /** Last absolute XP position per skill (for delta). */
-    private final Map<SkillType, Long> lastAbsolute = new EnumMap<>(SkillType.class);
+    private final Map<SkillType, Double> lastAbsolute = new EnumMap<>(SkillType.class);
     /** Fallback: last cumulative +XP per skill. */
     private final Map<SkillType, Double> lastCumulative = new EnumMap<>(SkillType.class);
     private PlayerPetState state;
@@ -72,7 +72,7 @@ public final class SkillXPActionBarParser {
                 else if (skill == SkillType.DUNGEONEERING) table = PetConstants.getInstance().getCatacombsXp();
                 if (table == null || level < 1 || level > table.length) return null;
                 long xpForLevel = table[level - 1];
-                long absolute = base + Math.round(pct / 100.0 * xpForLevel);
+                double absolute = base + (pct / 100.0) * xpForLevel;
                 return delta(skill, absolute);
             } catch (NumberFormatException e) { return null; }
         }
@@ -99,10 +99,10 @@ public final class SkillXPActionBarParser {
         return null;
     }
 
-    private SkillXPEvent delta(SkillType skill, long current) {
-        Long prev = lastAbsolute.put(skill, current);
+    private SkillXPEvent delta(SkillType skill, double current) {
+        Double prev = lastAbsolute.put(skill, current);
         if (prev == null) return null;
-        long d = current - prev;
+        double d = current - prev;
 
         // Level-up: percentage dropped → negative delta.
         // Try incrementing stored level until the math works.

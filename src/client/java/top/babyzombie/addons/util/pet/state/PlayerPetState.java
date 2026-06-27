@@ -30,6 +30,9 @@ public final class PlayerPetState {
     // ---- Battle Experience ----
     public int battleExperienceLevel = 0;
 
+    // ---- Why Not More (attribute: +1% exp share per level) ----
+    public int whyNotMoreLevel = 0;
+
     // ---- Mayor ----
     public boolean dianaMayor;
     public boolean dianaPetXpBuff;
@@ -57,6 +60,7 @@ public final class PlayerPetState {
     public double getTotalSharePercent() {
         double pct = getTamingSharePercent();
         pct += dianaSharingIsCaring ? 10.0 : 0.0;
+        pct += whyNotMoreLevel; // +1% per level
         return pct;
     }
 

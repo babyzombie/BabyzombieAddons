@@ -1,7 +1,6 @@
 package top.babyzombie.addons.util.pet;
 
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Implements the Hypixel SkyBlock pet experience formula.
@@ -76,64 +75,49 @@ public final class PetXPCalculator {
     /**
      * Calculate XP gained by a pet in an exp share slot.
      *
+     * The summoned pet XP = skillXP × summonedMatch × summonedItem × allPlayerMultipliers.
+     * The shared pet XP = skillXP × sharePct × sharedMatch × sharedItem × allPlayerMultipliers.
+     *
+     * So from summonedXP we divide out the summoned pet's specific multipliers
+     * and multiply in the shared pet's:
+     *   sharedXP = summonedXP × sharePct × (sharedMatch / summonedMatch) × (sharedItem / summonedItem)
+     *
      * @param summonedXP            XP gained by the summoned pet (from calcSummonedPetXP)
+     * @param summonedPetType       type of the summoned pet (to divide out its match)
+     * @param summonedPetItemMult   summoned pet's held-item multiplier (to divide out)
      * @param sharedPetType         type of the pet in the share slot
+     * @param sharedPetItemMult     shared pet's held-item multiplier
      * @param skill                 the skill type that generated the XP
-     * @param tamingLevel           player's Taming skill level
+     * @param tamingLevel           player's Taming skill level (for share percentage)
      * @param hasExpShareItem       whether this shared pet has an Exp Share item equipped
      * @param dianaSharingIsCaring  whether Diana's "Sharing is Caring" perk is active (+10%)
-     * @param hasWhyNotMore         whether this pet has the "Why Not More" attribute (+10%)
-     * @param sharedPetItemMult     multiplier from the shared pet's held item (for XP boost items)
-     * @param beastmasterMult       Beastmaster Crest multiplier
-     * @param battleXpLevel         Battle Experience attribute level
-     * @param dianaPetXpBuff        Diana Pet XP Buff
+     * @param whyNotMoreLevel       Why Not More attribute level (+1% exp share per level)
      * @return final pet XP for this shared pet
      */
     public static double calcSharedPetXP(
         double summonedXP,
+        String summonedPetType,
+        double summonedPetItemMult,
         String sharedPetType,
+        double sharedPetItemMult,
         SkillType skill,
         int tamingLevel,
         boolean hasExpShareItem,
         boolean dianaSharingIsCaring,
-        boolean hasWhyNotMore,
-        double sharedPetItemMult,
-        double beastmasterMult,
-        int battleXpLevel,
-        boolean dianaPetXpBuff
+        int whyNotMoreLevel
     ) {
-        // Share percentage: Taming base (0.2%/lvl) + Exp Share item (15%) + Diana (10%) + Why Not More (10%)
+        // Share percentage: Taming base (0.2%/lvl) + Exp Share item (15%) + Diana (10%) + Why Not More (1%/lvl)
         double sharePct = tamingLevel * 0.2;
         if (hasExpShareItem) sharePct += 15.0;
         if (dianaSharingIsCaring) sharePct += 10.0;
-        if (hasWhyNotMore) sharePct += 10.0;
-        sharePct = Math.min(sharePct / 100.0, 1.0); // Cap at 100%
+        sharePct += whyNotMoreLevel;
+        sharePct = Math.min(sharePct / 100.0, 1.0);
 
-        // Shared pet gets its own match multiplier against the skill
-        double match = getMatchMultiplier(sharedPetType, skill);
+        // Cancel out summoned pet's match & item, apply shared pet's
+        double summonedMatch = getMatchMultiplier(summonedPetType, skill);
+        double sharedMatch = getMatchMultiplier(sharedPetType, skill);
 
-        // Shared pet's own multipliers (same as summoned formula)
-        double taming = getTamingMultiplier(tamingLevel);
-        PetConstants constants = PetConstants.getInstance();
-        constants.ensureLoaded();
-        double reindeerMult = constants.getXpMultiplier(sharedPetType);
-        double battleMult = 1.0;
-        if (skill == SkillType.COMBAT) {
-            battleMult = 1.0 + battleXpLevel * 0.01;
-            if (battleMult > 1.10) battleMult = 1.10;
-        }
-        double dianaMult = dianaPetXpBuff ? 1.35 : 1.0;
-        double skillBonus = (skill == SkillType.MINING || skill == SkillType.FISHING) ? 1.5 : 1.0;
-
-        return summonedXP
-            * sharePct
-            * match
-            * sharedPetItemMult
-            * beastmasterMult
-            * battleMult
-            * reindeerMult
-            * dianaMult
-            * skillBonus;
+        return summonedXP * sharePct * (sharedMatch / summonedMatch) * (sharedPetItemMult / summonedPetItemMult);
     }
 
     // ===== Multiplier Helpers =====

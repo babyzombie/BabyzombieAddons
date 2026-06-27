@@ -73,6 +73,18 @@
   "config.babyzombieaddons.group.chat": "Chat Bar",
   "config.babyzombieaddons.category.misc": "Misc",
 
+  "config.babyzombieaddons.group.pet": "Pet",
+  "config.babyzombieaddons.option.petDisplay": "Pet Display",
+  "config.babyzombieaddons.option.petDisplay.desc": "Show current pet info on HUD.",
+  "config.babyzombieaddons.option.petExpDisplay": "Pet XP Display",
+  "config.babyzombieaddons.option.petExpDisplay.desc": "Show experience progress for the current pet.",
+  "config.babyzombieaddons.option.petItemDisplay": "Pet Item Display",
+  "config.babyzombieaddons.option.petItemDisplay.desc": "Show the pet's held item name.",
+  "config.babyzombieaddons.option.petItemIconDisplay": "Pet Item Icon",
+  "config.babyzombieaddons.option.petItemIconDisplay.desc": "Show a small icon next to the pet's held item name.",
+  "config.babyzombieaddons.option.petSharedDisplay": "Exp Sharing Pets",
+  "config.babyzombieaddons.option.petSharedDisplay.desc": "Show exp sharing pets below the main pet display.",
+
   "config.babyzombieaddons.group.autois": "AutoIS Settings",
   "config.babyzombieaddons.option.updateChecker": "Update Checker",
   "config.babyzombieaddons.option.updateChecker.desc": "Check for new versions when joining a world.",
@@ -655,12 +667,14 @@
   "babyzombieaddons.debug.pet.state_beastmaster": "§bBeastmaster Crest: §f+%s%% §7(×%s)",
   "babyzombieaddons.debug.pet.state_battle_exp": "§bBattle Experience: §f%s §7(×%.2f)",
   "babyzombieaddons.debug.pet.state_battle_exp_none": "None",
+  "babyzombieaddons.debug.pet.state_why_not_more": "§bWhy Not More: §f%s §7(+%d%%)",
+  "babyzombieaddons.debug.pet.state_why_not_more_none": "None",
   "babyzombieaddons.debug.pet.state_diana_mayor": "§bDiana Mayor: §f%s",
   "babyzombieaddons.debug.pet.state_pet_xp_buff": "§bPet XP Buff: §f%s",
   "babyzombieaddons.debug.pet.state_sharing_is_caring": "§bSharing is Caring: §f%s",
   "babyzombieaddons.debug.pet.yes": "Yes",
   "babyzombieaddons.debug.pet.no": "No",
   "babyzombieaddons.debug.pet.last_xp_header": "§6§l=== Last Skill XP ===",
-  "babyzombieaddons.debug.pet.last_xp_summoned": "§b%s +%.1f §7→ Summoned Pet §a+%.1f XP",
-  "babyzombieaddons.debug.pet.last_xp_shared": "§7Shared[%d] §b%s §7→ §a+%.1f XP"
+  "babyzombieaddons.debug.pet.last_xp_summoned": "§b%s +%.2f §7→ Summoned Pet §a+%.2f XP",
+  "babyzombieaddons.debug.pet.last_xp_shared": "§7Shared[%d] §b%s §7→ §a+%.2f XP"
 }

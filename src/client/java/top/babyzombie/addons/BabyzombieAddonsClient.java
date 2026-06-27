@@ -23,6 +23,7 @@ import top.babyzombie.addons.module.garden.GardenModule;
 import top.babyzombie.addons.module.events.FruitDiggingModule;
 import top.babyzombie.addons.module.events.GreatSpookModule;
 import top.babyzombie.addons.module.kuudra.KuudraModule;
+import top.babyzombie.addons.module.pet.PetDisplayHud;
 import top.babyzombie.addons.module.kuudra.ArrowPoisonRefill;
 import top.babyzombie.addons.module.mining.MiningModule;
 import top.babyzombie.addons.module.misc.MiscModule;
@@ -110,5 +111,6 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         SlayerModule.init();
         WitherCloakModule.init();
         PetManager.getInstance().init();
+        PetDisplayHud.init();
     }
 }

@@ -87,6 +87,11 @@ final class DebugPetCommand {
                 ? toRoman(state.battleExperienceLevel)
                 : t(PFX + "state_battle_exp_none"),
             state.getBattleExperienceMultiplier()));
+        src.sendFeedback(Component.translatable(PFX + "state_why_not_more",
+            state.whyNotMoreLevel > 0
+                ? toRoman(state.whyNotMoreLevel)
+                : t(PFX + "state_why_not_more_none"),
+            state.whyNotMoreLevel));
         src.sendFeedback(Component.translatable(PFX + "state_diana_mayor",
             (state.dianaMayor ? "§a" : "§c") + t(state.dianaMayor ? PFX + "yes" : PFX + "no")));
         src.sendFeedback(Component.translatable(PFX + "state_pet_xp_buff",
@@ -109,8 +114,8 @@ final class DebugPetCommand {
         }
     }
 
-    private static String fmtNum(long n) {
-        return String.format("%,d", n);
+    private static String fmtNum(double n) {
+        return String.format("%,.2f", n);
     }
 
     private static String t(String key) {

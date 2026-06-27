@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public record PetData(
     String type,
-    long exp,
+    double exp,
     int tier,
     @Nullable String heldItem,
     int candyUsed,
@@ -41,7 +41,7 @@ public record PetData(
 
     /** Calculate the pet's level from its exp, tier, and held item. */
     public int getLevel() {
-        long xp = this.exp;
+        double xp = this.exp;
         int level = 1;
         int tierIdx = this.tier;
         if ("PET_ITEM_TIER_BOOST".equals(this.heldItem)) {
@@ -83,7 +83,7 @@ public record PetData(
         }
         return new PetData(
             obj.get("type").getAsString(),
-            obj.get("exp").getAsLong(),
+            obj.get("exp").getAsDouble(),
             tier,
             obj.has("heldItem") && !obj.get("heldItem").isJsonNull()
                 ? obj.get("heldItem").getAsString() : null,
@@ -96,7 +96,7 @@ public record PetData(
     }
 
     /** Return a copy of this PetData with the given exp value. */
-    public PetData withExp(long newExp) {
+    public PetData withExp(double newExp) {
         return new PetData(type, newExp, tier, heldItem, candyUsed, uuid, uniqueId);
     }
 
@@ -107,5 +107,72 @@ public record PetData(
     @Nullable
     public SkillType getPrimarySkill() {
         return PetConstants.getInstance().getPrimarySkill(this.type);
+    }
+
+    // ===== Level Progress =====
+
+    /** Detailed XP breakdown at the current level. */
+    public record LevelInfo(int level, double xpInLevel, double xpToNext, boolean isMaxed) {}
+
+    /**
+     * Returns detailed level information, mirroring {@link #getLevel()} logic
+     * but preserving the remaining XP within the current level.
+     */
+    public LevelInfo getLevelInfo() {
+        double xp = this.exp;
+        int level = 1;
+        int tierIdx = this.tier;
+        if ("PET_ITEM_TIER_BOOST".equals(this.heldItem)) {
+            tierIdx++;
+        }
+        tierIdx = Math.min(tierIdx, 4);
+
+        for (int required : EXP_TO_NEXT_LEVEL[tierIdx]) {
+            if (xp < required) {
+                return new LevelInfo(level, xp, required, false);
+            }
+            xp -= required;
+            level++;
+        }
+
+        // Max-level pets (GOLDEN_DRAGON, JADE_DRAGON, ROSE_DRAGON → Lvl 200)
+        if (MAX_LEVEL_PETS.contains(this.type) && level >= 100) {
+            if (xp < 5555) {
+                return new LevelInfo(level + 1, xp, 5555, false);
+            }
+            level++;
+            xp -= 5555;
+            while (level < 200) {
+                if (xp < LEVEL_200_XP_REPEAT) {
+                    return new LevelInfo(level, xp, LEVEL_200_XP_REPEAT, false);
+                }
+                xp -= LEVEL_200_XP_REPEAT;
+                level++;
+            }
+        }
+
+        return new LevelInfo(level, 0, 0, true);
+    }
+
+    // ===== Display Helpers =====
+
+    /** "GOLDEN_DRAGON" → "Golden Dragon" */
+    public static String formatPetName(String type) {
+        if (type == null) return "?";
+        StringBuilder sb = new StringBuilder();
+        boolean nextUpper = true;
+        for (int i = 0; i < type.length(); i++) {
+            char c = type.charAt(i);
+            if (c == '_') {
+                sb.append(' ');
+                nextUpper = true;
+            } else if (nextUpper) {
+                sb.append(Character.toUpperCase(c));
+                nextUpper = false;
+            } else {
+                sb.append(Character.toLowerCase(c));
+            }
+        }
+        return sb.toString();
     }
 }

@@ -82,6 +82,20 @@ public final class SkyblockCategory {
                                         Component.translatable("config.babyzombieaddons.option.autoBackToSkyblock." + m.name())))
                                 .build())
                         .build())
+                .group(OptionGroup.createBuilder()
+                    .name(Component.translatable("config.babyzombieaddons.group.pet"))
+                    .collapsed(true)
+                    .option(createBool("petDisplay", defaults.pet.petDisplay,
+                            () -> config.pet.petDisplay, v -> config.pet.petDisplay = v))
+                    .option(createBool("petExpDisplay", defaults.pet.petExpDisplay,
+                            () -> config.pet.petExpDisplay, v -> config.pet.petExpDisplay = v))
+                    .option(createBool("petItemDisplay", defaults.pet.petItemDisplay,
+                            () -> config.pet.petItemDisplay, v -> config.pet.petItemDisplay = v))
+                    .option(createBool("petItemIconDisplay", defaults.pet.petItemIconDisplay,
+                            () -> config.pet.petItemIconDisplay, v -> config.pet.petItemIconDisplay = v))
+                    .option(createBool("petSharedDisplay", defaults.pet.petSharedDisplay,
+                            () -> config.pet.petSharedDisplay, v -> config.pet.petSharedDisplay = v))
+                    .build())
                 .build();
     }
 

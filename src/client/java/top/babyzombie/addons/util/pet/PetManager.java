@@ -211,7 +211,7 @@ public final class PetManager {
     /**
      * Add experience to a pet by UUID. Replaces the old record with updated exp.
      */
-    public void addPetExp(@Nullable String uuid, long expToAdd) {
+    public void addPetExp(@Nullable String uuid, double expToAdd) {
         if (uuid == null || expToAdd <= 0) return;
         for (int i = 0; i < pets.size(); i++) {
             PetData p = pets.get(i);
@@ -592,24 +592,34 @@ public final class PetManager {
         }
     }
 
-    /** Scan the Attribute Menu for Battle Experience item. */
+    /** Scan the Attribute Menu for Battle Experience and Why Not More. */
     private void scanAttributeMenu(AbstractContainerScreen<?> screen) {
         var slots = screen.getMenu().slots;
+        boolean foundBattle = false, foundWhyNot = false;
         for (int i = 0; i < slots.size() - 36; i++) {
             ItemStack stack = slots.get(i).getItem();
             if (stack.isEmpty()) continue;
             String name = ChatUtils.stripColor(stack.getHoverName().getString());
-            if (!name.startsWith("Battle Experience ")) continue;
 
-            // "Battle Experience X" → extract Roman numeral
-            String roman = name.substring("Battle Experience ".length()).trim();
-            int level = RomanNumeral.parse(roman);
-            if (level >= 0 && level <= 10) {
-                petState.battleExperienceLevel = level;
-                saveCurrentProfile();
+            if (!foundBattle && name.startsWith("Battle Experience ")) {
+                String roman = name.substring("Battle Experience ".length()).trim();
+                int level = RomanNumeral.parse(roman);
+                if (level >= 0 && level <= 10) {
+                    petState.battleExperienceLevel = level;
+                    foundBattle = true;
+                }
             }
-            break;
+            if (!foundWhyNot && name.startsWith("Why Not More ")) {
+                String roman = name.substring("Why Not More ".length()).trim();
+                int level = RomanNumeral.parse(roman);
+                if (level >= 0 && level <= 10) {
+                    petState.whyNotMoreLevel = level;
+                    foundWhyNot = true;
+                }
+            }
+            if (foundBattle && foundWhyNot) break;
         }
+        if (foundBattle || foundWhyNot) saveCurrentProfile();
     }
 
     // ===== Serialization =====

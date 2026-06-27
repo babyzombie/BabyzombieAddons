@@ -113,16 +113,16 @@ public final class PetExperienceTracker {
 
         // Calculate summoned pet XP
         double petItemMult = resolvePetItemMultiplier(currentPet.heldItem(), skill);
-        double summonedXP = PetXPCalculator.calcSummonedPetXP(
+        double summonedXP = round2(PetXPCalculator.calcSummonedPetXP(
             skillXP, skill, currentPet.type(),
             state.getTamingLevel(),
             petItemMult,
             state.beastmasterMult,
             state.battleExperienceLevel,
             state.dianaPetXpBuff
-        );
+        ));
 
-        petManager.addPetExp(currentPet.uuid(), (long) Math.ceil(summonedXP));
+        petManager.addPetExp(currentPet.uuid(), summonedXP);
         // Calculate shared pet XP
         List<PetData> sharedPets = petManager.getSharedPets();
         java.util.ArrayList<SharedPetXpResult> sharedResults = new java.util.ArrayList<>();
@@ -140,27 +140,25 @@ public final class PetExperienceTracker {
 
             double sharedPetItemMult = resolvePetItemMultiplier(sharedPet.heldItem(), skill);
             boolean hasExpShare = "PET_ITEM_EXP_SHARE".equals(sharedPet.heldItem());
-            boolean hasWhyNotMore = false; // TODO: detect from NBT/attributes
 
-            double sharedXP = PetXPCalculator.calcSharedPetXP(
-                summonedXP, sharedPet.type(), skill,
+            double sharedXP = round2(PetXPCalculator.calcSharedPetXP(
+                summonedXP,
+                currentPet.type(), petItemMult,
+                sharedPet.type(), sharedPetItemMult,
+                skill,
                 state.getTamingLevel(),
                 hasExpShare,
                 state.dianaSharingIsCaring,
-                hasWhyNotMore,
-                sharedPetItemMult,
-                state.beastmasterMult,
-                state.battleExperienceLevel,
-                state.dianaPetXpBuff
-            );
+                state.whyNotMoreLevel
+            ));
 
-            petManager.addPetExp(sharedPet.uuid(), (long) Math.ceil(sharedXP));
+            petManager.addPetExp(sharedPet.uuid(), sharedXP);
             sharedResults.add(new SharedPetXpResult(sharedPet.type(), sharedXP));
         }
 
         // Store for debug display
         lastCalculation = new LastCalculation(
-            skill.name(), skillXP, currentPet.type(), summonedXP, sharedResults
+            skill.name(), round2(skillXP), currentPet.type(), summonedXP, sharedResults
         );
     }
 
@@ -208,6 +206,11 @@ public final class PetExperienceTracker {
         } catch (IOException | NumberFormatException ignored) {}
 
         return 1.0;
+    }
+
+    /** Round to 2 decimal places to avoid floating-point noise. */
+    private static double round2(double v) {
+        return Math.round(v * 100.0) / 100.0;
     }
 
     /**

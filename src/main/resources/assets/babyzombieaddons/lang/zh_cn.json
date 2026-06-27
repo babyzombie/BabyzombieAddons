@@ -73,6 +73,18 @@
   "config.babyzombieaddons.group.chat": "聊天栏",
   "config.babyzombieaddons.category.misc": "杂项",
 
+  "config.babyzombieaddons.group.pet": "宠物",
+  "config.babyzombieaddons.option.petDisplay": "宠物显示",
+  "config.babyzombieaddons.option.petDisplay.desc": "在 HUD 上显示当前宠物信息。",
+  "config.babyzombieaddons.option.petExpDisplay": "宠物经验显示",
+  "config.babyzombieaddons.option.petExpDisplay.desc": "显示当前宠物的经验进度。",
+  "config.babyzombieaddons.option.petItemDisplay": "宠物物品显示",
+  "config.babyzombieaddons.option.petItemDisplay.desc": "显示宠物持有的物品名称。",
+  "config.babyzombieaddons.option.petItemIconDisplay": "宠物物品图标",
+  "config.babyzombieaddons.option.petItemIconDisplay.desc": "在宠物物品名称旁显示小图标。",
+  "config.babyzombieaddons.option.petSharedDisplay": "经验共享宠物",
+  "config.babyzombieaddons.option.petSharedDisplay.desc": "在主宠物下方显示经验共享宠物。",
+
   "config.babyzombieaddons.group.autois": "AutoIS 设置",
   "config.babyzombieaddons.option.updateChecker": "检查更新",
   "config.babyzombieaddons.option.updateChecker.desc": "进入世界时检查是否有新版本。",
@@ -655,12 +667,14 @@
   "babyzombieaddons.debug.pet.state_beastmaster": "§b兽王纹章：§f+%s%% §7(×%s)",
   "babyzombieaddons.debug.pet.state_battle_exp": "§b战斗经验：§f%s §7(×%.2f)",
   "babyzombieaddons.debug.pet.state_battle_exp_none": "无",
+  "babyzombieaddons.debug.pet.state_why_not_more": "§bWhy Not More：§f%s §7(+%d%%)",
+  "babyzombieaddons.debug.pet.state_why_not_more_none": "无",
   "babyzombieaddons.debug.pet.state_diana_mayor": "§bDiana 市长：§f%s",
   "babyzombieaddons.debug.pet.state_pet_xp_buff": "§b宠物经验加成：§f%s",
   "babyzombieaddons.debug.pet.state_sharing_is_caring": "§b经验共享：§f%s",
   "babyzombieaddons.debug.pet.yes": "是",
   "babyzombieaddons.debug.pet.no": "否",
   "babyzombieaddons.debug.pet.last_xp_header": "§6§l=== 上次技能经验 ===",
-  "babyzombieaddons.debug.pet.last_xp_summoned": "§b%s +%.1f §7→ 召唤宠物 §a+%.1f XP",
-  "babyzombieaddons.debug.pet.last_xp_shared": "§7共享[%d] §b%s §7→ §a+%.1f XP"
+  "babyzombieaddons.debug.pet.last_xp_summoned": "§b%s +%.2f §7→ 召唤宠物 §a+%.2f XP",
+  "babyzombieaddons.debug.pet.last_xp_shared": "§7共享[%d] §b%s §7→ §a+%.2f XP"
 }

@@ -96,6 +96,12 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.chatChannelSwitcher",
                 () -> get().chatChannel.chatChannelSwitcher);
 
+        // --- Pet Display ---
+        HudManager.register("PetDisplay", 10, 200, 1.0f,
+                "§7Lv.100 §fRabbit\n§b95.5%",
+                "config.babyzombieaddons.option.petDisplay",
+                () -> get().pet.petDisplay);
+
         // --- AutoIS ---
         HudManager.register("AutoIS", 10, 10, 1.0f,
                 "AutoIS §aEnabled",
