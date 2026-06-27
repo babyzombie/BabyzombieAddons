@@ -27,9 +27,11 @@ public final class PartyModule {
     public static final Pattern PARTY_CHAT = Pattern.compile(
             "(?:Party|组队|組隊) > (?:\\[[^\\]]+\\] )?([0-9a-zA-Z_]{2,24}).*?: (.+)");
 
-    // DM message: "From PlayerName: !p"
-    private static final Pattern DM_INVITE = Pattern.compile(
+    // DM message: "From PlayerName: !p" or "To PlayerName: !p" (outgoing)
+    private static final Pattern DM_INVITE_IN = Pattern.compile(
             "^From (.+): [!！][ ]?p(?:arty)?(?: .*)?$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern DM_INVITE_OUT = Pattern.compile(
+            "^To (.+): [!！][ ]?p(?:arty)?(?: .*)?$", Pattern.CASE_INSENSITIVE);
 
     // Party chat commands
     private static final Pattern CMD_ALLINVITE = Pattern.compile("^[!！][ ]?all(?:inv)?(?:ite)?$", Pattern.CASE_INSENSITIVE);
@@ -116,18 +118,31 @@ public final class PartyModule {
         // Party chat commands
         ClientReceiveMessageEvents.GAME.register(PartyModule::onPartyChat);
 
-        // DM party invite (!p in private message)
+        // DM party invite (!p in private message — incoming)
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
             if (!ModConfigManager.get().party.dmPartyInvite) return;
             if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
-            var matcher = DM_INVITE.matcher(message.getString());
+            var matcher = DM_INVITE_IN.matcher(message.getString());
+            if (matcher.find()) {
+                String raw = ChatUtils.stripColor(matcher.group(1));
+                String player = RANK_PREFIX.matcher(raw).replaceFirst("");
+                ChatUtils.sendCommand("party invite " + player);
+                showMsg("party.dm_invited", player);
+            }
+        });
+
+        // DM party invite (!p in private message — outgoing)
+        // 发出 !p 后，把对方加入 dmInvitePending，等对方邀请时自动接受
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+            if (overlay) return;
+            if (!ModConfigManager.get().party.dmPartyInvite) return;
+            if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
+            var matcher = DM_INVITE_OUT.matcher(message.getString());
             if (matcher.find()) {
                 String raw = ChatUtils.stripColor(matcher.group(1));
                 String player = RANK_PREFIX.matcher(raw).replaceFirst("");
                 dmInvitePending.put(player.toLowerCase(), ServerTick.getTime() + 2000);
-                ChatUtils.sendCommand("party invite " + player);
-                showMsg("party.dm_invited", player);
             }
         });
     }
@@ -197,12 +212,19 @@ public final class PartyModule {
         }
 
         // !play <content> → /play <content>
+        // pit/skyblock 不需要队长权限，直接执行
         if (cfg.partyPlay && CMD_PLAY.matcher(msg).matches()) {
             var pm = CMD_PLAY.matcher(msg);
             if (pm.find()) {
                 String content = pm.group(1);
                 nextCommand = "play" + (content != null ? " " + content : "");
-                runWhenLeader();
+                if (content != null && (content.equalsIgnoreCase("pit") || content.equalsIgnoreCase("skyblock"))) {
+                    ChatUtils.sendCommand(nextCommand);
+                    showMsg("party.executed", "/" + nextCommand);
+                    nextCommand = null;
+                } else {
+                    runWhenLeader();
+                }
             }
             return;
         }
