@@ -58,6 +58,7 @@ public final class ItemUtils {
         if (sbid != null) sb.append("internal name: ").append(sbid).append("\n");
         sb.append("display name: '").append(ChatUtils.toLegacyString(item.getDisplayName())).append("'\n");
         sb.append("minecraft id: '").append(BuiltInRegistries.ITEM.getKey(item.getItem())).append("'\n");
+        sb.append("stack: ").append(item.getCount()).append(" / ").append(item.getMaxStackSize()).append("\n");
 
         var tooltip = item.getTooltipLines(
                 net.minecraft.world.item.Item.TooltipContext.of(mc.level),
@@ -80,6 +81,10 @@ public final class ItemUtils {
         var cmd = item.get(DataComponents.CUSTOM_MODEL_DATA);
         if (cmd != null) {
             sb.append("\n\ncustom_model_data: ").append(cmd);
+        }
+        var itemModel = item.get(DataComponents.ITEM_MODEL);
+        if (itemModel != null) {
+            sb.append("\n\nitem_model: ").append(itemModel);
         }
         return sb.toString();
     }

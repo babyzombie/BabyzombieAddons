@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
@@ -52,6 +53,10 @@ public abstract class ContainerClickMixin {
             if (hoveredSlot != null && hoveredSlot.hasItem()) {
                 String text = ItemUtils.formatItemCopyText(hoveredSlot.getItem());
                 Minecraft.getInstance().keyboardHandler.setClipboard(text);
+                var player = Minecraft.getInstance().player;
+                if (player != null) {
+                    player.playSound(SoundEvents.NOTE_BLOCK_PLING.value(), 0.5f, 2.0f);
+                }
             }
         }
     }

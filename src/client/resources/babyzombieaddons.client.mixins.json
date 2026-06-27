@@ -30,6 +30,8 @@
     "sound.SoundEngineAccessor",
     "sound.SoundManagerAccessor",
 
+    "item.ItemStackMaxSizeMixin",
+
     "network.ClientCommonPacketListenerImplMixin",
     "network.ConnectScreenMixin",
     "network.ConnectionMixin",
