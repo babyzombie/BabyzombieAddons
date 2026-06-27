@@ -491,6 +491,9 @@
   "config.babyzombieaddons.option.configBackend": "配置界面后端",
   "config.babyzombieaddons.option.configBackend.desc": "选择 YACL 或 MoulConfig 渲染设置界面。",
 
+  "config.babyzombieaddons.option.wideMoulConfig": "MoulConfig 宽屏模式",
+  "config.babyzombieaddons.option.wideMoulConfig.desc": "将 MoulConfig 设置页面的宽度扩展到 1.5 倍，适合高分辨率屏幕。仅在 MoulConfig 后端下生效。",
+
   "config.babyzombieaddons.prompt.open": "打开",
   "config.babyzombieaddons.option.hudEdit": "编辑 HUD 位置",
   "config.babyzombieaddons.option.hudEdit.desc": "进入 HUD 编辑模式以拖拽和缩放 HUD 元素。",

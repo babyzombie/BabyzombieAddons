@@ -29,6 +29,8 @@ public final class MiscCategory {
                             case MOUL_CONFIG -> Component.literal("MoulConfig");
                         }))
                         .build())
+                .option(bool("wideMoulConfig", defaults.debug.wideMoulConfig,
+                        () -> config.debug.wideMoulConfig, v -> config.debug.wideMoulConfig = v))
                 .option(bool("debugMode", defaults.debug.debugMode,
                         () -> config.debug.debugMode, v -> config.debug.debugMode = v))
                 .option(Option.<Integer>createBuilder()

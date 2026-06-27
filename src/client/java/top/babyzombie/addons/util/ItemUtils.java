@@ -60,6 +60,12 @@ public final class ItemUtils {
         sb.append("minecraft id: '").append(BuiltInRegistries.ITEM.getKey(item.getItem())).append("'\n");
         sb.append("stack: ").append(item.getCount()).append(" / ").append(item.getMaxStackSize()).append("\n");
 
+        var cmd = item.get(DataComponents.CUSTOM_MODEL_DATA);
+        if (cmd != null) sb.append("\n\ncustom_model_data: ").append(cmd);
+
+        var itemModel = item.get(DataComponents.ITEM_MODEL);
+        if (itemModel != null) sb.append("\n\nitem_model: ").append(itemModel);
+
         var tooltip = item.getTooltipLines(
                 net.minecraft.world.item.Item.TooltipContext.of(mc.level),
                 mc.player, TooltipFlag.Default.NORMAL);
@@ -76,15 +82,6 @@ public final class ItemUtils {
             JsonElement je = com.mojang.serialization.Dynamic.convert(NbtOps.INSTANCE, JsonOps.INSTANCE, tag);
             String json = new GsonBuilder().setPrettyPrinting().create().toJson(je);
             sb.append("\n").append(json);
-        }
-
-        var cmd = item.get(DataComponents.CUSTOM_MODEL_DATA);
-        if (cmd != null) {
-            sb.append("\n\ncustom_model_data: ").append(cmd);
-        }
-        var itemModel = item.get(DataComponents.ITEM_MODEL);
-        if (itemModel != null) {
-            sb.append("\n\nitem_model: ").append(itemModel);
         }
         return sb.toString();
     }

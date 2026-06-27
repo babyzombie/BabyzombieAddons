@@ -43,6 +43,8 @@
     "screen.KeyMappingMixin",
     "screen.ScreenMixin",
 
+    "screen.MoulConfigAdapterMixin",
+
     "compat.AaronItemLoreFixMixin",
     "compat.ModernUITextRenderTypeMixin"
   ],

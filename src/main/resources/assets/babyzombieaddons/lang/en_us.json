@@ -491,6 +491,9 @@
   "config.babyzombieaddons.option.configBackend": "Config Backend",
   "config.babyzombieaddons.option.configBackend.desc": "Choose between YACL and MoulConfig rendering for the settings GUI.",
 
+  "config.babyzombieaddons.option.wideMoulConfig": "MoulConfig Wide Mode",
+  "config.babyzombieaddons.option.wideMoulConfig.desc": "Expand MoulConfig settings page width to 1.5× for high-resolution displays. Only effective under the MoulConfig backend.",
+
   "config.babyzombieaddons.prompt.open": "Open",
   "config.babyzombieaddons.option.hudEdit": "Edit HUD Positions",
   "config.babyzombieaddons.option.hudEdit.desc": "Enter HUD edit mode to drag and resize HUD elements.",

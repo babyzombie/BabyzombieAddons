@@ -202,6 +202,18 @@ final class DebugEntityCommand {
                 hoverSb.append(slotName);
                 hoverSb.append("\n§7").append(EntityType.getKey(type));
 
+                var cmd = item.get(DataComponents.CUSTOM_MODEL_DATA);
+                if (cmd != null) {
+                    hoverSb.append("\n\n§6§l--- CUSTOM_MODEL_DATA ---");
+                    hoverSb.append("\n§7").append(cmd);
+                }
+
+                var itemModel = item.get(DataComponents.ITEM_MODEL);
+                if (itemModel != null) {
+                    hoverSb.append("\n\n§6§l--- ITEM_MODEL ---");
+                    hoverSb.append("\n§7").append(itemModel);
+                }
+
                 var tooltip = item.getTooltipLines(
                         net.minecraft.world.item.Item.TooltipContext.of(mc.level),
                         mc.player, TooltipFlag.Default.NORMAL);
@@ -216,12 +228,6 @@ final class DebugEntityCommand {
                     String json = new GsonBuilder().setPrettyPrinting().create().toJson(je);
                     hoverSb.append("\n\n§6§l--- CUSTOM_DATA ---");
                     hoverSb.append("\n§7").append(json);
-                }
-
-                var cmd = item.get(DataComponents.CUSTOM_MODEL_DATA);
-                if (cmd != null) {
-                    hoverSb.append("\n\n§6§l--- CUSTOM_MODEL_DATA ---");
-                    hoverSb.append("\n§7").append(cmd);
                 }
 
                 String copyText = top.babyzombie.addons.util.ItemUtils.formatItemCopyText(item);
