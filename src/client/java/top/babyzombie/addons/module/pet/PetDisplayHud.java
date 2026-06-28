@@ -78,16 +78,16 @@ public final class PetDisplayHud {
             // Line 1: Lvl {level} {name}  — name coloured by rarity
             String line1 = "§7Lv.§f" + info.level() + " " + tierColor(current.tier()) + PetData.formatPetName(current.type());
             gui.text(font, line1, textX, curY, 0xFFFFFFFF, true);
-            curY += lh;
 
             // Line 2: XP (toggleable)
             if (config.petExpDisplay) {
-                gui.text(font, xpLine(info, current.exp()), textX, curY, 0xFFFFFFFF, true);
                 curY += lh;
+                gui.text(font, xpLine(info, current.exp()), textX, curY, 0xFFFFFFFF, true);
             }
 
             // Line 3: Held item (toggleable)
             if (config.petItemDisplay && current.heldItem() != null) {
+                curY += lh;
                 String line3 = PetHeadTexture.getItemDisplayName(current.heldItem());
                 int line3Width = font.width(line3);
 
@@ -104,7 +104,6 @@ public final class PetDisplayHud {
                     }
                 }
                 gui.text(font, line3, textX, curY, 0xFFFFFFFF, true);
-                curY += lh;
             }
         }
 
@@ -119,7 +118,7 @@ public final class PetDisplayHud {
 
             if (activeCount > 0) {
                 // Separator
-                curY += lh / 2;
+                curY += lh;
                 gui.text(font, "§8§m                              ", textX, curY, 0xFFFFFFFF, true);
                 curY += lh / 2 + 1;
 

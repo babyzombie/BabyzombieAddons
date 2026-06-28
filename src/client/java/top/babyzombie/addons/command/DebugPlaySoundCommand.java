@@ -38,7 +38,7 @@ final class DebugPlaySoundCommand {
                                                 (float) DoubleArgumentType.getDouble(ctx, "pitch"),
                                                 0, 0))
                                         .then(argument("seek", DoubleArgumentType.doubleArg(0))
-                                                .then(argument("duration", DoubleArgumentType.doubleArg(0.1, 60))
+                                                .then(argument("duration", DoubleArgumentType.doubleArg(0.1, 3600))
                                                         .executes(ctx -> play(ctx.getSource(),
                                                                 ctx.getArgument("id", Identifier.class),
                                                                 (float) DoubleArgumentType.getDouble(ctx, "volume"),

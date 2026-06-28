@@ -26,6 +26,8 @@
 
     "sound.ChannelAccessor",
     "sound.ChannelHandleAccessor",
+    "sound.ChannelMixin",
+    "sound.ChannelStreamAccessor",
     "sound.PlaySoundMixin",
     "sound.SoundEngineAccessor",
     "sound.SoundManagerAccessor",

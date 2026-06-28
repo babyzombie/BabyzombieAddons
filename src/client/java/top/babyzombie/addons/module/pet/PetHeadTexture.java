@@ -10,6 +10,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.babyzombie.addons.util.pet.PetConstants;
@@ -112,7 +113,7 @@ public final class PetHeadTexture {
 
     // ===== Internal =====
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     private static ItemStack loadFromRepo(String id, boolean isPet) {
         Path itemsDir = getItemsDir();
         if (itemsDir == null) return null;
@@ -131,7 +132,7 @@ public final class PetHeadTexture {
         return null;
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     private static ItemStack tryLoadFile(Path file) {
         if (!Files.exists(file)) return null;
         try {
@@ -161,7 +162,7 @@ public final class PetHeadTexture {
         return stack;
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     private static Path getItemsDir() {
         PetConstants constants = PetConstants.getInstance();
         constants.ensureLoaded();
