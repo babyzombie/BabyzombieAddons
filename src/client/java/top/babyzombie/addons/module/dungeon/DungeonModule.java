@@ -3,6 +3,7 @@ package top.babyzombie.addons.module.dungeon;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfig;
@@ -95,6 +96,10 @@ public final class DungeonModule {
             var pm = PartyModule.PARTY_CHAT.matcher(ChatUtils.stripColor(m.getString()));
             if (!pm.find()) return;
             String t = ChatUtils.stripColor(pm.group(2)).trim().toLowerCase();
+            if (t.startsWith("!dt")) {
+                AutoRequeue.cancel();
+                return;
+            }
             if (t.startsWith("!")) t = t.replace("!", "");
             for (String kw : ModConfigManager.get().dungeon.requeueCancelKeywords.toLowerCase().split("\\|")) {
                 if (!kw.isEmpty() && t.equals(kw)) {
@@ -103,6 +108,13 @@ public final class DungeonModule {
                 }
             }
         });
+
+        // Reset canRequeue After World Change
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register(((client, level) -> {
+            AutoRequeue.canRequeue = false;
+            AutoRequeue.cancelAutoJoin = false;
+            instanceStarted = false;
+        }));
 
         DungeonAutoPB.init();
     }

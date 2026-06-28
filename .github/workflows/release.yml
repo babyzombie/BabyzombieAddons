@@ -64,7 +64,7 @@ jobs:
       - name: Generate Changelog
         uses: orhun/git-cliff-action@v4
         with:
-          args: --latest --strip header --output changelog.md
+          args: --latest --sort newest --strip header --output changelog.md
           config: cliff.toml
 
       - name: Create GitHub Release

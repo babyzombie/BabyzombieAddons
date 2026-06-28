@@ -1,6 +1,8 @@
 [git]
 conventional_commits = false
 commit_parsers = [
+    { message = '^\s*v\d+\.\d+\.\d+\s*$', skip = true },
+    { message = '^/ ', skip = true },
     { message = '^\+ ', group = "新增" },
     { message = '^\- ', group = "修复" },
     { message = '^\* ', group = "优化" },
@@ -8,10 +10,13 @@ commit_parsers = [
 ]
 
 [changelog]
-body = """{% for group, commits in commits | group_by(attribute="group") %}
-### {{ group }}
-{% for commit in commits %}
+body = """{% for group_name in ["新增", "优化", "修复", "其他"] %}
+{% set group_commits = commits | filter(attribute="group", value=group_name) %}
+{% if group_commits | length > 0 %}
+### {{ group_name }}
+{% for commit in group_commits %}
 {{ commit.message }}
 {% endfor %}
+{% endif %}
 {% endfor %}"""
 trim = true
