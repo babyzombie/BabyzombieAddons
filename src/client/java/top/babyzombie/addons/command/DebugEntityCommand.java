@@ -30,6 +30,9 @@ import top.babyzombie.addons.config.ModConfigManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joml.Vector3fc;
+import top.babyzombie.addons.mixin.entity.DisplayAccessor;
+
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
@@ -107,12 +110,22 @@ final class DebugEntityCommand {
     private static void dumpEntity(FabricClientCommandSource src, Entity entity) {
         var mc = Minecraft.getInstance();
         var name = ChatUtils.toLegacyString(entity.getName());
+
+        // If TextDisplay, override name with the actual displayed text
+        String textDisplayText = null;
+        if (entity instanceof net.minecraft.world.entity.Display.TextDisplay td) {
+            var displayText = td.getText();
+            if (displayText != null && !displayText.getString().isEmpty()) {
+                textDisplayText = ChatUtils.toLegacyString(displayText);
+                name = textDisplayText;
+            }
+        }
+
         var customNameStr = entity.getCustomName() != null
                 ? ChatUtils.toLegacyString(entity.getCustomName()) : null;
         var type = entity.getType();
         var typeKey = EntityType.getKey(type).toString();
         var className = entity.getClass().getSimpleName();
-        var pos = entity.blockPosition();
         var vel = entity.getDeltaMovement();
         var bbox = entity.getBoundingBox();
 
@@ -133,6 +146,13 @@ final class DebugEntityCommand {
                 + Tstr("debug.entity.uuid", entity.getUUID()) + "\n"
                 + Tstr("debug.entity.fire", entity.getRemainingFireTicks()) + "\n"
                 + Tstr("debug.entity.on_ground", entity.onGround());
+
+        // Add scale to hover
+        var scaleStr = getEntityScale(entity);
+        if (scaleStr != null) {
+            nameHover += "\n" + Tstr("debug.entity.scale", scaleStr);
+        }
+
         lines.add(hover(nameLine.toString(), nameHover));
 
         // —— line 2: exact coords [+ health], hover: rotation / bbox / velocity / eye_height [/ pose / armor / absorption] ——
@@ -338,5 +358,25 @@ final class DebugEntityCommand {
 
     private static String Tstr(String key, Object... args) {
         return Component.translatable("babyzombieaddons." + key, args).getString();
+    }
+
+    /// Returns a formatted scale string, or null if not applicable
+    private static String getEntityScale(Entity entity) {
+        // Display entities have 3D scale from transformation
+        if (entity instanceof net.minecraft.world.entity.Display d) {
+            Vector3fc scale = getDisplayScale(d);
+            if (scale != null) {
+                return String.format("%.2f %.2f %.2f", scale.x(), scale.y(), scale.z());
+            }
+        }
+        // LivingEntity has a global scale attribute
+        if (entity instanceof LivingEntity living) {
+            return String.format("%.2f", living.getScale());
+        }
+        return null;
+    }
+
+    private static Vector3fc getDisplayScale(net.minecraft.world.entity.Display entity) {
+        return entity.getEntityData().get(DisplayAccessor.getDATA_SCALE_ID());
     }
 }

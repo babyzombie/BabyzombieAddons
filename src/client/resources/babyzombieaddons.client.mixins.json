@@ -4,6 +4,8 @@
   "package": "top.babyzombie.addons.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
+    "entity.DisplayAccessor",
+
     "render.BossHealthOverlayAccessor",
     "render.BossHealthOverlayMixin",
     "render.EntityGlowMixin",

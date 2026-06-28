@@ -638,6 +638,7 @@
   "babyzombieaddons.debug.entity.glowing": " §7[Glow]",
   "babyzombieaddons.debug.entity.armor": "  §7Armor: §e%s",
   "babyzombieaddons.debug.entity.absorption": " §e+%s abs",
+  "babyzombieaddons.debug.entity.scale": "  §7Scale: §e%s",
 
   "babyzombieaddons.help": "§6§lBabyzombieAddons Commands\n§6/bza §7- Open settings GUI\n§6/bza play §7- Open game mode menu\n§6/bza sc [channel] [suffix] §7- Send your coordinates\n§6/bza la [channel] [suffix] §7- Send looked-at coordinates\n§6/bza yaw <yaw> <pitch> §7- Set player rotation\n§6/bza l §7- Go to Limbo\n§6/bza wp §7- Waypoint manager, type /bza wp for usage",
   "babyzombieaddons.waypoint.usage": "§6/bza wp add <x> <y> <z> <name> [seconds]  §7- Add at coords\n§6/bza wp add here <name> [seconds]      §7- Add at current position\n§6/bza wp add looking <name> [seconds]   §7- Add at looking-at position\n§6/bza wp delete <name>                  §7- Delete waypoint\n§7Seconds: -1 = permanent, 0 = clear on world change, >0 = auto-expire",
