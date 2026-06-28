@@ -108,7 +108,7 @@
   "config.babyzombieaddons.option.autoBackToSkyblock.LOBBY_ONLY": "Lobby Only",
   "config.babyzombieaddons.option.autoBackToSkyblock.LOBBY_AND_SKYBLOCK": "Lobby + SkyBlock",
   "config.babyzombieaddons.option.cakeBuffTracker": "Cake Buff Tracker",
-  "config.babyzombieaddons.option.cakeBuffTracker.desc": "Replace default cake messages with a checklist of consumed cakes.",
+  "config.babyzombieaddons.option.cakeBuffTracker.desc": "Show consumed cake checklist on HUD for 30 seconds.",
   "config.babyzombieaddons.option.minionCollectAutoClose": "Auto-Close Minion GUI",
   "config.babyzombieaddons.option.minionCollectAutoClose.desc": "When clicking \"Collect All\" in a Minion GUI, automatically close the container screen.",
   "config.babyzombieaddons.option.skipSecondPerson": "Skip Second Person View",
@@ -575,7 +575,7 @@
   "babyzombieaddons.sound.removed_from_ignore": "§eRemoved from ignore list: §f%s",
   "babyzombieaddons.sound.clear_ignore": "§aCleared all ignored sounds",
 
-  "babyzombieaddons.cake.all_eaten": "§aYou have eaten all 16 cakes!",
+  "babyzombieaddons.cake.all_eaten": "§aYou have eaten all the cakes!",
   "babyzombieaddons.ch.nucleus": "§bReady to /warp nucleus, click the crystal again",
   "babyzombieaddons.glacite.exit": "§6Exit",
   "babyzombieaddons.glacite.portal_title": "§a§lPORTAL",

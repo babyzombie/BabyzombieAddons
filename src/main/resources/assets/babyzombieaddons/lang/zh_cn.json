@@ -108,7 +108,7 @@
   "config.babyzombieaddons.option.autoBackToSkyblock.LOBBY_ONLY": "仅返回大厅",
   "config.babyzombieaddons.option.autoBackToSkyblock.LOBBY_AND_SKYBLOCK": "大厅+重连 SkyBlock",
   "config.babyzombieaddons.option.cakeBuffTracker": "蛋糕 Buff 追踪",
-  "config.babyzombieaddons.option.cakeBuffTracker.desc": "用已食用蛋糕清单替换默认蛋糕消息。",
+  "config.babyzombieaddons.option.cakeBuffTracker.desc": "在 HUD 上显示已食用蛋糕清单，持续 30 秒。",
   "config.babyzombieaddons.option.minionCollectAutoClose": "收小人自动关闭界面",
   "config.babyzombieaddons.option.minionCollectAutoClose.desc": "在小人（Minion）界面点击“Collect All”后自动关闭容器界面。",
   "config.babyzombieaddons.option.skipSecondPerson": "跳过第二人称视角",
@@ -575,7 +575,7 @@
   "babyzombieaddons.sound.removed_from_ignore": "§e已从忽略列表移除: §f%s",
   "babyzombieaddons.sound.clear_ignore": "§a已清除所有忽略的声音",
 
-  "babyzombieaddons.cake.all_eaten": "§a已吃完所有 16 种蛋糕！",
+  "babyzombieaddons.cake.all_eaten": "§a已吃完所有的蛋糕！",
   "babyzombieaddons.ch.nucleus": "§b准备传送到晶核，再点一下水晶进行传送",
   "babyzombieaddons.glacite.exit": "§6出口",
   "babyzombieaddons.glacite.portal_title": "§a§l传送门",

@@ -108,6 +108,31 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.autois",
                 () -> get().general.autois);
 
+        // --- Cake Buff ---
+        HudManager.register("CakeBuffTracker", 10, 50, 1.0f,
+                "§c10❤ Health   §a✔\n"
+                + "§a3❈ Defense   §a✔\n"
+                + "§c2❁ Strength   §a✔\n"
+                + "§f10✦ Speed   §c✘\n"
+                + "§b5✎ Intelligence   §c✘\n"
+                + "§c2⫽ Ferocity   §c✘\n"
+                + "§41♨ Vitality   §a✔\n"
+                + "§f1❂ True Defense   §c✘\n"
+                + "§31α Sea Creature Chance   §c✘\n"
+                + "§b1✯ Magic Find   §a✔\n"
+                + "§d1♣ Pet Luck   §c✘\n"
+                + "§b1❄ Cold Resistance   §c✘\n"
+                + "§a10ф Rift Time   §a✔\n"
+                + "§65☘ Mining Fortune   §c✘\n"
+                + "§65☘ Farming Fortune   §a✔\n"
+                + "§65☘ Foraging Fortune   §c✘\n"
+                + "§61⛃ Treasure Chance   §c✘\n"
+                + "§d1❃ Tracking   §a✔\n"
+                + "§25∮ Sweep   §c✘\n"
+                + "§d1☘ Hunter Fortune   §c✘",
+                "config.babyzombieaddons.option.cakeBuffTracker",
+                () -> get().general.cakeBuffTracker);
+
         // --- Popup ---
         HudManager.register("Popup", 420, 50, 1.0f,
                 "§6Party Invite\n§fPlayer invites you to party\n§a[Y] Accept  §e[N] Ignore",
