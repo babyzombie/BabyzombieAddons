@@ -111,6 +111,7 @@ public final class PetManager {
             petState.skillLevels = loadedState.skillLevels;
             petState.beastmasterMult = loadedState.beastmasterMult;
             petState.battleExperienceLevel = loadedState.battleExperienceLevel;
+            petState.whyNotMoreLevel = loadedState.whyNotMoreLevel;
             petState.dianaMayor = loadedState.dianaMayor;
             petState.dianaPetXpBuff = loadedState.dianaPetXpBuff;
             petState.dianaSharingIsCaring = loadedState.dianaSharingIsCaring;
