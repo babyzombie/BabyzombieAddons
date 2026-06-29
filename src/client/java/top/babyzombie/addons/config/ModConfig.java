@@ -243,6 +243,19 @@ public class ModConfig {
         public String publicSpeakingDemon = "";
         public boolean fruitDiggingHelper = false;
         public boolean carnivalAutoAccept = false;
+
+        // ── Fruit Digging Solver ──
+        public boolean fruitDiggingSolver = false;
+        public float solverBombPenalty = 200f;
+        public float solverRumPenalty = 100f;
+        public float solverMinesInfoWeight = 3f;
+        public float solverTreasureInfoWeight = 2f;
+        public float solverAnchorInfoWeight = 1f;
+        public float solverEarlyAppleBonus = 50f;
+        public float solverEarlyCherryBonus = 80f;
+        public int solverWatermelonMCSamples = 200;
+        public int solverEarlyGameDigs = 3;
+        public int solverLateGameDigs = 3;
     }
 
     // ---- Misc ----

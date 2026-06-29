@@ -27,6 +27,7 @@ import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.render.BeamRenderer;
 import top.babyzombie.addons.util.render.WorldTextRenderer;
 
 
@@ -57,6 +58,38 @@ public final class FruitDiggingModule {
     private static long lastNpcDialogTime;
     private static String acceptCommand;
 
+    // ── Solver state ──
+    /** 7×7 棋盘左上角世界方块 X 坐标 */
+    private static final int GRID_ORIGIN_X = -112;
+    /** 7×7 棋盘左上角世界方块 Z 坐标 */
+    private static final int GRID_ORIGIN_Z = 19;
+    /** 当前最优推荐 */
+    private static FruitDiggingSolver.Move bestMove;
+    /** 已使用的挖掘次数 */
+    private static int digsUsed;
+    /** 是否正在游戏中（收到铲子后为 true） */
+    private static boolean gameActive;
+
+    /** 方块坐标 → 网格坐标（用于 digX/digZ 和 bomb/treasure marker） */
+    private static int blockToGridX(int bx) { return bx - GRID_ORIGIN_X; }
+    private static int blockToGridZ(int bz) { return bz - GRID_ORIGIN_Z; }
+
+    /** 水果 Marker 坐标 → 网格坐标（m.x = floor(itemX)+1，需先减 1 还原方块坐标） */
+    private static int fruitMarkerToGridX(int mx) { return (mx - 1) - GRID_ORIGIN_X; }
+    private static int fruitMarkerToGridZ(int mz) { return (mz - 1) - GRID_ORIGIN_Z; }
+
+    /** 网格坐标 → 世界方块中心坐标 */
+    private static double toWorldX(int gx) { return GRID_ORIGIN_X + gx + 0.5; }
+    private static double toWorldZ(int gz) { return GRID_ORIGIN_Z + gz + 0.5; }
+
+    /** 清除 BoardState 中所有指向指定水果的 treasureAdjacent */
+    private static void clearTreasureHints(FruitDiggingSolver.FruitType ft, FruitDiggingSolver.BoardState state) {
+        for (int x = 0; x < 7; x++)
+            for (int z = 0; z < 7; z++)
+                if (state.grid[x][z].treasureAdjacent == ft)
+                    state.grid[x][z].treasureAdjacent = null;
+    }
+
     private FruitDiggingModule() {}
 
     public static void init() {
@@ -67,6 +100,7 @@ public final class FruitDiggingModule {
             digX = pos.getX();
             digZ = pos.getZ();
             hasDigLoc = true;
+            digsUsed++;
             return InteractionResult.PASS;
         });
 
@@ -95,19 +129,32 @@ public final class FruitDiggingModule {
             }
         });
 
-        net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
             if (!ModConfigManager.get().events.fruitDiggingHelper) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             String text = ChatUtils.stripColor(message.getString());
 
-            if (text.matches("\\s+Fruit Digging")
-                    || text.equals("[NPC] Carnival Pirateman: Here's yer shovel, then.")) {
+            // 游戏开始：只响应铲子消息，不用 "Fruit Digging"（会和结束画面混淆）
+            if (text.equals("[NPC] Carnival Pirateman: Here's yer shovel, then.")) {
                 fruits.clear();
                 treasures.clear();
                 bombs.clear();
                 hasDigLoc = false;
                 acceptCommand = null;
+                bestMove = null;
+                digsUsed = 0;
+                gameActive = true;
+                FruitDiggingSolver.huntIndex = 0;
+            }
+
+            // 游戏结束：计分板出现分数摘要
+            if (gameActive && text.contains("Your Score")) {
+                gameActive = false;
+                bestMove = null;
+                fruits.clear();
+                treasures.clear();
+                bombs.clear();
             }
         });
 
@@ -159,7 +206,10 @@ public final class FruitDiggingModule {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfigManager.get().events.fruitDiggingHelper) return;
-            if (!isInCarnival()) return;
+            if (!isInCarnival()) {
+                gameActive = false;
+                return;
+            }
             if (client.player == null || client.player.tickCount % 10 != 0) return;
 
             var items = client.player.level().getEntitiesOfClass(ItemEntity.class,
@@ -185,12 +235,174 @@ public final class FruitDiggingModule {
                 fruits.removeIf(m -> m.x == fx + 1 && m.z == fz + 1);
                 fruits.add(new Marker(fx + 1, fz + 1, label));
             }
+
+            // ── Solver：综合 fruits + bombs + treasures + dugTiles 构建 BoardState ──
+            boolean solverEnabled = ModConfigManager.get().events.fruitDiggingSolver && gameActive;
+            FruitDiggingSolver.BoardState state = new FruitDiggingSolver.BoardState();
+            int totalKnown = 0;
+
+            if (solverEnabled) {
+                // 0. 直接扫描 49 格方块状态（y=72）
+                //    沙子 = 未挖 | 砂岩 = 已挖 | 砂岩台阶 = 被炸弹炸毁
+                for (int gx = 0; gx < 7; gx++) {
+                    for (int gz = 0; gz < 7; gz++) {
+                        int bx = GRID_ORIGIN_X + gx;
+                        int bz = GRID_ORIGIN_Z + gz;
+                        var block = client.player.level()
+                                .getBlockState(new net.minecraft.core.BlockPos(bx, 72, bz)).getBlock();
+                        if (block != Blocks.SAND) {
+                            state.grid[gx][gz].revealed = true;
+                            state.grid[gx][gz].treasureAdjacent = null; // 已挖，候选提示失效
+                        }
+                    }
+                }
+
+                // 1. 从 fruits 列表读取：已知水果类型 + 累积计数
+                for (var m : fruits) {
+                    int gx = fruitMarkerToGridX(m.x);
+                    int gz = fruitMarkerToGridZ(m.z);
+                    if (gx < 0 || gx >= 7 || gz < 0 || gz >= 7) continue;
+
+                    String name = ChatUtils.stripColor(m.label);
+                    FruitDiggingSolver.FruitType ft = FruitDiggingSolver.fromScannerName(name);
+                    if (ft == null) continue; // Bomb/Rum 不算水果
+
+                    if (m.label.startsWith("§a")) {
+                        // 已挖水果 → 更新累积计数 + 减少剩余库存 + 清除对应的宝藏提示
+                        state.remaining[ft.ordinal()] = Math.max(0, state.remaining[ft.ordinal()] - 1);
+                        if (ft == FruitDiggingSolver.FruitType.APPLE) state.applesTriggered++;
+                        if (ft == FruitDiggingSolver.FruitType.CHERRY) state.cherriesTriggered++;
+                        // 此水果已找到，清除全局 treasureAdjacent 提示
+                        for (int x = 0; x < 7; x++)
+                            for (int z = 0; z < 7; z++)
+                                if (state.grid[x][z].treasureAdjacent == ft)
+                                    state.grid[x][z].treasureAdjacent = null;
+                    } else if (!state.grid[gx][gz].revealed) {
+                        // 未挖水果 → 已知位置
+                        state.grid[gx][gz].fruit = ft;
+                        state.remaining[ft.ordinal()] = Math.max(0, state.remaining[ft.ordinal()] - 1);
+                        totalKnown++;
+                    }
+                }
+
+                // 龙果/榴莲已挖完 → 强制清空对应宝藏提示
+                if (state.remaining[FruitDiggingSolver.FruitType.DRAGONFRUIT.ordinal()] <= 0)
+                    clearTreasureHints(FruitDiggingSolver.FruitType.DRAGONFRUIT, state);
+                if (state.remaining[FruitDiggingSolver.FruitType.DURIAN.ordinal()] <= 0)
+                    clearTreasureHints(FruitDiggingSolver.FruitType.DURIAN, state);
+
+                // 2. 从 bombs 列表（marker.x = digX = 方块坐标，用 blockToGridX）
+                for (var b : bombs) {
+                    int gx = blockToGridX(b.x);
+                    int gz = blockToGridZ(b.z);
+                    if (gx < 0 || gx >= 7 || gz < 0 || gz >= 7) continue;
+                    state.grid[gx][gz].hasMinesInfo = true;
+                    String stripped = ChatUtils.stripColor(b.label);
+                    java.util.regex.Matcher bm = java.util.regex.Pattern.compile("(\\d+)").matcher(stripped);
+                    if (bm.find()) {
+                        state.grid[gx][gz].minesCount = Integer.parseInt(bm.group(1));
+                    }
+                }
+
+                // 3. 从 treasures 列表 + 传播到相邻格
+                for (var t : treasures) {
+                    int gx = blockToGridX(t.x);
+                    int gz = blockToGridZ(t.z);
+                    if (gx < 0 || gx >= 7 || gz < 0 || gz >= 7) continue;
+                    state.grid[gx][gz].hasTreasureInfo = true;
+                    String stripped = ChatUtils.stripColor(t.label);
+                    FruitDiggingSolver.FruitType hinted = null;
+                    if (stripped.contains("附近有 ")) {
+                        for (FruitDiggingSolver.FruitType ft : FruitDiggingSolver.FruitType.values()) {
+                            if (stripped.contains(ft.englishName)) {
+                                state.grid[gx][gz].treasureHint = ft;
+                                hinted = ft;
+                                break;
+                            }
+                        }
+                    }
+                    // 传播：标记相邻未知格（保留最高分水果提示）
+                    if (hinted != null) {
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                if (dx == 0 && dz == 0) continue;
+                                int nx = gx + dx, nz = gz + dz;
+                                if (nx < 0 || nx >= 7 || nz < 0 || nz >= 7) continue;
+                                if (state.grid[nx][nz].isUnknown() && !state.grid[nx][nz].revealed) {
+                                    // 保留价值更高的提示
+                                    if (state.grid[nx][nz].treasureAdjacent == null
+                                            || hinted.basePoints > state.grid[nx][nz].treasureAdjacent.basePoints) {
+                                        state.grid[nx][nz].treasureAdjacent = hinted;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                state.digsRemaining = 15 - digsUsed;
+
+                // 注入运行参数
+                var cfg = ModConfigManager.get().events;
+                var params = FruitDiggingSolver.getParams();
+                params.bombPenalty = cfg.solverBombPenalty;
+                params.rumPenalty = cfg.solverRumPenalty;
+                params.minesInfoWeight = cfg.solverMinesInfoWeight;
+                params.treasureInfoWeight = cfg.solverTreasureInfoWeight;
+                params.anchorInfoWeight = cfg.solverAnchorInfoWeight;
+                params.earlyAppleBonus = cfg.solverEarlyAppleBonus;
+                params.earlyCherryBonus = cfg.solverEarlyCherryBonus;
+                params.watermelonMCSamples = cfg.solverWatermelonMCSamples;
+                params.earlyGameDigs = cfg.solverEarlyGameDigs;
+                params.lateGameDigs = cfg.solverLateGameDigs;
+
+                bestMove = FruitDiggingSolver.findBestMove(state);
+
+                int dugCount = (int) fruits.stream().filter(m -> m.label.startsWith("§a")).count();
+
+                // Debug: 每 5 秒输出
+                if (client.player.tickCount % 100 == 0) {
+                    String phase = FruitDiggingSolver.determinePhase(state).toString().replace("SWEEP_BOMBS","扫弹").replace("HUNT_DRAGONFRUIT","猎龙").replace("DIG_CANDIDATES","追踪").replace("CLEANUP","收尾");
+                    ChatUtils.showMessage(
+                        "§7[§6Solver§7] §f已知: §e" + totalKnown + "果"
+                        + " §7| 炸弹: §c" + bombs.size()
+                        + " §7| 宝藏: §e" + treasures.size()
+                        + " §7| 已挖: §8" + dugCount
+                        + " §7[" + phase + "]"
+                        + " §f→ §b(" + bestMove.gridX + "," + bestMove.gridZ + ")"
+                        + " §e" + bestMove.dowsing
+                        + " §a" + String.format("%.0f", bestMove.score));
+                }
+            } else {
+                bestMove = null;
+            }
         });
 
         RenderPhaseRegister.register(ctx -> {
             if (!ModConfigManager.get().events.fruitDiggingHelper) return;
             boolean inCarnival = isInCarnival();
             if (!inCarnival) return;
+
+            // ── 信标光柱：Solver 推荐位置 ──
+            if (ModConfigManager.get().events.fruitDiggingSolver && bestMove != null) {
+                double wx = toWorldX(bestMove.gridX);
+                double wz = toWorldZ(bestMove.gridZ);
+                int color = dowsingColor(bestMove.dowsing);
+
+                // 光柱：沙面往上 7 格
+                BeamRenderer.drawBeam(ctx, wx, 72.0, wz, 7.0, 0.15f, color);
+
+                // 光柱顶端：探测模式文字
+                String modeText = switch (bestMove.dowsing) {
+                    case MINES -> "§cMINES";
+                    case TREASURE -> "§6TREASURE";
+                    case ANCHOR -> "§9ANCHOR";
+                };
+                WorldTextRenderer.renderString(ctx, modeText + " §7[" + String.format("%.0f", bestMove.score) + "]",
+                        wx, 79.5, wz, color, 0.04f, false);
+            }
+
+            // ── 已有标记渲染 ──
             int total = fruits.size() + treasures.size() + bombs.size();
             if (total == 0) return;
 
@@ -221,6 +433,24 @@ public final class FruitDiggingModule {
     private static boolean isInCarnival() {
         var tracker = HypixelLocationTracker.getInstance();
         return tracker.isInSkyblock() && "Carnival".equals(tracker.getLocation());
+    }
+
+    /** 统计已挖的某种水果数量（从 fruits 列表中已挖标记统计） */
+    private static int countDugFruit(String name) {
+        int count = 0;
+        for (var m : fruits) {
+            if (m.label.startsWith("§a") && m.label.contains(name)) count++;
+        }
+        return count;
+    }
+
+    /** 探测模式 → ARGB 信标颜色 */
+    private static int dowsingColor(FruitDiggingSolver.DowsingMode mode) {
+        return switch (mode) {
+            case MINES -> 0xFFFF5555;    // 红
+            case TREASURE -> 0xFFFFAA00;  // 金
+            case ANCHOR -> 0xFF5555FF;    // 蓝
+        };
     }
 
     private static boolean isInDigArea(double x, double y, double z) {
