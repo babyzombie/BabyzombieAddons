@@ -48,7 +48,7 @@ public final class AutoRequeue {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
         if (cancelAutoJoin) return;
-        if (!PartyTracker.getInstance().getLeaderName().isEmpty() || !PartyTracker.getInstance().isSelfLeader()) return;
+        if (PartyTracker.getInstance().getLeaderName() != null || !PartyTracker.getInstance().isSelfLeader()) return;
         var loc = HypixelLocationTracker.getInstance();
         if (!loc.isInSkyblock() || (!loc.isInDungeon() && !loc.isInKuudra())) return;
 
