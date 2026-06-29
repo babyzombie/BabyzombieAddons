@@ -29,6 +29,7 @@ import top.babyzombie.addons.module.mining.MiningModule;
 import top.babyzombie.addons.module.misc.MiscModule;
 import top.babyzombie.addons.module.party.PartyModule;
 import top.babyzombie.addons.module.playcmd.PlayCmdModule;
+import top.babyzombie.addons.module.chat.AutotipModule;
 import top.babyzombie.addons.module.chat.ChatChannelModule;
 import top.babyzombie.addons.module.chat.ContainerChatModule;
 import top.babyzombie.addons.module.popup.PopupEventsModule;
@@ -104,6 +105,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         MiscModule.init();
         PartyModule.init();
         PlayCmdModule.init();
+        AutotipModule.init();
         ChatChannelModule.init();
         ContainerChatModule.init();
         PopupEventsModule.init();

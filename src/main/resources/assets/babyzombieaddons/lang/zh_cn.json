@@ -70,6 +70,12 @@
   "config.babyzombieaddons.category.events": "事件",
   "config.babyzombieaddons.group.greatSpook": "Great Spook",
   "config.babyzombieaddons.group.carnival": "嘉年华",
+  "config.babyzombieaddons.group.autotip": "自动打赏",
+  "config.babyzombieaddons.option.autotipEnabled": "启用自动打赏",
+  "config.babyzombieaddons.option.autotipEnabled.desc": "每 20.5 分钟自动发送 /tip all。",
+  "config.babyzombieaddons.option.autotipHideMessages": "隐藏打赏消息",
+  "config.babyzombieaddons.option.autotipHideMessages.desc": "隐藏 /tip all 返回的结果消息。",
+
   "config.babyzombieaddons.group.chat": "聊天栏",
   "config.babyzombieaddons.category.misc": "杂项",
 

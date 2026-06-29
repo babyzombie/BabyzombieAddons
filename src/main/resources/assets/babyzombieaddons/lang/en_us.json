@@ -70,6 +70,12 @@
   "config.babyzombieaddons.category.events": "Events",
   "config.babyzombieaddons.group.greatSpook": "Great Spook",
   "config.babyzombieaddons.group.carnival": "Carnival",
+  "config.babyzombieaddons.group.autotip": "Auto Tip",
+  "config.babyzombieaddons.option.autotipEnabled": "Enable Auto Tip",
+  "config.babyzombieaddons.option.autotipEnabled.desc": "Automatically sends /tip all every 20.5 minutes.",
+  "config.babyzombieaddons.option.autotipHideMessages": "Hide Tip Messages",
+  "config.babyzombieaddons.option.autotipHideMessages.desc": "Hide the result messages from /tip all.",
+
   "config.babyzombieaddons.group.chat": "Chat Bar",
   "config.babyzombieaddons.category.misc": "Misc",
 

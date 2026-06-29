@@ -33,6 +33,14 @@ public final class GeneralCategory {
                         .action(HudManager::openEditScreen)
                         .build())
                 .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.autotip"))
+                        .collapsed(true)
+                        .option(createBool("autotipEnabled", defaults.autotip.enabled,
+                                () -> config.autotip.enabled, v -> config.autotip.enabled = v))
+                        .option(createBool("autotipHideMessages", defaults.autotip.hideMessages,
+                                () -> config.autotip.hideMessages, v -> config.autotip.hideMessages = v))
+                        .build())
+                .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.chat"))
                         .collapsed(true)
                         .option(createBool("chatChannelSwitcher", defaults.chatChannel.chatChannelSwitcher,

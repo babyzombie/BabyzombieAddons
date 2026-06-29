@@ -57,6 +57,7 @@ public class ModConfig {
     public AutoJoinConfig autoJoin = new AutoJoinConfig();
     public HandRenderConfig handRender = new HandRenderConfig();
     public PetConfig pet = new PetConfig();
+    public AutotipConfig autotip = new AutotipConfig();
 
     // ---- General ----
 
@@ -290,5 +291,12 @@ public class ModConfig {
         public boolean swapHands = false;
         public float swingSpeed = 1.0f;
         public float itemScale = 1.0f;
+    }
+
+    // ---- Auto Tip ----
+
+    public static class AutotipConfig {
+        public boolean enabled = false;
+        public boolean hideMessages = false;
     }
 }
