@@ -33,6 +33,7 @@ public final class DungeonModule {
         F4CrowdHiding.init();
         AutoChestClose.init();
         StormThunderMute.init();
+        MuteRareDropSound.init();
 
         // Instance start
         ClientReceiveMessageEvents.GAME.register((m, o) -> {

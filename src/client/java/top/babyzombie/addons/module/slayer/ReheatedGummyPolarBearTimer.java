@@ -69,14 +69,12 @@ public final class ReheatedGummyPolarBearTimer {
             Integer remaining = profileTimers.get(profileId);
             if (remaining == null || remaining <= 0) return;
 
-            // Only show in Smoldering Tomb if mode == 1
-            if (cfg.reheatedGummyPolarBear == ModConfig.GummyPolarBearMode.SMOLDERING_TOMB_ONLY
-                    && !"Smoldering Tomb".equals(tracker.getLocation())) return;
-
             remaining--;
             profileTimers.put(profileId, remaining);
 
-            switch (remaining) {
+            // Only show in Smoldering Tomb if mode == 1
+            if (cfg.reheatedGummyPolarBear == ModConfig.GummyPolarBearMode.EVERYWHERE_EXCEPT_DUNGEON
+                    || "Smoldering Tomb".equals(tracker.getLocation())) switch (remaining) {
                 case 300 -> {
                     if (!alerted5min) {
                         alerted5min = true;

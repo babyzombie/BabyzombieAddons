@@ -48,7 +48,7 @@ public final class AutoRequeue {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
         if (cancelAutoJoin) return;
-        if (!PartyTracker.getInstance().isSelfLeader()) return;
+        if (!PartyTracker.getInstance().getLeaderName().isEmpty() || !PartyTracker.getInstance().isSelfLeader()) return;
         var loc = HypixelLocationTracker.getInstance();
         if (!loc.isInSkyblock() || (!loc.isInDungeon() && !loc.isInKuudra())) return;
 
@@ -80,7 +80,7 @@ public final class AutoRequeue {
 
         ended = true;
         int delay = isKuudra ? cfg.kuudraRequeueDelay : cfg.dungeonRequeueDelay;
-        if (!cfg.requeueMessage.isEmpty()) {
+        if (!cfg.requeueMessage.isEmpty() && PartyTracker.getInstance().isSelfLeader()) {
             String msg = cfg.requeueMessage.replace("%delay%", String.valueOf(delay));
             ChatUtils.sendCommand("pc " + msg);
         }

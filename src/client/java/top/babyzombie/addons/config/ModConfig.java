@@ -99,6 +99,7 @@ public class ModConfig {
         public boolean enderPearlRefill = false;
         public boolean autoChestClose = false;
         public boolean muteStormThunder = false;
+        public boolean muteRareDropSound = false;
         public AutoPotionsMode autoOpenPotions = AutoPotionsMode.OFF;
         public DailyCounterMode dailyRunsCounter = DailyCounterMode.OFF;
         public DeathMessageAction deathMessageAction = DeathMessageAction.OFF;

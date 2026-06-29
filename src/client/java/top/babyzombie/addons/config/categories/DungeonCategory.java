@@ -107,6 +107,8 @@ public final class DungeonCategory {
                         () -> config.dungeon.autoChestClose, v -> config.dungeon.autoChestClose = v))
                 .option(bool("muteStormThunder", defaults.dungeon.muteStormThunder,
                         () -> config.dungeon.muteStormThunder, v -> config.dungeon.muteStormThunder = v))
+                .option(bool("muteRareDropSound", defaults.dungeon.muteRareDropSound,
+                        () -> config.dungeon.muteRareDropSound, v -> config.dungeon.muteRareDropSound = v))
                 .option(Option.<AutoPotionsMode>createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.option.autoOpenPotions"))
                         .description(Component.translatable("config.babyzombieaddons.option.autoOpenPotions.desc"))

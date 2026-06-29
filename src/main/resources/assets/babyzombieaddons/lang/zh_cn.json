@@ -178,6 +178,8 @@
   "config.babyzombieaddons.option.deathMessageAction.SEND": "仅发送",
   "config.babyzombieaddons.option.muteStormThunder": "静音Storm死后的雷声",
   "config.babyzombieaddons.option.muteStormThunder.desc": "在Storm死后22秒内取消所有雷声。",
+  "config.babyzombieaddons.option.muteRareDropSound": "静音地牢大厅里的稀有掉落音效",
+  "config.babyzombieaddons.option.muteRareDropSound.desc": "这样别人开箱就不会有声音影响到你了",
   "config.babyzombieaddons.option.dungeonEnderPearlRefill": "末影珍珠补充",
   "config.babyzombieaddons.option.dungeonEnderPearlRefill.desc": "进入地牢时或不足时自动从袋子取末影珍珠。",
   "config.babyzombieaddons.option.autoChestClose": "自动关闭箱子",
@@ -685,5 +687,16 @@
   "babyzombieaddons.debug.pet.no": "否",
   "babyzombieaddons.debug.pet.last_xp_header": "§6§l=== 上次技能经验 ===",
   "babyzombieaddons.debug.pet.last_xp_summoned": "§b%s +%.2f §7→ 召唤宠物 §a+%.2f XP",
-  "babyzombieaddons.debug.pet.last_xp_shared": "§7共享[%d] §b%s §7→ §a+%.2f XP"
+  "babyzombieaddons.debug.pet.last_xp_shared": "§7共享[%d] §b%s §7→ §a+%.2f XP",
+
+  "babyzombieaddons.debug.party.header": "§6§l=== 组队信息 ===",
+  "babyzombieaddons.debug.party.last_fetch": "§b上次获取时间：§f%s §7(%s前)",
+  "babyzombieaddons.debug.party.never_fetched": "§e尚未获取过组队信息",
+  "babyzombieaddons.debug.party.leader": "§b队长：§f%s §7(自己是队长: %s)",
+  "babyzombieaddons.debug.party.leader_unknown": "§7队长未知",
+  "babyzombieaddons.debug.party.member_count": "§b成员数量：§f%d",
+  "babyzombieaddons.debug.party.no_members": "§e无成员数据",
+  "babyzombieaddons.debug.party.raw_data": "§7原始数据: §f%s",
+  "babyzombieaddons.debug.party.yes": "是",
+  "babyzombieaddons.debug.party.no": "否"
 }

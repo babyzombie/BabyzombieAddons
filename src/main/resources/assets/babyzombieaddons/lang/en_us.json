@@ -178,6 +178,8 @@
   "config.babyzombieaddons.option.deathMessageAction.SEND": "Send Only",
   "config.babyzombieaddons.option.muteStormThunder": "Mute Storm Thunder",
   "config.babyzombieaddons.option.muteStormThunder.desc": "Cancel all thunder sounds for 22 seconds after Storm dies.",
+  "config.babyzombieaddons.option.muteRareDropSound": "Mute RareDrop Sound In Dungeon Hub",
+  "config.babyzombieaddons.option.muteRareDropSound.desc": "Mute the rare drop sound when players open loot chests in the Dungeon Hub.",
   "config.babyzombieaddons.option.dungeonEnderPearlRefill": "Ender Pearl Refill",
   "config.babyzombieaddons.option.dungeonEnderPearlRefill.desc": "Auto /gfs ender pearl on dungeon start or low count.",
   "config.babyzombieaddons.option.autoChestClose": "Auto Chest Close",
@@ -685,5 +687,16 @@
   "babyzombieaddons.debug.pet.no": "No",
   "babyzombieaddons.debug.pet.last_xp_header": "§6§l=== Last Skill XP ===",
   "babyzombieaddons.debug.pet.last_xp_summoned": "§b%s +%.2f §7→ Summoned Pet §a+%.2f XP",
-  "babyzombieaddons.debug.pet.last_xp_shared": "§7Shared[%d] §b%s §7→ §a+%.2f XP"
+  "babyzombieaddons.debug.pet.last_xp_shared": "§7Shared[%d] §b%s §7→ §a+%.2f XP",
+
+  "babyzombieaddons.debug.party.header": "§6§l=== Party Info ===",
+  "babyzombieaddons.debug.party.last_fetch": "§bLast Fetch: §f%s §7(%s ago)",
+  "babyzombieaddons.debug.party.never_fetched": "§eParty info has never been fetched",
+  "babyzombieaddons.debug.party.leader": "§bLeader: §f%s §7(Is Self: %s)",
+  "babyzombieaddons.debug.party.leader_unknown": "§7Leader unknown",
+  "babyzombieaddons.debug.party.member_count": "§bMember Count: §f%d",
+  "babyzombieaddons.debug.party.no_members": "§eNo member data",
+  "babyzombieaddons.debug.party.raw_data": "§7Raw Data: §f%s",
+  "babyzombieaddons.debug.party.yes": "Yes",
+  "babyzombieaddons.debug.party.no": "No"
 }

@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.hypixel.modapi.HypixelModAPI;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.util.ServerTick;
 import net.hypixel.modapi.packet.impl.clientbound.ClientboundPartyInfoPacket;
 import net.hypixel.modapi.packet.impl.serverbound.ServerboundPartyInfoPacket;
@@ -34,12 +35,12 @@ public final class PartyTracker {
 
     private final List<Consumer<PartyInfo>> pendingCallbacks = new ArrayList<>();
     private volatile boolean sendingRequest;
+    private final Runnable requestTimeout = () -> { sendingRequest = false; };
     private volatile PartyInfo lastInfo;
     private volatile long lastRequestTime;
     private volatile boolean isLeader;
     private volatile String leaderName;
     private String myName;
-    private volatile Runnable pendingLeaderAction;
 
     private PartyTracker() {}
 
@@ -52,6 +53,7 @@ public final class PartyTracker {
             lastInfo = new PartyInfo(members != null ? members : Set.of());
             lastRequestTime = ServerTick.getTime();
             sendingRequest = false;
+            Scheduler.cancel(requestTimeout);
 
             // Try to get leader from member entries
             try {
@@ -69,9 +71,6 @@ public final class PartyTracker {
                             break;
                         }
                     }
-                    var action = pendingLeaderAction;
-                    pendingLeaderAction = null;
-                    if (action != null && isLeader) action.run();
                 }
             } catch (Exception ignored) {}
 
@@ -128,7 +127,11 @@ public final class PartyTracker {
         if (leaderName != null) {
             return;
         }
-        pendingLeaderAction = action;
+        synchronized (pendingCallbacks) {
+            pendingCallbacks.add(info -> {
+                if (isLeader) action.run();
+            });
+        }
         lastRequestTime = 0;
         request(null);
     }
@@ -147,9 +150,11 @@ public final class PartyTracker {
             return;
         }
         // Unknown — request and queue both
-        pendingLeaderAction = () -> {
-            if (isLeader) onLeader.run(); else onMember.run();
-        };
+        synchronized (pendingCallbacks) {
+            pendingCallbacks.add(info -> {
+                if (isLeader) onLeader.run(); else onMember.run();
+            });
+        }
         lastRequestTime = 0;
         request(null);
     }
@@ -161,6 +166,12 @@ public final class PartyTracker {
         // leaderName is now a UUID string; just check if we know the leader
         return leaderName != null;
     }
+
+    /** @return the last fetched party info, or null if never fetched. */
+    public PartyInfo getLastInfo() { return lastInfo; }
+
+    /** @return the timestamp (ms) of the last party info fetch, or 0 if never fetched. */
+    public long getLastRequestTime() { return lastRequestTime; }
 
     /** Request party info from the server, with optional callback on response. */
     public void request(Consumer<PartyInfo> callback) {
@@ -176,15 +187,16 @@ public final class PartyTracker {
         if (sendingRequest) return;
         HypixelModAPI.getInstance().sendPacket(new ServerboundPartyInfoPacket());
         sendingRequest = true;
+        Scheduler.schedule(200, requestTimeout);
     }
 
     private void reset() {
         lastInfo = null;
         lastRequestTime = 0;
         sendingRequest = false;
+        Scheduler.cancel(requestTimeout);
         isLeader = false;
         leaderName = null;
-        pendingLeaderAction = null;
         synchronized (pendingCallbacks) {
             pendingCallbacks.clear();
         }
