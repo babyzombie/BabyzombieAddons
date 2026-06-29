@@ -94,6 +94,8 @@
   "config.babyzombieaddons.group.autois": "AutoIS Settings",
   "config.babyzombieaddons.option.updateChecker": "Update Checker",
   "config.babyzombieaddons.option.updateChecker.desc": "Check for new versions when joining a world.",
+  "config.babyzombieaddons.option.replaceReportWithServerList": "Replace Report with Server List",
+  "config.babyzombieaddons.option.replaceReportWithServerList.desc": "Replaces the \"Report Player\" button with \"Server List\" on the pause menu.",
 
   "config.babyzombieaddons.option.autois": "Auto Return to Island",
   "config.babyzombieaddons.option.autois.desc": "When joining SkyBlock, automatically warp to your island or garden.",

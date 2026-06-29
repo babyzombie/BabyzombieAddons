@@ -94,6 +94,8 @@
   "config.babyzombieaddons.group.autois": "AutoIS 设置",
   "config.babyzombieaddons.option.updateChecker": "检查更新",
   "config.babyzombieaddons.option.updateChecker.desc": "进入世界时检查是否有新版本。",
+  "config.babyzombieaddons.option.replaceReportWithServerList": "替换举报玩家为服务器列表",
+  "config.babyzombieaddons.option.replaceReportWithServerList.desc": "将暂停菜单中的「举报玩家」按钮替换为「服务器列表」，点击可打开多人游戏列表。",
 
   "config.babyzombieaddons.option.autois": "自动回岛",
   "config.babyzombieaddons.option.autois.desc": "进入 SkyBlock 时自动传送到岛屿或花园。",

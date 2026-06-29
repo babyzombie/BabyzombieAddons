@@ -126,8 +126,11 @@ public final class ChatUtils {
                     sb.append(legacy);
                 } else {
                     int rgb = color.getValue();
-                    sb.append(String.format("§x§%02x§%02x§%02x",
-                            (rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
+                    String hex = String.format("%06X", rgb);
+                    sb.append("§x");
+                    for (char c : hex.toCharArray()) {
+                        sb.append("§").append(c);
+                    }
                 }
             }
             if (style.isBold()) sb.append("§l");

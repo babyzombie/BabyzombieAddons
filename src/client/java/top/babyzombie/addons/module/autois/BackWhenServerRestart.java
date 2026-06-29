@@ -32,12 +32,9 @@ public class BackWhenServerRestart {
                     if (EVACUATE_MSG.matcher(component.getString()).matches()) {
                         restart = true;
                         var playerLocation = Minecraft.getInstance().player.getPosition(1);
-                        var playerAngle = Minecraft.getInstance().player.getLookAngle();
                         Scheduler.schedule(100, () -> {
                             var player = Minecraft.getInstance().player;
-                            if ( player != null
-                                    && player.getPosition(1).equals(playerLocation)
-                                    && player.getLookAngle().equals(playerAngle))
+                            if ( player != null && player.getPosition(1).distanceTo(playerLocation) < 1)
                                 afk = true;
                         });
                     }

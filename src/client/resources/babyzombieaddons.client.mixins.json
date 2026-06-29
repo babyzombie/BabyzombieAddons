@@ -49,6 +49,8 @@
 
     "screen.MoulConfigAdapterMixin",
 
+    "screen.PauseScreenMixin",
+
     "compat.AaronItemLoreFixMixin",
     "compat.ModernUITextRenderTypeMixin"
   ],

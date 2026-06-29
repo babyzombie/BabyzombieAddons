@@ -15,16 +15,15 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.world.entity.*;
 import top.babyzombie.addons.util.ChatUtils;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import top.babyzombie.addons.config.ModConfigManager;
 
 import java.util.ArrayList;
@@ -100,7 +99,11 @@ final class DebugEntityCommand {
                         entities.size() - max));
                 break;
             }
-            dumpEntity(src, entity);
+            try {
+                dumpEntity(src, entity);
+            } catch (Exception e) {
+                src.sendFeedback(Component.nullToEmpty(e.getMessage()));
+            }
             count++;
         }
 
@@ -112,12 +115,10 @@ final class DebugEntityCommand {
         var name = ChatUtils.toLegacyString(entity.getName());
 
         // If TextDisplay, override name with the actual displayed text
-        String textDisplayText = null;
         if (entity instanceof net.minecraft.world.entity.Display.TextDisplay td) {
             var displayText = td.getText();
-            if (displayText != null && !displayText.getString().isEmpty()) {
-                textDisplayText = ChatUtils.toLegacyString(displayText);
-                name = textDisplayText;
+            if (!displayText.getString().isEmpty()) {
+                name = ChatUtils.toLegacyString(displayText);
             }
         }
 
@@ -270,8 +271,39 @@ final class DebugEntityCommand {
         ItemStack heldItem = null;
         if (entity instanceof ItemEntity itemEnt) {
             heldItem = itemEnt.getItem();
-        } else if (entity instanceof net.minecraft.world.entity.Display.ItemDisplay itemDisp) {
+        } else if (entity instanceof Display.ItemDisplay itemDisp) {
             heldItem = itemDisp.getItemStack();
+        } else if (entity instanceof Display.BlockDisplay blockDisp) {
+            BlockState blockState = blockDisp.getBlockState();
+            if (!blockState.isAir()) {
+                Block block = blockState.getBlock();
+                String blockKey = BuiltInRegistries.BLOCK.getKey(block).toString();
+                ItemStack blockItem = new ItemStack(block.asItem());
+
+                // Build hover with block state properties
+                StringBuilder hoverSb = new StringBuilder();
+                hoverSb.append("§f").append(blockKey);
+
+                var properties = blockState.getValues().toList();
+                if (!properties.isEmpty()) {
+                    hoverSb.append("\n\n§6§l--- Properties ---");
+                    for (var pv : properties) {
+                        hoverSb.append("\n§7")
+                                .append(pv.property().getName())
+                                .append(" = §a")
+                                .append(pv.value().toString());
+                    }
+                }
+
+                hoverSb.append("\n\n§7Item: ")
+                        .append(BuiltInRegistries.ITEM.getKey(block.asItem()).toString());
+
+                String copyText = top.babyzombie.addons.util.ItemUtils.formatItemCopyText(blockItem);
+                lines.add(Component.literal("§dBlockState: §f" + blockKey)
+                        .withStyle(style -> style
+                                .withHoverEvent(new HoverEvent.ShowText(Component.literal(hoverSb.toString())))
+                                .withClickEvent(new ClickEvent.CopyToClipboard(copyText))));
+            }
         } else if (entity instanceof ArmorStand as) {
             // armor stand: grab mainhand + head for display
             var mainHand = as.getItemBySlot(EquipmentSlot.MAINHAND);

@@ -82,6 +82,7 @@ public class ModConfig {
         public float playerScaleZ = 1.0f;
         public boolean showCrosshairInThirdPerson = false;
         public boolean chatInContainer = false;
+        public boolean replaceReportWithServerList = false;
     }
 
     // ---- Dungeon ----
