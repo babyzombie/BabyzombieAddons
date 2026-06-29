@@ -154,7 +154,7 @@ public final class PopupEventsModule {
         SendCommandEvents.AFTER_SEND.register(command -> {
             if (expireTime == 0 || expireTime <= ServerTick.getTime()) return;
             if (PopupEventsModule.command.isEmpty()) return;
-            if (command.equals(PopupEventsModule.command)) {
+            if (command.replace("/","").equals(PopupEventsModule.command)) {
                 close();
             }
         });
