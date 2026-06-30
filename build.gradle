@@ -3,7 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-version = project.mod_version + "-mc" + project.minecraft_version
+def version_prefix = findProperty('version_prefix') ?: project.mod_version
+version = version_prefix + "-mc" + project.minecraft_version
 group = project.maven_group
 
 base {

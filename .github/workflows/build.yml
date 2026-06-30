@@ -26,11 +26,14 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Build
-        run: ./gradlew build
+      - name: Set dev version
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "ARTIFACT_NAME=BabyzombieAddons-dev-$SHORT_SHA" >> $GITHUB_ENV
+          echo "VERSION_PREFIX=dev-$SHORT_SHA" >> $GITHUB_ENV
 
-      - name: Set artifact name
-        run: echo "ARTIFACT_NAME=BabyzombieAddons-${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
+      - name: Build
+        run: ./gradlew build -Pversion_prefix="$VERSION_PREFIX"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
