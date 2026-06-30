@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.Scheduler;
@@ -27,18 +28,15 @@ public class BackWhenServerRestart {
             if (Minecraft.getInstance().player == null) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             if (!HypixelLocationTracker.getInstance().isIn("Private Island")) return;
-            if (component.getStyle().getClickEvent() instanceof ClickEvent.RunCommand command) {
-                if (command.command().replace("/", "").equals("evacuate")) {
-                    if (EVACUATE_MSG.matcher(component.getString()).matches()) {
-                        restart = true;
-                        var playerLocation = Minecraft.getInstance().player.getPosition(1);
-                        Scheduler.schedule(100, () -> {
-                            var player = Minecraft.getInstance().player;
-                            if ( player != null && player.getPosition(1).distanceTo(playerLocation) < 1)
-                                afk = true;
-                        });
-                    }
-                }
+            if (EVACUATE_MSG.matcher(component.getString()).matches()
+                && hasEvacuateClick(component)) {
+                restart = true;
+                var playerLocation = Minecraft.getInstance().player.getPosition(1);
+                Scheduler.schedule(100, () -> {
+                    var player = Minecraft.getInstance().player;
+                    if (player != null && player.getPosition(1).distanceTo(playerLocation) < 1)
+                        afk = true;
+                });
             }
         });
 
@@ -53,5 +51,26 @@ public class BackWhenServerRestart {
             restart = false;
             afk = false;
         }));
+    }
+
+    /**
+     * Recursively search the component tree for a click event whose command
+     * matches {@code /evacuate}. Hypixel often puts the click event on a
+     * sibling component, not the root, so a simple
+     * {@code getStyle().getClickEvent()} on the top-level component is not enough.
+     */
+    private static boolean hasEvacuateClick(Component component) {
+        // Check this node
+        if (component.getStyle().getClickEvent() instanceof ClickEvent.RunCommand cmd
+            && cmd.command().replace("/", "").equals("evacuate")) {
+            return true;
+        }
+        // Recurse into siblings
+        for (Component sibling : component.getSiblings()) {
+            if (hasEvacuateClick(sibling)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
