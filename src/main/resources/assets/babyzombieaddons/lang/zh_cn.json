@@ -511,10 +511,6 @@
   "config.babyzombieaddons.option.solverEarlyAppleBonus.desc": "游戏前期发现 Apple 时给予的额外分值加成。",
   "config.babyzombieaddons.option.solverEarlyCherryBonus": "早期樱桃奖励",
   "config.babyzombieaddons.option.solverEarlyCherryBonus.desc": "游戏前期发现 Cherry 时给予的额外分值加成。",
-  "config.babyzombieaddons.option.solverWatermelonMCSamples": "西瓜模拟次数",
-  "config.babyzombieaddons.option.solverWatermelonMCSamples.desc": "评估西瓜连锁收益时的 Monte Carlo 模拟次数（0=禁用模拟，仅用粗略估计）。",
-  "config.babyzombieaddons.option.solverEarlyGameDigs": "开局挖掘数",
-  "config.babyzombieaddons.option.solverEarlyGameDigs.desc": "前 N 铲视为开局阶段，优先收集信息。",
   "config.babyzombieaddons.option.solverLateGameDigs": "收尾挖掘数",
   "config.babyzombieaddons.option.solverLateGameDigs.desc": "最后 N 铲视为收尾阶段，优先保守收割。",
 

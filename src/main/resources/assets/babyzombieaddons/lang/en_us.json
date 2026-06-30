@@ -511,10 +511,6 @@
   "config.babyzombieaddons.option.solverEarlyAppleBonus.desc": "Extra score bonus for finding Apple in the early game.",
   "config.babyzombieaddons.option.solverEarlyCherryBonus": "Early Cherry Bonus",
   "config.babyzombieaddons.option.solverEarlyCherryBonus.desc": "Extra score bonus for finding Cherry in the early game.",
-  "config.babyzombieaddons.option.solverWatermelonMCSamples": "Watermelon MC Samples",
-  "config.babyzombieaddons.option.solverWatermelonMCSamples.desc": "Number of Monte Carlo samples when evaluating Watermelon chain value (0=disable simulation, use rough estimate).",
-  "config.babyzombieaddons.option.solverEarlyGameDigs": "Early Game Digs",
-  "config.babyzombieaddons.option.solverEarlyGameDigs.desc": "First N digs treated as early game phase (prioritize information gathering).",
   "config.babyzombieaddons.option.solverLateGameDigs": "Late Game Digs",
   "config.babyzombieaddons.option.solverLateGameDigs.desc": "Last N digs treated as late game phase (prioritize conservative harvesting).",
 

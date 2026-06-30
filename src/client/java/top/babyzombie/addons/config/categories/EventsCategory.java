@@ -59,10 +59,6 @@ public final class EventsCategory {
                                 () -> config.events.solverEarlyAppleBonus, v -> config.events.solverEarlyAppleBonus = v))
                         .option(createFloat("solverEarlyCherryBonus", 0, 500, defaults.events.solverEarlyCherryBonus,
                                 () -> config.events.solverEarlyCherryBonus, v -> config.events.solverEarlyCherryBonus = v))
-                        .option(createInt("solverWatermelonMCSamples", 0, 1000, defaults.events.solverWatermelonMCSamples,
-                                () -> config.events.solverWatermelonMCSamples, v -> config.events.solverWatermelonMCSamples = v))
-                        .option(createInt("solverEarlyGameDigs", 0, 15, defaults.events.solverEarlyGameDigs,
-                                () -> config.events.solverEarlyGameDigs, v -> config.events.solverEarlyGameDigs = v))
                         .option(createInt("solverLateGameDigs", 0, 15, defaults.events.solverLateGameDigs,
                                 () -> config.events.solverLateGameDigs, v -> config.events.solverLateGameDigs = v))
                         .build())

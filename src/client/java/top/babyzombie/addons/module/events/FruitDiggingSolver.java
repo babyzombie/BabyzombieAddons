@@ -1,10 +1,5 @@
 package top.babyzombie.addons.module.events;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * 挖水果小游戏解题器。
  * 不依赖 Minecraft 类（纯逻辑），便于测试和调试。
@@ -125,49 +120,6 @@ public final class FruitDiggingSolver {
         }
 
         /** 浅拷贝（grid 内的 Tile 共享引用） */
-        public BoardState copy() {
-            BoardState s = new BoardState();
-            for (int x = 0; x < 7; x++)
-                System.arraycopy(this.grid[x], 0, s.grid[x], 0, 7);
-            System.arraycopy(this.remaining, 0, s.remaining, 0, this.remaining.length);
-            s.remainingBombs = this.remainingBombs;
-            s.remainingRum = this.remainingRum;
-            s.applesTriggered = this.applesTriggered;
-            s.cherriesTriggered = this.cherriesTriggered;
-            s.digsRemaining = this.digsRemaining;
-            s.multiplierState = this.multiplierState;
-            return s;
-        }
-
-        /** 从 ItemInfo 构建棋盘 */
-        public static BoardState fromFruitPositions(Map<Integer, Map<Integer, FruitType>> knownFruits) {
-            BoardState s = new BoardState();
-            int[] foundCount = new int[FruitType.values().length];
-            for (var xEntry : knownFruits.entrySet()) {
-                for (var zEntry : xEntry.getValue().entrySet()) {
-                    int gx = xEntry.getKey();
-                    int gz = zEntry.getKey();
-                    FruitType f = zEntry.getValue();
-                    if (gx >= 0 && gx < 7 && gz >= 0 && gz < 7) {
-                        s.grid[gx][gz].fruit = f;
-                        foundCount[f.ordinal()]++;
-                    }
-                }
-            }
-            // 更新剩余计数
-            for (FruitType f : FruitType.values())
-                s.remaining[f.ordinal()] = Math.max(0, f.totalPerBoard - foundCount[f.ordinal()]);
-            // 未知格 = 炸弹或朗姆酒或未扫描到的水果
-            int unknownCells = s.countUnknownCells();
-            int missingFruits = 0;
-            for (FruitType f : FruitType.values())
-                missingFruits += s.remaining[f.ordinal()];
-            // 剩余未知格中，部分是炸弹+朗姆
-            s.remainingBombs = Math.min(10, unknownCells - missingFruits > 0 ? Math.min(10, (unknownCells - missingFruits) * 10 / 15) : 0);
-            s.remainingRum = Math.min(5, unknownCells - missingFruits - s.remainingBombs);
-            return s;
-        }
-
         public int countUnknownCells() {
             int c = 0;
             for (int x = 0; x < 7; x++)
@@ -241,8 +193,6 @@ public final class FruitDiggingSolver {
         public float anchorInfoWeight = 15f;
         public float earlyAppleBonus = 50f;
         public float earlyCherryBonus = 80f;
-        public int watermelonMCSamples = 200;
-        public int earlyGameDigs = 3;
         public int lateGameDigs = 3;
     }
 
@@ -276,19 +226,6 @@ public final class FruitDiggingSolver {
             case COCONUT     -> 200.0;
             case DURIAN      -> 800.0;
             case DRAGONFRUIT -> 1200.0;
-        };
-    }
-
-    /**
-     * 计算挖掘后乘数状态的转换
-     */
-    public static MultiplierState nextMultiplierState(FruitType fruit, MultiplierState currentState) {
-        // 如果当前有 Coconut 护盾，不改变乘数
-        return switch (fruit) {
-            case POMEGRANATE -> MultiplierState.POMEGRANATE_ACTIVE;
-            case DURIAN -> MultiplierState.DURIAN_ACTIVE;
-            case COCONUT -> MultiplierState.COCONUT_ACTIVE;
-            default -> MultiplierState.NORMAL;
         };
     }
 
@@ -335,20 +272,6 @@ public final class FruitDiggingSolver {
     // ═══════════════════════════════════════════════════════════════
     // 探测信息增益
     // ═══════════════════════════════════════════════════════════════
-
-    /** 计算某个格子的相邻未知格数量（含对角线，8 方向） */
-    public static int countAdjacentUnknown(int gx, int gz, BoardState state) {
-        int count = 0;
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                if (dx == 0 && dz == 0) continue;
-                int nx = gx + dx, nz = gz + dz;
-                if (nx < 0 || nx >= 7 || nz < 0 || nz >= 7) continue;
-                if (state.grid[nx][nz].isUnknown()) count++;
-            }
-        }
-        return count;
-    }
 
     /** 计算探测信息增益（考虑衰减：已被探测过的相邻格权重降低） */
     public static double infoGain(int gx, int gz, DowsingMode mode, BoardState state) {
@@ -607,13 +530,4 @@ public final class FruitDiggingSolver {
         };
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // 游戏阶段判断（供外部展示用）
-    // ═══════════════════════════════════════════════════════════════
-
-    public enum GamePhase { SWEEP, HUNT, DIG, END }
-
-    public static GamePhase getPhase(int digsUsed) {
-        return GamePhase.SWEEP; // 实际阶段由 determinePhase 决定
-    }
 }

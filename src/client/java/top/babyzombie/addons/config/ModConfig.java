@@ -253,8 +253,6 @@ public class ModConfig {
         public float solverAnchorInfoWeight = 1f;
         public float solverEarlyAppleBonus = 50f;
         public float solverEarlyCherryBonus = 80f;
-        public int solverWatermelonMCSamples = 200;
-        public int solverEarlyGameDigs = 3;
         public int solverLateGameDigs = 3;
     }
 

@@ -352,27 +352,9 @@ public final class FruitDiggingModule {
                 params.anchorInfoWeight = cfg.solverAnchorInfoWeight;
                 params.earlyAppleBonus = cfg.solverEarlyAppleBonus;
                 params.earlyCherryBonus = cfg.solverEarlyCherryBonus;
-                params.watermelonMCSamples = cfg.solverWatermelonMCSamples;
-                params.earlyGameDigs = cfg.solverEarlyGameDigs;
                 params.lateGameDigs = cfg.solverLateGameDigs;
 
                 bestMove = FruitDiggingSolver.findBestMove(state);
-
-                int dugCount = (int) fruits.stream().filter(m -> m.label.startsWith("§a")).count();
-
-                // Debug: 每 5 秒输出
-                if (client.player.tickCount % 100 == 0) {
-                    String phase = FruitDiggingSolver.determinePhase(state).toString().replace("SWEEP_BOMBS","扫弹").replace("HUNT_DRAGONFRUIT","猎龙").replace("DIG_CANDIDATES","追踪").replace("CLEANUP","收尾");
-                    ChatUtils.showMessage(
-                        "§7[§6Solver§7] §f已知: §e" + totalKnown + "果"
-                        + " §7| 炸弹: §c" + bombs.size()
-                        + " §7| 宝藏: §e" + treasures.size()
-                        + " §7| 已挖: §8" + dugCount
-                        + " §7[" + phase + "]"
-                        + " §f→ §b(" + bestMove.gridX + "," + bestMove.gridZ + ")"
-                        + " §e" + bestMove.dowsing
-                        + " §a" + String.format("%.0f", bestMove.score));
-                }
             } else {
                 bestMove = null;
             }
