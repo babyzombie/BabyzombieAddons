@@ -133,6 +133,12 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.cakeBuffTracker",
                 () -> get().general.cakeBuffTracker);
 
+        // --- Anniversary ---
+        HudManager.register("RaffleTasks", 10, 100, 1.0f,
+                "§6Raffle Tasks§7: §e15§7/21 remaining\n\n§7Obtain some Diamond Essence.\n§7Find a Suspicious Scrap while in a Glacite Mineshaft.\n§7Fish 30 Times",
+                "config.babyzombieaddons.option.raffleTaskTracker",
+                () -> get().events.raffleTaskTracker);
+
         // --- Popup ---
         HudManager.register("Popup", 420, 50, 1.0f,
                 "§6Party Invite\n§fPlayer invites you to party\n§a[Y] Accept  §e[N] Ignore",

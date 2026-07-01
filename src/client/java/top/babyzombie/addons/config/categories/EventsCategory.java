@@ -62,6 +62,11 @@ public final class EventsCategory {
                         .option(createInt("solverLateGameDigs", 0, 15, defaults.events.solverLateGameDigs,
                                 () -> config.events.solverLateGameDigs, v -> config.events.solverLateGameDigs = v))
                         .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.anniversary"))
+                        .option(bool("raffleTaskTracker", defaults.events.raffleTaskTracker,
+                                () -> config.events.raffleTaskTracker, v -> config.events.raffleTaskTracker = v))
+                        .build())
                 .build();
     }
 

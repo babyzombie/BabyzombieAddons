@@ -514,6 +514,10 @@
   "config.babyzombieaddons.option.solverLateGameDigs": "收尾挖掘数",
   "config.babyzombieaddons.option.solverLateGameDigs.desc": "最后 N 铲视为收尾阶段，优先保守收割。",
 
+  "config.babyzombieaddons.group.anniversary": "周年庆",
+  "config.babyzombieaddons.option.raffleTaskTracker": "抽奖任务追踪",
+  "config.babyzombieaddons.option.raffleTaskTracker.desc": "在 HUD 上显示未完成的抽奖任务。解析抽奖任务 GUI 并监听完成消息。",
+
   "config.babyzombieaddons.option.bzGetFromSacks": "BZ 从袋子提取物品",
   "config.babyzombieaddons.option.bzGetFromSacks.desc": "在 Bazaar 创建出售订单时，若物品显示\"None in inventory!\"，自动从袋子提取。",
   "config.babyzombieaddons.option.bzGetFromSacks.OFF": "关闭",

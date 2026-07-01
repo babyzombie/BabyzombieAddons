@@ -514,6 +514,10 @@
   "config.babyzombieaddons.option.solverLateGameDigs": "Late Game Digs",
   "config.babyzombieaddons.option.solverLateGameDigs.desc": "Last N digs treated as late game phase (prioritize conservative harvesting).",
 
+  "config.babyzombieaddons.group.anniversary": "Anniversary",
+  "config.babyzombieaddons.option.raffleTaskTracker": "Raffle Tasks Tracker",
+  "config.babyzombieaddons.option.raffleTaskTracker.desc": "Track uncompleted Raffle Tasks on HUD. Parses the Raffle Tasks GUI and listens for completion messages.",
+
   "config.babyzombieaddons.option.bzGetFromSacks": "BZ Get From Sacks",
   "config.babyzombieaddons.option.bzGetFromSacks.desc": "Auto-extract items from sacks when creating a Bazaar sell offer with \"None in inventory!\".",
   "config.babyzombieaddons.option.bzGetFromSacks.OFF": "Off",

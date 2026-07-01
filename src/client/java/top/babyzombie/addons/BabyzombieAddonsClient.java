@@ -23,6 +23,7 @@ import top.babyzombie.addons.module.dungeon.DungeonModule;
 import top.babyzombie.addons.module.garden.GardenModule;
 import top.babyzombie.addons.module.events.FruitDiggingModule;
 import top.babyzombie.addons.module.events.GreatSpookModule;
+import top.babyzombie.addons.module.events.RaffleTaskModule;
 import top.babyzombie.addons.module.kuudra.KuudraModule;
 import top.babyzombie.addons.module.pet.PetDisplayHud;
 import top.babyzombie.addons.module.kuudra.ArrowPoisonRefill;
@@ -101,6 +102,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         GardenModule.init();
         GreatSpookModule.init();
         FruitDiggingModule.init();
+        RaffleTaskModule.init();
         KuudraModule.init();
         ArrowPoisonRefill.init();
         MiningModule.init();

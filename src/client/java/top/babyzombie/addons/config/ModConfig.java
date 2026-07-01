@@ -254,6 +254,9 @@ public class ModConfig {
         public float solverEarlyAppleBonus = 50f;
         public float solverEarlyCherryBonus = 80f;
         public int solverLateGameDigs = 3;
+
+        // ── Anniversary ──
+        public boolean raffleTaskTracker = false;
     }
 
     // ---- Misc ----
