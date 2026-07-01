@@ -148,7 +148,27 @@ public class HypixelLocationTracker {
     public boolean isInSkyblock() { return "SkyBlock".equals(currentLocation.serverType()); }
     public boolean isInDungeon() { return isInSkyblock() && "Dungeon".equals(currentLocation.map()); }
     public boolean isInKuudra() { return isInSkyblock() && "Kuudra".equals(currentLocation.map()); }
-    public boolean isInLimbo() { return "limbo".equals(currentLocation.serverName()); }
+    /**
+     * Detect limbo by checking the tablist and sidebar scoreboard.
+     * In limbo: the tablist contains only the player themselves, and there is no
+     * sidebar scoreboard. The Hypixel Mod API does not send location packets
+     * while in limbo, so we cannot rely on {@code serverName}.
+     */
+    public boolean isInLimbo() {
+        var client = Minecraft.getInstance();
+        if (client.player == null || client.level == null) return false;
+        var conn = client.player.connection;
+        if (conn == null) return false;
+
+        // Limbo feature 1: tablist contains only the player themselves
+        if (conn.getOnlinePlayers().size() > 1) return false;
+
+        // Limbo feature 2: no sidebar scoreboard
+        var sb = client.level.getScoreboard();
+        if (sb.getDisplayObjective(DisplaySlot.BY_ID.apply(SIDEBAR_SLOT)) != null) return false;
+
+        return true;
+    }
 
     @Nullable public String getUuid() { return currentLocation.uuid(); }
     @Nullable public String getProfileId() { return currentLocation.profileId(); }

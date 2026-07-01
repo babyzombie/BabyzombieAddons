@@ -16,6 +16,7 @@ import top.babyzombie.addons.module.abiphone.AbiphoneTracker;
 import top.babyzombie.addons.module.abiphone.IncomingCallHandler;
 import top.babyzombie.addons.module.autoconnect.AutoJoinModule;
 import top.babyzombie.addons.module.autois.AutoISModule;
+import top.babyzombie.addons.module.autois.KickRecoveryModule;
 import top.babyzombie.addons.module.misc.AutoReconnectHelper;
 import top.babyzombie.addons.module.misc.BazaarSellFromSacks;
 import top.babyzombie.addons.module.dungeon.DungeonModule;
@@ -93,6 +94,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
 
         AutoJoinModule.init();
         AutoISModule.init();
+        KickRecoveryModule.init();
         AutoReconnectHelper.init();
         BazaarSellFromSacks.init();
         DungeonModule.init();

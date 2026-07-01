@@ -57,7 +57,7 @@ public final class SkyblockCategory {
                                 .binding(defaults.general.autoisDelay,
                                         () -> config.general.autoisDelay,
                                         v -> config.general.autoisDelay = v)
-                                .controller(IntegerController.createBuilder().range(1, 180).slider(1).build())
+                                .controller(IntegerController.createBuilder().range(5, 125).slider(5).build())
                                 .build())
                         .option(Option.<AutoISDest>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.autoisDest"))
