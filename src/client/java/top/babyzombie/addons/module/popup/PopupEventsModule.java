@@ -191,7 +191,7 @@ public final class PopupEventsModule {
         command = type == EventType.PARTY || type == EventType.GUILD_PARTY ? "party accept " + player
                 : type == EventType.FRIEND ? "friend accept " + player
                 : type == EventType.TRADE || type == EventType.POSITION_SWAP ? "trade " + player
-                : type == EventType.DUEL ? "duels accept " + player
+                : type == EventType.DUEL ? "duel accept " + player
                 : type == EventType.BAIT ? "bz " + player
                 : "";
         totalTime = 10000;

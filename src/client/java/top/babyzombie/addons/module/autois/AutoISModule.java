@@ -51,7 +51,6 @@ public final class AutoISModule {
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((minecraft, level) -> {
             if (!ModConfigManager.get().general.autois) return;
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             int delayTicks = ModConfigManager.get().general.autoisDelay * 20;
             Scheduler.schedule(delayTicks, AutoISModule::doWarp);
         });
@@ -89,6 +88,11 @@ public final class AutoISModule {
     private static void doWarp() {
         if (!ModConfigManager.get().general.autois) return;
         var tracker = HypixelLocationTracker.getInstance();
+        if (tracker.isInLimbo()) {
+            ChatUtils.sendCommand("lobby");
+            return;
+        }
+        if (!tracker.isOnHypixel()) return;
         if (tracker.isInSkyblock()) {
             var dest = ModConfigManager.get().general.autoisDest;
             if (dest == ModConfig.AutoISDest.ISLAND && !tracker.isIn("Private Island"))
