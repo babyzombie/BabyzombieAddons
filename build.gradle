@@ -70,8 +70,10 @@ dependencies {
 
     clientImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    //Hypixel Mod Api (bundled)
-    include(clientImplementation("net.hypixel:mod-api:${project.hm_api_version}"))
+    //Hypixel Mod Api (bundled via Fabric wrapper; core library comes with it)
+    include(clientImplementation("maven.modrinth:hypixel-mod-api:${project.hm_api_fabric_version}"))
+    // Core API — compile only, provided at runtime by the Fabric wrapper above
+    clientImplementation("net.hypixel:mod-api:${project.hm_api_version}")
 
     // Dandelion (bundled)
     include(clientImplementation("net.azureaaron:dandelion:${project.dandelion_version}"))

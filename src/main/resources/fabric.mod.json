@@ -44,7 +44,6 @@
   "suggests": {
     "yet-another-config-lib": ">=${yacl_mod_version}",
     "modmenu": ">=${mod_menu_mod_version}",
-    "hypixel-mod-api": ">=1.0",
     "roughlyenoughitems": ">=26.1"
   }
 }
