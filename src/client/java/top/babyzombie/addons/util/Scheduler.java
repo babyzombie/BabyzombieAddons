@@ -9,12 +9,14 @@ import java.util.List;
 
 /**
  * Simple scheduler for delayed and repeating tasks.
- * Replaces ChatTriggers' register("step", ...) pattern.
+ * Uses wall-clock time internally so timing stays accurate even at low FPS.
+ * <p>
+ * Parameters are still given in ticks (20 ticks = 1 second) for API compatibility,
+ * but they are converted to milliseconds (1 tick = 50ms) on construction.
  */
 public final class Scheduler {
 
     private static final List<ScheduledTask> tasks = new ArrayList<>();
-    private static boolean registered;
 
     private Scheduler() {}
 
@@ -27,14 +29,15 @@ public final class Scheduler {
         var client = Minecraft.getInstance();
         if (client.player == null) return;
 
+        long now = System.currentTimeMillis();
         Iterator<ScheduledTask> it = tasks.iterator();
         while (it.hasNext()) {
             ScheduledTask task = it.next();
-            task.ticksRemaining--;
-            if (task.ticksRemaining <= 0) {
+            if (now >= task.executeAtMs) {
                 task.runnable.run();
                 if (task.repeating) {
-                    task.ticksRemaining = task.intervalTicks;
+                    // Schedule next from now to avoid catch-up storms after long pauses
+                    task.executeAtMs = now + task.intervalMs;
                 } else {
                     it.remove();
                 }
@@ -62,14 +65,14 @@ public final class Scheduler {
     }
 
     private static class ScheduledTask {
-        int ticksRemaining;
-        int intervalTicks;
+        long executeAtMs;
+        long intervalMs;
         Runnable runnable;
         boolean repeating;
 
-        ScheduledTask(int delay, int interval, Runnable r, boolean rep) {
-            this.ticksRemaining = delay;
-            this.intervalTicks = interval;
+        ScheduledTask(int delayTicks, int intervalTicks, Runnable r, boolean rep) {
+            this.executeAtMs = System.currentTimeMillis() + delayTicks * 50L;
+            this.intervalMs = intervalTicks < 0 ? -1 : intervalTicks * 50L;
             this.runnable = r;
             this.repeating = rep;
         }
