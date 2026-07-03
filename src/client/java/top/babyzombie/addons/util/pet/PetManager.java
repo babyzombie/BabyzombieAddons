@@ -558,7 +558,8 @@ public final class PetManager {
             if (skill == SkillType.FARMING || skill == SkillType.MINING
                 || skill == SkillType.COMBAT || skill == SkillType.FORAGING
                 || skill == SkillType.FISHING || skill == SkillType.ENCHANTING
-                || skill == SkillType.ALCHEMY || skill == SkillType.TAMING) {
+                || skill == SkillType.ALCHEMY || skill == SkillType.TAMING
+                || skill == SkillType.HUNTING) {
                 petState.skillLevels.put(skill, level);
             }
         }

@@ -88,7 +88,7 @@ public final class PetExperienceTracker {
     private static final Set<SkillType> PET_XP_SKILLS = Set.of(
         SkillType.FARMING, SkillType.MINING, SkillType.COMBAT,
         SkillType.FORAGING, SkillType.FISHING, SkillType.ENCHANTING,
-        SkillType.ALCHEMY, SkillType.TAMING
+        SkillType.ALCHEMY, SkillType.TAMING, SkillType.HUNTING
     );
 
     private boolean onGameMessage(Component message, boolean overlay) {
