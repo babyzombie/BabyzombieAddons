@@ -72,7 +72,7 @@
   "config.babyzombieaddons.group.carnival": "嘉年华",
   "config.babyzombieaddons.group.autotip": "自动打赏",
   "config.babyzombieaddons.option.autotipEnabled": "启用自动打赏",
-  "config.babyzombieaddons.option.autotipEnabled.desc": "每 20.5 分钟自动发送 /tip all。",
+  "config.babyzombieaddons.option.autotipEnabled.desc": "每 20.5 分钟自动发送 /tip all。\nMVP++ 自带 autotip，此功能对 MVP++ 不生效。",
   "config.babyzombieaddons.option.autotipHideMessages": "隐藏打赏消息",
   "config.babyzombieaddons.option.autotipHideMessages.desc": "隐藏 /tip all 返回的结果消息。",
 
@@ -717,5 +717,13 @@
   "babyzombieaddons.debug.party.no_members": "§e无成员数据",
   "babyzombieaddons.debug.party.raw_data": "§7原始数据: §f%s",
   "babyzombieaddons.debug.party.yes": "是",
-  "babyzombieaddons.debug.party.no": "否"
+  "babyzombieaddons.debug.party.no": "否",
+
+  "babyzombieaddons.debug.rank.header": "§6===== 玩家 Rank 信息 =====",
+  "babyzombieaddons.debug.rank.no_data": "§7未获取到 rank 信息（尚未收到响应）",
+  "babyzombieaddons.debug.rank.player_rank": "§ePlayerRank: §f%s",
+  "babyzombieaddons.debug.rank.package_rank": "§ePackageRank: §f%s",
+  "babyzombieaddons.debug.rank.monthly_package_rank": "§eMonthlyPackageRank: §f%s",
+  "babyzombieaddons.debug.rank.prefix": "§ePrefix: §f%s",
+  "babyzombieaddons.debug.rank.none": "§7(无)"
 }

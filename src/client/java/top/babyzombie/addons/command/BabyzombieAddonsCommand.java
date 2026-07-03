@@ -59,6 +59,7 @@ public final class BabyzombieAddonsCommand {
             DebugEntityCommand.register(debug);
             DebugPetCommand.register(debug);
             DebugPartyCommand.register(debug);
+            DebugRankCommand.register(debug);
 
             SendCoordsCommand.register(bza);
             RotationCommand.register(bza);

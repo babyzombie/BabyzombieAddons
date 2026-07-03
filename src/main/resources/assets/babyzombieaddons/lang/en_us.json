@@ -72,7 +72,7 @@
   "config.babyzombieaddons.group.carnival": "Carnival",
   "config.babyzombieaddons.group.autotip": "Auto Tip",
   "config.babyzombieaddons.option.autotipEnabled": "Enable Auto Tip",
-  "config.babyzombieaddons.option.autotipEnabled.desc": "Automatically sends /tip all every 20.5 minutes.",
+  "config.babyzombieaddons.option.autotipEnabled.desc": "Automatically sends /tip all every 20.5 minutes.\nDoes nothing for MVP++ — MVP++ has built-in autotip.",
   "config.babyzombieaddons.option.autotipHideMessages": "Hide Tip Messages",
   "config.babyzombieaddons.option.autotipHideMessages.desc": "Hide the result messages from /tip all.",
 
@@ -717,5 +717,13 @@
   "babyzombieaddons.debug.party.no_members": "§eNo member data",
   "babyzombieaddons.debug.party.raw_data": "§7Raw Data: §f%s",
   "babyzombieaddons.debug.party.yes": "Yes",
-  "babyzombieaddons.debug.party.no": "No"
+  "babyzombieaddons.debug.party.no": "No",
+
+  "babyzombieaddons.debug.rank.header": "§6===== Player Rank Info =====",
+  "babyzombieaddons.debug.rank.no_data": "§7No rank info received yet (no response from Hypixel Mod API)",
+  "babyzombieaddons.debug.rank.player_rank": "§ePlayerRank: §f%s",
+  "babyzombieaddons.debug.rank.package_rank": "§ePackageRank: §f%s",
+  "babyzombieaddons.debug.rank.monthly_package_rank": "§eMonthlyPackageRank: §f%s",
+  "babyzombieaddons.debug.rank.prefix": "§ePrefix: §f%s",
+  "babyzombieaddons.debug.rank.none": "§7(none)"
 }

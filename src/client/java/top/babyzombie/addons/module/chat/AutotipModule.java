@@ -5,6 +5,8 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelPlayerInfoTracker;
+import net.hypixel.data.rank.MonthlyPackageRank;
 
 import java.util.regex.Pattern;
 
@@ -16,9 +18,13 @@ public final class AutotipModule {
 
     private static final Runnable tipTask = () -> {
         var config = ModConfigManager.get().autotip;
-        if (config.enabled && HypixelLocationTracker.getInstance().isOnHypixel()) {
-            ChatUtils.sendCommand("tip all");
-        }
+        if (!config.enabled || !HypixelLocationTracker.getInstance().isOnHypixel()) return;
+
+        // MVP++ 自带 autotip，无需本模组发送
+        var info = HypixelPlayerInfoTracker.getInstance().getLastInfo();
+        if (info != null && info.monthlyPackageRank() == MonthlyPackageRank.SUPERSTAR) return;
+
+        ChatUtils.sendCommand("tip all");
     };
 
     private AutotipModule() {}
