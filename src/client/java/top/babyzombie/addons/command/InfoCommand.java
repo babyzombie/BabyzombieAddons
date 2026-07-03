@@ -42,7 +42,7 @@ final class InfoCommand {
             var team = sb.getPlayersTeam(holder.getScoreboardName());
             if (team == null) continue;
             String text = team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString();
-            int score = sb.listPlayerScores(holder).get(obj);
+            int score = sb.listPlayerScores(holder).getInt(obj);
             lines.put(score, text);
         }
         int i = 0;
