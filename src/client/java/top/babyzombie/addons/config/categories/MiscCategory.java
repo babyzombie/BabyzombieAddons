@@ -33,6 +33,8 @@ public final class MiscCategory {
                         () -> config.debug.wideMoulConfig, v -> config.debug.wideMoulConfig = v))
                 .option(bool("debugMode", defaults.debug.debugMode,
                         () -> config.debug.debugMode, v -> config.debug.debugMode = v))
+                .option(bool("hypixelModApiDebugLog", defaults.debug.hypixelModApiDebugLog,
+                        () -> config.debug.hypixelModApiDebugLog, v -> config.debug.hypixelModApiDebugLog = v))
                 .option(Option.<Integer>createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.option.maxDebugEntities"))
                         .description(Component.translatable("config.babyzombieaddons.option.maxDebugEntities.desc"))

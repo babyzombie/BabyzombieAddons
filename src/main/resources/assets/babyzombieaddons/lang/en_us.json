@@ -568,8 +568,10 @@
   "rareropscreen.sharelist": "Share List (Auto-send)",
   "rareropscreen.sharelist.add": "+ Add to Share List",
   "rareropscreen.done": "Done",
-  "config.babyzombieaddons.option.debugMode": "Debug Mode",
+  "config.babyzombieaddons.option.debugMode": "HUD Layout Debug",
   "config.babyzombieaddons.option.debugMode.desc": "Show all HUD elements in edit screen (including disabled ones) to help with layout.",
+"config.babyzombieaddons.option.hypixelModApiDebugLog": "Hypixel Mod API Debug Output",
+"config.babyzombieaddons.option.hypixelModApiDebugLog.desc": "Shows raw Mod API data in chat when received.",
   "config.babyzombieaddons.option.maxDebugEntities": "Max Debug Entities",
   "config.babyzombieaddons.option.maxDebugEntities.desc": "Maximum number of entities shown by /bza debug getentity.",
 

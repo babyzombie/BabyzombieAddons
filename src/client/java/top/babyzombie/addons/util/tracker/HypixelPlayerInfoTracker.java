@@ -7,6 +7,8 @@ import net.hypixel.data.rank.PlayerRank;
 import net.hypixel.modapi.HypixelModAPI;
 import net.hypixel.modapi.packet.impl.clientbound.ClientboundPlayerInfoPacket;
 import net.hypixel.modapi.packet.impl.serverbound.ServerboundPlayerInfoPacket;
+import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.ChatUtils;
 
 /** Tracks the local player's Hypixel rank info via the Hypixel Mod API.
  *  <p>Passively receives {@link ClientboundPlayerInfoPacket} (e.g. when another mod requests it).
@@ -30,6 +32,10 @@ public final class HypixelPlayerInfoTracker {
                     packet.getMonthlyPackageRank(),
                     packet.getPrefix().orElse(null)
             );
+
+            if (ModConfigManager.get().debug.hypixelModApiDebugLog) {
+                ChatUtils.showMessage("§7[ModAPI] §ePlayerInfo §7→ §f" + packet);
+            }
         });
 
         // 进服时如果还没收到过数据，主动请求一次

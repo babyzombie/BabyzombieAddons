@@ -568,8 +568,10 @@
   "rareropscreen.sharelist": "分享列表（自动发送）",
   "rareropscreen.sharelist.add": "+ 添加到分享列表",
   "rareropscreen.done": "完成",
-  "config.babyzombieaddons.option.debugMode": "调试模式",
+  "config.babyzombieaddons.option.debugMode": "HUD 布局调试",
   "config.babyzombieaddons.option.debugMode.desc": "启用后 HUD 编辑界面会显示全部元素（包括未开启的），方便调整布局。",
+"config.babyzombieaddons.option.hypixelModApiDebugLog": "Hypixel Mod API 调试输出",
+"config.babyzombieaddons.option.hypixelModApiDebugLog.desc": "接收到 Mod API 数据时在聊天栏显示原始内容。",
   "config.babyzombieaddons.option.maxDebugEntities": "调试实体最大数量",
   "config.babyzombieaddons.option.maxDebugEntities.desc": "/bza debug getentity 指令最多显示的实体数量。",
 

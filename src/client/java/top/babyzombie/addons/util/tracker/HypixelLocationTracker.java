@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.scores.DisplaySlot;
+import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
@@ -77,6 +78,10 @@ public class HypixelLocationTracker {
             packet.getMap().orElse(null),
             uuid, prev.profileId(), prev.location()
         );
+
+        if (ModConfigManager.get().debug.hypixelModApiDebugLog) {
+            ChatUtils.showMessage("§7[ModAPI] §aLocation §7→ §f" + packet);
+        }
     }
 
     private void onGameMessage(Component message, boolean overlay) {

@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.hypixel.modapi.HypixelModAPI;
+import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.util.ServerTick;
@@ -80,6 +81,10 @@ public final class PartyTracker {
                 pendingCallbacks.clear();
             }
             for (var cb : callbacks) cb.accept(lastInfo);
+
+            if (ModConfigManager.get().debug.hypixelModApiDebugLog) {
+                ChatUtils.showMessage("§7[ModAPI] §dParty §7→ §f" + packet);
+            }
         });
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> reset());

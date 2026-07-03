@@ -278,6 +278,7 @@ public class ModConfig {
 
     public static class DebugConfig {
         public boolean debugMode = false;
+        public boolean hypixelModApiDebugLog = false;
         public ConfigBackend configBackend = ConfigBackend.MOUL_CONFIG;
         public boolean wideMoulConfig = false;
         public int maxDebugEntities = 20;
