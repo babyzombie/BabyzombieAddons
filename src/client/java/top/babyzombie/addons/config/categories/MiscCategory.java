@@ -43,6 +43,14 @@ public final class MiscCategory {
                                 v -> config.debug.maxDebugEntities = v)
                         .controller(IntegerController.createBuilder().range(1, 100).build())
                         .build())
+                .option(Option.<Integer>createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.serverVisitExpireMinutes"))
+                        .description(Component.translatable("config.babyzombieaddons.option.serverVisitExpireMinutes.desc"))
+                        .binding(defaults.misc.serverVisitExpireMinutes,
+                                () -> config.misc.serverVisitExpireMinutes,
+                                v -> config.misc.serverVisitExpireMinutes = v)
+                        .controller(IntegerController.createBuilder().range(1, 60).slider(2).build())
+                        .build())
                 .build();
     }
 

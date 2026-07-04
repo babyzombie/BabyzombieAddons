@@ -20,6 +20,7 @@ public final class BabyzombieAddonsCommand {
 
     public static void init() {
         SoundCommand.init();
+        FindCommand.init();
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             var bza = literal("bza").executes(BabyzombieAddonsCommand::settings)
@@ -61,6 +62,7 @@ public final class BabyzombieAddonsCommand {
             DebugPartyCommand.register(debug);
             DebugRankCommand.register(debug);
 
+            FindCommand.register(bza);
             SendCoordsCommand.register(bza);
             RotationCommand.register(bza);
             WaypointCommand.register(bza);

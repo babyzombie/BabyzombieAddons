@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -30,16 +29,16 @@ public final class Scheduler {
         if (client.player == null) return;
 
         long now = System.currentTimeMillis();
-        Iterator<ScheduledTask> it = tasks.iterator();
-        while (it.hasNext()) {
-            ScheduledTask task = it.next();
+
+        // Snapshot to avoid ConcurrentModificationException when a task's
+        // runnable calls schedule() or cancel() during iteration.
+        for (ScheduledTask task : new ArrayList<>(tasks)) {
             if (now >= task.executeAtMs) {
                 task.runnable.run();
                 if (task.repeating) {
-                    // Schedule next from now to avoid catch-up storms after long pauses
                     task.executeAtMs = now + task.intervalMs;
                 } else {
-                    it.remove();
+                    tasks.remove(task);
                 }
             }
         }

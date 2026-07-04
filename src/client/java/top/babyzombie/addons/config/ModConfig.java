@@ -266,6 +266,7 @@ public class ModConfig {
         public boolean abiphoneGui = false;
         public boolean playCmd = false;
         public BzGetFromSacksMode bzGetFromSacks = BzGetFromSacksMode.OFF;
+        public int serverVisitExpireMinutes = 10;
     }
 
     // ---- Chat Channel ----

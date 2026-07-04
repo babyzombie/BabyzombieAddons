@@ -527,6 +527,8 @@
   "config.babyzombieaddons.option.abiphoneGui.desc": "Replace /call with a graphical contact list.",
   "config.babyzombieaddons.option.playCmd": "Play Command GUI",
   "config.babyzombieaddons.option.playCmd.desc": "Replace /play with a game mode selection GUI and enable tab completion.",
+  "config.babyzombieaddons.option.serverVisitExpireMinutes": "Server Visit Expiry (min)",
+  "config.babyzombieaddons.option.serverVisitExpireMinutes.desc": "How long a visited server stays in the \"already seen\" list for /bza findnew. Range: 1–60 minutes, step 2.",
   "config.babyzombieaddons.option.chatChannelSwitcher": "Chat Channel Switcher",
   "config.babyzombieaddons.option.chatChannelSwitcher.desc": "Show clickable GC/OC/PC/CC/AC buttons above the chat input to quickly switch Hypixel chat channels.",
   "config.babyzombieaddons.option.raredropManage": "Manage Rare Drops",
@@ -727,5 +729,14 @@
   "babyzombieaddons.debug.rank.package_rank": "§ePackageRank: §f%s",
   "babyzombieaddons.debug.rank.monthly_package_rank": "§eMonthlyPackageRank: §f%s",
   "babyzombieaddons.debug.rank.prefix": "§ePrefix: §f%s",
-  "babyzombieaddons.debug.rank.none": "§7(none)"
+  "babyzombieaddons.debug.rank.none": "§7(none)",
+
+  "babyzombieaddons.find.starting": "§aStarting find → §f%s",
+  "babyzombieaddons.find.starting_new": "§aStarting findnew → §f%s §7(looking for new server)",
+  "babyzombieaddons.find.already_running": "§cA find operation is already in progress.",
+  "babyzombieaddons.find.warped": "§aWarped to §f%s §7(server: §f%s§7)",
+  "babyzombieaddons.find.new_server_found": "§aFound new server: §f%s",
+  "babyzombieaddons.find.retrying": "§eServer §f%s §ealready visited, retrying…",
+  "babyzombieaddons.find.timed_out": "§cFind operation timed out. Cancelled.",
+  "babyzombieaddons.find.cancelled_disconnect": "§cFind cancelled (disconnected)."
 }

@@ -38,6 +38,11 @@ public final class ChatUtils {
         }
     }
 
+    /** Show a translated system message. */
+    public static void showTranslatable(String key, Object... args) {
+        showMessage(translate(key, args));
+    }
+
     public static String stripRank(String name) {
         if (name == null) return null;
         return name.replaceFirst("^\\[[^\\]]+\\]\\s*", "");

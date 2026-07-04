@@ -44,6 +44,7 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.HypixelPlayerInfoTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.tracker.PartyTracker;
+import top.babyzombie.addons.util.tracker.ServerVisitTracker;
 import top.babyzombie.addons.util.ServerTickCounter;
 import top.babyzombie.addons.util.pet.PetManager;
 import top.babyzombie.addons.util.render.Waypoints;
@@ -85,6 +86,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         });
 
         HypixelLocationTracker.getInstance().init();
+        ServerVisitTracker.getInstance().init();
         AbiphoneTracker.getInstance().init();
         PartyTracker.getInstance().init();
         HypixelPlayerInfoTracker.getInstance().init();
