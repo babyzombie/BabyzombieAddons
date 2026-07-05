@@ -367,10 +367,11 @@ public final class PetManager {
 
             if (event.button() == 1) {
                 removePet(uuid);
+                if (uuid.equals(currentPetUuid)) setCurrentPet(null);
             } else if (event.button() == 0) {
                 for (PetData p : pets) {
                     if (uuid.equals(p.uuid())) {
-                        setCurrentPet(p);
+                        setCurrentPet(uuid.equals(currentPetUuid) ? null : p);
                         break;
                     }
                 }

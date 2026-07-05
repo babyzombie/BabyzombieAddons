@@ -144,6 +144,16 @@ public final class GeneralCategory {
                                 () -> config.handRender.disableAll, v -> config.handRender.disableAll = v))
                         .option(createBool("swapHands", defaults.handRender.swapHands,
                                 () -> config.handRender.swapHands, v -> config.handRender.swapHands = v))
+                        .option(createBool("customSwingDuration", defaults.handRender.customSwingDuration,
+                                () -> config.handRender.customSwingDuration, v -> config.handRender.customSwingDuration = v))
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.swingDurationTicks"))
+                                .description(Component.translatable("config.babyzombieaddons.option.swingDurationTicks.desc"))
+                                .binding(defaults.handRender.swingDurationTicks,
+                                        () -> config.handRender.swingDurationTicks,
+                                        v -> config.handRender.swingDurationTicks = v)
+                                .controller(IntegerController.createBuilder().range(0, 1200).build())
+                                .build())
                         .option(createFloat("itemScale", defaults.handRender.itemScale,
                                 () -> config.handRender.itemScale, v -> config.handRender.itemScale = v, 0.1f, 1.0f))
                         .build())

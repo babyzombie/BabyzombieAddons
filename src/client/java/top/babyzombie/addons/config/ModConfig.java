@@ -307,7 +307,8 @@ public class ModConfig {
     public static class HandRenderConfig {
         public boolean disableAll = false;
         public boolean swapHands = false;
-        public float swingSpeed = 1.0f;
+        public boolean customSwingDuration = false;
+        public int swingDurationTicks = 6;
         public float itemScale = 1.0f;
     }
 
