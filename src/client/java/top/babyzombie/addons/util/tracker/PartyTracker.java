@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.hypixel.modapi.HypixelModAPI;
+import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.Scheduler;
@@ -60,15 +61,12 @@ public final class PartyTracker {
             try {
                 var memberMap = packet.getMemberMap();
                 if (memberMap != null) {
-                    var self = net.minecraft.client.Minecraft.getInstance().player;
+                    var self = Minecraft.getInstance().player;
                     var selfUUID = self != null ? self.getUUID() : null;
-                    for (var entry : memberMap.entrySet()) {
-                        String s = entry.getValue().toString();
-                        if (s.contains("role=LEADER")) {
-                            // s looks like: PartyMember{uuid=..., role=LEADER}
-                            String uuidStr = s.replaceAll(".*uuid=([a-f0-9-]+).*", "$1");
-                            leaderName = uuidStr;
-                            isLeader = selfUUID != null && selfUUID.toString().equals(uuidStr);
+                    for (var member : memberMap.values()) {
+                        if (member.getRole() == ClientboundPartyInfoPacket.PartyRole.LEADER) {
+                            leaderName = member.getUuid().toString();
+                            isLeader = selfUUID != null && selfUUID.equals(member.getUuid());
                             break;
                         }
                     }
@@ -93,7 +91,7 @@ public final class PartyTracker {
             if (overlay) return;
             String text = ChatUtils.stripColor(message.getString());
             if (myName == null) {
-                var p = net.minecraft.client.Minecraft.getInstance().player;
+                var p = Minecraft.getInstance().player;
                 if (p != null) myName = p.getName().getString();
             }
             if (DISBAND_PAT.matcher(text).find()) {
@@ -102,16 +100,14 @@ public final class PartyTracker {
             }
             var tm = TRANSFER_PAT.matcher(text);
             if (tm.find()) {
-                String newLeader = ChatUtils.stripRank(ChatUtils.stripColor(tm.group(1) != null ? tm.group(1)
+                leaderName = ChatUtils.stripRank(ChatUtils.stripColor(tm.group(1) != null ? tm.group(1)
                         : (tm.group(3) != null ? tm.group(3) : tm.group(5))));
-                leaderName = newLeader;
                 isLeader = myName != null && myName.equals(leaderName);
                 return;
             }
             var pm = PROMOTE_PAT.matcher(text);
             if (pm.find()) {
-                String newLeader = ChatUtils.stripRank(ChatUtils.stripColor(pm.group(2)));
-                leaderName = newLeader;
+                leaderName = ChatUtils.stripRank(ChatUtils.stripColor(pm.group(2)));
                 isLeader = myName != null && myName.equals(leaderName);
             }
         });

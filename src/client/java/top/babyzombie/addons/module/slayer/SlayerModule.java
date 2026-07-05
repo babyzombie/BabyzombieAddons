@@ -64,7 +64,7 @@ public final class SlayerModule {
 
         // ---- Reset on world load ----
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
-            if (world == null) return;
+            if (world == null) { SlayerBossDetector.reset(); return; }
             PigmanSwordTimer.time = 0;
             HolyIceTimer.time = 0;
             HolyIceTimer.activated = false;

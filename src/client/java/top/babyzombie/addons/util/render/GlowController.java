@@ -1,5 +1,6 @@
 package top.babyzombie.addons.util.render;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Map;
@@ -10,6 +11,12 @@ public final class GlowController {
     private GlowController() {}
 
     private static final Map<UUID, Integer> GLOW_DATA = new ConcurrentHashMap<>();
+
+    static {
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
+            if (world == null) clearAll();
+        });
+    }
 
     /** Just enable glow, keep existing or default white. */
     public static void setGlow(Entity entity) {
@@ -38,5 +45,10 @@ public final class GlowController {
     public static int getGlowColor(Entity entity) {
         Integer color = GLOW_DATA.get(entity.getUUID());
         return color != null ? color : 0xFFFFFF;
+    }
+
+    /** 清除所有发光数据（世界卸载时自动调用）。 */
+    public static void clearAll() {
+        GLOW_DATA.clear();
     }
 }

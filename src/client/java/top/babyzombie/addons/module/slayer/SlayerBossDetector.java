@@ -107,7 +107,7 @@ public final class SlayerBossDetector {
         }
 
         ClientLevel level = client.level;
-        if (level == null || client.player == null) return;
+        if (level == null || client.player == null) { reset(); return; }
 
         // Clean up dead boss
         if (bossEntity != null && !bossEntity.isAlive()) reset();

@@ -19,7 +19,7 @@ public final class KuudraModule {
         CrimsonArmorPistonMute.init();
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
-            if (world != null) KuudraLocationTracker.reset();
+            KuudraLocationTracker.reset();
         });
     }
 }
