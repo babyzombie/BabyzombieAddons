@@ -156,6 +156,10 @@ public final class GeneralCategory {
                                 .build())
                         .option(createFloat("itemScale", defaults.handRender.itemScale,
                                 () -> config.handRender.itemScale, v -> config.handRender.itemScale = v, 0.1f, 1.0f))
+                        .option(createFloat("itemOffsetX", defaults.handRender.itemOffsetX,
+                                () -> config.handRender.itemOffsetX, v -> config.handRender.itemOffsetX = v, -1.0f, 1.0f))
+                        .option(createFloat("itemOffsetY", defaults.handRender.itemOffsetY,
+                                () -> config.handRender.itemOffsetY, v -> config.handRender.itemOffsetY = v, -1.0f, 1.0f))
                         .build())
                 .build();
     }

@@ -310,6 +310,8 @@ public class ModConfig {
         public boolean customSwingDuration = false;
         public int swingDurationTicks = 6;
         public float itemScale = 1.0f;
+        public float itemOffsetX = 0.0f;
+        public float itemOffsetY = 0.0f;
     }
 
     // ---- Auto Tip ----

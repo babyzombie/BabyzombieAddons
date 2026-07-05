@@ -14,11 +14,13 @@ import java.util.regex.Pattern;
  * Parses Hypixel SkyBlock skill XP messages from the action bar (overlay).
  *
  * Formats:
- *   +654.5 Foraging (11.51%)        ← percentage (non-maxed)
+ *   +654.5 Foraging (11.51%)        ← percentage (mid-level, non-maxed)
  *   +1,250 Combat (5,230,000/0)     ← total XP (maxed)
+ *   +50 Farming (1,234/5,000)       ← currentXP/nextLevelXP (low-level)
  *
  * For percentage: converts using skill level + cumulative XP table.
  * For maxed: tracks cumulative +XP delta.
+ * For progress: currentXP + base cumulative to get absolute, then delta.
  */
 public final class SkillXPActionBarParser {
 
@@ -30,6 +32,8 @@ public final class SkillXPActionBarParser {
     private static final Pattern PCT = Pattern.compile("\\(([0-9,.]+)%\\)");
     // (total/0)
     private static final Pattern MAXED = Pattern.compile("\\(([0-9,.]+)/0\\)");
+    // (currentXP/nextLevelXP) — low-level skills that haven't reached percentage display yet
+    private static final Pattern XP_PROGRESS = Pattern.compile("\\(([0-9,.]+)/([0-9,.]+)\\)");
 
     /** Last absolute XP position per skill (for delta). */
     private final Map<SkillType, Double> lastAbsolute = new EnumMap<>(SkillType.class);
@@ -82,6 +86,18 @@ public final class SkillXPActionBarParser {
         if (mm.find()) {
             try {
                 long absolute = Long.parseLong(mm.group(1).replace(",", ""));
+                return delta(skill, absolute);
+            } catch (NumberFormatException e) { return null; }
+        }
+
+        // Try progress format: (currentXP/nextLevelXP) — low-level skills
+        Matcher xm = XP_PROGRESS.matcher(tail);
+        if (xm.find()) {
+            try {
+                double currentXP = Double.parseDouble(xm.group(1).replace(",", ""));
+                int level = state.getSkillLevel(skill);
+                long base = PetConstants.getInstance().getCumulativeXp(skill, level - 1);
+                double absolute = base + currentXP;
                 return delta(skill, absolute);
             } catch (NumberFormatException e) { return null; }
         }
