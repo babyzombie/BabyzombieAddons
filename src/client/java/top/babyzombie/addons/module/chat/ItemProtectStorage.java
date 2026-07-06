@@ -15,10 +15,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 自维护的物品保护存储。仅在 Skyblocker/Firmament 都未安装/反射不可用时使用。
+ * 自维护的物品保护存储。仅在 Skyblocker 未安装时使用。
  * 文件位置：config/babyzombieaddons/protected_items.json
  */
 public final class ItemProtectStorage {
+
+    private static final boolean DISABLED = FabricLoader.getInstance().isModLoaded("skyblocker");
 
     private static final Path FILE = FabricLoader.getInstance().getConfigDir()
             .resolve("babyzombieaddons").resolve("protected_items.json");
@@ -28,6 +30,7 @@ public final class ItemProtectStorage {
     private ItemProtectStorage() {}
 
     public static void load() {
+        if (DISABLED) return;
         if (!Files.exists(FILE)) return;
         try {
             String json = Files.readString(FILE);
@@ -37,6 +40,7 @@ public final class ItemProtectStorage {
     }
 
     public static void save() {
+        if (DISABLED) return;
         try {
             Files.createDirectories(FILE.getParent());
             Files.writeString(FILE, GSON.toJson(uuids));
@@ -44,11 +48,13 @@ public final class ItemProtectStorage {
     }
 
     public static boolean contains(ItemStack stack) {
+        if (DISABLED) return false;
         String uuid = ItemUtils.getItemUuid(stack);
         return uuid != null && uuids.contains(uuid);
     }
 
     public static void toggle(ItemStack stack) {
+        if (DISABLED) return;
         String uuid = ItemUtils.getItemUuid(stack);
         if (uuid == null) return;
         boolean added;
@@ -64,6 +70,7 @@ public final class ItemProtectStorage {
     }
 
     public static boolean containsUuid(String uuid) {
+        if (DISABLED) return false;
         return uuid != null && uuids.contains(uuid);
     }
 

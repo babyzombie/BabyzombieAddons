@@ -92,6 +92,9 @@ dependencies {
 
     // REI (optional)
     clientCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
+
+    // Skyblocker LIAP (optional)
+    clientCompileOnly "maven.modrinth:skyblocker-liap:${project.skyblocker_liap_version}"
 }
 
 processResources {
