@@ -177,6 +177,8 @@ public final class KuudraCategory {
                         () -> config.kuudra.followerHelmetPrice, v -> config.kuudra.followerHelmetPrice = v))
                 .option(bool("muteCrimsonArmor", defaults.kuudra.muteCrimsonArmor,
                         () -> config.kuudra.muteCrimsonArmor, v -> config.kuudra.muteCrimsonArmor = v))
+                .option(bool("nopeMagmafish", defaults.kuudra.nopeMagmafish,
+                        () -> config.kuudra.nopeMagmafish, v -> config.kuudra.nopeMagmafish = v))
                 .build();
     }
 

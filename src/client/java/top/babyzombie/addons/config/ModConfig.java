@@ -128,6 +128,7 @@ public class ModConfig {
         public String perkShopBlacklistItems = "Elle's Pickaxe,Elle's Lava Rod,Auto Revive,Support Route,Mining Frenzy I";
         public boolean followerHelmetPrice = false;
         public boolean muteCrimsonArmor = false;
+        public boolean nopeMagmafish = false;
         public ToxicArrowMinTier toxicArrowMinTier = ToxicArrowMinTier.T3;
         public ToxicArrowTiming toxicArrowTiming = ToxicArrowTiming.KUUDRA_STUNNED;
         public int toxicArrowThreshold = 0;

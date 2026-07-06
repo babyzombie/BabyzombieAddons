@@ -1,9 +1,7 @@
 {
   "modmenu.gitee": "Gitee 仓库",
-
   "resourcepack.babyzombieaddons.chroma_modernui.name": "§bChroma × Modern UI 兼容",
   "resourcepack.babyzombieaddons.chroma_modernui.description": "让 Aaron Mod 的动态彩色字体在 Modern UI 文字引擎下生效",
-
   "key.category.babyzombieaddons.main": "BabyzombieAddons",
   "key.babyzombieaddons.cancel_key_release": "取消按键释放",
   "key.babyzombieaddons.second_person": "一键回头",
@@ -12,27 +10,21 @@
   "key.babyzombieaddons.popup_no": "弹出通知 - 忽略",
   "key.babyzombieaddons.copy_item_info": "复制物品信息",
   "key.babyzombieaddons.toggle_hand_render": "主副手交换",
-
   "babyzombieaddons.contact.lore.call": "左键呼叫联系人",
   "babyzombieaddons.contact.lore.auto_answer": "右键开关自动接听",
   "babyzombieaddons.contact.lore.favorite": "Shift+左键收藏",
   "babyzombieaddons.contact.lore.drag": "拖动排序",
   "babyzombieaddons.panel.color": "颜色：",
   "babyzombieaddons.panel.search": "搜索：",
-
   "babyzombieaddons.acceptparty.scheduled_any": "§a将在 2 分钟内自动接受下一个组队邀请",
   "babyzombieaddons.acceptparty.scheduled_player": "§a将在 2 分钟内自动接受来自 §6%s §a的组队邀请",
   "babyzombieaddons.party.accepted": "已自动接受队伍邀请",
   "babyzombieaddons.party.executed": "正在执行指令：%s",
   "babyzombieaddons.party.dm_invited": "已邀请 %s 加入队伍",
   "babyzombieaddons.dt.cancelled": "§c已取消自动重排。",
-
   "babyzombieaddons.dailyRuns.info": "§b地牢每日场数：%s/5",
-
   "config.babyzombieaddons.title": "BabyzombieAddons 设置",
-
   "hud.babyzombieaddons.autois": "§aAutoIS 已启用",
-
   "config.babyzombieaddons.category.general": "通用",
   "config.babyzombieaddons.category.skyblock": "skb 通用",
   "config.babyzombieaddons.category.dungeon": "地牢",
@@ -75,10 +67,8 @@
   "config.babyzombieaddons.option.autotipEnabled.desc": "每 20.5 分钟自动发送 /tip all。\nMVP++ 自带 autotip，此功能对 MVP++ 不生效。",
   "config.babyzombieaddons.option.autotipHideMessages": "隐藏打赏消息",
   "config.babyzombieaddons.option.autotipHideMessages.desc": "隐藏 /tip all 返回的结果消息。",
-
   "config.babyzombieaddons.group.chat": "聊天栏",
   "config.babyzombieaddons.category.misc": "杂项",
-
   "config.babyzombieaddons.group.pet": "宠物",
   "config.babyzombieaddons.option.petDisplay": "宠物显示",
   "config.babyzombieaddons.option.petDisplay.desc": "在 HUD 上显示当前宠物信息。",
@@ -90,13 +80,11 @@
   "config.babyzombieaddons.option.petItemIconDisplay.desc": "在宠物物品名称旁显示小图标。",
   "config.babyzombieaddons.option.petSharedDisplay": "经验共享宠物",
   "config.babyzombieaddons.option.petSharedDisplay.desc": "在主宠物下方显示经验共享宠物。",
-
   "config.babyzombieaddons.group.autois": "AutoIS 设置",
   "config.babyzombieaddons.option.updateChecker": "检查更新",
   "config.babyzombieaddons.option.updateChecker.desc": "进入世界时检查是否有新版本。",
   "config.babyzombieaddons.option.replaceReportWithServerList": "替换举报玩家为服务器列表",
   "config.babyzombieaddons.option.replaceReportWithServerList.desc": "将暂停菜单中的「举报玩家」按钮替换为「服务器列表」，点击可打开多人游戏列表。",
-
   "config.babyzombieaddons.option.autois": "自动回岛",
   "config.babyzombieaddons.option.autois.desc": "进入 SkyBlock 时自动传送到岛屿或花园。",
   "config.babyzombieaddons.option.autoisDelay": "延迟（秒）",
@@ -109,7 +97,6 @@
   "config.babyzombieaddons.option.hideEntities.desc": "我都来挂机了还要看这些实体干嘛。仅在启用自动回岛时生效。",
   "config.babyzombieaddons.option.backOnServerRestart": "服务器重启后自动回岛",
   "config.babyzombieaddons.option.backOnServerRestart.desc": "被服务器重启踢到 Hub 后，过一会自动回到自己的岛屿。仅在自动回岛关闭时生效——如果自动回岛已开启，其设置将覆盖此功能。",
-
   "config.babyzombieaddons.option.autoBackToSkyblock": "踢出后恢复",
   "config.babyzombieaddons.option.autoBackToSkyblock.desc": "被踢后的操作。",
   "config.babyzombieaddons.option.autoBackToSkyblock.OFF": "关闭",
@@ -128,21 +115,17 @@
   "config.babyzombieaddons.option.autoReconnectDelay.desc": "断线后等待多少秒再重连。",
   "config.babyzombieaddons.option.autoReconnectMaxRetries": "失败重试次数",
   "config.babyzombieaddons.option.autoReconnectMaxRetries.desc": "重连失败后最多尝试几次，设为 0 则不限次数。每次成功进服后重置计数。",
-
   "config.babyzombieaddons.group.autoJoinServer": "启动游戏自动进服",
   "config.babyzombieaddons.option.autoJoinServer": "启用",
   "config.babyzombieaddons.option.autoJoinServer.desc": "游戏启动后自动连接到下方配置的服务器。",
   "config.babyzombieaddons.option.autoJoinServerIP": "服务器地址",
   "config.babyzombieaddons.option.autoJoinServerIP.desc": "游戏启动时自动连接的服务器 IP 或域名，例如 mc.hypixel.net。",
-
   "config.babyzombieaddons.option.useTpsAdjustedTime": "TPS 校准计时",
   "config.babyzombieaddons.option.useTpsAdjustedTime.desc": "使用服务器 tick 速率调整计时器速度。在卡顿的服务器上，冷却时间会跟随实际游戏时间变慢，而非使用真实墙上时间。",
   "config.babyzombieaddons.option.showCrosshairInThirdPerson": "非第一人称显示准星",
   "config.babyzombieaddons.option.showCrosshairInThirdPerson.desc": "在第三人称视角下也显示屏幕中央的准星。",
-
   "config.babyzombieaddons.option.chatInContainer": "容器内聊天",
   "config.babyzombieaddons.option.chatInContainer.desc": "打开箱子/背包等容器时，可按聊天键（默认 T）在容器上方打开真正的聊天栏。ESC 关闭聊天但保留容器，再按 ESC 关闭容器。",
-
   "config.babyzombieaddons.group.playerScale": "玩家渲染缩放",
   "config.babyzombieaddons.option.playerScaleX": "X 轴缩放",
   "config.babyzombieaddons.option.playerScaleX.desc": "仅影响自己看到的自身模型，在 X 轴（宽度）方向的缩放比例。",
@@ -150,7 +133,6 @@
   "config.babyzombieaddons.option.playerScaleY.desc": "仅影响自己看到的自身模型，在 Y 轴（高度）方向的缩放比例。",
   "config.babyzombieaddons.option.playerScaleZ": "Z 轴缩放",
   "config.babyzombieaddons.option.playerScaleZ.desc": "仅影响自己看到的自身模型，在 Z 轴（深度）方向的缩放比例。",
-
   "config.babyzombieaddons.group.handRender": "手臂渲染",
   "config.babyzombieaddons.option.disableHandRender": "取消手臂渲染",
   "config.babyzombieaddons.option.disableHandRender.desc": "完全关闭第一人称手臂和手持物品的渲染。",
@@ -170,7 +152,6 @@
   "config.babyzombieaddons.option.renderPhase.desc": "控制框、光柱、悬浮字的渲染时机。",
   "config.babyzombieaddons.option.renderPhase.AFTER_ENTITIES": "实体之后（默认）",
   "config.babyzombieaddons.option.renderPhase.END_MAIN": "主渲染末尾",
-
   "config.babyzombieaddons.option.f4CrowdHiding": "F4 观众隐藏",
   "config.babyzombieaddons.option.f4CrowdHiding.desc": "处理 F4 Boss 房间的观众 NPC。",
   "config.babyzombieaddons.option.f4CrowdHiding.OFF": "关闭",
@@ -221,7 +202,6 @@
   "config.babyzombieaddons.option.requeueCancelMessage.desc": "取消自动重开时发送到队伍的消息。",
   "config.babyzombieaddons.option.requeueCancelKeywords": "取消关键词",
   "config.babyzombieaddons.option.requeueCancelKeywords.desc": "以 \"|\" 分隔的关键词，在队伍聊天中出现时取消自动重开。",
-
   "config.babyzombieaddons.option.hpDisplay": "Kuudra 血量显示",
   "config.babyzombieaddons.option.hpDisplay.desc": "在 HUD 或 Boss 条上显示 Kuudra 血量。",
   "config.babyzombieaddons.option.hpDisplay.OFF": "关闭",
@@ -232,7 +212,6 @@
   "config.babyzombieaddons.option.stunTimer": "眩晕计时器",
   "config.babyzombieaddons.option.stunTimer.desc": "眩晕、击倒和 P4 阶段倒计时显示。",
   "config.babyzombieaddons.group.waypoints": "路径点",
-
   "config.babyzombieaddons.option.supplyBeacons": "补给信标",
   "config.babyzombieaddons.option.supplyBeacons.desc": "在补给救援阶段为补给箱显示信标光束。",
   "config.babyzombieaddons.option.supplyBeaconColor": "补给信标颜色",
@@ -294,7 +273,6 @@
   "config.babyzombieaddons.option.perkShopBlacklist.desc": "防止误购黑名单中的 Perk 商店物品。",
   "config.babyzombieaddons.option.perkShopBlacklistItems": "黑名单物品",
   "config.babyzombieaddons.option.perkShopBlacklistItems.desc": "使用物品完整名字，用英文逗号分隔。",
-
   "kuudra.phase.p1": "第一阶段 - 收集物资",
   "kuudra.phase.p2": "第二阶段 - 建造弩炮",
   "kuudra.phase.p3": "第三阶段 - 眩晕 Kuudra",
@@ -310,10 +288,10 @@
   "config.babyzombieaddons.option.followerHelmetPrice.desc": "计算当天的 Kuudra Follower 头盔价格。",
   "config.babyzombieaddons.option.muteCrimsonArmor": "地狱套装满层静音",
   "config.babyzombieaddons.option.muteCrimsonArmor.desc": "当地狱套装（Crimson/Terror/Aurora/Fervor）层数叠满时自动静音活塞声音。",
-
+  "config.babyzombieaddons.option.nopeMagmafish": "Nope. that's just a Magmafish!",
+  "config.babyzombieaddons.option.nopeMagmafish.desc": "当 Elle 说出 \"Nope, that's just a Magmafish!\" 时显示 Title。",
   "config.babyzombieaddons.option.pigmanSwordTimer": "猪人剑冷却计时",
   "config.babyzombieaddons.option.pigmanSwordTimer.desc": "猪人剑触发后在屏幕上显示冷却计时器。",
-
   "config.babyzombieaddons.option.holyIceTimer": "Holy Ice 计时",
   "config.babyzombieaddons.option.holyIceTimer.desc": "在 Rift 内使用 Holy Ice 后在屏幕上显示计时器。",
   "config.babyzombieaddons.option.ragnarockAxeTimer": "Ragnarock Axe 计时",
@@ -329,29 +307,21 @@
   "config.babyzombieaddons.option.endStoneSwordTimer.TIMER_ONLY": "仅计时器",
   "config.babyzombieaddons.option.endStoneSwordTimer.PREVENT_REUSE": "仅防重复使用",
   "config.babyzombieaddons.option.endStoneSwordTimer.BOTH": "同时启用",
-
   "config.babyzombieaddons.option.noslayerquest": "没接任务提醒",
   "config.babyzombieaddons.option.noslayerquest.desc": "任务失败后如果没重新接就刷怪时提醒一下（需要武器有 Champion 附魔）。",
-
   "config.babyzombieaddons.option.reheatedGummyPolarBear": "小熊软糖计时器",
   "config.babyzombieaddons.option.reheatedGummyPolarBear.desc": "显示小熊软糖剩余时间，在最后五分钟、两分钟、一分钟和结束时会有一次提醒。",
   "config.babyzombieaddons.option.reheatedGummyPolarBear.OFF": "关闭",
   "config.babyzombieaddons.option.reheatedGummyPolarBear.SMOLDERING_TOMB_ONLY": "仅在烈焰人洞显示",
   "config.babyzombieaddons.option.reheatedGummyPolarBear.EVERYWHERE_EXCEPT_DUNGEON": "除了地牢都显示",
-
-
-
   "config.babyzombieaddons.option.boxLowHPBloodfiend": "标记血量低于 20% 的吸血鬼 Boss",
   "config.babyzombieaddons.option.boxLowHPBloodfiend.desc": "当出现这个（紫色）标记的时候，代表可以用 Steak Stake 斩杀 Boss 了。",
-
   "config.babyzombieaddons.option.showEffigies": "显示 Rift 城堡里没拆的血柱",
   "config.babyzombieaddons.option.showEffigies.desc": "根据计分板判断，不会显示已经拆掉的。",
-
   "config.babyzombieaddons.option.slayerBossInfo": "猎手 Boss 信息",
   "config.babyzombieaddons.option.slayerBossInfoMode.OFF": "关闭",
   "config.babyzombieaddons.option.slayerBossInfoMode.BASIC": "仅血量",
   "config.babyzombieaddons.option.slayerBossInfoMode.FULL": "完整信息",
-
   "config.babyzombieaddons.option.zombieSlayerInfo": "僵尸猎手信息",
   "config.babyzombieaddons.option.zombieSlayerInfo.desc": "在屏幕上显示 Revenant Horror Boss 的血量和状态。",
   "config.babyzombieaddons.option.spiderSlayerInfo": "蜘蛛猎手信息",
@@ -364,7 +334,6 @@
   "config.babyzombieaddons.option.blazeSlayerInfo.desc": "在屏幕上显示 Inferno Demonlord Boss 的血量、调谐和小弟状态。",
   "config.babyzombieaddons.option.vampireSlayerInfo": "吸血鬼猎手信息",
   "config.babyzombieaddons.option.vampireSlayerInfo.desc": "在屏幕上显示 Riftstalker Bloodfiend Boss 的血量和状态。",
-
   "config.babyzombieaddons.option.boxSlayerBoss": "猎手 Boss 边框",
   "config.babyzombieaddons.option.boxSlayerBoss.desc": "为猎手 Boss 绘制包围框。",
   "config.babyzombieaddons.option.boxSlayerBoss.OFF": "关闭",
@@ -383,14 +352,6 @@
   "config.babyzombieaddons.group.itemSkillTimers": "物品技能计时器",
   "config.babyzombieaddons.group.slayerBossInfo": "Boss 信息",
   "config.babyzombieaddons.group.slayerBossBox": "Boss 边框",
-
-
-
-
-
-
-
-
   "config.babyzombieaddons.group.crystalHollows": "水晶矿洞",
   "config.babyzombieaddons.group.glaciteTunnels": "冰川隧道",
   "config.babyzombieaddons.group.witherCloak": "Wither Cloak",
@@ -404,7 +365,6 @@
   "config.babyzombieaddons.option.gravityStormTimer.desc": "追踪 30 秒重力风暴冷却。",
   "config.babyzombieaddons.option.hideChargedCreepers": "隐藏隐身闪电苦力怕",
   "config.babyzombieaddons.option.hideChargedCreepers.desc": "当 Wither Cloak 激活时，隐藏 2 格范围内的隐身闪电苦力怕。",
-
   "config.babyzombieaddons.option.nucleusAutoWarp": "水晶核自动传送",
   "config.babyzombieaddons.option.nucleusAutoWarp.desc": "双击水晶直接传送到晶核。",
   "config.babyzombieaddons.option.miningAbilityAlerts": "挖矿能力提醒",
@@ -423,17 +383,13 @@
   "config.babyzombieaddons.option.scathaReleaseKey.desc": "挖矿时挖出虫后释放所有当前按下的按键。",
   "config.babyzombieaddons.option.armadilloEnergy": "犰狳能量",
   "config.babyzombieaddons.option.armadilloEnergy.desc": "显示当前/最大能量及颜色渐变。",
-
   "config.babyzombieaddons.option.drillSwingSuppression": "钻头挥动抑制",
   "config.babyzombieaddons.option.drillSwingSuppression.desc": "挖矿时防止手臂挥动动画。",
   "config.babyzombieaddons.option.powderMiningSounds": "粉末挖矿音效",
   "config.babyzombieaddons.option.powderMiningSounds.desc": "移除经验球音效并替换箱子音效。",
-
   "config.babyzombieaddons.option.jungleTempleThinWall": "丛林神庙宝藏房薄墙定位",
   "config.babyzombieaddons.option.jungleTempleThinWall.desc": "与 Kalhuiki 门卫对话时，自动定位宝藏房墙壁最薄点并添加坐标点。",
   "babyzombieaddons.jungleTemple.thinWall": "&6丛林神庙宝藏房",
-
-
   "config.babyzombieaddons.option.greatGlaciteWaypoints": "大块冰川路径点",
   "config.babyzombieaddons.option.greatGlaciteWaypoints.desc": "在冰川区域标记大块冰川位置。",
   "config.babyzombieaddons.option.creeperVisibility": "苦力怕可见性",
@@ -449,9 +405,6 @@
   "config.babyzombieaddons.option.mineshaftWaypoints.desc": "显示矿井中的尸体位置。",
   "config.babyzombieaddons.option.suspiciousScrapCounter": "可疑碎片计数",
   "config.babyzombieaddons.option.suspiciousScrapCounter.desc": "在 HUD 显示可疑碎片数量。",
-
-
-
   "config.babyzombieaddons.option.pestDisplay": "害虫显示",
   "config.babyzombieaddons.option.pestDisplay.desc": "在花园害虫上显示信标光束。",
   "config.babyzombieaddons.option.xpOrbSoundRemoval": "经验球音效音量",
@@ -461,18 +414,14 @@
   "config.babyzombieaddons.option.farmingToolSwingSuppression": "农具挥动抑制",
   "config.babyzombieaddons.option.farmingToolSwingSuppression.desc": "在花园手持农具时取消手臂挥动动画。",
   "config.babyzombieaddons.group.trevor": "Trevor 猎手",
-
   "config.babyzombieaddons.option.trevorAutoAccept": "自动接取猎手任务",
   "config.babyzombieaddons.option.trevorAutoAccept.desc": "猎手Trevor打电话来的时候自动帮你点 [YES] 接受任务。",
   "config.babyzombieaddons.option.trevorAutoCall": "自动呼叫 Trevor",
   "config.babyzombieaddons.option.trevorAutoCall.desc": "狩猎任务完成后自动 /call trevor_the_trapper，确保距离任务开始至少 31 秒。",
-
   "babyzombieaddons.trevor.auto_call": "§f已自动呼叫 Trevor",
   "babyzombieaddons.trevor.auto_call_disable_btn": "§7[§c本次关闭§7]",
   "babyzombieaddons.trevor.auto_call_disable_hover": "§7点击后切换世界前不再自动呼叫 Trevor",
   "babyzombieaddons.trevor.auto_call_disabled": "§e已暂时关闭 Trevor 自动呼叫，切换世界后恢复",
-
-
   "config.babyzombieaddons.option.popupPartyInvite": "组队邀请",
   "config.babyzombieaddons.option.popupPartyInvite.desc": "收到组队邀请时弹出提示。",
   "config.babyzombieaddons.option.popupGuildPartyInvite": "公会组队邀请",
@@ -489,7 +438,6 @@
   "config.babyzombieaddons.option.popupBaitLow.desc": "手持鱼竿右键时检测第 9 格鱼饵数量，少于设定值时弹出提醒。设为 0 关闭。",
   "config.babyzombieaddons.option.popupSound": "提示音效",
   "config.babyzombieaddons.option.popupSound.desc": "弹出通知时播放的音效。",
-
   "config.babyzombieaddons.option.greatSpook": "Great Spook 助手",
   "config.babyzombieaddons.option.greatSpook.desc": "自动解答 QUICK MATHS、回复演讲恶魔并点击 HERE 按钮。",
   "config.babyzombieaddons.option.greatSpookDelay": "加个半秒到一秒延迟",
@@ -519,11 +467,9 @@
   "config.babyzombieaddons.option.solverEarlyCherryBonus.desc": "游戏前期发现 Cherry 时给予的额外分值加成。",
   "config.babyzombieaddons.option.solverLateGameDigs": "收尾挖掘数",
   "config.babyzombieaddons.option.solverLateGameDigs.desc": "最后 N 铲视为收尾阶段，优先保守收割。",
-
   "config.babyzombieaddons.group.anniversary": "周年庆",
   "config.babyzombieaddons.option.raffleTaskTracker": "抽奖任务追踪",
   "config.babyzombieaddons.option.raffleTaskTracker.desc": "在 HUD 上显示未完成的抽奖任务。解析抽奖任务 GUI 并监听完成消息。",
-
   "config.babyzombieaddons.option.bzGetFromSacks": "BZ 从袋子提取物品",
   "config.babyzombieaddons.option.bzGetFromSacks.desc": "在 Bazaar 创建出售订单时，若物品显示\"None in inventory!\"，自动从袋子提取。",
   "config.babyzombieaddons.option.bzGetFromSacks.OFF": "关闭",
@@ -539,18 +485,14 @@
   "config.babyzombieaddons.option.chatChannelSwitcher.desc": "在聊天输入框上方显示 GC/OC/PC/CC/AC 可点击按钮，快速切换 Hypixel 聊天频道。",
   "config.babyzombieaddons.option.raredropManage": "管理稀有掉落",
   "config.babyzombieaddons.option.raredropManage.desc": "打开稀有掉落黑名单和分享列表管理器。",
-
   "config.babyzombieaddons.group.configBackend": "配置界面后端",
   "config.babyzombieaddons.option.configBackend": "配置界面后端",
   "config.babyzombieaddons.option.configBackend.desc": "选择 YACL 或 MoulConfig 渲染设置界面。",
-
   "config.babyzombieaddons.option.wideMoulConfig": "MoulConfig 宽屏模式",
   "config.babyzombieaddons.option.wideMoulConfig.desc": "将 MoulConfig 设置页面的宽度扩展到 1.5 倍，适合高分辨率屏幕。仅在 MoulConfig 后端下生效。会影响其他使用 Dandelion→MoulConfig 的模组的设置页面（如 SkyBlocker）。",
-
   "config.babyzombieaddons.prompt.open": "打开",
   "config.babyzombieaddons.option.hudEdit": "编辑 HUD 位置",
   "config.babyzombieaddons.option.hudEdit.desc": "进入 HUD 编辑模式以拖拽和缩放 HUD 元素。",
-
   "playcmd.cat.Main": "主分类",
   "playcmd.cat.BedWars": "起床战争",
   "playcmd.cat.SkyWars": "空岛战争",
@@ -567,7 +509,6 @@
   "playcmd.cat.Smash_Heroes": "星碎英雄",
   "playcmd.cat.Classic": "经典游戏",
   "playcmd.title": "游戏菜单",
-
   "babyzombieaddons.raredrop.copied": "§6§l§a已复制到剪贴板",
   "rareropscreen.title": "稀有掉落管理",
   "rareropscreen.input.hint": "物品名...",
@@ -578,11 +519,10 @@
   "rareropscreen.done": "完成",
   "config.babyzombieaddons.option.debugMode": "HUD 布局调试",
   "config.babyzombieaddons.option.debugMode.desc": "启用后 HUD 编辑界面会显示全部元素（包括未开启的），方便调整布局。",
-"config.babyzombieaddons.option.hypixelModApiDebugLog": "Hypixel Mod API 调试输出",
-"config.babyzombieaddons.option.hypixelModApiDebugLog.desc": "接收到 Mod API 数据时在聊天栏显示原始内容。",
+  "config.babyzombieaddons.option.hypixelModApiDebugLog": "Hypixel Mod API 调试输出",
+  "config.babyzombieaddons.option.hypixelModApiDebugLog.desc": "接收到 Mod API 数据时在聊天栏显示原始内容。",
   "config.babyzombieaddons.option.maxDebugEntities": "调试实体最大数量",
   "config.babyzombieaddons.option.maxDebugEntities.desc": "/bza debug getentity 指令最多显示的实体数量。",
-
   "babyzombieaddons.popup.title.party_invite": "组队邀请",
   "babyzombieaddons.popup.title.guild_party_invite": "公会组队邀请",
   "babyzombieaddons.popup.title.friend_request": "好友请求",
@@ -617,33 +557,27 @@
   "babyzombieaddons.sound.added_to_ignore": "§c已添加到忽略列表: §f%s",
   "babyzombieaddons.sound.removed_from_ignore": "§e已从忽略列表移除: §f%s",
   "babyzombieaddons.sound.clear_ignore": "§a已清除所有忽略的声音",
-
   "babyzombieaddons.cake.all_eaten": "§a已吃完所有的蛋糕！",
   "babyzombieaddons.ch.nucleus": "§b准备传送到晶核，再点一下水晶进行传送",
   "babyzombieaddons.glacite.exit": "§6出口",
   "babyzombieaddons.glacite.portal_title": "§a§l传送门",
   "babyzombieaddons.glacite.portal_sub": "§b冰川矿井",
   "babyzombieaddons.glacite.portal_sub_auto": "§3在进洞后将会尝试/p warp",
-
   "slayer.noslayerquest.warning": "§c您是不是没接slayer任务",
   "slayer.gummybear.5min": "§b小熊软糖持续时间还剩§c五分钟",
   "slayer.gummybear.2min": "§b小熊软糖持续时间还剩最后§c两分钟",
   "slayer.gummybear.1min": "§b小熊软糖持续时间还剩最后§c60秒",
   "slayer.gummybear.expired": "§c小熊软糖效果结束",
-
   "babyzombieaddons.fruitdigging.treasure_nearby": "§e附近有 %s",
   "babyzombieaddons.fruitdigging.no_fruit": "§e附近没有水果",
   "babyzombieaddons.fruitdigging.bombs_nearby": "§c附近有%s个炸弹",
-
   "babyzombieaddons.sendcoords.no_target": "§c视线内没有目标方块",
-
   "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §a发现新版本 §e%s §a(当前: §7%s§a)",
   "babyzombieaddons.update.download.github": "§b§n[GitHub 下载]",
   "babyzombieaddons.update.download.gitee": "§d§n[Gitee 下载]",
   "babyzombieaddons.update.open_url": "§7点击打开 §f%s",
   "babyzombieaddons.reconnect.countdown": "将在 %d 秒后自动重连...",
   "babyzombieaddons.reconnect.attempt": "（第 %d 次）",
-
   "babyzombieaddons.waypoint.added": "§a已在 §b%s %s %s §a处添加标记点 §r%s",
   "babyzombieaddons.waypoint.deleted": "§a删除了§b%s§a个名为 §b%s §a的坐标点",
   "babyzombieaddons.waypoint.not_found": "§e没有找到名为 §b%s §e的坐标点",
@@ -654,14 +588,11 @@
   "babyzombieaddons.debug.playsound.played_seeked": "§a播放 §f%s §7vol=%s pit=%s seek=%ss dur=%ss",
   "babyzombieaddons.debug.stopsound.all": "§a已停止所有声音",
   "babyzombieaddons.debug.stopsound.one": "§a已停止: §f%s",
-
   "babyzombieaddons.debug.entities.header": "§6§l=== 附近实体（找到 %s 个，范围 %.0f）===",
   "babyzombieaddons.debug.entities.none": "§e[Debug] 在 %s 格内未找到实体%s",
   "babyzombieaddons.debug.entities.none_filter": "（筛选条件：\"%s\"）",
   "babyzombieaddons.debug.entities.truncated": "§7... 还有 %s 个（已截断）",
-
   "babyzombieaddons.debug.entity.type": "§8[%s / %s]",
-
   "babyzombieaddons.debug.entity.pos": "  §7坐标: §a%s %s %s",
   "babyzombieaddons.debug.entity.exact": "  §7精确: §a%s %s %s",
   "babyzombieaddons.debug.entity.uuid": "  §7UUID: %s",
@@ -682,12 +613,9 @@
   "babyzombieaddons.debug.entity.armor": "  §7护甲: §e%s",
   "babyzombieaddons.debug.entity.absorption": " §e+%s金血",
   "babyzombieaddons.debug.entity.scale": "  §7缩放: §e%s",
-
   "babyzombieaddons.help": "§6§lBabyzombieAddons 指令帮助\n§6/bza §7- 打开设置界面\n§6/bza play §7- 打开游戏模式菜单\n§6/bza sc [频道] [附言] §7- 发送自己的坐标\n§6/bza la [频道] [附言] §7- 发送指针指向的坐标\n§6/bza yaw <yaw> <pitch> §7- 设置视角朝向\n§6/bza l §7- 前往 Limbo\n§6/bza wp §7- 路径点管理，输入 /bza wp 查看用法",
   "babyzombieaddons.waypoint.usage": "§6/bza wp add <x> <y> <z> <名称> [秒数]  §7- 在指定坐标添加\n§6/bza wp add here <名称> [秒数]      §7- 在当前位置添加\n§6/bza wp add looking <名称> [秒数]   §7- 在指针位置添加\n§6/bza wp delete <名称>                §7- 删除坐标点\n§7持续时间填 -1 为永久, 0 为切换世界时清除, 大于 0 为到期清除",
-
   "config.babyzombieaddons.yacl_missing": "§eYACL 未安装，已回退到内置配置界面",
-
   "babyzombieaddons.debug.pet.summoned_header": "§6§l=== 召唤宠物 === §7(追踪 %s 只宠物)",
   "babyzombieaddons.debug.pet.none": "§7(无)",
   "babyzombieaddons.debug.pet.unknown": "未知",
@@ -717,7 +645,6 @@
   "babyzombieaddons.debug.pet.last_xp_header": "§6§l=== 上次技能经验 ===",
   "babyzombieaddons.debug.pet.last_xp_summoned": "§b%s +%.2f §7→ 召唤宠物 §a+%.2f XP",
   "babyzombieaddons.debug.pet.last_xp_shared": "§7共享[%d] §b%s §7→ §a+%.2f XP",
-
   "babyzombieaddons.debug.party.header": "§6§l=== 组队信息 ===",
   "babyzombieaddons.debug.party.last_fetch": "§b上次获取时间：§f%s §7(%s前)",
   "babyzombieaddons.debug.party.never_fetched": "§e尚未获取过组队信息",
@@ -728,7 +655,6 @@
   "babyzombieaddons.debug.party.raw_data": "§7原始数据: §f%s",
   "babyzombieaddons.debug.party.yes": "是",
   "babyzombieaddons.debug.party.no": "否",
-
   "babyzombieaddons.debug.rank.header": "§6===== 玩家 Rank 信息 =====",
   "babyzombieaddons.debug.rank.no_data": "§7未获取到 rank 信息（尚未收到响应）",
   "babyzombieaddons.debug.rank.player_rank": "§ePlayerRank: §f%s",
@@ -736,7 +662,6 @@
   "babyzombieaddons.debug.rank.monthly_package_rank": "§eMonthlyPackageRank: §f%s",
   "babyzombieaddons.debug.rank.prefix": "§ePrefix: §f%s",
   "babyzombieaddons.debug.rank.none": "§7(无)",
-
   "babyzombieaddons.find.starting": "§a开始 find → §f%s",
   "babyzombieaddons.find.starting_new": "§a开始 findnew → §f%s §7(寻找新服务器)",
   "babyzombieaddons.find.already_running": "§c已有 find 操作正在进行中。",

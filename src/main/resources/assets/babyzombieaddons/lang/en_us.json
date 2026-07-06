@@ -1,9 +1,7 @@
 {
   "modmenu.gitee": "Gitee Page",
-
   "resourcepack.babyzombieaddons.chroma_modernui.name": "§bChroma × Modern UI Compat",
   "resourcepack.babyzombieaddons.chroma_modernui.description": "Makes Aaron Mod's animated chroma fonts work under Modern UI's text engine",
-  
   "key.category.babyzombieaddons.main": "BabyzombieAddons",
   "key.babyzombieaddons.cancel_key_release": "Cancel Key Release",
   "key.babyzombieaddons.second_person": "Quick Look Behind",
@@ -12,27 +10,21 @@
   "key.babyzombieaddons.popup_no": "Popup - Ignore",
   "key.babyzombieaddons.copy_item_info": "Copy Item Info",
   "key.babyzombieaddons.toggle_hand_render": "Swap Hands",
-
   "babyzombieaddons.contact.lore.call": "Left-click to call",
   "babyzombieaddons.contact.lore.auto_answer": "Right-click to toggle auto-answer",
   "babyzombieaddons.contact.lore.favorite": "Shift+Left-click to toggle favorite",
   "babyzombieaddons.contact.lore.drag": "Drag to reorder",
   "babyzombieaddons.panel.color": "Color:",
   "babyzombieaddons.panel.search": "Search:",
-
   "babyzombieaddons.acceptparty.scheduled_any": "§aWill auto-accept the next party invite within 2 minutes",
   "babyzombieaddons.acceptparty.scheduled_player": "§aWill auto-accept the next party invite from §6%s §awithin 2 minutes",
   "babyzombieaddons.party.accepted": "Auto-accepted party invite",
   "babyzombieaddons.party.executed": "Executing command: %s",
   "babyzombieaddons.party.dm_invited": "Invited %s to party",
   "babyzombieaddons.dt.cancelled": "§cAuto requeue cancelled.",
-
   "babyzombieaddons.dailyRuns.info": "§bDaily runs: %s/5",
-
   "config.babyzombieaddons.title": "BabyzombieAddons Config",
-
   "hud.babyzombieaddons.autois": "§aAutoIS Enabled",
-
   "config.babyzombieaddons.category.general": "General",
   "config.babyzombieaddons.category.skyblock": "skb",
   "config.babyzombieaddons.category.dungeon": "Dungeon",
@@ -75,10 +67,8 @@
   "config.babyzombieaddons.option.autotipEnabled.desc": "Automatically sends /tip all every 20.5 minutes.\nDoes nothing for MVP++ — MVP++ has built-in autotip.",
   "config.babyzombieaddons.option.autotipHideMessages": "Hide Tip Messages",
   "config.babyzombieaddons.option.autotipHideMessages.desc": "Hide the result messages from /tip all.",
-
   "config.babyzombieaddons.group.chat": "Chat Bar",
   "config.babyzombieaddons.category.misc": "Misc",
-
   "config.babyzombieaddons.group.pet": "Pet",
   "config.babyzombieaddons.option.petDisplay": "Pet Display",
   "config.babyzombieaddons.option.petDisplay.desc": "Show current pet info on HUD.",
@@ -90,13 +80,11 @@
   "config.babyzombieaddons.option.petItemIconDisplay.desc": "Show a small icon next to the pet's held item name.",
   "config.babyzombieaddons.option.petSharedDisplay": "Exp Sharing Pets",
   "config.babyzombieaddons.option.petSharedDisplay.desc": "Show exp sharing pets below the main pet display.",
-
   "config.babyzombieaddons.group.autois": "AutoIS Settings",
   "config.babyzombieaddons.option.updateChecker": "Update Checker",
   "config.babyzombieaddons.option.updateChecker.desc": "Check for new versions when joining a world.",
   "config.babyzombieaddons.option.replaceReportWithServerList": "Replace Report with Server List",
   "config.babyzombieaddons.option.replaceReportWithServerList.desc": "Replaces the \"Report Player\" button with \"Server List\" on the pause menu.",
-
   "config.babyzombieaddons.option.autois": "Auto Return to Island",
   "config.babyzombieaddons.option.autois.desc": "When joining SkyBlock, automatically warp to your island or garden.",
   "config.babyzombieaddons.option.autoisDelay": "AutoIS Delay (seconds)",
@@ -109,7 +97,6 @@
   "config.babyzombieaddons.option.hideEntities.desc": "I'm here to AFK, why would I need to see these entities. Only effective when AutoIS is on.",
   "config.babyzombieaddons.option.backOnServerRestart": "Back on Server Restart",
   "config.babyzombieaddons.option.backOnServerRestart.desc": "After being kicked to the Hub by a server restart, automatically warp back to your island. Only takes effect when AutoIS is OFF — if AutoIS is ON, its settings will override this.",
-
   "config.babyzombieaddons.option.autoBackToSkyblock": "After Kick Recovery",
   "config.babyzombieaddons.option.autoBackToSkyblock.desc": "What to do after being kicked.",
   "config.babyzombieaddons.option.autoBackToSkyblock.OFF": "Off",
@@ -128,21 +115,17 @@
   "config.babyzombieaddons.option.autoReconnectDelay.desc": "How many seconds to wait before reconnecting.",
   "config.babyzombieaddons.option.autoReconnectMaxRetries": "Max Retries",
   "config.babyzombieaddons.option.autoReconnectMaxRetries.desc": "Maximum retry attempts after a failed reconnect. Set to 0 for unlimited. Resets on successful join.",
-
   "config.babyzombieaddons.group.autoJoinServer": "Auto Join Server on Launch",
   "config.babyzombieaddons.option.autoJoinServer": "Enable",
   "config.babyzombieaddons.option.autoJoinServer.desc": "Automatically connect to the server below when the game launches.",
   "config.babyzombieaddons.option.autoJoinServerIP": "Server Address",
   "config.babyzombieaddons.option.autoJoinServerIP.desc": "The server IP or hostname to auto-connect to on launch, e.g. mc.hypixel.net.",
-
   "config.babyzombieaddons.option.useTpsAdjustedTime": "TPS-Adjusted Timers",
   "config.babyzombieaddons.option.useTpsAdjustedTime.desc": "Use server tick rate to adjust timer speeds. On laggy servers, cooldowns will slow down to match actual game time instead of using real wall-clock time.",
   "config.babyzombieaddons.option.showCrosshairInThirdPerson": "Show Crosshair in Third Person",
   "config.babyzombieaddons.option.showCrosshairInThirdPerson.desc": "Show the crosshair in the center of the screen even when in third-person view.",
-
   "config.babyzombieaddons.option.chatInContainer": "Chat in Containers",
   "config.babyzombieaddons.option.chatInContainer.desc": "When opening chests/inventory, press the chat key (default T) to open the real chat screen on top of the container. ESC closes chat but keeps the container. ESC again closes the container.",
-
   "config.babyzombieaddons.group.playerScale": "Player Render Scale",
   "config.babyzombieaddons.option.playerScaleX": "X Scale",
   "config.babyzombieaddons.option.playerScaleX.desc": "Only affects how you see your own model. Scale factor on the X (width) axis.",
@@ -150,7 +133,6 @@
   "config.babyzombieaddons.option.playerScaleY.desc": "Only affects how you see your own model. Scale factor on the Y (height) axis.",
   "config.babyzombieaddons.option.playerScaleZ": "Z Scale",
   "config.babyzombieaddons.option.playerScaleZ.desc": "Only affects how you see your own model. Scale factor on the Z (depth) axis.",
-
   "config.babyzombieaddons.group.handRender": "Hand Render",
   "config.babyzombieaddons.option.disableHandRender": "Disable Hand Render",
   "config.babyzombieaddons.option.disableHandRender.desc": "Completely disable first-person arm and item rendering.",
@@ -170,7 +152,6 @@
   "config.babyzombieaddons.option.renderPhase.desc": "Controls when boxes, beams, and floating text are rendered.",
   "config.babyzombieaddons.option.renderPhase.AFTER_ENTITIES": "After Entities (Default)",
   "config.babyzombieaddons.option.renderPhase.END_MAIN": "End of Main Render",
-
   "config.babyzombieaddons.option.f4CrowdHiding": "F4 Crowd Hiding",
   "config.babyzombieaddons.option.f4CrowdHiding.desc": "Handle spectator crowd in Floor 4 boss room.",
   "config.babyzombieaddons.option.f4CrowdHiding.OFF": "Off",
@@ -221,7 +202,6 @@
   "config.babyzombieaddons.option.requeueCancelMessage.desc": "Party message sent when auto requeue is cancelled.",
   "config.babyzombieaddons.option.requeueCancelKeywords": "Cancel Keywords",
   "config.babyzombieaddons.option.requeueCancelKeywords.desc": "Pipe-separated keywords that cancel auto requeue from party chat.",
-
   "config.babyzombieaddons.option.hpDisplay": "Kuudra HP Display",
   "config.babyzombieaddons.option.hpDisplay.desc": "Show Kuudra HP on HUD or boss bar.",
   "config.babyzombieaddons.option.hpDisplay.OFF": "Off",
@@ -232,7 +212,6 @@
   "config.babyzombieaddons.option.stunTimer": "Stun Timer",
   "config.babyzombieaddons.option.stunTimer.desc": "Stun duration, knockdown, and P4 countdown display.",
   "config.babyzombieaddons.group.waypoints": "Waypoints",
-
   "config.babyzombieaddons.option.supplyBeacons": "Supply Beacons",
   "config.babyzombieaddons.option.supplyBeacons.desc": "Beacon beams on supply crates during Rescue Supplies phase.",
   "config.babyzombieaddons.option.supplyBeaconColor": "Supply Beacon Color",
@@ -294,7 +273,6 @@
   "config.babyzombieaddons.option.perkShopBlacklist.desc": "Prevent accidental purchase of blacklisted Perk Shop items.",
   "config.babyzombieaddons.option.perkShopBlacklistItems": "Blacklisted Items",
   "config.babyzombieaddons.option.perkShopBlacklistItems.desc": "Full item names, separated by commas.",
-
   "kuudra.phase.p1": "PHASE 1 - SUPPLIES",
   "kuudra.phase.p2": "PHASE 2 - BUILDING THE BALLISTA",
   "kuudra.phase.p3": "PHASE 3 - STUNNING KUUDRA",
@@ -310,10 +288,10 @@
   "config.babyzombieaddons.option.followerHelmetPrice.desc": "Calculate today's Kuudra Follower Helmet price.",
   "config.babyzombieaddons.option.muteCrimsonArmor": "Mute Crimson Armor Piston",
   "config.babyzombieaddons.option.muteCrimsonArmor.desc": "Cancel piston sound when Crimson Isle armor stacks are full (10 stacks).",
-
+  "config.babyzombieaddons.option.nopeMagmafish": "Nope. that's just a Magmafish!",
+  "config.babyzombieaddons.option.nopeMagmafish.desc": "Show a title when Elle says \"Nope, that's just a Magmafish!\".",
   "config.babyzombieaddons.option.pigmanSwordTimer": "Pigman Sword CD Timer",
   "config.babyzombieaddons.option.pigmanSwordTimer.desc": "Show cooldown timer on HUD after Pigman Sword triggers.",
-
   "config.babyzombieaddons.option.holyIceTimer": "Holy Ice Timer",
   "config.babyzombieaddons.option.holyIceTimer.desc": "Show Holy Ice usage timer on HUD in the Rift.",
   "config.babyzombieaddons.option.ragnarockAxeTimer": "Ragnarock Axe Timer",
@@ -329,29 +307,21 @@
   "config.babyzombieaddons.option.endStoneSwordTimer.TIMER_ONLY": "Timer Only",
   "config.babyzombieaddons.option.endStoneSwordTimer.PREVENT_REUSE": "Prevent Reuse Only",
   "config.babyzombieaddons.option.endStoneSwordTimer.BOTH": "Both",
-
   "config.babyzombieaddons.option.noslayerquest": "No Quest Reminder",
   "config.babyzombieaddons.option.noslayerquest.desc": "Remind you after failing a quest if you keep killing mobs without taking a new one (requires Champion enchant on weapon).",
-
   "config.babyzombieaddons.option.reheatedGummyPolarBear": "Gummy Bear Timer",
   "config.babyzombieaddons.option.reheatedGummyPolarBear.desc": "Show remaining time of Re-heated Gummy Polar Bear. Alerts at 5min, 2min, 1min left and on expiration.",
   "config.babyzombieaddons.option.reheatedGummyPolarBear.OFF": "Off",
   "config.babyzombieaddons.option.reheatedGummyPolarBear.SMOLDERING_TOMB_ONLY": "Smoldering Tomb Only",
   "config.babyzombieaddons.option.reheatedGummyPolarBear.EVERYWHERE_EXCEPT_DUNGEON": "Everywhere Except Dungeon",
-
-
-
   "config.babyzombieaddons.option.boxLowHPBloodfiend": "Low HP Bloodfiend Marker",
   "config.babyzombieaddons.option.boxLowHPBloodfiend.desc": "Mark Bloodfiend bosses below 20% HP with a colored indicator. When this marker appears, you can use Steak Stake to execute.",
-
   "config.babyzombieaddons.option.showEffigies": "Show Effigies",
   "config.babyzombieaddons.option.showEffigies.desc": "Show remaining blood pillars in the Rift castle based on scoreboard.",
-
   "config.babyzombieaddons.option.slayerBossInfo": "Slayer Boss Info",
   "config.babyzombieaddons.option.slayerBossInfoMode.OFF": "Off",
   "config.babyzombieaddons.option.slayerBossInfoMode.BASIC": "Basic HP",
   "config.babyzombieaddons.option.slayerBossInfoMode.FULL": "Full Info",
-
   "config.babyzombieaddons.option.zombieSlayerInfo": "Zombie Slayer Info",
   "config.babyzombieaddons.option.zombieSlayerInfo.desc": "Show Revenant Horror boss HP and status on HUD.",
   "config.babyzombieaddons.option.spiderSlayerInfo": "Spider Slayer Info",
@@ -364,7 +334,6 @@
   "config.babyzombieaddons.option.blazeSlayerInfo.desc": "Show Inferno Demonlord boss HP, attunement and minion status on HUD.",
   "config.babyzombieaddons.option.vampireSlayerInfo": "Vampire Slayer Info",
   "config.babyzombieaddons.option.vampireSlayerInfo.desc": "Show Riftstalker Bloodfiend boss HP and status on HUD.",
-
   "config.babyzombieaddons.option.boxSlayerBoss": "Slayer Boss Box",
   "config.babyzombieaddons.option.boxSlayerBoss.desc": "Draw a bounding box around the slayer boss.",
   "config.babyzombieaddons.option.boxSlayerBoss.OFF": "Off",
@@ -383,15 +352,6 @@
   "config.babyzombieaddons.group.itemSkillTimers": "Item Skill Timers",
   "config.babyzombieaddons.group.slayerBossInfo": "Boss Info",
   "config.babyzombieaddons.group.slayerBossBox": "Boss Box",
-
-
-
-
-
-
-
-
-
   "config.babyzombieaddons.group.crystalHollows": "Crystal Hollows",
   "config.babyzombieaddons.group.glaciteTunnels": "Glacite Tunnels",
   "config.babyzombieaddons.group.witherCloak": "Wither Cloak",
@@ -405,7 +365,6 @@
   "config.babyzombieaddons.option.gravityStormTimer.desc": "Track 30-second Gravity Storm cooldown.",
   "config.babyzombieaddons.option.hideChargedCreepers": "Hide Invisible Charged Creepers",
   "config.babyzombieaddons.option.hideChargedCreepers.desc": "Hide invisible charged creepers within 2 blocks when Wither Cloak is active.",
-
   "config.babyzombieaddons.option.nucleusAutoWarp": "Nucleus Auto Warp",
   "config.babyzombieaddons.option.nucleusAutoWarp.desc": "Double-click crystal to /warp nucleus.",
   "config.babyzombieaddons.option.miningAbilityAlerts": "Mining Ability Alerts",
@@ -424,17 +383,13 @@
   "config.babyzombieaddons.option.scathaReleaseKey.desc": "Release all currently pressed keys when a worm spawns while mining.",
   "config.babyzombieaddons.option.armadilloEnergy": "Armadillo Energy",
   "config.babyzombieaddons.option.armadilloEnergy.desc": "Show current/max energy with color transition.",
-
   "config.babyzombieaddons.option.drillSwingSuppression": "Drill Swing Suppression",
   "config.babyzombieaddons.option.drillSwingSuppression.desc": "Prevent arm swinging animation while mining.",
   "config.babyzombieaddons.option.powderMiningSounds": "Powder Mining Sounds",
   "config.babyzombieaddons.option.powderMiningSounds.desc": "Remove XP orb sounds and replace chest sounds.",
-
   "config.babyzombieaddons.option.jungleTempleThinWall": "Jungle Temple Thin Wall",
   "config.babyzombieaddons.option.jungleTempleThinWall.desc": "When talking to a Kalhuiki Door Guardian, find the thin wall to the treasure room and mark it as a waypoint.",
   "babyzombieaddons.jungleTemple.thinWall": "&6Jungle Temple Treasure Room",
-
-
   "config.babyzombieaddons.option.greatGlaciteWaypoints": "Great Glacite Waypoints",
   "config.babyzombieaddons.option.greatGlaciteWaypoints.desc": "Mark Great Glacite locations in the Glacite area.",
   "config.babyzombieaddons.option.creeperVisibility": "Creeper Visibility",
@@ -450,8 +405,6 @@
   "config.babyzombieaddons.option.mineshaftWaypoints.desc": "Show corpse locations in mineshafts.",
   "config.babyzombieaddons.option.suspiciousScrapCounter": "Suspicious Scrap Counter",
   "config.babyzombieaddons.option.suspiciousScrapCounter.desc": "Show suspicious scrap count on HUD.",
-
-
   "config.babyzombieaddons.option.pestDisplay": "Pest Display",
   "config.babyzombieaddons.option.pestDisplay.desc": "Show beacon beams on garden pests.",
   "config.babyzombieaddons.option.xpOrbSoundRemoval": "XP Orb Sound Volume",
@@ -461,18 +414,14 @@
   "config.babyzombieaddons.option.farmingToolSwingSuppression": "Farming Tool Swing Suppression",
   "config.babyzombieaddons.option.farmingToolSwingSuppression.desc": "Prevent arm swinging animation while holding a farming tool in the Garden.",
   "config.babyzombieaddons.group.trevor": "Trevor",
-
   "config.babyzombieaddons.option.trevorAutoAccept": "Trevor Auto Accept",
   "config.babyzombieaddons.option.trevorAutoAccept.desc": "Automatically accept Trevor the Trapper's hunting task by clicking [YES] for you.",
   "config.babyzombieaddons.option.trevorAutoCall": "Trevor Auto Call",
   "config.babyzombieaddons.option.trevorAutoCall.desc": "Automatically /call trevor_the_trapper 31 seconds after the hunting task starts, once the previous animal is found.",
-
   "babyzombieaddons.trevor.auto_call": "Auto-called Trevor",
   "babyzombieaddons.trevor.auto_call_disable_btn": "§7[§cDisable§7]",
   "babyzombieaddons.trevor.auto_call_disable_hover": "§7Click to disable auto-call until world change",
   "babyzombieaddons.trevor.auto_call_disabled": "§eTrevor auto-call disabled until world change",
-
-
   "config.babyzombieaddons.option.popupPartyInvite": "Party Invite",
   "config.babyzombieaddons.option.popupPartyInvite.desc": "Show a popup when someone invites you to a party.",
   "config.babyzombieaddons.option.popupGuildPartyInvite": "Guild Party Invite",
@@ -489,7 +438,6 @@
   "config.babyzombieaddons.option.popupBaitLow.desc": "When right-clicking a fishing rod, checks slot 9 bait quantity. Shows popup if below threshold. 0 = off.",
   "config.babyzombieaddons.option.popupSound": "Notification Sound",
   "config.babyzombieaddons.option.popupSound.desc": "Sound played when a popup notification appears.",
-
   "config.babyzombieaddons.option.greatSpook": "Great Spook Helper",
   "config.babyzombieaddons.option.greatSpook.desc": "Auto-solve QUICK MATHS, respond to Public Speaking Demon, and click HERE buttons.",
   "config.babyzombieaddons.option.greatSpookDelay": "Add 0.5-1s Delay",
@@ -519,11 +467,9 @@
   "config.babyzombieaddons.option.solverEarlyCherryBonus.desc": "Extra score bonus for finding Cherry in the early game.",
   "config.babyzombieaddons.option.solverLateGameDigs": "Late Game Digs",
   "config.babyzombieaddons.option.solverLateGameDigs.desc": "Last N digs treated as late game phase (prioritize conservative harvesting).",
-
   "config.babyzombieaddons.group.anniversary": "Anniversary",
   "config.babyzombieaddons.option.raffleTaskTracker": "Raffle Tasks Tracker",
   "config.babyzombieaddons.option.raffleTaskTracker.desc": "Track uncompleted Raffle Tasks on HUD. Parses the Raffle Tasks GUI and listens for completion messages.",
-
   "config.babyzombieaddons.option.bzGetFromSacks": "BZ Get From Sacks",
   "config.babyzombieaddons.option.bzGetFromSacks.desc": "Auto-extract items from sacks when creating a Bazaar sell offer with \"None in inventory!\".",
   "config.babyzombieaddons.option.bzGetFromSacks.OFF": "Off",
@@ -539,18 +485,14 @@
   "config.babyzombieaddons.option.chatChannelSwitcher.desc": "Show clickable GC/OC/PC/CC/AC buttons above the chat input to quickly switch Hypixel chat channels.",
   "config.babyzombieaddons.option.raredropManage": "Manage Rare Drops",
   "config.babyzombieaddons.option.raredropManage.desc": "Open the rare drop blacklist and share list manager.",
-
   "config.babyzombieaddons.group.configBackend": "Config Backend",
   "config.babyzombieaddons.option.configBackend": "Config Backend",
   "config.babyzombieaddons.option.configBackend.desc": "Choose between YACL and MoulConfig rendering for the settings GUI.",
-
   "config.babyzombieaddons.option.wideMoulConfig": "MoulConfig Wide Mode",
   "config.babyzombieaddons.option.wideMoulConfig.desc": "Expand MoulConfig settings page width to 1.5× for high-resolution displays. Only effective under the MoulConfig backend. Also affects settings pages of other mods using Dandelion→MoulConfig (e.g. SkyBlocker).",
-
   "config.babyzombieaddons.prompt.open": "Open",
   "config.babyzombieaddons.option.hudEdit": "Edit HUD Positions",
   "config.babyzombieaddons.option.hudEdit.desc": "Enter HUD edit mode to drag and resize HUD elements.",
-
   "playcmd.cat.Main": "Main",
   "playcmd.cat.BedWars": "BedWars",
   "playcmd.cat.SkyWars": "SkyWars",
@@ -567,7 +509,6 @@
   "playcmd.cat.Smash_Heroes": "Smash Heroes",
   "playcmd.cat.Classic": "Classic",
   "playcmd.title": "Play",
-
   "babyzombieaddons.raredrop.copied": "§6§l§aCopied to clipboard",
   "rareropscreen.title": "Rare Drop Manager",
   "rareropscreen.input.hint": "Item name...",
@@ -578,11 +519,10 @@
   "rareropscreen.done": "Done",
   "config.babyzombieaddons.option.debugMode": "HUD Layout Debug",
   "config.babyzombieaddons.option.debugMode.desc": "Show all HUD elements in edit screen (including disabled ones) to help with layout.",
-"config.babyzombieaddons.option.hypixelModApiDebugLog": "Hypixel Mod API Debug Output",
-"config.babyzombieaddons.option.hypixelModApiDebugLog.desc": "Shows raw Mod API data in chat when received.",
+  "config.babyzombieaddons.option.hypixelModApiDebugLog": "Hypixel Mod API Debug Output",
+  "config.babyzombieaddons.option.hypixelModApiDebugLog.desc": "Shows raw Mod API data in chat when received.",
   "config.babyzombieaddons.option.maxDebugEntities": "Max Debug Entities",
   "config.babyzombieaddons.option.maxDebugEntities.desc": "Maximum number of entities shown by /bza debug getentity.",
-
   "babyzombieaddons.popup.title.party_invite": "Party Invite",
   "babyzombieaddons.popup.title.guild_party_invite": "Guild Party Invite",
   "babyzombieaddons.popup.title.friend_request": "Friend Request",
@@ -617,33 +557,27 @@
   "babyzombieaddons.sound.added_to_ignore": "§cAdded to ignore list: §f%s",
   "babyzombieaddons.sound.removed_from_ignore": "§eRemoved from ignore list: §f%s",
   "babyzombieaddons.sound.clear_ignore": "§aCleared all ignored sounds",
-
   "babyzombieaddons.cake.all_eaten": "§aYou have eaten all the cakes!",
   "babyzombieaddons.ch.nucleus": "§bReady to /warp nucleus, click the crystal again",
   "babyzombieaddons.glacite.exit": "§6Exit",
   "babyzombieaddons.glacite.portal_title": "§a§lPORTAL",
   "babyzombieaddons.glacite.portal_sub": "§bGlacite Mineshaft",
   "babyzombieaddons.glacite.portal_sub_auto": "§3Will attempt /p warp after entering",
-
   "slayer.noslayerquest.warning": "§cYou forgot to take a slayer quest!",
   "slayer.gummybear.5min": "§bGummy Bear: §c5 minutes remaining",
   "slayer.gummybear.2min": "§bGummy Bear: §c2 minutes remaining!",
   "slayer.gummybear.1min": "§bGummy Bear: §c60 seconds remaining!",
   "slayer.gummybear.expired": "§cGummy Bear effect expired!",
-
   "babyzombieaddons.fruitdigging.treasure_nearby": "§e%s nearby",
   "babyzombieaddons.fruitdigging.no_fruit": "§eNo fruit nearby",
   "babyzombieaddons.fruitdigging.bombs_nearby": "§c%s bombs nearby",
-
   "babyzombieaddons.sendcoords.no_target": "§cNo block in sight",
-
   "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §aNew version available: §e%s §a(current: §7%s§a)",
   "babyzombieaddons.update.download.github": "§b§n[GitHub]",
   "babyzombieaddons.update.download.gitee": "§d§n[Gitee]",
   "babyzombieaddons.update.open_url": "§7Click to open §f%s",
   "babyzombieaddons.reconnect.countdown": "Auto-reconnecting in %d s...",
   "babyzombieaddons.reconnect.attempt": "(attempt %d)",
-
   "babyzombieaddons.waypoint.added": "§aWaypoint added at §b%s %s %s§a: §r%s",
   "babyzombieaddons.waypoint.deleted": "§aDeleted §b%s §awaypoint(s) named §b%s",
   "babyzombieaddons.waypoint.not_found": "§eNo waypoint found named §b%s",
@@ -654,14 +588,11 @@
   "babyzombieaddons.debug.playsound.played_seeked": "§aPlaying §f%s §7vol=%s pit=%s seek=%ss dur=%ss",
   "babyzombieaddons.debug.stopsound.all": "§aStopped all sounds",
   "babyzombieaddons.debug.stopsound.one": "§aStopped: §f%s",
-
   "babyzombieaddons.debug.entities.header": "§6§l=== Nearby Entities (%s found, range: %.0f) ===",
   "babyzombieaddons.debug.entities.none": "§e[Debug] No entities found within %s blocks%s",
   "babyzombieaddons.debug.entities.none_filter": " matching \"%s\"",
   "babyzombieaddons.debug.entities.truncated": "§7... and %s more (truncated)",
-
   "babyzombieaddons.debug.entity.type": "§8[%s / %s]",
-
   "babyzombieaddons.debug.entity.pos": "  §7Pos: §a%s %s %s",
   "babyzombieaddons.debug.entity.exact": "  §7Exact: §a%s %s %s",
   "babyzombieaddons.debug.entity.uuid": "  §7UUID: %s",
@@ -682,12 +613,9 @@
   "babyzombieaddons.debug.entity.armor": "  §7Armor: §e%s",
   "babyzombieaddons.debug.entity.absorption": " §e+%s abs",
   "babyzombieaddons.debug.entity.scale": "  §7Scale: §e%s",
-
   "babyzombieaddons.help": "§6§lBabyzombieAddons Commands\n§6/bza §7- Open settings GUI\n§6/bza play §7- Open game mode menu\n§6/bza sc [channel] [suffix] §7- Send your coordinates\n§6/bza la [channel] [suffix] §7- Send looked-at coordinates\n§6/bza yaw <yaw> <pitch> §7- Set player rotation\n§6/bza l §7- Go to Limbo\n§6/bza wp §7- Waypoint manager, type /bza wp for usage",
   "babyzombieaddons.waypoint.usage": "§6/bza wp add <x> <y> <z> <name> [seconds]  §7- Add at coords\n§6/bza wp add here <name> [seconds]      §7- Add at current position\n§6/bza wp add looking <name> [seconds]   §7- Add at looking-at position\n§6/bza wp delete <name>                  §7- Delete waypoint\n§7Seconds: -1 = permanent, 0 = clear on world change, >0 = auto-expire",
-
   "config.babyzombieaddons.yacl_missing": "§eYACL is not installed, falling back to built-in config screen",
-
   "babyzombieaddons.debug.pet.summoned_header": "§6§l=== Summoned Pet === §7(tracking %s pets)",
   "babyzombieaddons.debug.pet.none": "§7(none)",
   "babyzombieaddons.debug.pet.unknown": "Unknown",
@@ -717,7 +645,6 @@
   "babyzombieaddons.debug.pet.last_xp_header": "§6§l=== Last Skill XP ===",
   "babyzombieaddons.debug.pet.last_xp_summoned": "§b%s +%.2f §7→ Summoned Pet §a+%.2f XP",
   "babyzombieaddons.debug.pet.last_xp_shared": "§7Shared[%d] §b%s §7→ §a+%.2f XP",
-
   "babyzombieaddons.debug.party.header": "§6§l=== Party Info ===",
   "babyzombieaddons.debug.party.last_fetch": "§bLast Fetch: §f%s §7(%s ago)",
   "babyzombieaddons.debug.party.never_fetched": "§eParty info has never been fetched",
@@ -728,7 +655,6 @@
   "babyzombieaddons.debug.party.raw_data": "§7Raw Data: §f%s",
   "babyzombieaddons.debug.party.yes": "Yes",
   "babyzombieaddons.debug.party.no": "No",
-
   "babyzombieaddons.debug.rank.header": "§6===== Player Rank Info =====",
   "babyzombieaddons.debug.rank.no_data": "§7No rank info received yet (no response from Hypixel Mod API)",
   "babyzombieaddons.debug.rank.player_rank": "§ePlayerRank: §f%s",
@@ -736,7 +662,6 @@
   "babyzombieaddons.debug.rank.monthly_package_rank": "§eMonthlyPackageRank: §f%s",
   "babyzombieaddons.debug.rank.prefix": "§ePrefix: §f%s",
   "babyzombieaddons.debug.rank.none": "§7(none)",
-
   "babyzombieaddons.find.starting": "§aStarting find → §f%s",
   "babyzombieaddons.find.starting_new": "§aStarting findnew → §f%s §7(looking for new server)",
   "babyzombieaddons.find.already_running": "§cA find operation is already in progress.",

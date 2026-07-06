@@ -62,7 +62,13 @@ public final class ChatUtils {
     }
 
     public static void showTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        // Removed in Minecraft 26.x — gui.setTimes/setTitle/setSubtitle no longer exist
+        var client = Minecraft.getInstance();
+        if (client.gui == null) return;
+        client.gui.setTimes(fadeIn, stay, fadeOut);
+        client.gui.setTitle(Component.literal(title));
+        if (subtitle != null) {
+            client.gui.setSubtitle(Component.literal(subtitle));
+        }
     }
 
     public static void showTitle(String title, String subtitle) {
@@ -74,7 +80,13 @@ public final class ChatUtils {
     }
 
     public static void showTranslatableTitle(String titleKey, String subtitleKey, int fadeIn, int stay, int fadeOut) {
-        // Removed in Minecraft 26.x
+        var client = Minecraft.getInstance();
+        if (client.gui == null) return;
+        client.gui.setTimes(fadeIn, stay, fadeOut);
+        client.gui.setTitle(Component.translatable(titleKey));
+        if (subtitleKey != null) {
+            client.gui.setSubtitle(Component.translatable(subtitleKey));
+        }
     }
 
     public static void showTranslatableTitle(String titleKey, int fadeIn, int stay, int fadeOut) {

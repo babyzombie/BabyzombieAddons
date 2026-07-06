@@ -17,6 +17,7 @@ public final class KuudraModule {
         EnderPearlRefill.init();
         KuudraFollowerHelmetPrice.init();
         CrimsonArmorPistonMute.init();
+        KuudraNopeMagmafish.init();
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             KuudraLocationTracker.reset();
