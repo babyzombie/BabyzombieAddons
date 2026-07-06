@@ -52,7 +52,6 @@
 
     "screen.PauseScreenMixin",
 
-    "compat.AaronItemLoreFixMixin",
     "compat.ModernUITextRenderTypeMixin"
   ],
   "injectors": {
