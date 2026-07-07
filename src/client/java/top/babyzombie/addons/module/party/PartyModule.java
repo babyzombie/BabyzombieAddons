@@ -172,19 +172,20 @@ public final class PartyModule {
         String msg = ChatUtils.stripColor(matcher.group(2)).trim();
 
         var self = Minecraft.getInstance().player;
-        if (self != null && player.equals(self.getName().getString()) && !cfg.partySelfExecute) return;
+        boolean selfSent = self != null && player.equals(self.getName().getString());
+        if (selfSent && !cfg.partySelfExecute) return;
 
         // !pt / !ptme / !叫地主 / !抢地主 → transfer party leader to sender
         if (cfg.partyTransfer && CMD_PTME.matcher(msg).matches()) {
             nextCommand = "party transfer " + player;
-            runWhenLeader();
+            runWhenLeader(selfSent);
             return;
         }
 
         // !allinv → toggle allinvite
         if (cfg.partyAllinvite && CMD_ALLINVITE.matcher(msg).matches()) {
             nextCommand = "party settings allinvite";
-            runWhenLeader();
+            runWhenLeader(selfSent);
             return;
         }
 
@@ -193,7 +194,7 @@ public final class PartyModule {
             var pm = CMD_PINVITE.matcher(msg);
             if (pm.find()) {
                 nextCommand = "party invite " + pm.group(1);
-                runWhenLeader();
+                runWhenLeader(selfSent);
             }
             return;
         }
@@ -205,7 +206,7 @@ public final class PartyModule {
                 return;
             }
             nextCommand = "party warp";
-            runWhenLeader();
+            runWhenLeader(selfSent);
             return;
         }
 
@@ -220,7 +221,7 @@ public final class PartyModule {
             var jm = CMD_JOIN.matcher(msg);
             if (jm.find()) {
                 nextCommand = buildJoinCommand(jm.group(1), jm.group(2));
-                runWhenLeader();
+                runWhenLeader(selfSent);
             }
             return;
         }
@@ -235,13 +236,18 @@ public final class PartyModule {
                     // pit/skyblock 需要队长执行，且切换世界后自动 /p warp
                     var cmd = nextCommand;
                     nextCommand = null;
-                    PartyTracker.getInstance().runWhenLeader(() -> {
+                    Runnable action = () -> PartyTracker.getInstance().runWhenLeader(() -> {
                         ChatUtils.sendCommand(cmd);
                         showMsg("party.executed", "/" + cmd);
                         pendingPlayWarp = true;
                     });
+                    if (selfSent) {
+                        scheduleWithDelay(action);
+                    } else {
+                        action.run();
+                    }
                 } else {
-                    runWhenLeader();
+                    runWhenLeader(selfSent);
                 }
             }
             return;
@@ -251,7 +257,12 @@ public final class PartyModule {
         if (cfg.partySendCoords && HypixelLocationTracker.getInstance().isInSkyblock() && CMD_SENDCOORDS.matcher(msg).matches()) {
             if (self != null) {
                 var pos = self.blockPosition();
-                ChatUtils.sendCommand("pc x: " + pos.getX() + ", y: " + pos.getY() + ", z: " + pos.getZ());
+                String coordCmd = "pc x: " + pos.getX() + ", y: " + pos.getY() + ", z: " + pos.getZ();
+                if (selfSent) {
+                    scheduleWithDelay(() -> ChatUtils.sendCommand(coordCmd));
+                } else {
+                    ChatUtils.sendCommand(coordCmd);
+                }
             }
         }
     }
@@ -261,14 +272,35 @@ public final class PartyModule {
         pendingAutoAccept.put(key, ServerTick.getTime() + 120000);
     }
 
-    private static void runWhenLeader() {
+    private static void runWhenLeader(boolean selfSent) {
         if (nextCommand == null) return;
         var cmd = nextCommand;
         nextCommand = null;
-        PartyTracker.getInstance().runWhenLeader(() -> {
+        Runnable action = () -> PartyTracker.getInstance().runWhenLeader(() -> {
             ChatUtils.sendCommand(cmd);
             showMsg("party.executed", "/" + cmd);
         });
+        if (selfSent) {
+            scheduleWithDelay(action);
+        } else {
+            action.run();
+        }
+    }
+
+    /**
+     * 自己发的 party chat 消息，等聊天冷却过去后再执行指令。
+     * 延迟 = max(0, 500ms - ping)，确保消息已发出、冷却已重置。
+     */
+    private static void scheduleWithDelay(Runnable action) {
+        int ping = ServerTick.getPing();
+        if (ping < 0) ping = 0;
+        int delayMs = Math.max(0, 500 - ping);
+        int delayTicks = (delayMs + 49) / 50; // 向上取整，避免 <50ms 的延迟被截断为 0
+        if (delayTicks > 0) {
+            Scheduler.schedule(delayTicks, action);
+        } else {
+            action.run();
+        }
     }
 
     private static String buildJoinCommand(String type, String floor) {
