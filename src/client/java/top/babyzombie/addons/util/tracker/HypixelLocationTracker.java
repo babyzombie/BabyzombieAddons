@@ -156,6 +156,7 @@ public class HypixelLocationTracker {
     public boolean isInSkyblock() { return "SkyBlock".equals(currentLocation.serverType()); }
     public boolean isInDungeon() { return isInSkyblock() && "Dungeon".equals(currentLocation.map()); }
     public boolean isInKuudra() { return isInSkyblock() && "Kuudra".equals(currentLocation.map()); }
+    public boolean isInRift() { return isInSkyblock() && "The Rift".equals(currentLocation.map()); }
     /**
      * Detect limbo by checking the tablist and sidebar scoreboard.
      * In limbo: the tablist contains only the player themselves, and there is no

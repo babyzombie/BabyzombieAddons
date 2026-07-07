@@ -41,8 +41,7 @@ public final class EffigyDisplay {
 
             active.clear();
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isIn("The Rift")) return;
-
+            if (!tracker.isInRift()) return;
             var level = client.player.level();
             if (level == null) return;
             Scoreboard sb = level.getScoreboard();
@@ -68,7 +67,7 @@ public final class EffigyDisplay {
         RenderPhaseRegister.register(ctx -> {
             if (!ModConfigManager.get().slayer.showEffigies) return;
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isIn("The Rift")) return;
+            if (!tracker.isInRift()) return;
             if (active.isEmpty()) return;
 
             for (int idx : active) {

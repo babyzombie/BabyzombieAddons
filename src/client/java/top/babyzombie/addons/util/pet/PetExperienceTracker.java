@@ -93,7 +93,8 @@ public final class PetExperienceTracker {
 
     private boolean onGameMessage(Component message, boolean overlay) {
         if (!overlay) return true;
-        if (!HypixelLocationTracker.getInstance().isInSkyblock()) return true;
+        var tracker = HypixelLocationTracker.getInstance();
+        if (!tracker.isInSkyblock() || tracker.isInRift()) return true;
         if (petManager == null || state == null) return true;
 
         SkillXPActionBarParser.SkillXPEvent event = actionBarParser.parse(message);

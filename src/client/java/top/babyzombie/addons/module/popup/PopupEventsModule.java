@@ -119,7 +119,7 @@ public final class PopupEventsModule {
                     var m = SKYBLOCK_TRADE.matcher(ChatUtils.stripColor(text));
                     if (m.find()) {
                         var loc = HypixelLocationTracker.getInstance();
-                        EventType t = loc.isIn("The Rift")
+                        EventType t = loc.isInRift()
                                 ? EventType.POSITION_SWAP : EventType.TRADE;
                         notify(t, m.group(1), null);
                         return;

@@ -60,7 +60,7 @@ public final class ReheatedGummyPolarBearTimer {
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock()) return;
             if (tracker.isInDungeon()) return;
-            if ("The Rift".equals(tracker.getLocation())) return;
+            if (tracker.isInRift()) return;
 
             if (++tickCounter % 20 != 0) return;
 
