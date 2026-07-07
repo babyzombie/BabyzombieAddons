@@ -7,11 +7,18 @@ import net.minecraft.client.input.MouseButtonEvent;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfigManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class HudEditScreen extends Screen {
+    private static final int SNAP_THRESHOLD = 6;
+
     private final Screen parent;
     private HudManager.HudElement selected;
     private HudManager.HudElement hovered;
     private int dragOffsetX, dragOffsetY;
+    private int snapLineX = -1; // -1 = 无吸附指示线
+    private int snapLineY = -1;
 
     HudEditScreen(Screen parent) {
         super(Component.translatable("config.babyzombieaddons.option.hudEdit"));
@@ -64,6 +71,17 @@ public final class HudEditScreen extends Screen {
                         java.util.List.of(Component.translatable(key)), mouseX, mouseY);
             }
         }
+
+        // 吸附指示线（拖动时吸附到参考位置时显示）
+        if (selected != null) {
+            int lineColor = 0xCC00FFFF; // 青色半透明
+            if (snapLineX >= 0) {
+                gui.fill(snapLineX, 0, snapLineX + 1, height, lineColor);
+            }
+            if (snapLineY >= 0) {
+                gui.fill(0, snapLineY, width, snapLineY + 1, lineColor);
+            }
+        }
     }
 
     @Override
@@ -96,15 +114,97 @@ public final class HudEditScreen extends Screen {
         int sh = minecraft.getWindow().getGuiScaledHeight();
         int w = demoWidth(selected) + 8;
         int h = demoHeight(selected) + 8;
-        selected.x = (int) Math.max(0, Math.min(mx - dragOffsetX, sw - w));
-        selected.y = (int) Math.max(0, Math.min(my - dragOffsetY, sh - h));
+        int rawX = mx - dragOffsetX;
+        int rawY = my - dragOffsetY;
+
+        // 应用吸附
+        int snappedX = applySnapX(rawX, w);
+        int snappedY = applySnapY(rawY, h);
+
+        selected.x = (int) Math.max(0, Math.min(snappedX, sw - w));
+        selected.y = (int) Math.max(0, Math.min(snappedY, sh - h));
         return true;
+    }
+
+    /**
+     * 水平方向吸附。将元素的左/右边与屏幕边缘、其他元素边缘对齐。
+     */
+    private int applySnapX(int proposedX, int w) {
+        int sw = minecraft.getWindow().getGuiScaledWidth();
+        int bestDist = SNAP_THRESHOLD + 1;
+        int bestX = proposedX;
+        snapLineX = -1;
+
+        // 收集所有参考 X 坐标
+        List<Integer> refs = new ArrayList<>();
+        refs.add(0);   // 屏幕左
+        refs.add(sw);  // 屏幕右
+
+        for (var e : HudManager.elements.values()) {
+            if (!showElement(e) || e == selected) continue;
+            int ew = demoWidth(e) + 8;
+            refs.add(e.x);        // 左
+            refs.add(e.x + ew);   // 右
+        }
+
+        for (int ref : refs) {
+            // 左对齐
+            int dist = Math.abs(proposedX - ref);
+            if (dist < bestDist) { bestDist = dist; bestX = ref; snapLineX = ref; }
+            // 右对齐
+            dist = Math.abs(proposedX + w - ref);
+            if (dist < bestDist) { bestDist = dist; bestX = ref - w; snapLineX = ref; }
+        }
+
+        if (bestDist > SNAP_THRESHOLD) {
+            snapLineX = -1;
+            return proposedX;
+        }
+        return bestX;
+    }
+
+    /**
+     * 垂直方向吸附。将元素的顶/底边与屏幕边缘、其他元素边缘对齐。
+     */
+    private int applySnapY(int proposedY, int h) {
+        int sh = minecraft.getWindow().getGuiScaledHeight();
+        int bestDist = SNAP_THRESHOLD + 1;
+        int bestY = proposedY;
+        snapLineY = -1;
+
+        List<Integer> refs = new ArrayList<>();
+        refs.add(0);   // 屏幕顶
+        refs.add(sh);  // 屏幕底
+
+        for (var e : HudManager.elements.values()) {
+            if (!showElement(e) || e == selected) continue;
+            int eh = demoHeight(e) + 8;
+            refs.add(e.y);        // 顶
+            refs.add(e.y + eh);   // 底
+        }
+
+        for (int ref : refs) {
+            // 顶对齐
+            int dist = Math.abs(proposedY - ref);
+            if (dist < bestDist) { bestDist = dist; bestY = ref; snapLineY = ref; }
+            // 底对齐
+            dist = Math.abs(proposedY + h - ref);
+            if (dist < bestDist) { bestDist = dist; bestY = ref - h; snapLineY = ref; }
+        }
+
+        if (bestDist > SNAP_THRESHOLD) {
+            snapLineY = -1;
+            return proposedY;
+        }
+        return bestY;
     }
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             selected = null;
+            snapLineX = -1;
+            snapLineY = -1;
         }
         return super.mouseReleased(event);
     }
