@@ -1,12 +1,7 @@
 package top.babyzombie.addons.util.pet;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.fabricmc.loader.api.FabricLoader;
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -15,22 +10,32 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
- * Fetches current mayor and perk status from the Hypixel API.
- * Used to determine if Diana is mayor and which perks are active.
+ * Fetches current mayor and perk status.
  *
- * Refresh strategy:
- * - Fetches once per hour between minutes 20-30 of each real-world hour
- * - Also respects SkyBlock day tracking to avoid redundant requests
+ * <p>Two strategies:
+ * <ul>
+ *   <li><b>Skyblocker path</b> — if Skyblocker is installed, listen to
+ *       {@code SkyblockEvents.MAYOR_CHANGE} and read {@code MayorUtils.getActivePerks()}</li>
+ *   <li><b>Fallback path</b> — poll {@code api.hypixel.net/resources/skyblock/election}
+ *       once per hour (free public endpoint, no API key)</li>
+ * </ul>
+ *
+ * Used to determine if Diana is mayor and which perks are active.
  */
 public final class MayorFetcher {
-    private static final Logger LOGGER = LoggerFactory.getLogger("BabyzombieAddons/MayorFetcher");
     private static final String ELECTION_URL = "https://api.hypixel.net/resources/skyblock/election";
     private static final long MIN_REFRESH_MS = 3600_000; // 1 hour
 
     private static final MayorFetcher INSTANCE = new MayorFetcher();
     private PlayerPetState state;
+    private boolean useSkyblocker;
 
     private MayorFetcher() {}
 
@@ -38,6 +43,67 @@ public final class MayorFetcher {
 
     public void init(PlayerPetState petState) {
         this.state = petState;
+        if (tryInitSkyblocker()) return;
+        initFallback();
+    }
+
+    /** Force a refresh (e.g. on profile load if data is stale). */
+    public void fetchIfStale() {
+        if (useSkyblocker) {
+            syncFromSkyblocker();
+            return;
+        }
+        long now = System.currentTimeMillis();
+        if (now - state.mayorLastCheckTime >= MIN_REFRESH_MS) {
+            fetch();
+        }
+    }
+
+    // ===== Skyblocker path =====
+
+    private boolean tryInitSkyblocker() {
+        try {
+            if (!FabricLoader.getInstance().isModLoaded("skyblocker")) return false;
+            useSkyblocker = true;
+
+            de.hysky.skyblocker.events.SkyblockEvents.MAYOR_CHANGE.register(this::onMayorChange);
+            syncFromSkyblocker();
+            return true;
+        } catch (NoClassDefFoundError | Exception e) {
+            useSkyblocker = false;
+            return false;
+        }
+    }
+
+    private void onMayorChange() {
+        syncFromSkyblocker();
+    }
+
+    private void syncFromSkyblocker() {
+        try {
+            // NPE guard: MayorUtils may not have loaded data yet
+            List<String> perks = de.hysky.skyblocker.utils.mayor.MayorUtils.getActivePerks();
+            if (perks == null) return;
+
+            boolean petXpBuff = perks.contains("Pet XP Buff");
+            boolean sharingIsCaring = perks.contains("Sharing is Caring");
+
+            // Only save if something actually changed
+            if (state.dianaPetXpBuff == petXpBuff
+                    && state.dianaSharingIsCaring == sharingIsCaring) return;
+
+            state.dianaPetXpBuff = petXpBuff;
+            state.dianaSharingIsCaring = sharingIsCaring;
+            state.dianaMayor = petXpBuff || sharingIsCaring;
+            state.mayorLastCheckTime = System.currentTimeMillis();
+            PetManager.getInstance().saveCurrentProfile();
+        } catch (Exception e) {
+        }
+    }
+
+    // ===== Fallback path =====
+
+    private void initFallback() {
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
     }
 
@@ -54,14 +120,6 @@ public final class MayorFetcher {
         fetch();
     }
 
-    /** Force a fetch (e.g. on profile load if data is stale). */
-    public void fetchIfStale() {
-        long now = System.currentTimeMillis();
-        if (now - state.mayorLastCheckTime >= MIN_REFRESH_MS) {
-            fetch();
-        }
-    }
-
     private void fetch() {
         try {
             HttpURLConnection conn = (HttpURLConnection) URI.create(ELECTION_URL).toURL().openConnection();
@@ -70,10 +128,7 @@ public final class MayorFetcher {
             conn.setRequestProperty("Accept", "application/json");
 
             int code = conn.getResponseCode();
-            if (code != 200) {
-                LOGGER.warn("[MayorFetcher] HTTP {}", code);
-                return;
-            }
+            if (code != 200) return;
 
             JsonObject obj;
             try (var reader = new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8)) {
@@ -120,14 +175,9 @@ public final class MayorFetcher {
                     }
                 }
             }
-            updateTimestamp();
+            state.mayorLastCheckTime = System.currentTimeMillis();
+            PetManager.getInstance().saveCurrentProfile();
         } catch (IOException e) {
-            LOGGER.warn("[MayorFetcher] Fetch failed: {}", e.getMessage());
         }
-    }
-
-    private void updateTimestamp() {
-        state.mayorLastCheckTime = System.currentTimeMillis();
-        PetManager.getInstance().saveCurrentProfile();
     }
 }
