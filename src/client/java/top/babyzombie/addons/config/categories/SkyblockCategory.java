@@ -96,6 +96,25 @@ public final class SkyblockCategory {
                     .option(createBool("petSharedDisplay", defaults.pet.petSharedDisplay,
                             () -> config.pet.petSharedDisplay, v -> config.pet.petSharedDisplay = v))
                     .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.necronBlade"))
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.necronBladeExplosionVolume"))
+                                .description(Component.translatable("config.babyzombieaddons.option.necronBladeExplosionVolume.desc"))
+                                .binding((int)(defaults.misc.necronBladeExplosionVolume * 100f),
+                                        () -> (int)(config.misc.necronBladeExplosionVolume * 100f),
+                                        v -> config.misc.necronBladeExplosionVolume = v / 100f)
+                                .controller(IntegerController.createBuilder().range(0, 100).slider(5).build())
+                                .build())
+                        .option(createBool("necronBladeHideExplosionParticles",
+                                defaults.misc.necronBladeHideExplosionParticles,
+                                () -> config.misc.necronBladeHideExplosionParticles,
+                                v -> config.misc.necronBladeHideExplosionParticles = v))
+                        .option(createBool("necronBladeHideOthersParticles",
+                                defaults.misc.necronBladeHideOthersParticles,
+                                () -> config.misc.necronBladeHideOthersParticles,
+                                v -> config.misc.necronBladeHideOthersParticles = v))
+                        .build())
                 .build();
     }
 

@@ -673,5 +673,12 @@
   "babyzombieaddons.find.new_server_found": "§a找到新服务器: §f%s",
   "babyzombieaddons.find.retrying": "§e服务器 §f%s §e已访问过，重试中…",
   "babyzombieaddons.find.timed_out": "§cfind 操作超时，已取消。",
-  "babyzombieaddons.find.cancelled_disconnect": "§cfind 操作已取消（断开连接）。"
+  "babyzombieaddons.find.cancelled_disconnect": "§cfind 操作已取消（断开连接）。",
+  "config.babyzombieaddons.group.necronBlade": "凋零之刃",
+  "config.babyzombieaddons.option.necronBladeExplosionVolume": "爆炸音量",
+  "config.babyzombieaddons.option.necronBladeExplosionVolume.desc": "手持凋零之刃时附近爆炸音效的音量（10%-100%）。",
+  "config.babyzombieaddons.option.necronBladeHideExplosionParticles": "隐藏爆炸粒子",
+  "config.babyzombieaddons.option.necronBladeHideExplosionParticles.desc": "手持凋零之刃时隐藏附近的大型爆炸粒子。",
+  "config.babyzombieaddons.option.necronBladeHideOthersParticles": "隐藏他人的爆炸粒子",
+  "config.babyzombieaddons.option.necronBladeHideOthersParticles.desc": "隐藏附近其他玩家使用凋零之刃时产生的大型爆炸粒子。"
 }

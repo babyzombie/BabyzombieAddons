@@ -270,6 +270,11 @@ public class ModConfig {
         public boolean playCmd = false;
         public BzGetFromSacksMode bzGetFromSacks = BzGetFromSacksMode.OFF;
         public int serverVisitExpireMinutes = 10;
+
+        // Necron's Blade
+        public float necronBladeExplosionVolume = 1.0f;
+        public boolean necronBladeHideExplosionParticles = false;
+        public boolean necronBladeHideOthersParticles = false;
     }
 
     // ---- Chat Channel ----

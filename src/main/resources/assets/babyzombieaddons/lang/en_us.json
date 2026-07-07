@@ -673,5 +673,12 @@
   "babyzombieaddons.find.new_server_found": "§aFound new server: §f%s",
   "babyzombieaddons.find.retrying": "§eServer §f%s §ealready visited, retrying…",
   "babyzombieaddons.find.timed_out": "§cFind operation timed out. Cancelled.",
-  "babyzombieaddons.find.cancelled_disconnect": "§cFind cancelled (disconnected)."
+  "babyzombieaddons.find.cancelled_disconnect": "§cFind cancelled (disconnected).",
+  "config.babyzombieaddons.group.necronBlade": "Necron's Blade",
+  "config.babyzombieaddons.option.necronBladeExplosionVolume": "Explosion Volume",
+  "config.babyzombieaddons.option.necronBladeExplosionVolume.desc": "Volume of nearby explosion sounds while holding a Necron's Blade (10%–100%).",
+  "config.babyzombieaddons.option.necronBladeHideExplosionParticles": "Hide Explosion Particles",
+  "config.babyzombieaddons.option.necronBladeHideExplosionParticles.desc": "Hide nearby large explosion particles while holding a Necron's Blade.",
+  "config.babyzombieaddons.option.necronBladeHideOthersParticles": "Hide Others' Explosion Particles",
+  "config.babyzombieaddons.option.necronBladeHideOthersParticles.desc": "Hide large explosion particles from other players using a Necron's Blade nearby."
 }
