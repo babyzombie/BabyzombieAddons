@@ -3,13 +3,19 @@ package top.babyzombie.addons.util;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
+import de.hysky.skyblocker.injected.SkyblockerStack;
+import de.hysky.skyblocker.skyblock.item.tooltip.info.TooltipInfoType;
+import de.hysky.skyblocker.utils.BazaarProduct;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import top.babyzombie.addons.util.ChatUtils;
+
+import java.util.OptionalDouble;
 
 public final class ItemUtils {
     private ItemUtils() {}
@@ -87,5 +93,47 @@ public final class ItemUtils {
         if (lore == null) return false;
         var lines = lore.lines().iterator();
         return lines.hasNext() && "Farming Tool".equals(ChatUtils.stripColor(lines.next().getString()));
+    }
+
+    /**
+     * 查询物品单价，优先 Bazaar 卖价 → 最低一口价。
+     *
+     * @param stack 要查询的物品
+     * @return 单价，无 Skyblocker / 无 API ID / 无价格数据时返回 -1
+     */
+    public static double getItemPrice(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return -1;
+
+        try {
+            // Skyblocker 通过 mixin 把 SkyblockerStack 注入到了 ItemStack 上
+            String apiId = ((SkyblockerStack) (Object) stack).getSkyblockApiId();
+            if (apiId == null || apiId.isEmpty()) return -1;
+            return querySkyblockerPrice(apiId);
+        } catch (NoClassDefFoundError e) {
+            return -1;
+        }
+    }
+
+    /**
+     * 从 Skyblocker 缓存中查询价格，拆出来是为了让 NoClassDefFoundError
+     * 只在真正调用时才触发，不影响 ItemUtils 类本身加载。
+     */
+    private static double querySkyblockerPrice(String apiId) {
+        // 1. Bazaar 卖价
+        Object2ObjectMap<String, BazaarProduct> bazaar =
+                (Object2ObjectMap<String, BazaarProduct>) TooltipInfoType.BAZAAR.getData();
+        if (bazaar != null && bazaar.containsKey(apiId)) {
+            OptionalDouble sellPrice = bazaar.get(apiId).sellPrice();
+            if (sellPrice.isPresent()) return sellPrice.getAsDouble();
+        }
+
+        // 2. 兜底：AH 最低一口价
+        Object2DoubleMap<String> lbin =
+                (Object2DoubleMap<String>) TooltipInfoType.LOWEST_BINS.getData();
+        if (lbin != null && lbin.containsKey(apiId)) {
+            return lbin.getDouble(apiId);
+        }
+
+        return -1;
     }
 }

@@ -1,8 +1,5 @@
 package top.babyzombie.addons.module.playcmd;
 
-import com.mojang.brigadier.context.StringRange;
-import com.mojang.brigadier.suggestion.Suggestion;
-import com.mojang.brigadier.suggestion.Suggestions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,13 +10,12 @@ import top.babyzombie.addons.event.SendCommandEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class PlayCmdModule {
     private PlayCmdModule() {}
 
     public static void init() {
+        PlayAutocomplete.init();
+
         SendCommandEvents.BEFORE_SEND.register(command -> {
             if (command.trim().equals("play") && ModConfigManager.get().misc.playCmd
                     && HypixelLocationTracker.getInstance().isOnHypixel()) {
@@ -32,69 +28,6 @@ public final class PlayCmdModule {
 
     public static boolean isPlayCmdEnabled() {
         return ModConfigManager.get().misc.playCmd;
-    }
-
-    /**
-     * Returns the position where game arguments start, or -1 if not a recognized play command.
-     * Supports: /play, !play, /pc !play
-     */
-    public static int getGameArgsStart(String text) {
-        if (text.length() < 5) return -1;
-        String lower = text.toLowerCase();
-        int playEnd;
-        if (lower.startsWith("/play")) {
-            playEnd = 5;
-        } else if (lower.startsWith("!play")) {
-            playEnd = 5;
-        } else if (lower.startsWith("/pc !play")) {
-            playEnd = 9;
-        } else {
-            return -1;
-        }
-        if (text.length() > playEnd && text.charAt(playEnd) == ' ') {
-            return playEnd + 1;
-        }
-        return text.length();
-    }
-
-    public static Suggestions enrichPlaySuggestions(String text, Suggestions existing) {
-        if (!ModConfigManager.get().misc.playCmd) return existing;
-
-        int rangeStart = getGameArgsStart(text);
-        if (rangeStart < 0) return existing;
-
-        List<Suggestion> list = new ArrayList<>();
-        String prefix;
-        if (rangeStart < text.length()) {
-            prefix = text.substring(rangeStart).toLowerCase();
-        } else {
-            prefix = "";
-        }
-
-        StringRange range = StringRange.between(rangeStart, text.length());
-
-        // Collect all matching game suffixes
-        List<String> matched = new ArrayList<>();
-        for (Object[][] cat : GAMES) {
-            for (int i = 1; i < cat.length; i++) {
-                String cmd = (String) cat[i][1];
-                if (!cmd.startsWith("/play ")) continue;
-                String sub = cmd.substring(6);
-                if (prefix.isEmpty() || sub.toLowerCase().startsWith(prefix)) {
-                    if (!matched.contains(sub)) {
-                        matched.add(sub);
-                    }
-                }
-            }
-        }
-
-        boolean needLeadingSpace = rangeStart == text.length();
-
-        for (String sub : matched) {
-            list.add(new Suggestion(range, needLeadingSpace ? " " + sub : sub));
-        }
-
-        return new Suggestions(range, list);
     }
 
     public static void openGUI() {

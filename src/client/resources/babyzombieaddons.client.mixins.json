@@ -38,6 +38,7 @@
     "item.ItemStackMaxSizeMixin",
 
     "network.ClientCommonPacketListenerImplMixin",
+    "network.ClientboundCommandsPacketMixin",
     "network.ConnectScreenMixin",
     "network.ConnectionMixin",
     "network.DisconnectedScreenMixin",
