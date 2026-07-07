@@ -141,6 +141,14 @@ public final class KuudraCategory {
                                         v -> config.kuudra.toxicArrowThreshold = v)
                                 .controller(IntegerController.createBuilder().range(0, 32).slider(2).build())
                                 .build())
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.toxicArrowPerMissing"))
+                                .description(Component.translatable("config.babyzombieaddons.option.toxicArrowPerMissing.desc"))
+                                .binding(defaults.kuudra.toxicArrowPerMissing,
+                                        () -> config.kuudra.toxicArrowPerMissing,
+                                        v -> config.kuudra.toxicArrowPerMissing = v)
+                                .controller(IntegerController.createBuilder().range(0, 16).slider(1).build())
+                                .build())
                         .option(Option.<TwilightArrowTiming>createBuilder()
                                 .name(Component.translatable("config.babyzombieaddons.option.twilightArrowTiming"))
                                 .description(Component.translatable("config.babyzombieaddons.option.twilightArrowTiming.desc"))

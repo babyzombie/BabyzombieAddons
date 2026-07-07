@@ -132,6 +132,7 @@ public class ModConfig {
         public ToxicArrowMinTier toxicArrowMinTier = ToxicArrowMinTier.T3;
         public ToxicArrowTiming toxicArrowTiming = ToxicArrowTiming.KUUDRA_STUNNED;
         public int toxicArrowThreshold = 0;
+        public int toxicArrowPerMissing = 0;
         public TwilightArrowTiming twilightArrowTiming = TwilightArrowTiming.P4_START;
         public int twilightArrowThreshold = 0;
     }

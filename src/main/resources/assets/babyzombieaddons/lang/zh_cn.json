@@ -254,6 +254,8 @@
   "config.babyzombieaddons.option.toxicArrowTiming.KUUDRA_STUNNED": "Kuudra 被眩晕",
   "config.babyzombieaddons.option.toxicArrowThreshold": "毒箭补充数量",
   "config.babyzombieaddons.option.toxicArrowThreshold.desc": "触发补充时，将毒箭补到此数量。设为 0 则关闭。",
+  "config.babyzombieaddons.option.toxicArrowPerMissing": "缺人额外补偿",
+  "config.babyzombieaddons.option.toxicArrowPerMissing.desc": "周围 20 格内手持 Terminator 的队友不足 2 人时，每少一人多补几根毒箭。0 关闭。",
   "config.babyzombieaddons.option.twilightArrowTiming": "暮光箭补充时机",
   "config.babyzombieaddons.option.twilightArrowTiming.desc": "仅在 T5 Kuudra 中生效，选择在什么时机触发暮光箭补充。补充数量由下方的阈值控制，设为 0 则关闭。若选择「Kuudra 开始」则会和珍珠补充冲突。",
   "config.babyzombieaddons.option.twilightArrowTiming.P4_SHORTLY_AFTER": "进 P4 后一小会",

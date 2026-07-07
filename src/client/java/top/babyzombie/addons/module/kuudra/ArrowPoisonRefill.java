@@ -2,6 +2,9 @@ package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.config.ModConfig.ToxicArrowMinTier;
 import top.babyzombie.addons.config.ModConfig.ToxicArrowTiming;
 import top.babyzombie.addons.config.ModConfig.TwilightArrowTiming;
@@ -51,8 +54,14 @@ public final class ArrowPoisonRefill {
 
             if (toxicMatches && toxicCooldown <= now && !"p3".equals(KuudraLocationTracker.area)) {
                 int current = countArrow("TOXIC_ARROW_POISON");
-                if (current < cfg.toxicArrowThreshold) {
-                    ChatUtils.sendCommand("gfs Toxic Arrow Poison " + (cfg.toxicArrowThreshold - current));
+                int target = cfg.toxicArrowThreshold;
+                if (cfg.toxicArrowPerMissing > 0) {
+                    int nearbyShooters = countNearbyTerminatorShooters();
+                    int missing = Math.max(0, 2 - nearbyShooters);
+                    target += missing * cfg.toxicArrowPerMissing;
+                }
+                if (current < target) {
+                    ChatUtils.sendCommand("gfs Toxic Arrow Poison " + (target - current));
                     toxicCooldown = now + 2000;
                     if (twilightMatches) {
                         int threshold = cfg.twilightArrowThreshold;
@@ -114,6 +123,30 @@ public final class ArrowPoisonRefill {
             case P4_START -> text.equals("[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!");
             case P4_TRUE_LAIR -> text.equals("[NPC] Elle: What just happened? Is this Kuudra's real lair?");
         };
+    }
+
+    /**
+     * 统计周围 20 格内手持 Terminator 的非 NPC 玩家数量（不含自己）。
+     */
+    private static int countNearbyTerminatorShooters() {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return 0;
+        var level = player.level();
+        var box = new AABB(
+                player.getX() - 20, player.getY() - 20, player.getZ() - 20,
+                player.getX() + 20, player.getY() + 20, player.getZ() + 20);
+        int count = 0;
+        for (var p : level.getEntitiesOfClass(Player.class, box, p -> p != player)) {
+            // 名字里有空格的是 NPC
+            if (p.getName().getString().contains(" ")) continue;
+            var item = p.getMainHandItem();
+            if (item.isEmpty()) continue;
+            // 先看是不是弓，再看 SkyBlock ID 是不是 TERMINATOR
+            if (!(item.getItem() instanceof BowItem)) continue;
+            if (!"TERMINATOR".equals(ItemUtils.getSkyblockId(item))) continue;
+            count++;
+        }
+        return count;
     }
 
     private static int countArrow(String sbid) {

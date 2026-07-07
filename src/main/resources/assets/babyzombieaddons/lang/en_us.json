@@ -254,6 +254,8 @@
   "config.babyzombieaddons.option.toxicArrowTiming.KUUDRA_STUNNED": "Kuudra Stunned",
   "config.babyzombieaddons.option.toxicArrowThreshold": "Toxic Arrow Refill Amount",
   "config.babyzombieaddons.option.toxicArrowThreshold.desc": "Target amount of Toxic Arrow Poison to refill to via /gfs when the selected timing triggers. 0 = off.",
+  "config.babyzombieaddons.option.toxicArrowPerMissing": "Extra Per Missing Shooter",
+  "config.babyzombieaddons.option.toxicArrowPerMissing.desc": "When fewer than 2 nearby players (within 20 blocks) are holding a Terminator, add this many extra arrows per missing shooter. 0 = off.",
   "config.babyzombieaddons.option.twilightArrowTiming": "Twilight Arrow Refill Timing",
   "config.babyzombieaddons.option.twilightArrowTiming.desc": "When to refill Twilight Arrow Poison (T5 only). Refill amount is controlled by the threshold option below. 0 = off. Selecting \"Kuudra Start\" will conflict with Ender Pearl refill.",
   "config.babyzombieaddons.option.twilightArrowTiming.P4_SHORTLY_AFTER": "Shortly After P4 (Current)",
