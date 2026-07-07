@@ -5,24 +5,31 @@ import net.minecraft.client.sounds.SoundEngine;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.babyzombie.addons.event.PlaySoundEvents;
-import top.babyzombie.addons.module.garden.XpOrbSoundReducer;
 
 @Mixin(SoundEngine.class)
 public class PlaySoundMixin {
 
-    @Inject(method = "play", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/sounds/SoundInstance;getIdentifier()Lnet/minecraft/resources/Identifier;"), cancellable = true)
+    /**
+     * Modify the SoundInstance after early validation, right before getIdentifier() is consumed.
+     * This ensures only sounds that will actually play are modified.
+     */
+    @ModifyVariable(method = "play", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/resources/sounds/SoundInstance;getIdentifier()Lnet/minecraft/resources/Identifier;"),
+            argsOnly = true, name = "instance")
+    private SoundInstance modifySound(SoundInstance instance) {
+        return PlaySoundEvents.MODIFY.invoker().modify(instance);
+    }
+
+    /** Before-play cancellation — fires AFTER MODIFY. */
+    @Inject(method = "play", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/resources/sounds/SoundInstance;getIdentifier()Lnet/minecraft/resources/Identifier;"),
+            cancellable = true)
     private void beforePlay(SoundInstance instance, CallbackInfoReturnable<SoundEngine.PlayResult> cir) {
         if (PlaySoundEvents.BEFORE_PLAY.invoker().beforePlay(instance)) {
             cir.cancel();
         }
-    }
-
-    @Redirect(method = "play", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/sounds/SoundInstance;getVolume()F"))
-    private float adjustVolume(SoundInstance instance) {
-        float originalVolume = instance.getVolume();
-        return XpOrbSoundReducer.getAdjustedVolume(instance, originalVolume);
     }
 }
