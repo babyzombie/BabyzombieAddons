@@ -2,6 +2,8 @@ package top.babyzombie.addons.util;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import com.mojang.serialization.JsonOps;
 import de.hysky.skyblocker.injected.SkyblockerStack;
 import de.hysky.skyblocker.skyblock.item.tooltip.info.TooltipInfoType;
@@ -13,8 +15,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.OptionalDouble;
 
 public final class ItemUtils {
@@ -69,6 +74,15 @@ public final class ItemUtils {
         var itemModel = item.get(DataComponents.ITEM_MODEL);
         if (itemModel != null) sb.append("item_model: ").append(itemModel).append("\n");
 
+        // 玩家头颅材质
+        var skullProfile = getSkullProfile(item);
+        if (skullProfile != null) {
+            sb.append("skull_owner: '").append(skullProfile.name()).append("'\n");
+            sb.append("skull_uuid: ").append(skullProfile.id()).append("\n");
+            var texture = getSkullTexture(item);
+            if (texture != null) sb.append("skull_texture: ").append(texture).append("\n");
+        }
+
         var loreComp = item.get(DataComponents.LORE);
         if (loreComp != null) {
             sb.append("lore:\n");
@@ -85,6 +99,33 @@ public final class ItemUtils {
             sb.append("\n").append(json);
         }
         return sb.toString();
+    }
+
+    /**
+     * 获取玩家头颅的 texture 值（base64）。
+     *
+     * @param stack 物品
+     * @return texture value，如果不是玩家头颅或没有 texture 则返回 null
+     */
+    @Nullable
+    public static String getSkullTexture(ItemStack stack) {
+        var gp = getSkullProfile(stack);
+        if (gp == null) return null;
+        var textures = gp.properties().get("textures");
+        if (textures == null) return null;
+        return textures.stream()
+                .filter(Objects::nonNull)
+                .map(Property::value)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Nullable
+    private static GameProfile getSkullProfile(ItemStack stack) {
+        if (!stack.is(Items.PLAYER_HEAD)) return null;
+        ResolvableProfile profile = stack.get(DataComponents.PROFILE);
+        if (profile == null) return null;
+        return profile.partialProfile();
     }
 
     public static boolean isFarmingTool(ItemStack stack) {

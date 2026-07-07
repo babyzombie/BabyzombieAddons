@@ -4,28 +4,25 @@ package top.babyzombie.addons.module.events;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
-import com.mojang.authlib.properties.Property;
 import net.minecraft.client.Minecraft;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.render.BeamRenderer;
 import top.babyzombie.addons.util.render.WorldTextRenderer;
@@ -224,7 +221,7 @@ public final class FruitDiggingModule {
                 boolean dug = client.player.level()
                         .getBlockState(new net.minecraft.core.BlockPos(bx, 72, bz)).getBlock() != Blocks.SAND;
 
-                String textureValue = getSkullTexture(stack);
+                String textureValue = ItemUtils.getSkullTexture(stack);
                 if (textureValue == null) continue;
                 String fruitName = FRUITS.get(textureValue);
                 if (fruitName == null) continue;
@@ -395,21 +392,6 @@ public final class FruitDiggingModule {
             for (var m : fruits)
                 WorldTextRenderer.renderString(ctx, m.label, m.x - 0.5, 74.3, m.z - 0.5, 0xFFFFFFFF, 0.025f, false);
         });
-    }
-
-    private static String getSkullTexture(net.minecraft.world.item.ItemStack stack) {
-        if (!stack.is(Items.PLAYER_HEAD)) return null;
-        ResolvableProfile profile = stack.get(DataComponents.PROFILE);
-        if (profile == null) return null;
-        var gameProfile = profile.partialProfile();
-        if (gameProfile == null) return null;
-        var textures = gameProfile.properties().get("textures");
-        if (textures == null) return null;
-        return textures.stream()
-                .filter(Objects::nonNull)
-                .map(Property::value)
-                .findFirst()
-                .orElse(null);
     }
 
     private static boolean isInCarnival() {
