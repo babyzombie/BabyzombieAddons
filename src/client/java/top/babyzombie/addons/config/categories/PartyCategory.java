@@ -43,6 +43,8 @@ public final class PartyCategory {
                         () -> config.party.partySendCoords, v -> config.party.partySendCoords = v))
                 .option(bool("partyPlay", defaults.party.partyPlay,
                         () -> config.party.partyPlay, v -> config.party.partyPlay = v))
+                .option(bool("partyStream", defaults.party.partyStream,
+                        () -> config.party.partyStream, v -> config.party.partyStream = v))
                 .option(bool("partyTransfer", defaults.party.partyTransfer,
                         () -> config.party.partyTransfer, v -> config.party.partyTransfer = v))
                 .option(bool("dmPartyInvite", defaults.party.dmPartyInvite,

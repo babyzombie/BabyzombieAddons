@@ -48,6 +48,8 @@
   "config.babyzombieaddons.option.partySendCoords.desc": "Respond to !sc in party chat to send your coordinates.\nRegex: ^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$",
   "config.babyzombieaddons.option.partyPlay": "!play - Play Command",
   "config.babyzombieaddons.option.partyPlay.desc": "Respond to !play <content> in party chat to execute /play <content>.\nRegex: ^[!！][ ]?play(?: (.+))?$",
+  "config.babyzombieaddons.option.partyStream": "!stream - Stream Command",
+  "config.babyzombieaddons.option.partyStream.desc": "Respond to !stream in party chat to execute /stream open/close. Requires leader + MVP++.\nRegex: ^[!！][ ]?stream(?:[ ]+(\\d+|c(?:lose)?|off))?$",
   "config.babyzombieaddons.option.partyTransfer": "!pt - Transfer Leader",
   "config.babyzombieaddons.option.partyTransfer.desc": "Respond to !pt or !ptme in party chat to transfer party leader.\nRegex: ^[!！][ ]?pt(?:me)?$",
   "config.babyzombieaddons.option.dmPartyInvite": "DM !p - Invite",

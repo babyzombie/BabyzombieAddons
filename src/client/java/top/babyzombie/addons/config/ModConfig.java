@@ -234,6 +234,7 @@ public class ModConfig {
         public boolean partyTransfer = false;
         public boolean dmPartyInvite = false;
         public boolean partyPlay = false;
+        public boolean partyStream = false;
         public boolean partySelfExecute = false;
     }
 

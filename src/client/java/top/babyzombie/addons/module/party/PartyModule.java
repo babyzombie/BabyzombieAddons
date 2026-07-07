@@ -2,12 +2,14 @@ package top.babyzombie.addons.module.party;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.hypixel.data.rank.MonthlyPackageRank;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.HypixelPlayerInfoTracker;
 import top.babyzombie.addons.util.tracker.PartyTracker;
 import top.babyzombie.addons.util.ServerTick;
 
@@ -45,6 +47,8 @@ public final class PartyModule {
     private static final Pattern CMD_SENDCOORDS = Pattern.compile("^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$", Pattern.CASE_INSENSITIVE);
     // !play <content> — execute /play <content>
     private static final Pattern CMD_PLAY = Pattern.compile("^[!！][ ]?play(?: (.+))?$", Pattern.CASE_INSENSITIVE);
+    // !stream [number|close] → /stream open|close
+    private static final Pattern CMD_STREAM = Pattern.compile("^[!！][ ]?stream(?:[ ]+(\\d+|c(?:lose)?|off))?$", Pattern.CASE_INSENSITIVE);
 
     /** Strip rank prefix like "[MVP+] " from a player name. */
     private static final Pattern RANK_PREFIX = Pattern.compile("^\\[[\\w+\\+-]+] ");
@@ -249,6 +253,25 @@ public final class PartyModule {
                 } else {
                     runWhenLeader(selfSent);
                 }
+            }
+            return;
+        }
+
+        // !stream → open/close stream (leader + SUPERSTAR only)
+        if (cfg.partyStream && CMD_STREAM.matcher(msg).matches()) {
+            var info = HypixelPlayerInfoTracker.getInstance().getLastInfo();
+            if (info == null || info.monthlyPackageRank() != MonthlyPackageRank.SUPERSTAR) return;
+            var sm = CMD_STREAM.matcher(msg);
+            if (sm.find()) {
+                String arg = sm.group(1);
+                if (arg == null) {
+                    nextCommand = "stream open";
+                } else if (arg.matches("\\d+")) {
+                    nextCommand = "stream open " + arg;
+                } else {
+                    nextCommand = "stream close";
+                }
+                runWhenLeader(selfSent);
             }
             return;
         }

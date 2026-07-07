@@ -48,6 +48,8 @@
   "config.babyzombieaddons.option.partySendCoords.desc": "响应队伍聊天中的 !sc 指令发送自己的坐标。\n正则: ^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$",
   "config.babyzombieaddons.option.partyPlay": "!play - 执行 /play",
   "config.babyzombieaddons.option.partyPlay.desc": "响应队伍聊天中的 !play <内容>，执行 /play <内容>。\n正则: ^[!！][ ]?play(?: (.+))?$",
+  "config.babyzombieaddons.option.partyStream": "!stream - 直播指令",
+  "config.babyzombieaddons.option.partyStream.desc": "回应队伍聊天中的 !stream，执行 /stream open/close。需队长 + MVP++。\n正则: ^[!！][ ]?stream(?:[ ]+(\\d+|c(?:lose)?|off))?$",
   "config.babyzombieaddons.option.partyTransfer": "!pt - 转让队长",
   "config.babyzombieaddons.option.partyTransfer.desc": "回应队伍聊天中的 !pt 或 !ptme，转让队长给发送者。\n正则: ^[!！][ ]?pt(?:me)?$",
   "config.babyzombieaddons.option.dmPartyInvite": "私信 !p - 邀请",
