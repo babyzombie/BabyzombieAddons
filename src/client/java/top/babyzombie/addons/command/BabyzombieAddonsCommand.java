@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.module.party.PartyModule;
+import top.babyzombie.addons.module.chat.PartyModule;
 import top.babyzombie.addons.module.playcmd.PlayCmdModule;
 import top.babyzombie.addons.util.ChatUtils;
 

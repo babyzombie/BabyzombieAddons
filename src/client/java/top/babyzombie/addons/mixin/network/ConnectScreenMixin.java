@@ -35,7 +35,7 @@ public class ConnectScreenMixin {
         // Auto-accept Hypixel Skyblock resource pack without prompting
         if (data != null
                 && ModConfigManager.get().general.serverResourcePackAutoAccept
-                && HypixelLocationTracker.getInstance().isOnHypixel()) {
+                && (HypixelLocationTracker.getInstance().isOnHypixel() || host.contains("hypixel.net"))) {
             data.setResourcePackStatus(ServerData.ServerPackStatus.ENABLED);
         }
     }

@@ -1,4 +1,4 @@
-package top.babyzombie.addons.module.party;
+package top.babyzombie.addons.module.chat;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
