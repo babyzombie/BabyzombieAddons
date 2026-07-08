@@ -28,6 +28,8 @@ public final class GeneralCategory {
                         () -> config.general.updateChecker, v -> config.general.updateChecker = v))
                 .option(createBool("replaceReportWithServerList", defaults.general.replaceReportWithServerList,
                         () -> config.general.replaceReportWithServerList, v -> config.general.replaceReportWithServerList = v))
+                .option(createBool("serverResourcePackAutoAccept", defaults.general.serverResourcePackAutoAccept,
+                        () -> config.general.serverResourcePackAutoAccept, v -> config.general.serverResourcePackAutoAccept = v))
                 .option(ButtonOption.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.option.hudEdit"))
                         .description(Component.translatable("config.babyzombieaddons.option.hudEdit.desc"))

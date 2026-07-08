@@ -48,17 +48,35 @@ public final class ChatUtils {
         return name.replaceFirst("^\\[[^\\]]+\\]\\s*", "");
     }
 
+    /**
+     * Remove emoji (U+1F000–U+1FFFF) and Private Use Area characters
+     * (U+E000–U+F8FF, U+F0000–U+FFFFD, U+100000–U+10FFFD) from text.
+     * Hypixel Skyblock server resource packs map custom icons into PUA code points;
+     * stripping them lets us compare the remaining plain text.
+     */
     public static String removeEmoji(String text) {
         if (text == null) return "";
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < text.length(); i++) {
             int cp = text.codePointAt(i);
-            if (cp < 0x1F000 || cp > 0x1FFFF) {
+            if (!isEmojiOrPua(cp)) {
                 sb.appendCodePoint(cp);
             }
             if (Character.isSupplementaryCodePoint(cp)) i++;
         }
         return sb.toString();
+    }
+
+    private static boolean isEmojiOrPua(int cp) {
+        // Emoji range
+        if (cp >= 0x1F000 && cp <= 0x1FFFF) return true;
+        // BMP Private Use Area (U+E000–U+F8FF)
+        if (cp >= 0xE000 && cp <= 0xF8FF) return true;
+        // Supplementary Private Use Area-A (U+F0000–U+FFFFD)
+        if (cp >= 0xF0000 && cp <= 0xFFFFD) return true;
+        // Supplementary Private Use Area-B (U+100000–U+10FFFD)
+        if (cp >= 0x100000 && cp <= 0x10FFFD) return true;
+        return false;
     }
 
     public static void showTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {

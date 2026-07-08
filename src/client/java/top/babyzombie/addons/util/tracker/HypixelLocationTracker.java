@@ -29,7 +29,10 @@ public class HypixelLocationTracker {
 
     private static final HypixelLocationTracker INSTANCE = new HypixelLocationTracker();
     private static final Pattern PROFILE_ID_PATTERN = Pattern.compile("Profile ID: ([a-f0-9-]+)");
-    private static final Pattern LOCATION_PATTERN = Pattern.compile("[⏣ф]");
+    // U+E067 = 🏷 location marker icon from Hypixel's official Skyblock resource pack
+    // (assets/minecraft/font/default.json → hypixel_skyblock:gui/icons.png row 1 col 3)
+    // ⏣ (U+23E3) and ф (U+0444) are legacy markers kept for backward compatibility.
+    private static final Pattern LOCATION_PATTERN = Pattern.compile("[\uE067⏣\uE020ф]");
     private static final int SIDEBAR_SLOT = 1;
 
     private volatile HypixelLocationData currentLocation;
@@ -117,8 +120,7 @@ public class HypixelLocationTracker {
             String text = team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString();
             String plain = ChatFormatting.stripFormatting(text).trim();
             if (!plain.isEmpty() && LOCATION_PATTERN.matcher(plain).find()) {
-                newLocation = ChatUtils.removeEmoji(
-                        ChatUtils.stripColor(plain).replaceAll("[⏣ф]", "").trim());
+                newLocation = ChatUtils.removeEmoji(ChatUtils.stripColor(plain)).trim();
                 break;
             }
         }

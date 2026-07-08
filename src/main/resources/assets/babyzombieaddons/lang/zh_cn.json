@@ -108,6 +108,8 @@
   "config.babyzombieaddons.option.cakeBuffTracker.desc": "在 HUD 上显示已食用蛋糕清单，持续 30 秒。",
   "config.babyzombieaddons.option.minionCollectAutoClose": "收小人自动关闭界面",
   "config.babyzombieaddons.option.minionCollectAutoClose.desc": "在小人（Minion）界面点击“Collect All”后自动关闭容器界面。",
+  "config.babyzombieaddons.option.serverResourcePackAutoAccept": "自动接受服务器资源包",
+  "config.babyzombieaddons.option.serverResourcePackAutoAccept.desc": "不弹出确认窗口，自动接受 Hypixel 的服务器资源包。",
   "config.babyzombieaddons.option.skipSecondPerson": "跳过第二人称视角",
   "config.babyzombieaddons.option.skipSecondPerson.desc": "按 F5 时跳过第二人称视角，仅在第一人称和第三人称后方之间切换。长按超过设定 tick 数后松手时切换至第二人称视角。调为 0 关闭，20 tick = 1 秒。",
   "config.babyzombieaddons.group.autoReconnect": "断线自动重连",

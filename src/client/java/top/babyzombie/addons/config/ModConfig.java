@@ -83,6 +83,7 @@ public class ModConfig {
         public boolean showCrosshairInThirdPerson = false;
         public boolean chatInContainer = false;
         public boolean replaceReportWithServerList = false;
+        public boolean serverResourcePackAutoAccept = false;
     }
 
     // ---- Dungeon ----

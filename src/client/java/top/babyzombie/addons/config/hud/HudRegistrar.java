@@ -110,26 +110,26 @@ public final class HudRegistrar {
 
         // --- Cake Buff ---
         HudManager.register("CakeBuffTracker", 10, 50, 1.0f,
-                "§c10❤ Health   §a✔\n"
-                + "§a3❈ Defense   §a✔\n"
-                + "§c2❁ Strength   §a✔\n"
-                + "§f10✦ Speed   §c✘\n"
-                + "§b5✎ Intelligence   §c✘\n"
-                + "§c2⫽ Ferocity   §c✘\n"
-                + "§41♨ Vitality   §a✔\n"
-                + "§f1❂ True Defense   §c✘\n"
-                + "§31α Sea Creature Chance   §c✘\n"
-                + "§b1✯ Magic Find   §a✔\n"
-                + "§d1♣ Pet Luck   §c✘\n"
-                + "§b1❄ Cold Resistance   §c✘\n"
-                + "§a10ф Rift Time   §a✔\n"
-                + "§65☘ Mining Fortune   §c✘\n"
-                + "§65☘ Farming Fortune   §a✔\n"
-                + "§65☘ Foraging Fortune   §c✘\n"
-                + "§61⛃ Treasure Chance   §c✘\n"
-                + "§d1❃ Tracking   §a✔\n"
-                + "§25∮ Sweep   §c✘\n"
-                + "§d1☘ Hunter Fortune   §c✘",
+                "§c10\uE010 Health   §a✔\n"
+                + "§a3\uE008 Defense   §a✔\n"
+                + "§c2\uE00D Strength   §a✔\n"
+                + "§f10\uE022 Speed   §c✘\n"
+                + "§b5\uE003 Intelligence   §c✘\n"
+                + "§c2\uE00B Ferocity   §c✘\n"
+                + "§41\uE028 Vitality   §a✔\n"
+                + "§f1\uE027 True Defense   §c✘\n"
+                + "§31\uE021 Sea Creature Chance   §c✘\n"
+                + "§b1\uE01A Magic Find   §a✔\n"
+                + "§d1\uE013 Pet Luck   §c✘\n"
+                + "§b1\uE006 Cold Resistance   §c✘\n"
+                + "§a10\uE020 Rift Time   §a✔\n"
+                + "§65\uE053 Mining Fortune   §c✘\n"
+                + "§65\uE051 Farming Fortune   §a✔\n"
+                + "§65\uE054 Foraging Fortune   §c✘\n"
+                + "§61\uE025 Treasure Chance   §c✘\n"
+                + "§d1\uE077 Tracking   §a✔\n"
+                + "§25\uE023 Sweep   §c✘\n"
+                + "§d1\uE05B Hunter Fortune   §c✘",
                 "config.babyzombieaddons.option.cakeBuffTracker",
                 () -> get().general.cakeBuffTracker);
 

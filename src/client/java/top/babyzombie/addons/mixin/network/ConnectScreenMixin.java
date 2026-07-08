@@ -11,7 +11,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.misc.AutoReconnectHelper;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 @Mixin(ConnectScreen.class)
 public class ConnectScreenMixin {
@@ -29,5 +31,12 @@ public class ConnectScreenMixin {
             ip = host + ":" + port;
         }
         AutoReconnectHelper.onConnectionAttempt(ip, data.name);
+
+        // Auto-accept Hypixel Skyblock resource pack without prompting
+        if (data != null
+                && ModConfigManager.get().general.serverResourcePackAutoAccept
+                && HypixelLocationTracker.getInstance().isOnHypixel()) {
+            data.setResourcePackStatus(ServerData.ServerPackStatus.ENABLED);
+        }
     }
 }

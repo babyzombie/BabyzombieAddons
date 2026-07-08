@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
+import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -48,6 +50,12 @@ public final class PetManager {
     );
     private static final Pattern HELD_ITEM_PATTERN =
         Pattern.compile("Held Item: (.+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern LOADOUT_PATTERN =
+        Pattern.compile("^You equipped (.+)!$");
+
+    // Loadout switch delayed scan state
+    private boolean loadoutSwitchPending;
+    private int loadoutSwitchDeadline; // tickCount deadline (now + ping/50 + buffer)
 
     private String currentProfileKey;
     private final List<PetData> pets = new ArrayList<>();
@@ -71,6 +79,7 @@ public final class PetManager {
         registerPetItemInteract();
         registerGuiClick();
         registerPetsMenuScan();
+        registerLoadoutSwitch();
         registerDisconnectSave();
         // Initialize XP tracker and mayor fetcher
         PetExperienceTracker.getInstance().init(this, petState);
@@ -451,6 +460,69 @@ public final class PetManager {
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             if (world == null) saveAll();
         });
+    }
+
+    /**
+     * Detect loadout switch via chat message "You equipped &lt;name&gt;!",
+     * then scan the Loadouts menu for the newly equipped pet after a short delay.
+     * Uses ALLOW_GAME (not just GAME) to receive the message even if another mod
+     * cancels it.
+     */
+    private void registerLoadoutSwitch() {
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay) return true;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return true;
+            String text = ChatUtils.stripColor(message.getString());
+            if (!LOADOUT_PATTERN.matcher(text).find()) return true;
+
+            var client = Minecraft.getInstance();
+            if (client.player == null) return true;
+            // Wait for one server round-trip (ping) + 3 extra ticks for processing
+            int pingMs = ServerTick.getPing();
+            int pingTicks = pingMs > 0 ? Math.max(1, (pingMs + 49) / 50) : 2;
+            loadoutSwitchDeadline = client.player.tickCount + pingTicks;
+            loadoutSwitchPending = true;
+            return true;
+        });
+
+        // Tick handler: wait until the ping-based deadline, then scan the
+        // Loadouts menu if it's still open.
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!loadoutSwitchPending) return;
+            if (client.player == null) {
+                loadoutSwitchPending = false;
+                return;
+            }
+            if (client.player.tickCount < loadoutSwitchDeadline) return;
+            loadoutSwitchPending = false;
+
+            if (client.screen instanceof AbstractContainerScreen<?> cs) {
+                String title = ChatUtils.stripColor(cs.getTitle().getString());
+                if (title.matches("\\(\\d+/\\d+\\) Loadouts")) {
+                    scanLoadoutPet(cs);
+                }
+            }
+        });
+    }
+
+    /**
+     * Scan the Loadouts menu for the equipped pet.
+     * The pet is in row 3, column 4 (0-indexed: row 2, col 3 → slot 21)
+     * of the 6-row Loadouts chest menu.
+     */
+    private void scanLoadoutPet(AbstractContainerScreen<?> screen) {
+        int petSlot = 21; // 3rd row, 4th column (1-indexed)
+        var slots = screen.getMenu().slots;
+        if (petSlot >= slots.size()) return;
+        ItemStack stack = slots.get(petSlot).getItem();
+        if (stack.isEmpty()) return;
+        String petInfo = getPetInfoFromStack(stack);
+        if (petInfo == null) return;
+        PetData pet = PetData.fromPetInfo(petInfo);
+        if (pet.uuid() != null) {
+            addPet(pet);
+            setCurrentPet(pet);
+        }
     }
 
     // ===== Internal Helpers =====
