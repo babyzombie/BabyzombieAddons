@@ -51,6 +51,8 @@ public final class MiscCategory {
                                 v -> config.misc.serverVisitExpireMinutes = v)
                         .controller(IntegerController.createBuilder().range(1, 60).slider(2).build())
                         .build())
+                .option(bool("showClickEventInHover", defaults.misc.showClickEventInHover,
+                        () -> config.misc.showClickEventInHover, v -> config.misc.showClickEventInHover = v))
                 .build();
     }
 

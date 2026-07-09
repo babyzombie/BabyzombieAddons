@@ -277,6 +277,7 @@ public class ModConfig {
         public float necronBladeExplosionVolume = 1.0f;
         public boolean necronBladeHideExplosionParticles = false;
         public boolean necronBladeHideOthersParticles = false;
+        public boolean showClickEventInHover = false;
     }
 
     // ---- Chat Channel ----

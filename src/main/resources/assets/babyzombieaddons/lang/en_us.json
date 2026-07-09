@@ -698,5 +698,14 @@
   "config.babyzombieaddons.option.windowTitleShowPing": "Show Ping",
   "config.babyzombieaddons.option.windowTitleShowPing.desc": "Display network latency in milliseconds.",
   "config.babyzombieaddons.option.windowTitleShowLocation": "Show Hypixel Location",
-  "config.babyzombieaddons.option.windowTitleShowLocation.desc": "Display current location in the title (Limbo / Lobby / Server Type - Map). Enable the \"Replace with Hypixel\" sub-option below for a cleaner look."
+  "config.babyzombieaddons.option.windowTitleShowLocation.desc": "Display current location in the title (Limbo / Lobby / Server Type - Map). Enable the \"Replace with Hypixel\" sub-option below for a cleaner look.",
+
+  "config.babyzombieaddons.option.showClickEventInHover": "Show Click Action in Tooltip",
+  "config.babyzombieaddons.option.showClickEventInHover.desc": "When hovering over clickable text in chat, show what it does (run command, open URL, copy text, etc.).",
+  "babyzombieaddons.clickhover.run_command": "Click to run: %s",
+  "babyzombieaddons.clickhover.open_url": "Click to open: %s",
+  "babyzombieaddons.clickhover.suggest_command": "Click to fill: %s",
+  "babyzombieaddons.clickhover.copy_to_clipboard": "Click to copy: %s",
+  "babyzombieaddons.clickhover.change_page": "Click to go to page %s",
+  "babyzombieaddons.clickhover.unknown": "Click to interact"
 }

@@ -698,5 +698,14 @@
   "config.babyzombieaddons.option.windowTitleShowPing": "显示延迟",
   "config.babyzombieaddons.option.windowTitleShowPing.desc": "以毫秒为单位显示网络延迟。",
   "config.babyzombieaddons.option.windowTitleShowLocation": "显示 Hypixel 位置",
-  "config.babyzombieaddons.option.windowTitleShowLocation.desc": "在标题栏显示当前位置（Limbo / 大厅 / 服务器类型 - 地图）。启用后可配合下方「覆盖为 Hypixel」使用。"
+  "config.babyzombieaddons.option.windowTitleShowLocation.desc": "在标题栏显示当前位置（Limbo / 大厅 / 服务器类型 - 地图）。启用后可配合下方「覆盖为 Hypixel」使用。",
+
+  "config.babyzombieaddons.option.showClickEventInHover": "在悬停提示中显示点击操作",
+  "config.babyzombieaddons.option.showClickEventInHover.desc": "聊天中的可点击文本在悬停时显示具体操作（执行指令、打开链接、复制文本等）。",
+  "babyzombieaddons.clickhover.run_command": "点击执行: %s",
+  "babyzombieaddons.clickhover.open_url": "点击打开: %s",
+  "babyzombieaddons.clickhover.suggest_command": "点击填充: %s",
+  "babyzombieaddons.clickhover.copy_to_clipboard": "点击复制: %s",
+  "babyzombieaddons.clickhover.change_page": "点击跳转到第 %s 页",
+  "babyzombieaddons.clickhover.unknown": "点击交互"
 }

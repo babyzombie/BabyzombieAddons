@@ -26,6 +26,7 @@
     "chat.ContainerChatMixin",
     "chat.ReiScreenChatMixin",
     "chat.SendCommandMixin",
+    "chat.StyleMixin",
 
     "sound.ChannelAccessor",
     "sound.ChannelHandleAccessor",
