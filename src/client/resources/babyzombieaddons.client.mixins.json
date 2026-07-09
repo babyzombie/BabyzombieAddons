@@ -43,6 +43,8 @@
     "network.ConnectionMixin",
     "network.DisconnectedScreenMixin",
 
+    "window.WindowTitleMixin",
+
     "screen.CommandSuggestionsMixin",
     "screen.ContainerClickMixin",
     "screen.InventoryScreenMixin",

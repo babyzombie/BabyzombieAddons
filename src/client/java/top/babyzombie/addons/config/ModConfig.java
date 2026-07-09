@@ -58,6 +58,7 @@ public class ModConfig {
     public HandRenderConfig handRender = new HandRenderConfig();
     public PetConfig pet = new PetConfig();
     public AutotipConfig autotip = new AutotipConfig();
+    public WindowTitleConfig windowTitle = new WindowTitleConfig();
 
     // ---- General ----
 
@@ -328,5 +329,17 @@ public class ModConfig {
     public static class AutotipConfig {
         public boolean enabled = false;
         public boolean hideMessages = false;
+    }
+
+    // ---- Window Title ----
+
+    public static class WindowTitleConfig {
+        public boolean enabled = false;
+        public boolean overrideOriginal = false;
+        public int updateInterval = 1;
+        public boolean showMemory = false;
+        public boolean showSystemMemory = false;
+        public boolean showPing = false;
+        public boolean showLocation = false;
     }
 }

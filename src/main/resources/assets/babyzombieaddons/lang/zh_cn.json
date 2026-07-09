@@ -682,5 +682,21 @@
   "config.babyzombieaddons.option.necronBladeHideExplosionParticles": "隐藏爆炸粒子",
   "config.babyzombieaddons.option.necronBladeHideExplosionParticles.desc": "手持凋零之刃时隐藏附近的大型爆炸粒子。",
   "config.babyzombieaddons.option.necronBladeHideOthersParticles": "隐藏他人的爆炸粒子",
-  "config.babyzombieaddons.option.necronBladeHideOthersParticles.desc": "隐藏附近其他玩家使用凋零之刃时产生的大型爆炸粒子。"
+  "config.babyzombieaddons.option.necronBladeHideOthersParticles.desc": "隐藏附近其他玩家使用凋零之刃时产生的大型爆炸粒子。",
+
+  "config.babyzombieaddons.group.windowTitle": "窗口标题",
+  "config.babyzombieaddons.option.windowTitleEnabled": "启用自定义标题",
+  "config.babyzombieaddons.option.windowTitleEnabled.desc": "在游戏窗口标题中显示自定义信息（内存、延迟、位置）。",
+  "config.babyzombieaddons.option.windowTitleOverride": "覆盖为 Hypixel",
+  "config.babyzombieaddons.option.windowTitleOverride.desc": "在 Hypixel 时将原始标题替换为 \"Hypixel\" 前缀。需要开启「显示位置」才生效。",
+  "config.babyzombieaddons.option.windowTitleUpdateInterval": "更新间隔（tick）",
+  "config.babyzombieaddons.option.windowTitleUpdateInterval.desc": "窗口标题的刷新间隔（1 = 每帧更新，20 = 每秒一次）。",
+  "config.babyzombieaddons.option.windowTitleShowMemory": "显示 JVM 内存",
+  "config.babyzombieaddons.option.windowTitleShowMemory.desc": "显示已用/最大 JVM 堆内存（如 \"1.5G/2.0G\"）。",
+  "config.babyzombieaddons.option.windowTitleShowSystemMemory": "显示系统内存",
+  "config.babyzombieaddons.option.windowTitleShowSystemMemory.desc": "显示系统总内存（如 \"Sys 15.5G\"）。",
+  "config.babyzombieaddons.option.windowTitleShowPing": "显示延迟",
+  "config.babyzombieaddons.option.windowTitleShowPing.desc": "以毫秒为单位显示网络延迟。",
+  "config.babyzombieaddons.option.windowTitleShowLocation": "显示 Hypixel 位置",
+  "config.babyzombieaddons.option.windowTitleShowLocation.desc": "在标题栏显示当前位置（Limbo / 大厅 / 服务器类型 - 地图）。启用后可配合下方「覆盖为 Hypixel」使用。"
 }

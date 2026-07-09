@@ -163,6 +163,30 @@ public final class GeneralCategory {
                         .option(createFloat("itemOffsetY", defaults.handRender.itemOffsetY,
                                 () -> config.handRender.itemOffsetY, v -> config.handRender.itemOffsetY = v, -1.0f, 1.0f))
                         .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.windowTitle"))
+                        .collapsed(true)
+                        .option(createBool("windowTitleEnabled", defaults.windowTitle.enabled,
+                                () -> config.windowTitle.enabled, v -> config.windowTitle.enabled = v))
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.windowTitleUpdateInterval"))
+                                .description(Component.translatable("config.babyzombieaddons.option.windowTitleUpdateInterval.desc"))
+                                .binding(defaults.windowTitle.updateInterval,
+                                        () -> config.windowTitle.updateInterval,
+                                        v -> config.windowTitle.updateInterval = v)
+                                .controller(IntegerController.createBuilder().range(1, 20).slider(1).build())
+                                .build())
+                        .option(createBool("windowTitleShowLocation", defaults.windowTitle.showLocation,
+                                () -> config.windowTitle.showLocation, v -> config.windowTitle.showLocation = v))
+                        .option(createBool("windowTitleOverride", defaults.windowTitle.overrideOriginal,
+                                () -> config.windowTitle.overrideOriginal, v -> config.windowTitle.overrideOriginal = v))
+                        .option(createBool("windowTitleShowMemory", defaults.windowTitle.showMemory,
+                                () -> config.windowTitle.showMemory, v -> config.windowTitle.showMemory = v))
+                        .option(createBool("windowTitleShowSystemMemory", defaults.windowTitle.showSystemMemory,
+                                () -> config.windowTitle.showSystemMemory, v -> config.windowTitle.showSystemMemory = v))
+                        .option(createBool("windowTitleShowPing", defaults.windowTitle.showPing,
+                                () -> config.windowTitle.showPing, v -> config.windowTitle.showPing = v))
+                        .build())
                 .build();
     }
 

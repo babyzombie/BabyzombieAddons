@@ -682,5 +682,21 @@
   "config.babyzombieaddons.option.necronBladeHideExplosionParticles": "Hide Explosion Particles",
   "config.babyzombieaddons.option.necronBladeHideExplosionParticles.desc": "Hide nearby large explosion particles while holding a Necron's Blade.",
   "config.babyzombieaddons.option.necronBladeHideOthersParticles": "Hide Others' Explosion Particles",
-  "config.babyzombieaddons.option.necronBladeHideOthersParticles.desc": "Hide large explosion particles from other players using a Necron's Blade nearby."
+  "config.babyzombieaddons.option.necronBladeHideOthersParticles.desc": "Hide large explosion particles from other players using a Necron's Blade nearby.",
+
+  "config.babyzombieaddons.group.windowTitle": "Window Title",
+  "config.babyzombieaddons.option.windowTitleEnabled": "Enable Custom Title",
+  "config.babyzombieaddons.option.windowTitleEnabled.desc": "Show custom information (memory, ping, location) in the game window title.",
+  "config.babyzombieaddons.option.windowTitleOverride": "Replace with Hypixel",
+  "config.babyzombieaddons.option.windowTitleOverride.desc": "When on Hypixel, replace the original title with a \"Hypixel\" prefix. Requires \"Show Location\" to be enabled.",
+  "config.babyzombieaddons.option.windowTitleUpdateInterval": "Update Interval (ticks)",
+  "config.babyzombieaddons.option.windowTitleUpdateInterval.desc": "How often to refresh the window title (1 = every frame, 20 = once per second).",
+  "config.babyzombieaddons.option.windowTitleShowMemory": "Show JVM Memory",
+  "config.babyzombieaddons.option.windowTitleShowMemory.desc": "Display used/max JVM heap memory (e.g. \"1.5G/2.0G\").",
+  "config.babyzombieaddons.option.windowTitleShowSystemMemory": "Show System Memory",
+  "config.babyzombieaddons.option.windowTitleShowSystemMemory.desc": "Display total system RAM (e.g. \"Sys 15.5G\").",
+  "config.babyzombieaddons.option.windowTitleShowPing": "Show Ping",
+  "config.babyzombieaddons.option.windowTitleShowPing.desc": "Display network latency in milliseconds.",
+  "config.babyzombieaddons.option.windowTitleShowLocation": "Show Hypixel Location",
+  "config.babyzombieaddons.option.windowTitleShowLocation.desc": "Display current location in the title (Limbo / Lobby / Server Type - Map). Enable the \"Replace with Hypixel\" sub-option below for a cleaner look."
 }
