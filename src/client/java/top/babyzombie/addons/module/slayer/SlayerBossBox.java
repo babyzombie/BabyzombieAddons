@@ -32,11 +32,13 @@ public final class SlayerBossBox {
             float b = (color & 0xFF) / 255f;
             float a = ((color >> 24) & 0xFF) / 255f;
 
+            double effectiveH = SlayerBossDetector.getEffectiveH(def);
+
             double x1 = boss.getX() - def.wX / 2;
             double y1 = boss.getY();
             double z1 = boss.getZ() - def.wZ / 2;
             double x2 = boss.getX() + def.wX / 2;
-            double y2 = boss.getY() + def.h;
+            double y2 = boss.getY() + effectiveH;
             double z2 = boss.getZ() + def.wZ / 2;
 
             // Wireframe box

@@ -63,11 +63,13 @@ public final class SlayerBossDetector {
 
     // State
     static String slayerType = "";
+    static String bossTier = "";
     static Entity bossEntity;
     static String hp = "";
     static String hpTag = "";
     static String timeLeft = "";
     static String renderStr = "";
+    static boolean spiderPhase2 = false;
 
     // Voidgloom
     static final VoidgloomState voidgloom = new VoidgloomState();
@@ -141,7 +143,7 @@ public final class SlayerBossDetector {
 
         String bossName = ChatUtils.removeEmoji(ChatUtils.stripColor(bossLine)).trim();
         String[] nameParts = bossName.split(" ");
-        String bossTier = nameParts.length > 2 ? nameParts[nameParts.length - 1] : "";
+        bossTier = nameParts.length > 2 ? nameParts[nameParts.length - 1] : "";
         if (nameParts.length >= 2) {
             bossName = nameParts[0] + " " + nameParts[1];
         }
@@ -181,11 +183,13 @@ public final class SlayerBossDetector {
         if (best != null) {
             if (!best.isAlive() || best.getType() != def.type
                     || ("Riftstalker Bloodfiend".equals(bossName)
-                        && !"Bloodfiend ".equals(best.getName().getString()))) {
+                        && !"Bloodfiend ".equals(best.getName().getString()))
+                    || (spiderPhase2
+                        && !ChatUtils.stripColor(best.getName().getString()).contains("Dinnerbone"))) {
                 best = null;
             } else {
                 double dx = best.getX() - spawnArmorStand.getX();
-                double dy = (best.getY() + def.h) - spawnArmorStand.getY();
+                double dy = (best.getY() + getEffectiveH(def)) - spawnArmorStand.getY();
                 double dz = best.getZ() - spawnArmorStand.getZ();
                 bestDist = Math.sqrt(dx * dx + dy * dy + dz * dz);
             }
@@ -197,9 +201,10 @@ public final class SlayerBossDetector {
             if (e.getType() != def.type) continue;
             if (!e.isAlive()) continue;
             if ("Riftstalker Bloodfiend".equals(bossName) && !"Bloodfiend ".equals(e.getName().getString())) continue;
+            if (spiderPhase2 && !ChatUtils.stripColor(e.getName().getString()).contains("Dinnerbone")) continue;
 
             double dx = e.getX() - spawnArmorStand.getX();
-            double dy = (e.getY() + def.h) - spawnArmorStand.getY();
+            double dy = (e.getY() + getEffectiveH(def)) - spawnArmorStand.getY();
             double dz = e.getZ() - spawnArmorStand.getZ();
             double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
             if (dist < def.range && e.getY() < spawnArmorStand.getY() && dist < bestDist) {
@@ -222,10 +227,13 @@ public final class SlayerBossDetector {
                 }
             }
 
-            // HP tag (T5 uses different name, e.g. Atoned Horror)
+            // HP tag (T5 uses different name, e.g. Atoned Horror / Conjoined Brood)
             String searchName = def.name;
             if ("Revenant Horror".equals(bossName) && "V".equals(bossTier)) {
                 searchName = "Atoned Horror";
+            }
+            if ("Tarantula Broodfather".equals(bossName) && "V".equals(bossTier)) {
+                searchName = "Conjoined Brood";
             }
             hpTag = null;
             for (ArmorStand as : nearbyStands) {
@@ -235,6 +243,11 @@ public final class SlayerBossDetector {
                     break;
                 }
             }
+
+            // Detect Tarantula T5 phase 2 (Conjoined Brood → stacked spiders)
+            spiderPhase2 = "Tarantula Broodfather".equals(bossName) && "V".equals(bossTier)
+                    && hpTag != null && ChatUtils.stripColor(hpTag).contains("Conjoined Brood");
+
             hp = (hpTag != null && hpTag.contains("ᛤ") ? "§5ᛤ§r " : "")
                     + (bossEntity != null ? healthToString((LivingEntity) bossEntity) : extractHpFromTag(hpTag));
 
@@ -507,13 +520,24 @@ public final class SlayerBossDetector {
 
     // ---- Helpers ----
 
+    /**
+     * Get effective boss height, accounting for T5 phase 2 stacked spiders.
+     * Tarantula T5 phase 2 has 3 stacked spiders (Dinnerbone + cave spider + normal spider).
+     */
+    public static double getEffectiveH(BossDef def) {
+        if (spiderPhase2) return 1.7;
+        return def.h;
+    }
+
     static void reset() {
         slayerType = "";
+        bossTier = "";
         bossEntity = null;
         hp = "";
         hpTag = "";
         timeLeft = "";
         renderStr = "";
+        spiderPhase2 = false;
         voidgloom.reset();
         infernoMinions.clear();
         infernoStatus.reset();
