@@ -1,6 +1,7 @@
 package top.babyzombie.addons.module.misc;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.util.ChatUtils;
@@ -19,13 +20,16 @@ public final class MinionCollectAutoClose {
 
     public static void init() {
         // Detect "Collect All" click — record the tick for freshness guard
-        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, event) -> {
+        ContainerClickEvents.BEFORE_CONTAINER_INPUT.register((player, containerId, slotId, buttonNum, input) -> {
             if (!ModConfigManager.get().general.minionCollectAutoClose) return false;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
 
+            var client = Minecraft.getInstance();
+            if (!(client.screen instanceof AbstractContainerScreen<?> screen)) return false;
             String title = ChatUtils.stripColor(screen.getTitle().getString());
             if (!MINION_TITLE.matcher(title).find()) return false;
 
+            var slot = player.containerMenu.getSlot(slotId);
             if (slot == null || !slot.hasItem()) return false;
 
             String name = ChatUtils.stripColor(slot.getItem().getHoverName().getString()).trim();

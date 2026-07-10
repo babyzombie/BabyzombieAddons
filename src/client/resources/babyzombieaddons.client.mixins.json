@@ -48,6 +48,7 @@
 
     "screen.CommandSuggestionsMixin",
     "screen.ContainerClickMixin",
+    "screen.HandleContainerInputMixin",
     "screen.InventoryScreenMixin",
     "screen.KeyMappingMixin",
     "screen.ScreenMixin",

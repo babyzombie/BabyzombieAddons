@@ -358,10 +358,11 @@ public final class PetManager {
         });
     }
 
-    /** GUI mouse click: right-click removes pet, left-click selects it. */
+    /** GUI click: right-click removes pet, left-click selects it (all sources). */
     private void registerGuiClick() {
-        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, event) -> {
+        ContainerClickEvents.BEFORE_CONTAINER_INPUT.register((player, containerId, slotId, buttonNum, input) -> {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
+            var slot = player.containerMenu.getSlot(slotId);
             if (slot == null || !slot.hasItem()) return false;
             ItemStack stack = slot.getItem();
             if (getPetInfoFromStack(stack) == null) return false;
@@ -369,10 +370,10 @@ public final class PetManager {
             String uuid = getItemUuid(stack);
             if (uuid == null) return false;
 
-            if (event.button() == 1) {
+            if (buttonNum == 1) {
                 removePet(uuid);
                 if (uuid.equals(currentPetUuid)) setCurrentPet(null);
-            } else if (event.button() == 0) {
+            } else if (buttonNum == 0) {
                 for (PetData p : pets) {
                     if (uuid.equals(p.uuid())) {
                         setCurrentPet(uuid.equals(currentPetUuid) ? null : p);
@@ -445,17 +446,20 @@ public final class PetManager {
 
         // Left-click on a preset slot in the Loadouts menu flags that the
         // next page refresh is a loadout switch and should trigger auto-close.
-        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, event) -> {
-            if (event.button() != 0) return false;
-            if (slot == null || slot.index < 0) return false;
+        // Uses BEFORE_CONTAINER_INPUT to also catch programmatic clicks (e.g. IQ mod).
+        ContainerClickEvents.BEFORE_CONTAINER_INPUT.register((player, containerId, slotId, buttonNum, input) -> {
+            if (buttonNum != 0) return false;
+            if (slotId < 0) return false;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
 
+            var client = Minecraft.getInstance();
+            if (!(client.screen instanceof AbstractContainerScreen<?> screen)) return false;
             String title = ChatUtils.stripColor(screen.getTitle().getString());
             if (!title.matches("\\(\\d+/\\d+\\) Loadouts")) return false;
 
             // Preset slots: rows 2-5, cols 6-8 → slots 14-16, 23-25, 32-34, 41-43
-            int row = slot.index / 9;
-            int col = slot.index % 9;
+            int row = slotId / 9;
+            int col = slotId % 9;
             if (row < 1 || row > 4 || col < 5 || col > 7) return false;
 
             loadoutSwitchPending = true;
