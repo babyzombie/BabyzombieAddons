@@ -71,6 +71,20 @@ public final class MiningCategory {
                         .option(bool("greatGlaciteWaypoints", defaults.mining.greatGlaciteWaypoints,
                                 () -> config.mining.greatGlaciteWaypoints, v -> config.mining.greatGlaciteWaypoints = v))
                         .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.mithrilGourmand"))
+                        .option(bool("mithrilGourmandAutoExpresso", defaults.mining.mithrilGourmandAutoExpresso,
+                                () -> config.mining.mithrilGourmandAutoExpresso,
+                                v -> config.mining.mithrilGourmandAutoExpresso = v))
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.mithrilGourmandTriggerSeconds"))
+                                .description(Component.translatable("config.babyzombieaddons.option.mithrilGourmandTriggerSeconds.desc"))
+                                .binding(defaults.mining.mithrilGourmandTriggerSeconds,
+                                        () -> config.mining.mithrilGourmandTriggerSeconds,
+                                        v -> config.mining.mithrilGourmandTriggerSeconds = v)
+                                .controller(IntegerController.createBuilder().range(3, 20).slider(1).build())
+                                .build())
+                        .build())
                 .build();
     }
 

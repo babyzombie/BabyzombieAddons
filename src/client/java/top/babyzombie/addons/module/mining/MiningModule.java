@@ -22,6 +22,7 @@ public final class MiningModule {
 
         PowderMiningSounds.init();
         DrillSwingSuppression.init();
+        MithrilGourmandModule.init();
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             if (world == null) return;

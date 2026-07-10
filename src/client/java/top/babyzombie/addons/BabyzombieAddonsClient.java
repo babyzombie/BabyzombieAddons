@@ -43,6 +43,7 @@ import top.babyzombie.addons.module.withercloak.WitherCloakModule;
 import top.babyzombie.addons.util.DungeonCooldown;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.HypixelPlayerInfoTracker;
+import top.babyzombie.addons.util.ClientBossbarManager;
 import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.tracker.PartyTracker;
 import top.babyzombie.addons.util.tracker.ServerVisitTracker;
@@ -91,6 +92,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         AbiphoneTracker.getInstance().init();
         PartyTracker.getInstance().init();
         HypixelPlayerInfoTracker.getInstance().init();
+        ClientBossbarManager.init();
         DungeonCooldown.init();
         ServerTickCounter.init();
         Waypoints.init();

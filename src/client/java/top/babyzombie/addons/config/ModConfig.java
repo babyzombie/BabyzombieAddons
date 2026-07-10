@@ -196,6 +196,8 @@ public class ModConfig {
         public boolean creeperVisibility = false;
         public boolean greatGlaciteWaypoints = false;
         public boolean jungleTempleThinWall = false;
+        public boolean mithrilGourmandAutoExpresso = false;
+        public int mithrilGourmandTriggerSeconds = 10;
     }
 
     // ---- Garden ----
