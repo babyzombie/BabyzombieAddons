@@ -1,12 +1,11 @@
 package top.babyzombie.addons.module.slayer;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.PlaySoundHelper;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 /**
@@ -19,20 +18,18 @@ public final class SlayerBossRespawnAlert {
     private SlayerBossRespawnAlert() {}
 
     public static void init() {
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay) return;
-            if (!ModConfigManager.get().slayer.bossRespawnAlert) return;
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay) return true;
+            if (!ModConfigManager.get().slayer.bossRespawnAlert) return true;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return true;
 
-            String text = ChatUtils.stripColor(message.getString()).trim();
+            String text = ChatUtils.stripColor(message.getString());
             if (text.equals(COCOON_MESSAGE)) {
                 ChatUtils.showTranslatableTitle("slayer.bossRespawnAlert.title", "slayer.bossRespawnAlert.subtitle", 0, 50, 10);
 
-                var player = Minecraft.getInstance().player;
-                if (player != null) {
-                    player.level().playSound(player, player.blockPosition(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.MASTER, 1f, 1f);
-                }
+                PlaySoundHelper.playSeeked(SimpleSoundInstance.forUI(SoundEvents.MUSIC_DISC_PIGSTEP, 1), 23, 5.8f);
             }
+            return true;
         });
     }
 }
