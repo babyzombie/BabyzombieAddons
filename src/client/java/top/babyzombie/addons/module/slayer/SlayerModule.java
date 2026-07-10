@@ -19,6 +19,7 @@ public final class SlayerModule {
         NoSlayerQuestWarning.init();
         BloodfiendLowHPBox.init();
         EffigyDisplay.init();
+        SlayerBossRespawnAlert.init();
         SlayerBossDetector.init();
         SlayerBossBox.init();
         SlayerHUD.init();

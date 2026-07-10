@@ -150,6 +150,7 @@ public class ModConfig {
         public EndStoneSwordMode endStoneSwordTimer = EndStoneSwordMode.OFF;
         public boolean noslayerquest = false;
         public GummyPolarBearMode reheatedGummyPolarBear = GummyPolarBearMode.OFF;
+        public boolean bossRespawnAlert = false;
         public boolean boxLowHPBloodfiend = false;
         public boolean showEffigies = false;
         public SlayerBossInfoMode zombieSlayerInfo = SlayerBossInfoMode.OFF;

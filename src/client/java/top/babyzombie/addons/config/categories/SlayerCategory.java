@@ -121,6 +121,8 @@ public final class SlayerCategory {
                         .build())
 
                 // ── flat options ──
+                .option(bool("bossRespawnAlert", defaults.slayer.bossRespawnAlert,
+                        () -> config.slayer.bossRespawnAlert, v -> config.slayer.bossRespawnAlert = v))
                 .option(bool("noslayerquest", defaults.slayer.noslayerquest,
                         () -> config.slayer.noslayerquest, v -> config.slayer.noslayerquest = v))
                 .option(bool("boxLowHPBloodfiend", defaults.slayer.boxLowHPBloodfiend,
