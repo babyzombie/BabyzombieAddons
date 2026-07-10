@@ -11,9 +11,9 @@ import java.util.regex.Pattern;
 
 public final class ChatChannelModule {
 
-    // 完整匹配：You are now in the X channel / You're now in the X channel
+    // Hypixel 混用了中英文频道名，如 "You are now in the 公会管理频道 channel"
     private static final Pattern CHANNEL_SWITCH_EN = Pattern.compile(
-            "You (?:are|'re) now in the (GUILD|OFFICER|PARTY|SKYBLOCK CO-OP|ALL) channel!?",
+            "You (?:are|'re) now in the (GUILD|OFFICER|PARTY|SKYBLOCK CO-OP|ALL|公会|公会管理频道|组队|空岛生存合作模式|所有) channel!?",
             Pattern.CASE_INSENSITIVE);
     // 完整匹配两种 moved 消息
     private static final Pattern MOVED_TO_CHANNEL = Pattern.compile(
