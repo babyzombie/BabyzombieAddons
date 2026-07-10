@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
+import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
@@ -464,9 +465,9 @@ public final class PetManager {
 
     /**
      * Detect loadout switch via chat message "You equipped &lt;name&gt;!",
-     * then scan the Loadouts menu for the newly equipped pet after a short delay.
-     * Uses ALLOW_GAME (not just GAME) to receive the message even if another mod
-     * cancels it.
+     * then scan the Loadouts menu for the newly equipped pet when the page
+     * is fully loaded (slot 53, 第6排第9格 ≠ air).
+     * If enabled in config, auto-close the menu after scanning.
      */
     private void registerLoadoutSwitch() {
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
@@ -477,30 +478,57 @@ public final class PetManager {
 
             var client = Minecraft.getInstance();
             if (client.player == null) return true;
-            // Wait for one server round-trip (ping) + 3 extra ticks for processing
+            // Set timeout: ping + 1s buffer, capped at 2s
             int pingMs = ServerTick.getPing();
             int pingTicks = pingMs > 0 ? Math.max(1, (pingMs + 49) / 50) : 2;
-            loadoutSwitchDeadline = client.player.tickCount + pingTicks;
+            loadoutSwitchDeadline = client.player.tickCount + pingTicks + 20;
             loadoutSwitchPending = true;
             return true;
         });
 
-        // Tick handler: wait until the ping-based deadline, then scan the
-        // Loadouts menu if it's still open.
+        // Tick handler: wait for Loadouts menu to be open AND slot 53
+        // (6th row, 9th column) to be non-empty, then scan and optionally close.
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!loadoutSwitchPending) return;
             if (client.player == null) {
                 loadoutSwitchPending = false;
                 return;
             }
-            if (client.player.tickCount < loadoutSwitchDeadline) return;
-            loadoutSwitchPending = false;
 
-            if (client.screen instanceof AbstractContainerScreen<?> cs) {
-                String title = ChatUtils.stripColor(cs.getTitle().getString());
-                if (title.matches("\\(\\d+/\\d+\\) Loadouts")) {
-                    scanLoadoutPet(cs);
+            // Check if the Loadouts menu is open
+            if (!(client.screen instanceof AbstractContainerScreen<?> cs)) {
+                if (client.player.tickCount >= loadoutSwitchDeadline) {
+                    loadoutSwitchPending = false;
                 }
+                return;
+            }
+
+            String title = ChatUtils.stripColor(cs.getTitle().getString());
+            if (!title.matches("\\(\\d+/\\d+\\) Loadouts")) {
+                if (client.player.tickCount >= loadoutSwitchDeadline) {
+                    loadoutSwitchPending = false;
+                }
+                return;
+            }
+
+            // Screen is the Loadouts menu — wait for page to fully load.
+            // Slot 53 = 6th row, 9th column (0-indexed, the bottom-right corner).
+            if (cs.getMenu().slots.get(53).getItem().isEmpty()) {
+                if (client.player.tickCount >= loadoutSwitchDeadline) {
+                    loadoutSwitchPending = false;
+                }
+                return;
+            }
+
+            // Page fully loaded — scan the pet
+            loadoutSwitchPending = false;
+            scanLoadoutPet(cs);
+
+            // Auto-close if enabled
+            if (ModConfigManager.get().general.loadoutSwitchAutoClose) {
+                client.execute(() -> {
+                    if (client.player != null) client.player.closeContainer();
+                });
             }
         });
     }

@@ -72,6 +72,7 @@ public class ModConfig {
         public boolean backOnServerRestart = false;
         public boolean cakeBuffTracker = false;
         public boolean minionCollectAutoClose = false;
+        public boolean loadoutSwitchAutoClose = false;
         public int skipSecondPerson = 0;
         public boolean useTpsAdjustedTime = false;
         public WorldRenderPhase renderPhase = WorldRenderPhase.AFTER_ENTITIES;
