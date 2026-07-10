@@ -1,4 +1,4 @@
-package top.babyzombie.addons.command;
+package top.babyzombie.addons.command.debug;
 
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
@@ -7,10 +7,10 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
-final class InfoCommand {
+public final class InfoCommand {
     private InfoCommand() {}
 
-    static void register(
+    public static void register(
             com.mojang.brigadier.builder.ArgumentBuilder<FabricClientCommandSource, ?> parent) {
         parent.then(literal("location").executes(ctx -> location(ctx.getSource())));
         parent.then(literal("scoreboard").executes(ctx -> scoreboard(ctx.getSource())));

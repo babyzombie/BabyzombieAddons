@@ -1,4 +1,4 @@
-package top.babyzombie.addons.command;
+package top.babyzombie.addons.command.debug;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -15,13 +15,13 @@ import java.util.Locale;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
-final class DebugBossbarCommand {
+public final class DebugBossbarCommand {
     private static final int MAX_CONTENT_LENGTH = 256;
     private static final String PFX = "babyzombieaddons.debug.bossbar.";
 
     private DebugBossbarCommand() {}
 
-    static void register(ArgumentBuilder<FabricClientCommandSource, ?> parent) {
+    public static void register(ArgumentBuilder<FabricClientCommandSource, ?> parent) {
         parent.then(literal("getbossbar")
                 .executes(ctx -> dumpBossbars(ctx.getSource())));
 

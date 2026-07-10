@@ -6,6 +6,7 @@ commit_parsers = [
     { message = '^\+ ', group = "新增" },
     { message = '^\- ', group = "修复" },
     { message = '^\* ', group = "优化" },
+    { message = '^Merge branch', skip = true },
     { message = ".*", group = "其他" },
 ]
 

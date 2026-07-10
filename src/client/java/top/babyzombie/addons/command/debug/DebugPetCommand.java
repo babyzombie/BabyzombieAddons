@@ -1,4 +1,4 @@
-package top.babyzombie.addons.command;
+package top.babyzombie.addons.command.debug;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -13,12 +13,12 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 /**
  * /bza debug pet — shows detailed pet XP calculation info.
  */
-final class DebugPetCommand {
+public final class DebugPetCommand {
     private DebugPetCommand() {}
 
     private static final String PFX = "babyzombieaddons.debug.pet.";
 
-    static void register(ArgumentBuilder<FabricClientCommandSource, ?> parent) {
+    public static void register(ArgumentBuilder<FabricClientCommandSource, ?> parent) {
         parent.then(literal("pet").executes(ctx -> {
             dumpPetInfo(ctx.getSource());
             return 1;

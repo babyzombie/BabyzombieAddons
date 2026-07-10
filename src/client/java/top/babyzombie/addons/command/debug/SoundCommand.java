@@ -1,4 +1,4 @@
-package top.babyzombie.addons.command;
+package top.babyzombie.addons.command.debug;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -6,18 +6,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.event.PlaySoundEvents;
-import top.babyzombie.addons.util.ChatUtils;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
-final class SoundCommand {
+public final class SoundCommand {
     private static boolean monitor;
     private static final java.util.Set<String> blacklist = new java.util.LinkedHashSet<>();
 
     private SoundCommand() {}
 
-    static void init() {
+    public static void init() {
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {
             if (!monitor) return false;
             var snd = sound.getSound();
@@ -52,7 +51,7 @@ final class SoundCommand {
         });
     }
 
-    static void register(
+    public static void register(
             com.mojang.brigadier.builder.ArgumentBuilder<FabricClientCommandSource, ?> parent) {
         parent.then(literal("getsound")
                 .executes(ctx -> toggle(ctx.getSource()))

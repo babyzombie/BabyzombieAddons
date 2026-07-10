@@ -1,4 +1,4 @@
-package top.babyzombie.addons.command;
+package top.babyzombie.addons.command.debug;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -15,12 +15,12 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 /**
  * /bza debug party — shows last party info fetch time and member data.
  */
-final class DebugPartyCommand {
+public final class DebugPartyCommand {
     private DebugPartyCommand() {}
 
     private static final String PFX = "babyzombieaddons.debug.party.";
 
-    static void register(ArgumentBuilder<FabricClientCommandSource, ?> parent) {
+    public static void register(ArgumentBuilder<FabricClientCommandSource, ?> parent) {
         parent.then(literal("party").executes(ctx -> {
             dumpPartyInfo(ctx.getSource());
             return 1;

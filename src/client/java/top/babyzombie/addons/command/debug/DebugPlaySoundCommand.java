@@ -1,4 +1,4 @@
-package top.babyzombie.addons.command;
+package top.babyzombie.addons.command.debug;
 
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -15,10 +15,10 @@ import top.babyzombie.addons.util.PlaySoundHelper;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
-final class DebugPlaySoundCommand {
+public final class DebugPlaySoundCommand {
     private DebugPlaySoundCommand() {}
 
-    static void register(
+    public static void register(
             com.mojang.brigadier.builder.ArgumentBuilder<FabricClientCommandSource, ?> parent) {
         parent.then(literal("playsound")
                 .executes(ctx -> {

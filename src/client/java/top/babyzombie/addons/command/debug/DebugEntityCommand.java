@@ -1,4 +1,4 @@
-package top.babyzombie.addons.command;
+package top.babyzombie.addons.command.debug;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -35,10 +35,10 @@ import top.babyzombie.addons.mixin.entity.DisplayAccessor;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
-final class DebugEntityCommand {
+public final class DebugEntityCommand {
     private DebugEntityCommand() {}
 
-    static void register(ArgumentBuilder<FabricClientCommandSource, ?> parent) {
+    public static void register(ArgumentBuilder<FabricClientCommandSource, ?> parent) {
         parent.then(literal("getentity")
                 .executes(ctx -> list(ctx.getSource(), 5.0, null))
                 .then(argument("distance", DoubleArgumentType.doubleArg(1, 128))

@@ -1,4 +1,4 @@
-package top.babyzombie.addons.command;
+package top.babyzombie.addons.command.debug;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -8,12 +8,12 @@ import top.babyzombie.addons.util.tracker.HypixelPlayerInfoTracker.PlayerInfo;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
-final class DebugRankCommand {
+public final class DebugRankCommand {
     private DebugRankCommand() {}
 
     private static final String PFX = "babyzombieaddons.debug.rank.";
 
-    static void register(ArgumentBuilder<FabricClientCommandSource, ?> parent) {
+    public static void register(ArgumentBuilder<FabricClientCommandSource, ?> parent) {
         parent.then(literal("rank").executes(ctx -> {
             dumpRankInfo(ctx.getSource());
             return 1;

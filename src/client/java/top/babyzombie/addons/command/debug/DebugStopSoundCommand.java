@@ -1,4 +1,4 @@
-package top.babyzombie.addons.command;
+package top.babyzombie.addons.command.debug;
 
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
@@ -12,10 +12,10 @@ import top.babyzombie.addons.mixin.sound.SoundManagerAccessor;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
-final class DebugStopSoundCommand {
+public final class DebugStopSoundCommand {
     private DebugStopSoundCommand() {}
 
-    static void register(
+    public static void register(
             com.mojang.brigadier.builder.ArgumentBuilder<FabricClientCommandSource, ?> parent) {
         parent.then(literal("stopsound")
                 .executes(ctx -> stop(ctx.getSource(), null))
