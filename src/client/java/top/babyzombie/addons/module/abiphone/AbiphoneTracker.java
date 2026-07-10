@@ -3,8 +3,6 @@ package top.babyzombie.addons.module.abiphone;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.component.DataComponents;
@@ -14,6 +12,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.Nullable;
+import top.babyzombie.addons.util.ScreenLoadWaiter;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.io.IOException;
@@ -44,69 +43,48 @@ public class AbiphoneTracker {
     }
 
     public void init() {
-        ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
-            if (!(screen instanceof AbstractContainerScreen<?> containerScreen)) return;
+        ScreenLoadWaiter.whenScreenOpened(
+            title -> TITLE_PATTERN.matcher(title).matches(),
+            44, 0,
+            containerScreen -> {
+                var tracker = HypixelLocationTracker.getInstance();
+                String uuid = tracker.getUuid();
+                String profileId = tracker.getProfileId();
+                if (uuid == null || profileId == null) return;
 
-            String title = screen.getTitle().getString();
-            if (!TITLE_PATTERN.matcher(title).matches()) return;
+                var menu = containerScreen.getMenu();
+                var collected = new LinkedHashSet<ItemEntry>();
+                for (int i = 10; i < 44; i++) {
+                    ItemStack stack = menu.slots.get(i).getItem();
+                    if (stack.isEmpty()) continue;
 
-            var menu = containerScreen.getMenu();
-            if (menu.slots.size() < 90) return;
+                    String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+                    if (itemId.contains("glass_pane")) continue;
 
-            var tracker = HypixelLocationTracker.getInstance();
-            String uuid = tracker.getUuid();
-            String profileId = tracker.getProfileId();
-            if (uuid == null || profileId == null) return;
-
-            // Items may arrive in batches — slot 44's glass pane signals the row has loaded
-            final Set<ItemEntry> collected = new LinkedHashSet<>();
-            final boolean[] persisted = {false};
-            ClientTickEvents.END_CLIENT_TICK.register(tickClient -> {
-                if (persisted[0]) return;
-
-                if (tickClient.screen == containerScreen) {
-                    for (int i = 10; i < 44; i++) {
-                        ItemStack stack = menu.slots.get(i).getItem();
-                        if (stack.isEmpty()) continue;
-
-                        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-                        if (itemId.contains("glass_pane")) continue;
-
-                        String name = stack.getHoverName().getString();
-                        String nbt = null;
-                        var profileComp = stack.get(DataComponents.PROFILE);
-                        if (profileComp != null) {
-                            nbt = ResolvableProfile.CODEC.encodeStart(NbtOps.INSTANCE, profileComp)
-                                .result().map(Tag::toString).orElse(null);
-                        }
-                        String description = null;
-                        var loreComp = stack.get(DataComponents.LORE);
-                        if (loreComp != null) {
-                            List<String> descLines = new ArrayList<>();
-                            for (var line : loreComp.lines()) {
-                                String text = line.getString();
-                                if (text.isBlank()) break;
-                                descLines.add(text);
-                            }
-                            if (!descLines.isEmpty()) {
-                                description = String.join("\n", descLines);
-                            }
-                        }
-                        collected.add(new ItemEntry(name, itemId, nbt, description));
+                    String name = stack.getHoverName().getString();
+                    String nbt = null;
+                    var profileComp = stack.get(DataComponents.PROFILE);
+                    if (profileComp != null) {
+                        nbt = ResolvableProfile.CODEC.encodeStart(NbtOps.INSTANCE, profileComp)
+                            .result().map(Tag::toString).orElse(null);
                     }
-
-                    // Glass pane at slot 44 loaded = all rows have arrived
-                    if (!collected.isEmpty() && !menu.slots.get(44).getItem().isEmpty()) {
-                        persisted[0] = true;
-                        saveItems(uuid, profileId, new ArrayList<>(collected));
+                    String description = null;
+                    var loreComp = stack.get(DataComponents.LORE);
+                    if (loreComp != null) {
+                        List<String> descLines = new ArrayList<>();
+                        for (var line : loreComp.lines()) {
+                            String text = line.getString();
+                            if (text.isBlank()) break;
+                            descLines.add(text);
+                        }
+                        if (!descLines.isEmpty()) {
+                            description = String.join("\n", descLines);
+                        }
                     }
-                } else if (!collected.isEmpty()) {
-                    persisted[0] = true;
-                    saveItems(uuid, profileId, new ArrayList<>(collected));
+                    collected.add(new ItemEntry(name, itemId, nbt, description));
                 }
+                saveItems(uuid, profileId, new ArrayList<>(collected));
             });
-        });
     }
 
     private Path getFile(String uuid, String profileId) {

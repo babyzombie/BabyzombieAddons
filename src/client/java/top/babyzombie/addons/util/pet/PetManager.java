@@ -1,10 +1,8 @@
 package top.babyzombie.addons.util.pet;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -19,7 +17,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
-import top.babyzombie.addons.util.ServerTick;
+import top.babyzombie.addons.util.ScreenLoadWaiter;
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -54,9 +52,8 @@ public final class PetManager {
     private static final Pattern LOADOUT_PATTERN =
         Pattern.compile("^You equipped (.+)!$");
 
-    // Loadout switch delayed scan state
+    // Loadout switch pending flag — set by chat, consumed by whenScreenOpened
     private boolean loadoutSwitchPending;
-    private int loadoutSwitchDeadline; // tickCount deadline (now + ping/50 + buffer)
 
     private String currentProfileKey;
     private final List<PetData> pets = new ArrayList<>();
@@ -392,67 +389,30 @@ public final class PetManager {
 
     /** Scan the Pets menu, Exp Sharing, Skills, Accessory Bag, and Attribute Menu. */
     private void registerPetsMenuScan() {
-        ScreenEvents.AFTER_INIT.register((client, screen, sw, sh) -> {
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
-            if (!(screen instanceof AbstractContainerScreen<?> cs)) return;
-            String title = ChatUtils.stripColor(cs.getTitle().getString());
+        // Pets main page
+        ScreenLoadWaiter.whenScreenOpened(
+            title -> ChatUtils.stripColor(title).matches("(\\(\\d+/\\d+\\) )?Pets"),
+            44, 0, this::scanPetsContainer);
 
-            // Pets main page
-            if (title.matches("(\\(\\d+/\\d+\\) )?Pets")) {
-                final boolean[] scanned = {false};
-                ClientTickEvents.END_CLIENT_TICK.register(tickClient -> {
-                    if (scanned[0]) return;
-                    if (client.screen != cs) return;
-                    if (cs.getMenu().slots.get(44).getItem().isEmpty()) return;
-                    scanned[0] = true;
-                    scanPetsContainer(cs);
-                });
-            }
-            // Exp Sharing sub-page
-            if ("Exp Sharing".equals(title)) {
-                final boolean[] scanned = {false};
-                ClientTickEvents.END_CLIENT_TICK.register(tickClient -> {
-                    if (scanned[0]) return;
-                    if (client.screen != cs) return;
-                    if (cs.getMenu().slots.get(44).getItem().isEmpty()) return;
-                    scanned[0] = true;
-                    scanExpSharingPage(cs);
-                });
-            }
-            // Your Skills — scan Taming level
-            if ("Your Skills".equals(title)) {
-                final boolean[] scanned = {false};
-                ClientTickEvents.END_CLIENT_TICK.register(tickClient -> {
-                    if (scanned[0]) return;
-                    if (client.screen != cs) return;
-                    if (cs.getMenu().slots.get(30).getItem().isEmpty()) return;
-                    scanned[0] = true;
-                    scanSkillsPage(cs);
-                });
-            }
-            // Accessory Bag — scan Beastmaster Crest
-            if (title.startsWith("Accessory Bag")) {
-                final boolean[] scanned = {false};
-                ClientTickEvents.END_CLIENT_TICK.register(tickClient -> {
-                    if (scanned[0]) return;
-                    if (client.screen != cs) return;
-                    if (cs.getMenu().slots.get(44).getItem().isEmpty()) return;
-                    scanned[0] = true;
-                    scanAccessoryBag(cs);
-                });
-            }
-            // Attribute Menu — scan Battle Experience
-            if ("Attribute Menu".equals(title)) {
-                final boolean[] scanned = {false};
-                ClientTickEvents.END_CLIENT_TICK.register(tickClient -> {
-                    if (scanned[0]) return;
-                    if (client.screen != cs) return;
-                    if (cs.getMenu().slots.get(44).getItem().isEmpty()) return;
-                    scanned[0] = true;
-                    scanAttributeMenu(cs);
-                });
-            }
-        });
+        // Exp Sharing sub-page
+        ScreenLoadWaiter.whenScreenOpened(
+            title -> "Exp Sharing".equals(ChatUtils.stripColor(title)),
+            44, 0, this::scanExpSharingPage);
+
+        // Your Skills — scan Taming level
+        ScreenLoadWaiter.whenScreenOpened(
+            title -> "Your Skills".equals(ChatUtils.stripColor(title)),
+            30, 0, this::scanSkillsPage);
+
+        // Accessory Bag — scan Beastmaster Crest
+        ScreenLoadWaiter.whenScreenOpened(
+            title -> ChatUtils.stripColor(title).startsWith("Accessory Bag"),
+            44, 0, this::scanAccessoryBag);
+
+        // Attribute Menu — scan Battle Experience
+        ScreenLoadWaiter.whenScreenOpened(
+            title -> "Attribute Menu".equals(ChatUtils.stripColor(title)),
+            44, 0, this::scanAttributeMenu);
     }
 
     /** Save on disconnect or world unload. */
@@ -470,66 +430,34 @@ public final class PetManager {
      * If enabled in config, auto-close the menu after scanning.
      */
     private void registerLoadoutSwitch() {
+        // Always scan the pet when the Loadouts menu opens (harmless, idempotent)
+        ScreenLoadWaiter.whenScreenOpened(
+            title -> ChatUtils.stripColor(title).matches("\\(\\d+/\\d+\\) Loadouts"),
+            53, 0,
+            cs -> {
+                scanLoadoutPet(cs);
+                // Auto-close only if triggered by a recent loadout switch
+                if (loadoutSwitchPending) {
+                    loadoutSwitchPending = false;
+                    if (ModConfigManager.get().general.loadoutSwitchAutoClose) {
+                        var client = Minecraft.getInstance();
+                        client.execute(() -> {
+                            if (client.player != null) client.player.closeContainer();
+                        });
+                    }
+                }
+            });
+
+        // Chat message simply flags that the *next* Loadouts screen open
+        // (or refresh via OpenScreenPacket) should trigger an auto-close.
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             if (overlay) return true;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return true;
             String text = ChatUtils.stripColor(message.getString());
             if (!LOADOUT_PATTERN.matcher(text).find()) return true;
 
-            var client = Minecraft.getInstance();
-            if (client.player == null) return true;
-            // Set timeout: ping + 1s buffer, capped at 2s
-            int pingMs = ServerTick.getPing();
-            int pingTicks = pingMs > 0 ? Math.max(1, (pingMs + 49) / 50) : 2;
-            loadoutSwitchDeadline = client.player.tickCount + pingTicks + 20;
             loadoutSwitchPending = true;
             return true;
-        });
-
-        // Tick handler: wait for Loadouts menu to be open AND slot 53
-        // (6th row, 9th column) to be non-empty, then scan and optionally close.
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!loadoutSwitchPending) return;
-            if (client.player == null) {
-                loadoutSwitchPending = false;
-                return;
-            }
-
-            // Check if the Loadouts menu is open
-            if (!(client.screen instanceof AbstractContainerScreen<?> cs)) {
-                if (client.player.tickCount >= loadoutSwitchDeadline) {
-                    loadoutSwitchPending = false;
-                }
-                return;
-            }
-
-            String title = ChatUtils.stripColor(cs.getTitle().getString());
-            if (!title.matches("\\(\\d+/\\d+\\) Loadouts")) {
-                if (client.player.tickCount >= loadoutSwitchDeadline) {
-                    loadoutSwitchPending = false;
-                }
-                return;
-            }
-
-            // Screen is the Loadouts menu — wait for page to fully load.
-            // Slot 53 = 6th row, 9th column (0-indexed, the bottom-right corner).
-            if (cs.getMenu().slots.get(53).getItem().isEmpty()) {
-                if (client.player.tickCount >= loadoutSwitchDeadline) {
-                    loadoutSwitchPending = false;
-                }
-                return;
-            }
-
-            // Page fully loaded — scan the pet
-            loadoutSwitchPending = false;
-            scanLoadoutPet(cs);
-
-            // Auto-close if enabled
-            if (ModConfigManager.get().general.loadoutSwitchAutoClose) {
-                client.execute(() -> {
-                    if (client.player != null) client.player.closeContainer();
-                });
-            }
         });
     }
 

@@ -1,11 +1,10 @@
 package top.babyzombie.addons.module.misc;
 
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ScreenLoadWaiter;
 import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -19,8 +18,7 @@ public final class MinionCollectAutoClose {
     private static long collectClickTick = -1;
 
     public static void init() {
-        // Detect "Collect All" click — record the tick so the screen-arrival
-        // handler can check freshness without a blind timer.
+        // Detect "Collect All" click — record the tick for freshness guard
         ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, event) -> {
             if (!ModConfigManager.get().general.minionCollectAutoClose) return false;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
@@ -37,24 +35,20 @@ public final class MinionCollectAutoClose {
             return false;
         });
 
-        // Hypixel refreshes the minion screen by sending a new OpenScreenPacket.
-        // Close it immediately when the refreshed screen arrives — but only if
-        // it's soon enough after the click (freshness guard).
-        ScreenEvents.AFTER_INIT.register((client, screen, sw, sh) -> {
-            if (collectClickTick < 0) return;
-            if (ServerTick.getTick() - collectClickTick > TIMEOUT_TICKS) {
+        // When the refreshed Minion screen opens and slot 0 loads, close it —
+        // but only if soon enough after the click.
+        ScreenLoadWaiter.whenScreenOpened(
+            title -> MINION_TITLE.matcher(ChatUtils.stripColor(title)).find(),
+            0, TIMEOUT_TICKS,
+            cs -> {
+                if (collectClickTick < 0) return;
+                long elapsed = ServerTick.getTick() - collectClickTick;
                 collectClickTick = -1;
-                return;
-            }
-            if (!(screen instanceof AbstractContainerScreen<?> cs)) return;
-
-            String title = ChatUtils.stripColor(cs.getTitle().getString());
-            if (!MINION_TITLE.matcher(title).find()) return;
-
-            collectClickTick = -1;
-            client.execute(() -> {
-                if (client.player != null) client.player.closeContainer();
+                if (elapsed > TIMEOUT_TICKS) return;
+                var client = Minecraft.getInstance();
+                client.execute(() -> {
+                    if (client.player != null) client.player.closeContainer();
+                });
             });
-        });
     }
 }
