@@ -49,10 +49,7 @@ public final class PetManager {
     );
     private static final Pattern HELD_ITEM_PATTERN =
         Pattern.compile("Held Item: (.+)", Pattern.CASE_INSENSITIVE);
-    private static final Pattern LOADOUT_PATTERN =
-        Pattern.compile("^You equipped (.+)!$");
-
-    // Loadout switch pending flag — set by chat, consumed by whenScreenOpened
+    // Loadout switch pending flag — set by preset click, consumed by whenScreenOpened
     private boolean loadoutSwitchPending;
 
     private String currentProfileKey;
@@ -424,10 +421,9 @@ public final class PetManager {
     }
 
     /**
-     * Detect loadout switch via chat message "You equipped &lt;name&gt;!",
-     * then scan the Loadouts menu for the newly equipped pet when the page
-     * is fully loaded (slot 53, 第6排第9格 ≠ air).
-     * If enabled in config, auto-close the menu after scanning.
+     * Detect loadout switch via left-click on a preset slot in the Loadouts
+     * menu (rows 2-5, cols 6-8 = 12 slots). Then wait for the refreshed page
+     * to load (slot 53 ≠ air), scan the pet, and optionally auto-close.
      */
     private void registerLoadoutSwitch() {
         // Always scan the pet when the Loadouts menu opens (harmless, idempotent)
@@ -436,7 +432,6 @@ public final class PetManager {
             53, 0,
             cs -> {
                 scanLoadoutPet(cs);
-                // Auto-close only if triggered by a recent loadout switch
                 if (loadoutSwitchPending) {
                     loadoutSwitchPending = false;
                     if (ModConfigManager.get().general.loadoutSwitchAutoClose) {
@@ -448,16 +443,23 @@ public final class PetManager {
                 }
             });
 
-        // Chat message simply flags that the *next* Loadouts screen open
-        // (or refresh via OpenScreenPacket) should trigger an auto-close.
-        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
-            if (overlay) return true;
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return true;
-            String text = ChatUtils.stripColor(message.getString());
-            if (!LOADOUT_PATTERN.matcher(text).find()) return true;
+        // Left-click on a preset slot in the Loadouts menu flags that the
+        // next page refresh is a loadout switch and should trigger auto-close.
+        ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, event) -> {
+            if (event.button() != 0) return false;
+            if (slot == null || slot.index < 0) return false;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
+
+            String title = ChatUtils.stripColor(screen.getTitle().getString());
+            if (!title.matches("\\(\\d+/\\d+\\) Loadouts")) return false;
+
+            // Preset slots: rows 2-5, cols 6-8 → slots 14-16, 23-25, 32-34, 41-43
+            int row = slot.index / 9;
+            int col = slot.index % 9;
+            if (row < 1 || row > 4 || col < 5 || col > 7) return false;
 
             loadoutSwitchPending = true;
-            return true;
+            return false;
         });
     }
 
