@@ -10,6 +10,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
@@ -361,6 +362,7 @@ public final class PetManager {
     /** GUI click: right-click removes pet, left-click selects it (all sources). */
     private void registerGuiClick() {
         ContainerClickEvents.BEFORE_CONTAINER_INPUT.register((player, containerId, slotId, buttonNum, input) -> {
+            if (input != ContainerInput.PICKUP) return false;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
             var slot = player.containerMenu.getSlot(slotId);
             if (slot == null || !slot.hasItem()) return false;
@@ -448,6 +450,7 @@ public final class PetManager {
         // next page refresh is a loadout switch and should trigger auto-close.
         // Uses BEFORE_CONTAINER_INPUT to also catch programmatic clicks (e.g. IQ mod).
         ContainerClickEvents.BEFORE_CONTAINER_INPUT.register((player, containerId, slotId, buttonNum, input) -> {
+            if (input != ContainerInput.PICKUP) return false;
             if (buttonNum != 0) return false;
             if (slotId < 0) return false;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;

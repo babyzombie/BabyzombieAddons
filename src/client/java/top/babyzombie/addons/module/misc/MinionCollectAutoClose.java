@@ -2,6 +2,7 @@ package top.babyzombie.addons.module.misc;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.ContainerInput;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.util.ChatUtils;
@@ -21,6 +22,7 @@ public final class MinionCollectAutoClose {
     public static void init() {
         // Detect "Collect All" click — record the tick for freshness guard
         ContainerClickEvents.BEFORE_CONTAINER_INPUT.register((player, containerId, slotId, buttonNum, input) -> {
+            if (input != ContainerInput.PICKUP) return false;
             if (!ModConfigManager.get().general.minionCollectAutoClose) return false;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
 
