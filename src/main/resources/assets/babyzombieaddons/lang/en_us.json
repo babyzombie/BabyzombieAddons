@@ -743,5 +743,8 @@
   "config.babyzombieaddons.option.preventInstantReelDelay": "Delay (ms)",
   "config.babyzombieaddons.option.preventInstantReelDelay.desc": "Cancel right-click reel within this many milliseconds after casting (50–500, step 25).",
   "config.babyzombieaddons.group.preventInstantReel": "Anti Instant Reel",
+  "babyzombieaddons.debug.tablist.no_connection": "§cNot connected to a server",
+  "babyzombieaddons.debug.tablist.empty": "§eTab list is empty",
+  "babyzombieaddons.debug.tablist.copied": "§aTab list copied to clipboard",
   "fishing.rareSeaCreaturesAlert.title": "Rare Sea Creature"
 }

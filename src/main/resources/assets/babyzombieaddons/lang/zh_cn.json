@@ -743,5 +743,8 @@
   "config.babyzombieaddons.option.preventInstantReelDelay": "延迟时间（毫秒）",
   "config.babyzombieaddons.option.preventInstantReelDelay.desc": "抛竿后多少毫秒内取消右键收杆（50-500，步长 25）。",
   "config.babyzombieaddons.group.preventInstantReel": "防瞬间收杆",
+  "babyzombieaddons.debug.tablist.no_connection": "§c未连接到服务器",
+  "babyzombieaddons.debug.tablist.empty": "§eTab 列表为空",
+  "babyzombieaddons.debug.tablist.copied": "§a已复制 Tab 列表到剪贴板",
   "fishing.rareSeaCreaturesAlert.title": "稀有海怪"
 }

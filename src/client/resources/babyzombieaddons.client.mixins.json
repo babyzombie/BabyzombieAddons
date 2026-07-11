@@ -8,6 +8,7 @@
     "entity.SwingDurationMixin",
 
     "render.BossHealthOverlayAccessor",
+    "render.PlayerTabOverlayAccessor",
     "render.BossHealthOverlayMixin",
     "render.EntityRenderDispatcherScaleMixin",
     "render.EntityRenderMixin",

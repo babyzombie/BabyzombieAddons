@@ -47,6 +47,16 @@ public final class FishingCategory {
                                 .build())
                         .build())
 
+                // ── 鱼饵不足提醒（指向 popup.popupBaitLow）──
+                .option(Option.<Integer>createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.option.popupBaitLow"))
+                        .description(Component.translatable("config.babyzombieaddons.option.popupBaitLow.desc"))
+                        .binding(defaults.popup.popupBaitLow,
+                                () -> config.popup.popupBaitLow,
+                                v -> config.popup.popupBaitLow = v)
+                        .controller(IntegerController.createBuilder().range(0, 64).slider(2).build())
+                        .build())
+
                 .build();
     }
 
