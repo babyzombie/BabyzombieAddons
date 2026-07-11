@@ -32,6 +32,7 @@
   "config.babyzombieaddons.category.slayer": "Slayer",
   "config.babyzombieaddons.category.mining": "Mining",
   "config.babyzombieaddons.category.garden": "Garden",
+  "config.babyzombieaddons.category.fishing": "Fishing",
   "config.babyzombieaddons.option.partyAllinvite": "!allinv - Toggle All Invite",
   "config.babyzombieaddons.option.partyAllinvite.desc": "Respond to !allinv in party chat to toggle all-invite.\nRegex: ^[!！][ ]?all(?:inv)?(?:ite)?$",
   "config.babyzombieaddons.option.partyInvite": "!p - Invite Player",
@@ -731,5 +732,10 @@
   "babyzombieaddons.clickhover.suggest_command": "Click to fill: %s",
   "babyzombieaddons.clickhover.copy_to_clipboard": "Click to copy: %s",
   "babyzombieaddons.clickhover.change_page": "Click to go to page %s",
-  "babyzombieaddons.clickhover.unknown": "Click to interact"
+  "babyzombieaddons.clickhover.unknown": "Click to interact",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlert": "Mark Nearby Rare Sea Creatures",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlert.desc": "Highlight nearby rare sea creatures",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle": "Title Alert for Nearby Rare Sea Creatures",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle.desc": "Show a title with the creature name when rare sea creatures are nearby.",
+  "fishing.rareSeaCreaturesAlert.title": "Rare Sea Creature"
 }

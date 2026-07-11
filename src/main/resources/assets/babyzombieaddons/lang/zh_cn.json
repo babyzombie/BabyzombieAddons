@@ -32,6 +32,7 @@
   "config.babyzombieaddons.category.slayer": "猎手",
   "config.babyzombieaddons.category.mining": "挖矿",
   "config.babyzombieaddons.category.garden": "花园",
+  "config.babyzombieaddons.category.fishing": "钓鱼",
   "config.babyzombieaddons.option.partyAllinvite": "!allinv - 全员邀请",
   "config.babyzombieaddons.option.partyAllinvite.desc": "响应队伍聊天中的 !allinv 指令切换全员邀请。\n正则: ^[!！][ ]?all(?:inv)?(?:ite)?$",
   "config.babyzombieaddons.option.partyInvite": "!p - 邀请玩家",
@@ -731,5 +732,10 @@
   "babyzombieaddons.clickhover.suggest_command": "点击填充: %s",
   "babyzombieaddons.clickhover.copy_to_clipboard": "点击复制: %s",
   "babyzombieaddons.clickhover.change_page": "点击跳转到第 %s 页",
-  "babyzombieaddons.clickhover.unknown": "点击交互"
+  "babyzombieaddons.clickhover.unknown": "点击交互",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlert": "标记周围的稀有海怪",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlert.desc": "高亮附近的稀有海怪",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle": "Title 提示附近的稀有海怪",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle.desc": "附近有稀有海怪时显示 Title 提示其名称。",
+  "fishing.rareSeaCreaturesAlert.title": "稀有海怪"
 }

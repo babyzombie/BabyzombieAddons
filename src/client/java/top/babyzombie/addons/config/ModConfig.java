@@ -59,6 +59,7 @@ public class ModConfig {
     public PetConfig pet = new PetConfig();
     public AutotipConfig autotip = new AutotipConfig();
     public WindowTitleConfig windowTitle = new WindowTitleConfig();
+    public FishingConfig fishing = new FishingConfig();
 
     // ---- General ----
 
@@ -346,5 +347,12 @@ public class ModConfig {
         public boolean showSystemMemory = false;
         public boolean showPing = false;
         public boolean showLocation = false;
+    }
+
+    // ---- Fishing ----
+
+    public static class FishingConfig {
+        public boolean rareSeaCreaturesAlert = false;
+        public boolean rareSeaCreaturesAlertTitle = false;
     }
 }

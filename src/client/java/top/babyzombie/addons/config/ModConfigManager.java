@@ -68,6 +68,7 @@ public final class ModConfigManager {
                 .category(KuudraCategory.create(defaults, config))
                 .category(SlayerCategory.create(defaults, config))
                 .category(MiningCategory.create(defaults, config))
+                .category(FishingCategory.create(defaults, config))
                 .category(GardenCategory.create(defaults, config))
                 .category(PartyCategory.create(defaults, config))
                 .category(PopupCategory.create(defaults, config))

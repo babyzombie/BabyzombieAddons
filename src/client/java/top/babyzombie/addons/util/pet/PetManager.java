@@ -364,6 +364,8 @@ public final class PetManager {
         ContainerClickEvents.BEFORE_CONTAINER_INPUT.register((player, containerId, slotId, buttonNum, input) -> {
             if (input != ContainerInput.PICKUP) return false;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
+            if (Minecraft.getInstance().screen != null && ChatUtils.stripColor(Minecraft.getInstance().screen.getTitle().getString()).matches("(\\(\\d+/\\d+\\) )?Pets"))
+                return false;
             var slot = player.containerMenu.getSlot(slotId);
             if (slot == null || !slot.hasItem()) return false;
             ItemStack stack = slot.getItem();
