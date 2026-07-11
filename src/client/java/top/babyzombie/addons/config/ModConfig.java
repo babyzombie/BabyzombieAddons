@@ -352,7 +352,12 @@ public class ModConfig {
     // ---- Fishing ----
 
     public static class FishingConfig {
+        // 稀有海怪
         public boolean rareSeaCreaturesAlert = false;
         public boolean rareSeaCreaturesAlertTitle = false;
+
+        // 防瞬间收杆
+        public boolean preventInstantReel = false;
+        public int preventInstantReelDelay = 200;
     }
 }

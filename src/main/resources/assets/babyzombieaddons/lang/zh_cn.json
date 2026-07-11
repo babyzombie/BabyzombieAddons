@@ -737,5 +737,11 @@
   "config.babyzombieaddons.option.rareSeaCreaturesAlert.desc": "高亮附近的稀有海怪",
   "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle": "Title 提示附近的稀有海怪",
   "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle.desc": "附近有稀有海怪时显示 Title 提示其名称。",
+  "config.babyzombieaddons.group.rareSeaCreatures": "稀有海怪",
+  "config.babyzombieaddons.option.preventInstantReel": "防止抛竿后瞬间收杆",
+  "config.babyzombieaddons.option.preventInstantReel.desc": "防止抛竿后瞬间收杆",
+  "config.babyzombieaddons.option.preventInstantReelDelay": "延迟时间（毫秒）",
+  "config.babyzombieaddons.option.preventInstantReelDelay.desc": "抛竿后多少毫秒内取消右键收杆（50-500，步长 25）。",
+  "config.babyzombieaddons.group.preventInstantReel": "防瞬间收杆",
   "fishing.rareSeaCreaturesAlert.title": "稀有海怪"
 }

@@ -737,5 +737,11 @@
   "config.babyzombieaddons.option.rareSeaCreaturesAlert.desc": "Highlight nearby rare sea creatures",
   "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle": "Title Alert for Nearby Rare Sea Creatures",
   "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle.desc": "Show a title with the creature name when rare sea creatures are nearby.",
+  "config.babyzombieaddons.group.rareSeaCreatures": "Rare Sea Creatures",
+  "config.babyzombieaddons.option.preventInstantReel": "Prevent Instant Reel",
+  "config.babyzombieaddons.option.preventInstantReel.desc": "Prevent instant reel after casting",
+  "config.babyzombieaddons.option.preventInstantReelDelay": "Delay (ms)",
+  "config.babyzombieaddons.option.preventInstantReelDelay.desc": "Cancel right-click reel within this many milliseconds after casting (50–500, step 25).",
+  "config.babyzombieaddons.group.preventInstantReel": "Anti Instant Reel",
   "fishing.rareSeaCreaturesAlert.title": "Rare Sea Creature"
 }

@@ -47,11 +47,9 @@ public final class WindowTitleModule {
         HypixelLocationTracker tracker = HypixelLocationTracker.getInstance();
 
         // ── 前缀 ──
-        if (wt.overrideOriginal && wt.showLocation) {
+        if (wt.overrideOriginal && wt.showLocation && tracker.isOnHypixel()) {
             // 覆盖模式仅在位置显示开启时生效：在 Hypixel 用 "Hypixel" 顶替原前缀
-            if (tracker.isOnHypixel()) {
-                sb.append("Hypixel");
-            }
+            sb.append("Hypixel");
         } else {
             if (originalTitle != null && !originalTitle.isEmpty()) {
                 sb.append(originalTitle);
