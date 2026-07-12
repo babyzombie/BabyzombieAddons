@@ -15,7 +15,7 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 public final class RareSeaCreaturesAlert {
 
     /// 扫描半径（格）
-    private static final double SCAN_RANGE = 24.0;
+    private static final double SCAN_RANGE = 16.0;
 
     /// 橙色信标光柱颜色 (ARGB)
     private static final int BEAM_COLOR = 0xFFFF6600;
@@ -47,16 +47,16 @@ public final class RareSeaCreaturesAlert {
 
             var stands = level.getEntitiesOfClass(
                     ArmorStand.class,
-                    new AABB(player.blockPosition()).inflate(SCAN_RANGE),
+                    new AABB(player.blockPosition()).inflate(SCAN_RANGE, 128, SCAN_RANGE),
                     e -> !e.isDeadOrDying()
             );
 
             int count = 0;
             String firstCleanedName = null;
             for (var stand : stands) {
-                String name = ChatUtils.toLegacyString(stand.getName());
+                String name = stand.getName().getString();
                 if ((name.contains(AQUATIC) || name.contains(MAGMATIC)) && name.contains(ELUSIVE)) {
-                    BeamRenderer.drawBeam(ctx, stand.getX(), stand.getY(), stand.getZ(),
+                    BeamRenderer.drawBeam(ctx, stand.getX(), stand.getY() - 5, stand.getZ(),
                             2048, 0.15f, BEAM_COLOR);
                     if (firstCleanedName == null) {
                         firstCleanedName = cleanSeaCreatureName(name);
@@ -82,14 +82,14 @@ public final class RareSeaCreaturesAlert {
     /// 清理盔甲架名称：移除表情/私有区字符、等级标签、血量数字，
     /// 保留颜色符号。
     private static String cleanSeaCreatureName(String rawName) {
-        // 1. 复用 ChatUtils 移除表情和私有区字符（含爱心等图标）
+        // 1. 复用 ChatUtils 移除表情和私有区字符
         String s = ChatUtils.removeEmoji(rawName);
         // 2. 移除等级标签 [Lv100] / [LV100]
         s = s.replaceAll("\\[[Ll][Vv]\\s*\\d+\\]", "");
         // 3. 移除血量数字 (如 1,145,140, 10k, 1.2M)
-        s = s.replaceAll("[\\d,]+[kKmMbB]?", "");
+        s = s.replaceAll("[\\d,./]+[kKmMbB]?", "").replace("❤", "");
         // 4. 合并多余空格并 trim
         s = s.replaceAll(" {2,}", " ").trim();
-        return s;
+        return "§6" + s;
     }
 }

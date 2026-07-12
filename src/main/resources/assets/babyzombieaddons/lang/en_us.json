@@ -746,5 +746,14 @@
   "babyzombieaddons.debug.tablist.no_connection": "§cNot connected to a server",
   "babyzombieaddons.debug.tablist.empty": "§eTab list is empty",
   "babyzombieaddons.debug.tablist.copied": "§aTab list copied to clipboard",
-  "fishing.rareSeaCreaturesAlert.title": "Rare Sea Creature"
+  "fishing.rareSeaCreaturesAlert.title": "Rare Sea Creature",
+
+  "config.babyzombieaddons.category.hunting": "Hunting",
+  "config.babyzombieaddons.group.safari": "Safari",
+  "config.babyzombieaddons.option.safariBellDisplay": "Safari Bell Display",
+  "config.babyzombieaddons.option.safariBellDisplay.desc": "Show rainbow-colored beacon beams at bell locations in the Safari zone.",
+  "config.babyzombieaddons.option.safariShulkerGlow": "Safari Shulker Glow",
+  "config.babyzombieaddons.option.safariShulkerGlow.desc": "Highlight all shulkers in the Safari zone with their own colour, visible through walls.",
+  "config.babyzombieaddons.option.safariHideyhoGlow": "Safari Hideyho Glow",
+  "config.babyzombieaddons.option.safariHideyhoGlow.desc": "Highlight the Hideyho NPC in the Safari zone, visible through walls."
 }

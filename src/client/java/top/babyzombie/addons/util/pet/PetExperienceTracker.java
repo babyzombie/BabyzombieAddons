@@ -94,7 +94,7 @@ public final class PetExperienceTracker {
     private boolean onGameMessage(Component message, boolean overlay) {
         if (!overlay) return true;
         var tracker = HypixelLocationTracker.getInstance();
-        if (!tracker.isInSkyblock() || tracker.isInRift()) return true;
+        if (!tracker.isInSkyblock() || tracker.isInRift() || tracker.isInSafari()) return true;
         if (petManager == null || state == null) return true;
 
         SkillXPActionBarParser.SkillXPEvent event = actionBarParser.parse(message);

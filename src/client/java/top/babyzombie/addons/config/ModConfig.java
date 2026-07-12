@@ -60,6 +60,7 @@ public class ModConfig {
     public AutotipConfig autotip = new AutotipConfig();
     public WindowTitleConfig windowTitle = new WindowTitleConfig();
     public FishingConfig fishing = new FishingConfig();
+    public HuntingConfig hunting = new HuntingConfig();
 
     // ---- General ----
 
@@ -359,5 +360,11 @@ public class ModConfig {
         // 防瞬间收杆
         public boolean preventInstantReel = false;
         public int preventInstantReelDelay = 200;
+    }
+
+    public static class HuntingConfig {
+        public boolean safariBellDisplay = false;
+        public boolean safariShulkerGlow = false;
+        public boolean safariHideyhoGlow = false;
     }
 }

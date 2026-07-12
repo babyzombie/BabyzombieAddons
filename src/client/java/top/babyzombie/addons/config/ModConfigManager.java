@@ -74,6 +74,7 @@ public final class ModConfigManager {
                 .category(PopupCategory.create(defaults, config))
                 .category(EventsCategory.create(defaults, config))
                 .category(MiscCategory.create(defaults, config))
+                .category(HuntingCategory.create(defaults, config))
                 .search(search)
         ).generateScreen(parent, configType);
     }

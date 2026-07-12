@@ -41,16 +41,16 @@ public final class DebugTabListCommand {
         // Players
         var players = ta.invokeGetPlayerInfos();
         if (!players.isEmpty()) {
+            var idx = new int[]{0};
             sb.append("Players:\n");
-            int idx = 1;
-            for (var info : players) {
-                sb.append(idx++).append(". ");
-                var displayName = info.getTabListDisplayName();
+            players.forEach(playerInfo -> {
+                sb.append(idx[0]++).append(". ");
+                var displayName = playerInfo.getTabListDisplayName();
                 if (displayName != null) {
                     sb.append(ChatUtils.toLegacyString(displayName));
                 }
                 sb.append("\n");
-            }
+            });
         }
 
         // Footer

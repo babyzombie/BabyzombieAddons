@@ -55,7 +55,7 @@ public final class PetDisplayHud {
             Identifier.fromNamespaceAndPath("babyzombieaddons", "pet_display"),
             (context, tickCounter) -> {
                 var tracker = HypixelLocationTracker.getInstance();
-                if (!tracker.isInSkyblock() || tracker.isInRift()) return;
+                if (!tracker.isInSkyblock() || tracker.isInRift() || tracker.isInSafari()) return;
                 render(context);
             }
         );
