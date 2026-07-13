@@ -85,34 +85,6 @@ public final class MiningCategory {
                                 .controller(IntegerController.createBuilder().range(3, 20).slider(1).build())
                                 .build())
                         .build())
-                .group(OptionGroup.createBuilder()
-                        .name(Component.translatable("config.babyzombieaddons.group.profitTracker"))
-                        .option(bool("profitTracker", defaults.mining.profitTracker,
-                                () -> config.mining.profitTracker, v -> config.mining.profitTracker = v))
-                        .option(bool("profitTrackerUseNpcPrices", defaults.mining.profitTrackerUseNpcPrices,
-                                () -> config.mining.profitTrackerUseNpcPrices,
-                                v -> config.mining.profitTrackerUseNpcPrices = v))
-                        .option(bool("profitTrackerIncludeRoughGems", defaults.mining.profitTrackerIncludeRoughGems,
-                                () -> config.mining.profitTrackerIncludeRoughGems,
-                                v -> config.mining.profitTrackerIncludeRoughGems = v))
-                        .option(Option.<Integer>createBuilder()
-                                .name(Component.translatable("config.babyzombieaddons.option.profitTrackerPristineChance"))
-                                .description(Component.translatable("config.babyzombieaddons.option.profitTrackerPristineChance.desc"))
-                                .binding(defaults.mining.profitTrackerPristineChance,
-                                        () -> config.mining.profitTrackerPristineChance,
-                                        v -> config.mining.profitTrackerPristineChance = v)
-                                .controller(IntegerController.createBuilder().range(0, 100).build())
-                                .build())
-                        .option(Option.<ModConfig.ProfitTrackerGemTier>createBuilder()
-                                .name(Component.translatable("config.babyzombieaddons.option.profitTrackerGemTier"))
-                                .description(Component.translatable("config.babyzombieaddons.option.profitTrackerGemTier.desc"))
-                                .binding(defaults.mining.profitTrackerGemTier,
-                                        () -> config.mining.profitTrackerGemTier,
-                                        v -> config.mining.profitTrackerGemTier = v)
-                                .controller(ConfigUtils.createEnumDropdownController(
-                                        v -> Component.translatable("config.babyzombieaddons.option.profitTrackerGemTier." + v.name())))
-                                .build())
-                        .build())
                 .build();
     }
 

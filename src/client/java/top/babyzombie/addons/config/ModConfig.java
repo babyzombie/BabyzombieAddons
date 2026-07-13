@@ -20,27 +20,6 @@ public class ModConfig {
     public enum WorldRenderPhase { AFTER_ENTITIES, END_MAIN }
     public enum BzGetFromSacksMode { OFF, GET_ONLY, GET_AND_RECLICK }
     public enum AutoPotionsMode { OFF, M4, M5, M6, M7 }
-    public enum ProfitTrackerGemTier {
-        FLAWED(1, 1D),
-        FINE(2, 80D),
-        FLAWLESS(3, 6400D);
-
-        private final int tier;
-        private final double divisor;
-
-        ProfitTrackerGemTier(int tier, double divisor) {
-            this.tier = tier;
-            this.divisor = divisor;
-        }
-
-        public int tier() {
-            return tier;
-        }
-
-        public double divisor() {
-            return divisor;
-        }
-    }
 
     public enum ToxicArrowMinTier { T1, T2, T3, T4, T5 }
 
@@ -222,11 +201,6 @@ public class ModConfig {
         public boolean jungleTempleThinWall = false;
         public boolean mithrilGourmandAutoExpresso = false;
         public int mithrilGourmandTriggerSeconds = 10;
-        public boolean profitTracker = false;
-        public boolean profitTrackerUseNpcPrices = false;
-        public boolean profitTrackerIncludeRoughGems = false;
-        public int profitTrackerPristineChance = 20;
-        public ProfitTrackerGemTier profitTrackerGemTier = ProfitTrackerGemTier.FLAWED;
     }
 
     // ---- Garden ----

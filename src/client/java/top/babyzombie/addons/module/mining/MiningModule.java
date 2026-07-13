@@ -1,7 +1,6 @@
 package top.babyzombie.addons.module.mining;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
-import top.babyzombie.addons.module.mining.profit.MiningProfitModule;
 
 public final class MiningModule {
     private MiningModule() {}
@@ -24,7 +23,6 @@ public final class MiningModule {
         PowderMiningSounds.init();
         DrillSwingSuppression.init();
         MithrilGourmandModule.init();
-        MiningProfitModule.init();
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             if (world == null) return;
