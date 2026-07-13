@@ -92,7 +92,7 @@ public final class DungeonModule {
             if (!AutoRequeue.canRequeue || AutoRequeue.cancelAutoJoin) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra() && !HypixelLocationTracker.getInstance().isInDungeon()) return;
             if (ModConfigManager.get().dungeon.requeue.dungeonRequeue == ModConfig.RequeueMode.OFF && HypixelLocationTracker.getInstance().isInDungeon()) return;
-            if (ModConfigManager.get().dungeon.requeue.kuudraRequeue == ModConfig.RequeueMode.OFF && HypixelLocationTracker.getInstance().isInKuudra()) return;
+            if (ModConfigManager.get().kuudra.requeue.kuudraRequeue == ModConfig.RequeueMode.OFF && HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (!PartyTracker.getInstance().isSelfLeader()) return;
             var pm = PartyModule.PARTY_CHAT.matcher(ChatUtils.stripColor(m.getString()));
             if (!pm.find()) return;

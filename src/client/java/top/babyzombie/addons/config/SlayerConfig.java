@@ -4,11 +4,11 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorColour;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorColour;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
+import io.github.notenoughupdates.moulconfig.ChromaColour;
 import top.babyzombie.addons.config.ModConfig.*;
 
 public class SlayerConfig {
@@ -69,10 +69,10 @@ public class SlayerConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossLineWidth", desc = "config.babyzombieaddons.option.boxBossLineWidth.desc") @ConfigEditorSlider(minValue = 1, maxValue = 16, minStep = 1)
         public int boxBossLineWidth = 5;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossColor", desc = "config.babyzombieaddons.option.boxBossColor.desc") @ConfigEditorColour
-        public String boxBossColor = "0:255:255:255:255";
+        public ChromaColour boxBossColor = ChromaColour.fromStaticRGB(255, 255, 255, 255);
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossBeam", desc = "config.babyzombieaddons.option.boxBossBeam.desc") @ConfigEditorBoolean
         public boolean boxBossBeam = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossBeamColor", desc = "config.babyzombieaddons.option.boxBossBeamColor.desc") @ConfigEditorColour
-        public String boxBossBeamColor = "0:255:255:255:255";
+        public ChromaColour boxBossBeamColor = ChromaColour.fromStaticRGB(255, 255, 255, 255);
     }
 }

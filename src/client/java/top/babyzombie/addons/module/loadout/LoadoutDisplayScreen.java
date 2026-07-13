@@ -298,8 +298,13 @@ public class LoadoutDisplayScreen extends Screen {
                 // 右侧5行文本统一 lh2 间距
                 ty2 = cy + m;
                 if (pd.petName != null && !pd.petName.equalsIgnoreCase("None") && ty2 < cy + reh) {
-                    String d = pd.petLevel != null ? "Lv" + pd.petLevel + " " + pd.petName : pd.petName;
-                    drawWrappedRight(g, Component.literal(d).withColor(0xFFFFAA00), rx, ty2, rx - lx);
+                    String d;
+                    if (pd.petNameRaw != null) {
+                        d = pd.petNameRaw; // 原始名字已包含 [Lvl X] 和颜色代码
+                    } else {
+                        d = pd.petLevel != null ? "Lv" + pd.petLevel + " " + pd.petName : pd.petName;
+                    }
+                    drawWrappedRight(g, Component.literal(d), rx, ty2, rx - lx);
                     ty2 += lh2;
                 }
                 if (pd.powerStone != null && !pd.powerStone.equalsIgnoreCase("None") && ty2 < cy + reh) {

@@ -40,10 +40,6 @@ public class DungeonConfig {
         public RequeueMode dungeonRequeue = RequeueMode.OFF;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.dungeonRequeueDelay", desc = "config.babyzombieaddons.option.dungeonRequeueDelay.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1)
         public int dungeonRequeueDelay = 0;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraRequeue", desc = "config.babyzombieaddons.option.kuudraRequeue.desc") @ConfigEditorDropdown @SearchTag("kuudra")
-        public RequeueMode kuudraRequeue = RequeueMode.OFF;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraRequeueDelay", desc = "config.babyzombieaddons.option.kuudraRequeueDelay.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1)
-        public int kuudraRequeueDelay = 0;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.requeueMessage", desc = "config.babyzombieaddons.option.requeueMessage.desc") @ConfigEditorText
         public String requeueMessage = "going in %delay%";
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.requeueCancelMessage", desc = "config.babyzombieaddons.option.requeueCancelMessage.desc") @ConfigEditorText

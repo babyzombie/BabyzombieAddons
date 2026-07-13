@@ -1,7 +1,6 @@
 package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import io.github.notenoughupdates.moulconfig.ChromaColour;
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.monster.Giant;
@@ -55,14 +54,14 @@ public final class KuudraWaypoints {
 
             if ("Rescue supplies".equals(phase)) {
                 if (cfg.waypoints.supplyBeacons) {
-                    float[] c = argbToFloats(ChromaColour.specialToSimpleRGB(cfg.waypoints.supplyBeaconColor));
+                    float[] c = argbToFloats(cfg.waypoints.supplyBeaconColor.getEffectiveColourRGB());
                     for (var g : client.player.level().getEntitiesOfClass(Giant.class,
                             new AABB(client.player.blockPosition()).inflate(64)))
                         beams.add(new Beam(g.getX() - 2.5, g.getY() + 9.5, g.getZ() + 3.0,
                                 c[0], c[1], c[2], c[3], 20f));
                 }
                 if (cfg.waypoints.supplyDropoffBeacons) {
-                    float[] c = argbToFloats(ChromaColour.specialToSimpleRGB(cfg.waypoints.supplyDropoffBeaconColor));
+                    float[] c = argbToFloats(cfg.waypoints.supplyDropoffBeaconColor.getEffectiveColourRGB());
                     for (var s : client.player.level().getEntitiesOfClass(
                             net.minecraft.world.entity.decoration.ArmorStand.class,
                             new AABB(client.player.blockPosition()).inflate(64),
@@ -73,7 +72,7 @@ public final class KuudraWaypoints {
                 }
             } else if ("Protect Elle".equals(phase)) {
                 if (cfg.waypoints.ballistaBuildBeacons || cfg.waypoints.ballistaProgressText) {
-                    float[] bc = argbToFloats(ChromaColour.specialToSimpleRGB(cfg.waypoints.ballistaBeaconColor));
+                    float[] bc = argbToFloats(cfg.waypoints.ballistaBeaconColor.getEffectiveColourRGB());
                     for (var s : client.player.level().getEntitiesOfClass(
                             net.minecraft.world.entity.decoration.ArmorStand.class,
                             new AABB(client.player.blockPosition()).inflate(64),
@@ -88,13 +87,13 @@ public final class KuudraWaypoints {
                             String[] parts = ChatUtils.stripColor(s.getName().getString()).split(" ");
                             String key = "p2_" + s.getId(); seenKeys.add(key);
                             textEntries.put(key, new TextData(parts.length > 1 ? parts[parts.length - 1] : "",
-                                    x, y + 1.2, z, ChromaColour.specialToSimpleRGB(cfg.waypoints.ballistaTextColor)));
+                                    x, y + 1.2, z, cfg.waypoints.ballistaTextColor.getEffectiveColourRGB()));
                         }
                     }
                 }
             } else {
                 if (cfg.waypoints.fuelOrbBeacons) {
-                    float[] c = argbToFloats(ChromaColour.specialToSimpleRGB(cfg.waypoints.fuelOrbBeaconColor));
+                    float[] c = argbToFloats(cfg.waypoints.fuelOrbBeaconColor.getEffectiveColourRGB());
                     for (var g : client.player.level().getEntitiesOfClass(Giant.class,
                             new AABB(client.player.blockPosition()).inflate(64)))
                         beams.add(new Beam(g.getX() - 2.5, g.getY() + 9.5, g.getZ() + 3.0,

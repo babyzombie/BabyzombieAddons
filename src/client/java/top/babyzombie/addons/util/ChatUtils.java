@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
-import java.util.Map;
 import java.util.Optional;
 
 public final class ChatUtils {

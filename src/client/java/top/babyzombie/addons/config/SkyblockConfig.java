@@ -21,7 +21,7 @@ public class SkyblockConfig {
     public BzGetFromSacksMode bzGetFromSacks = BzGetFromSacksMode.OFF;
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.raredropManage", desc = "config.babyzombieaddons.option.raredropManage.desc") @ConfigEditorButton(buttonText = "OPEN")
-    public transient Runnable raredropManage = () -> Minecraft.getInstance().setScreen(new RareDropScreen(null));
+    public transient Runnable raredropManage = () -> Minecraft.getInstance().setScreen(new RareDropScreen(Minecraft.getInstance().screen));
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.cakeBuffTracker", desc = "config.babyzombieaddons.option.cakeBuffTracker.desc") @ConfigEditorBoolean @SearchTag("cake")
     public boolean cakeBuffTracker = false;
@@ -43,16 +43,16 @@ public class SkyblockConfig {
     public static class AutoIS {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.autois", desc = "config.babyzombieaddons.option.autois.desc") @ConfigEditorBoolean
         public boolean enabled = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.autoisDelay", desc = "config.babyzombieaddons.option.autoisDelay.desc") @ConfigEditorSlider(minValue = 5, maxValue = 125, minStep = 5)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.autoisDelay", desc = "config.babyzombieaddons.option.autoisDelay.desc") @ConfigEditorSlider(minValue = 5, maxValue = 125, minStep = 1)
         public int delay = 5;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.autoisDest", desc = "config.babyzombieaddons.option.autoisDest.desc") @ConfigEditorDropdown
-        public AutoISDest dest = AutoISDest.GARDEN;
+        public AutoISDest dest = AutoISDest.ISLAND;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideEntities", desc = "config.babyzombieaddons.option.hideEntities.desc") @ConfigEditorBoolean
         public boolean hideEntities = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.backOnServerRestart", desc = "config.babyzombieaddons.option.backOnServerRestart.desc") @ConfigEditorBoolean
         public boolean backOnServerRestart = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.autoBackToSkyblock", desc = "config.babyzombieaddons.option.autoBackToSkyblock.desc") @ConfigEditorDropdown
-        public KickRecovery autoBackToSkyblock = KickRecovery.LOBBY_ONLY;
+        public KickRecovery autoBackToSkyblock = KickRecovery.OFF;
     }
 
     public static class Pet {
@@ -69,7 +69,7 @@ public class SkyblockConfig {
     }
 
     public static class NecronBlade {
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.necronBladeExplosionVolume", desc = "config.babyzombieaddons.option.necronBladeExplosionVolume.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.05f)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.necronBladeExplosionVolume", desc = "config.babyzombieaddons.option.necronBladeExplosionVolume.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f)
         public float explosionVolume = 1.0f;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.necronBladeHideExplosionParticles", desc = "config.babyzombieaddons.option.necronBladeHideExplosionParticles.desc") @ConfigEditorBoolean
         public boolean hideExplosionParticles = false;

@@ -43,19 +43,19 @@ public class EventsConfig {
     public static class FruitDiggingSolver {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fruitDiggingSolver", desc = "config.babyzombieaddons.option.fruitDiggingSolver.desc") @ConfigEditorBoolean @SearchTag("fruit")
         public boolean enabled = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverBombPenalty", desc = "config.babyzombieaddons.option.solverBombPenalty.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1000, minStep = 10)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverBombPenalty", desc = "config.babyzombieaddons.option.solverBombPenalty.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1000, minStep = 1)
         public float bombPenalty = 200f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverRumPenalty", desc = "config.babyzombieaddons.option.solverRumPenalty.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1000, minStep = 10)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverRumPenalty", desc = "config.babyzombieaddons.option.solverRumPenalty.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1000, minStep = 1)
         public float rumPenalty = 100f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverMinesInfoWeight", desc = "config.babyzombieaddons.option.solverMinesInfoWeight.desc") @ConfigEditorSlider(minValue = 0, maxValue = 200, minStep = 0.5f)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverMinesInfoWeight", desc = "config.babyzombieaddons.option.solverMinesInfoWeight.desc") @ConfigEditorSlider(minValue = 0, maxValue = 200, minStep = 0.1f)
         public float minesInfoWeight = 3f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverTreasureInfoWeight", desc = "config.babyzombieaddons.option.solverTreasureInfoWeight.desc") @ConfigEditorSlider(minValue = 0, maxValue = 200, minStep = 0.5f)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverTreasureInfoWeight", desc = "config.babyzombieaddons.option.solverTreasureInfoWeight.desc") @ConfigEditorSlider(minValue = 0, maxValue = 200, minStep = 0.1f)
         public float treasureInfoWeight = 2f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverAnchorInfoWeight", desc = "config.babyzombieaddons.option.solverAnchorInfoWeight.desc") @ConfigEditorSlider(minValue = 0, maxValue = 200, minStep = 0.5f)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverAnchorInfoWeight", desc = "config.babyzombieaddons.option.solverAnchorInfoWeight.desc") @ConfigEditorSlider(minValue = 0, maxValue = 200, minStep = 0.1f)
         public float anchorInfoWeight = 1f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverEarlyAppleBonus", desc = "config.babyzombieaddons.option.solverEarlyAppleBonus.desc") @ConfigEditorSlider(minValue = 0, maxValue = 500, minStep = 10)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverEarlyAppleBonus", desc = "config.babyzombieaddons.option.solverEarlyAppleBonus.desc") @ConfigEditorSlider(minValue = 0, maxValue = 500, minStep = 1)
         public float earlyAppleBonus = 50f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverEarlyCherryBonus", desc = "config.babyzombieaddons.option.solverEarlyCherryBonus.desc") @ConfigEditorSlider(minValue = 0, maxValue = 500, minStep = 10)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverEarlyCherryBonus", desc = "config.babyzombieaddons.option.solverEarlyCherryBonus.desc") @ConfigEditorSlider(minValue = 0, maxValue = 500, minStep = 1)
         public float earlyCherryBonus = 80f;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.solverLateGameDigs", desc = "config.babyzombieaddons.option.solverLateGameDigs.desc") @ConfigEditorSlider(minValue = 0, maxValue = 15, minStep = 1)
         public int lateGameDigs = 3;

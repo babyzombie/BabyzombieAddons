@@ -250,11 +250,14 @@ public final class LoadoutItemResolver {
         data.presetName = ChatUtils.stripColor(presetStack.getHoverName().getString());
 
         List<String> lines = new ArrayList<>();
+        List<net.minecraft.network.chat.Component> rawLines = new ArrayList<>();
         for (var line : lore.lines()) {
             lines.add(line.getString());
+            rawLines.add(line);
         }
 
-        for (String line : lines) {
+        for (int li = 0; li < lines.size(); li++) {
+            String line = lines.get(li);
             String stripped = ChatUtils.stripColor(line);
             if (stripped.isEmpty()) continue;
 
@@ -284,10 +287,16 @@ public final class LoadoutItemResolver {
                 // 提取等级
                 var lvlMatcher = java.util.regex.Pattern.compile("\\[Lvl (\\d+)]").matcher(petPart);
                 if (lvlMatcher.find()) data.petLevel = lvlMatcher.group(1);
-                // 去掉 [Lvl X] 和 [...] 格式的前缀
+                // 去掉 [Lvl X] 和 [...] 格式的前缀（cleanName 用）
                 String cleaned = petPart.replaceAll("\\[.*?\\]", "").trim();
                 if (!cleaned.isEmpty() && !cleaned.equalsIgnoreCase("None")) {
                     data.petName = cleaned;
+                }
+                // 同时保留带颜色代码的原始宠物名（仅去掉 "Pet: " 前缀）
+                String legacy = ChatUtils.toLegacyString(rawLines.get(li));
+                String rawName = legacy.replaceFirst("^.*Pet:\\s*", "").trim();
+                if (!rawName.isEmpty() && !ChatUtils.stripColor(rawName).equalsIgnoreCase("None")) {
+                    data.petNameRaw = rawName;
                 }
             }
             // 属性
@@ -320,7 +329,7 @@ public final class LoadoutItemResolver {
         public String presetName;
         public String helmetName, chestplateName, leggingsName, bootsName;
         public String necklaceName, cloakName, beltName, glovesName;
-        public String petName, petLevel;
+        public String petName, petNameRaw, petLevel;
         public String powerStone, tuningSlot, hotm, hotf;
 
         public boolean isEmpty() {

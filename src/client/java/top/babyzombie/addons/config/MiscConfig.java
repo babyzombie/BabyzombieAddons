@@ -12,7 +12,7 @@ public class MiscConfig {
     @ConfigOption(name = "config.babyzombieaddons.option.wideMoulConfig", desc = "config.babyzombieaddons.option.wideMoulConfig.desc")
     @ConfigEditorBoolean
     @SearchTag("wide")
-    public boolean wideMoulConfig = true;
+    public boolean wideMoulConfig = false;
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.debugMode", desc = "config.babyzombieaddons.option.debugMode.desc")
@@ -34,7 +34,7 @@ public class MiscConfig {
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.serverVisitExpireMinutes", desc = "config.babyzombieaddons.option.serverVisitExpireMinutes.desc")
-    @ConfigEditorSlider(minValue = 1, maxValue = 60, minStep = 2)
+    @ConfigEditorSlider(minValue = 1, maxValue = 60, minStep = 1)
     @SearchTag("visit")
     public int serverVisitExpireMinutes = 10;
 

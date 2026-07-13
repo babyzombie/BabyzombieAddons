@@ -1,9 +1,14 @@
 package top.babyzombie.addons.config;
 
 import io.github.notenoughupdates.moulconfig.Config;
+import io.github.notenoughupdates.moulconfig.Social;
 import io.github.notenoughupdates.moulconfig.annotations.Category;
+import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import com.google.gson.annotations.Expose;
 import net.minecraft.network.chat.Component;
+
+import java.util.List;
 
 public class ModConfig extends Config {
 
@@ -94,6 +99,29 @@ public class ModConfig extends Config {
     /** Translates a key via Minecraft's I18n system. */
     private static String t(String key) {
         return Component.translatable(key).getString();
+    }
+
+    // ── Title & Social Links ──
+
+    @Override
+    public StructuredText getTitle() {
+        return StructuredText.translatable("config.babyzombieaddons.title");
+    }
+
+    @Override
+    public List<Social> getSocials() {
+        return List.of(
+                Social.forLink(
+                        StructuredText.translatable("config.babyzombieaddons.social.github"),
+                        new MyResourceLocation("babyzombieaddons", "textures/github.png"),
+                        "https://github.com/babyzombie/BabyzombieAddons"
+                ),
+                Social.forLink(
+                        StructuredText.translatable("config.babyzombieaddons.social.gitee"),
+                        new MyResourceLocation("babyzombieaddons", "textures/gitee.png"),
+                        "https://gitee.com/babyzombie/BabyzombieAddons"
+                )
+        );
     }
 
     // ── Categories ──

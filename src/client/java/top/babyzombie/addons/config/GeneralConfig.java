@@ -9,6 +9,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
+import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfig.*;
 import top.babyzombie.addons.config.hud.HudManager;
 
@@ -21,7 +22,7 @@ public class GeneralConfig {
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.serverResourcePackAutoAccept", desc = "config.babyzombieaddons.option.serverResourcePackAutoAccept.desc") @ConfigEditorBoolean @SearchTag("resourcepack")
     public boolean serverResourcePackAutoAccept = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.hudEdit", desc = "config.babyzombieaddons.option.hudEdit.desc") @ConfigEditorButton(buttonText = "OPEN")
-    public transient Runnable hudEdit = () -> HudManager.openEditScreen(null);
+    public transient Runnable hudEdit = () -> HudManager.openEditScreen(Minecraft.getInstance().screen);
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.playCmd", desc = "config.babyzombieaddons.option.playCmd.desc") @ConfigEditorBoolean @SearchTag("play")
     public boolean playCmd = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.skipSecondPerson", desc = "config.babyzombieaddons.option.skipSecondPerson.desc") @ConfigEditorSlider(minValue = 0, maxValue = 30, minStep = 1) @SearchTag("camera")
@@ -77,11 +78,11 @@ public class GeneralConfig {
     }
 
     public static class PlayerScale {
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleX", desc = "config.babyzombieaddons.option.playerScaleX.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.05f)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleX", desc = "config.babyzombieaddons.option.playerScaleX.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f)
         public float x = 1.0f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleY", desc = "config.babyzombieaddons.option.playerScaleY.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.05f)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleY", desc = "config.babyzombieaddons.option.playerScaleY.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f)
         public float y = 1.0f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleZ", desc = "config.babyzombieaddons.option.playerScaleZ.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.05f)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleZ", desc = "config.babyzombieaddons.option.playerScaleZ.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f)
         public float z = 1.0f;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.showCrosshairInThirdPerson", desc = "config.babyzombieaddons.option.showCrosshairInThirdPerson.desc") @ConfigEditorBoolean
         public boolean showCrosshairInThirdPerson = false;
@@ -96,11 +97,11 @@ public class GeneralConfig {
         public boolean customSwingDuration = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.swingDurationTicks", desc = "config.babyzombieaddons.option.swingDurationTicks.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1200, minStep = 1)
         public int swingDurationTicks = 6;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.itemScale", desc = "config.babyzombieaddons.option.itemScale.desc") @ConfigEditorSlider(minValue = 0.1f, maxValue = 1.0f, minStep = 0.05f)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.itemScale", desc = "config.babyzombieaddons.option.itemScale.desc") @ConfigEditorSlider(minValue = 0.1f, maxValue = 1.0f, minStep = 0.01f)
         public float itemScale = 1.0f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.itemOffsetX", desc = "config.babyzombieaddons.option.itemOffsetX.desc") @ConfigEditorSlider(minValue = -1.0f, maxValue = 1.0f, minStep = 0.05f)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.itemOffsetX", desc = "config.babyzombieaddons.option.itemOffsetX.desc") @ConfigEditorSlider(minValue = -1.0f, maxValue = 1.0f, minStep = 0.01f)
         public float itemOffsetX = 0.0f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.itemOffsetY", desc = "config.babyzombieaddons.option.itemOffsetY.desc") @ConfigEditorSlider(minValue = -1.0f, maxValue = 1.0f, minStep = 0.05f)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.itemOffsetY", desc = "config.babyzombieaddons.option.itemOffsetY.desc") @ConfigEditorSlider(minValue = -1.0f, maxValue = 1.0f, minStep = 0.01f)
         public float itemOffsetY = 0.0f;
     }
 

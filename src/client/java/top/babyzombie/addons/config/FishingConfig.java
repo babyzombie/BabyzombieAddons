@@ -19,7 +19,7 @@ public class FishingConfig {
     @Accordion
     public PreventInstantReel preventInstantReel = new PreventInstantReel();
 
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.popupBaitLow", desc = "config.babyzombieaddons.option.popupBaitLow.desc") @ConfigEditorSlider(minValue = 0, maxValue = 64, minStep = 2) @SearchTag("bait")
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.popupBaitLow", desc = "config.babyzombieaddons.option.popupBaitLow.desc") @ConfigEditorSlider(minValue = 0, maxValue = 64, minStep = 1) @SearchTag("bait")
     public int popupBaitLow = 0;
 
     public static class RareSeaCreatures {
@@ -32,7 +32,7 @@ public class FishingConfig {
     public static class PreventInstantReel {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.preventInstantReel", desc = "config.babyzombieaddons.option.preventInstantReel.desc") @ConfigEditorBoolean @SearchTag("reel")
         public boolean enabled = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.preventInstantReelDelay", desc = "config.babyzombieaddons.option.preventInstantReelDelay.desc") @ConfigEditorSlider(minValue = 50, maxValue = 500, minStep = 25) @SearchTag("reel")
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.preventInstantReelDelay", desc = "config.babyzombieaddons.option.preventInstantReelDelay.desc") @ConfigEditorSlider(minValue = 50, maxValue = 500, minStep = 1) @SearchTag("reel")
         public int delay = 200;
     }
 }

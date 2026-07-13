@@ -1,7 +1,6 @@
 package top.babyzombie.addons.module.slayer;
 
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
-import io.github.notenoughupdates.moulconfig.ChromaColour;
 import net.minecraft.world.entity.Entity;
 import top.babyzombie.addons.config.ModConfig.SlayerBossBoxMode;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -27,7 +26,7 @@ public final class SlayerBossBox {
             boolean depthTest = !cfg.slayerBossBox.boxBossRenderThroughWalls;
             boolean filled = cfg.slayerBossBox.boxSlayerBoss == SlayerBossBoxMode.BOX;
 
-            int color = ChromaColour.specialToSimpleRGB(cfg.slayerBossBox.boxBossColor);
+            int color = cfg.slayerBossBox.boxBossColor.getEffectiveColourRGB();
             float r = ((color >> 16) & 0xFF) / 255f;
             float g = ((color >> 8) & 0xFF) / 255f;
             float b = (color & 0xFF) / 255f;
@@ -52,7 +51,7 @@ public final class SlayerBossBox {
 
             // Beacon beam (at box origin corner)
             if (cfg.slayerBossBox.boxBossBeam) {
-                BeamRenderer.drawBeam(ctx, boss.getX(), boss.getY(), boss.getZ(), 2048, 0.15f, ChromaColour.specialToSimpleRGB(cfg.slayerBossBox.boxBossBeamColor));
+                BeamRenderer.drawBeam(ctx, boss.getX(), boss.getY(), boss.getZ(), 2048, 0.15f, cfg.slayerBossBox.boxBossBeamColor.getEffectiveColourRGB());
             }
 
             // Inferno minion boxes
@@ -71,7 +70,7 @@ public final class SlayerBossBox {
                         WorldRenderUtils.drawFilledBox(ctx, mx1, my1, mz1, mx2, my2, mz2, r, g, b, a * 0.5f, depthTest);
                     }
                     if (cfg.slayerBossBox.boxBossBeam) {
-                        BeamRenderer.drawBeam(ctx, minion.getX(), minion.getY(), minion.getZ(), 2048, 0.15f, ChromaColour.specialToSimpleRGB(cfg.slayerBossBox.boxBossBeamColor));
+                        BeamRenderer.drawBeam(ctx, minion.getX(), minion.getY(), minion.getZ(), 2048, 0.15f, cfg.slayerBossBox.boxBossBeamColor.getEffectiveColourRGB());
                     }
                 }
             }
