@@ -30,7 +30,7 @@ public final class ArmadilloEnergy {
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!ModConfigManager.get().mining.armadilloEnergy) return;
+            if (!ModConfigManager.get().mining.crystalHollows.armadilloEnergy) return;
             if (!isInCrystalHollows()) return;
             var player = client.player;
             if (player == null) return;
@@ -51,7 +51,7 @@ public final class ArmadilloEnergy {
         // Parse action bar for energy values
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (!overlay) return;
-            if (!ModConfigManager.get().mining.armadilloEnergy) return;
+            if (!ModConfigManager.get().mining.crystalHollows.armadilloEnergy) return;
             if (!isInCrystalHollows()) return;
             String text = ChatUtils.stripColor(message.getString());
             var matcher = ENERGY_PATTERN.matcher(text);
@@ -65,7 +65,7 @@ public final class ArmadilloEnergy {
         // Full energy alert
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().mining.armadilloEnergy) return;
+            if (!ModConfigManager.get().mining.crystalHollows.armadilloEnergy) return;
             if (!isInCrystalHollows()) return;
             if (ChatUtils.stripColor(message.getString()).equals("Your armadillo is full of energy!")) {
                 energyNow = energyMax;
@@ -76,7 +76,7 @@ public final class ArmadilloEnergy {
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
                 Identifier.fromNamespaceAndPath("babyzombieaddons", "armadillo_energy"),
                 (context, tickCounter) -> {
-            if (!ModConfigManager.get().mining.armadilloEnergy) return;
+            if (!ModConfigManager.get().mining.crystalHollows.armadilloEnergy) return;
             if (!isInCrystalHollows() || !hasDillo || energyMax == 0) return;
             if (energyNow >= energyMax) return;
 

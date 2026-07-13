@@ -91,7 +91,7 @@ public final class FruitDiggingModule {
 
     public static void init() {
         AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
-            if (!ModConfigManager.get().events.fruitDiggingHelper) return InteractionResult.PASS;
+            if (!ModConfigManager.get().events.carnival.fruitDiggingHelper) return InteractionResult.PASS;
             if (!isInCarnival()) return InteractionResult.PASS;
             if (!isInDigArea(pos.getX(), pos.getY(), pos.getZ())) return InteractionResult.PASS;
             digX = pos.getX();
@@ -103,7 +103,7 @@ public final class FruitDiggingModule {
 
         net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().events.fruitDiggingHelper) return;
+            if (!ModConfigManager.get().events.carnival.fruitDiggingHelper) return;
             if (!isInCarnival() || !hasDigLoc) return;
             String text = ChatUtils.stripColor(message.getString());
 
@@ -128,7 +128,7 @@ public final class FruitDiggingModule {
 
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().events.fruitDiggingHelper) return;
+            if (!ModConfigManager.get().events.carnival.fruitDiggingHelper) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             String text = ChatUtils.stripColor(message.getString());
 
@@ -158,7 +158,7 @@ public final class FruitDiggingModule {
         // Auto-accept: capture accept command from options message
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().events.carnivalAutoAccept) return;
+            if (!ModConfigManager.get().events.carnival.autoAccept) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             String text = ChatUtils.stripColor(message.getString());
 
@@ -187,7 +187,7 @@ public final class FruitDiggingModule {
 
         // Right-click on NPC within 2s → cancel and auto-accept
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (!ModConfigManager.get().events.carnivalAutoAccept) return InteractionResult.PASS;
+            if (!ModConfigManager.get().events.carnival.autoAccept) return InteractionResult.PASS;
             if (acceptCommand == null) return InteractionResult.PASS;
             if (System.currentTimeMillis() - lastNpcDialogTime > 2000) {
                 acceptCommand = null;
@@ -202,7 +202,7 @@ public final class FruitDiggingModule {
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!ModConfigManager.get().events.fruitDiggingHelper) return;
+            if (!ModConfigManager.get().events.carnival.fruitDiggingHelper) return;
             if (!isInCarnival()) {
                 gameActive = false;
                 return;
@@ -234,7 +234,7 @@ public final class FruitDiggingModule {
             }
 
             // ── Solver：综合 fruits + bombs + treasures + dugTiles 构建 BoardState ──
-            boolean solverEnabled = ModConfigManager.get().events.fruitDiggingSolver && gameActive;
+            boolean solverEnabled = ModConfigManager.get().events.fruitDiggingSolver.enabled && gameActive;
             FruitDiggingSolver.BoardState state = new FruitDiggingSolver.BoardState();
             int totalKnown = 0;
 
@@ -342,14 +342,14 @@ public final class FruitDiggingModule {
                 // 注入运行参数
                 var cfg = ModConfigManager.get().events;
                 var params = FruitDiggingSolver.getParams();
-                params.bombPenalty = cfg.solverBombPenalty;
-                params.rumPenalty = cfg.solverRumPenalty;
-                params.minesInfoWeight = cfg.solverMinesInfoWeight;
-                params.treasureInfoWeight = cfg.solverTreasureInfoWeight;
-                params.anchorInfoWeight = cfg.solverAnchorInfoWeight;
-                params.earlyAppleBonus = cfg.solverEarlyAppleBonus;
-                params.earlyCherryBonus = cfg.solverEarlyCherryBonus;
-                params.lateGameDigs = cfg.solverLateGameDigs;
+                params.bombPenalty = cfg.fruitDiggingSolver.bombPenalty;
+                params.rumPenalty = cfg.fruitDiggingSolver.rumPenalty;
+                params.minesInfoWeight = cfg.fruitDiggingSolver.minesInfoWeight;
+                params.treasureInfoWeight = cfg.fruitDiggingSolver.treasureInfoWeight;
+                params.anchorInfoWeight = cfg.fruitDiggingSolver.anchorInfoWeight;
+                params.earlyAppleBonus = cfg.fruitDiggingSolver.earlyAppleBonus;
+                params.earlyCherryBonus = cfg.fruitDiggingSolver.earlyCherryBonus;
+                params.lateGameDigs = cfg.fruitDiggingSolver.lateGameDigs;
 
                 bestMove = FruitDiggingSolver.findBestMove(state);
             } else {
@@ -358,12 +358,12 @@ public final class FruitDiggingModule {
         });
 
         RenderPhaseRegister.register(ctx -> {
-            if (!ModConfigManager.get().events.fruitDiggingHelper) return;
+            if (!ModConfigManager.get().events.carnival.fruitDiggingHelper) return;
             boolean inCarnival = isInCarnival();
             if (!inCarnival) return;
 
             // ── 信标光柱：Solver 推荐位置 ──
-            if (ModConfigManager.get().events.fruitDiggingSolver && bestMove != null) {
+            if (ModConfigManager.get().events.fruitDiggingSolver.enabled && bestMove != null) {
                 double wx = toWorldX(bestMove.gridX);
                 double wz = toWorldZ(bestMove.gridZ);
                 int color = dowsingColor(bestMove.dowsing);

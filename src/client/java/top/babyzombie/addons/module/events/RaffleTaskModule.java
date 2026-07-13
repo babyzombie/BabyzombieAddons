@@ -52,7 +52,7 @@ public final class RaffleTaskModule {
     public static void init() {
         // 1. 检测 "Raffle Tasks" 容器打开
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-            if (!ModConfigManager.get().events.raffleTaskTracker) return;
+            if (!ModConfigManager.get().events.anniversary.raffleTaskTracker) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             if (!(screen instanceof AbstractContainerScreen<?> cs)) return;
 
@@ -102,7 +102,7 @@ public final class RaffleTaskModule {
         // 3. 监听聊天中的任务完成消息
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().events.raffleTaskTracker) return;
+            if (!ModConfigManager.get().events.anniversary.raffleTaskTracker) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             if (taskNames.isEmpty()) return;
 
@@ -143,7 +143,7 @@ public final class RaffleTaskModule {
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
                 Identifier.fromNamespaceAndPath("babyzombieaddons", "raffle_tasks"),
                 (context, tickCounter) -> {
-            if (!ModConfigManager.get().events.raffleTaskTracker) return;
+            if (!ModConfigManager.get().events.anniversary.raffleTaskTracker) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             if (hudText == null) return;
 

@@ -1,6 +1,7 @@
 package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import io.github.notenoughupdates.moulconfig.ChromaColour;
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.monster.Giant;
@@ -41,9 +42,9 @@ public final class KuudraWaypoints {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var cfg = ModConfigManager.get().kuudra;
-            boolean anyOn = cfg.supplyBeacons || cfg.supplyDropoffBeacons
-                    || cfg.ballistaProgressText || cfg.ballistaBuildBeacons
-                    || cfg.fuelOrbBeacons;
+            boolean anyOn = cfg.waypoints.supplyBeacons || cfg.waypoints.supplyDropoffBeacons
+                    || cfg.waypoints.ballistaProgressText || cfg.waypoints.ballistaBuildBeacons
+                    || cfg.waypoints.fuelOrbBeacons;
             if (!anyOn) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (client.player == null || client.player.tickCount % 20 != 0) return;
@@ -53,15 +54,15 @@ public final class KuudraWaypoints {
             String phase = getScoreboardPhase(client);
 
             if ("Rescue supplies".equals(phase)) {
-                if (cfg.supplyBeacons) {
-                    float[] c = argbToFloats(cfg.supplyBeaconColor);
+                if (cfg.waypoints.supplyBeacons) {
+                    float[] c = argbToFloats(ChromaColour.specialToSimpleRGB(cfg.waypoints.supplyBeaconColor));
                     for (var g : client.player.level().getEntitiesOfClass(Giant.class,
                             new AABB(client.player.blockPosition()).inflate(64)))
                         beams.add(new Beam(g.getX() - 2.5, g.getY() + 9.5, g.getZ() + 3.0,
                                 c[0], c[1], c[2], c[3], 20f));
                 }
-                if (cfg.supplyDropoffBeacons) {
-                    float[] c = argbToFloats(cfg.supplyDropoffBeaconColor);
+                if (cfg.waypoints.supplyDropoffBeacons) {
+                    float[] c = argbToFloats(ChromaColour.specialToSimpleRGB(cfg.waypoints.supplyDropoffBeaconColor));
                     for (var s : client.player.level().getEntitiesOfClass(
                             net.minecraft.world.entity.decoration.ArmorStand.class,
                             new AABB(client.player.blockPosition()).inflate(64),
@@ -71,8 +72,8 @@ public final class KuudraWaypoints {
                     }
                 }
             } else if ("Protect Elle".equals(phase)) {
-                if (cfg.ballistaBuildBeacons || cfg.ballistaProgressText) {
-                    float[] bc = argbToFloats(cfg.ballistaBeaconColor);
+                if (cfg.waypoints.ballistaBuildBeacons || cfg.waypoints.ballistaProgressText) {
+                    float[] bc = argbToFloats(ChromaColour.specialToSimpleRGB(cfg.waypoints.ballistaBeaconColor));
                     for (var s : client.player.level().getEntitiesOfClass(
                             net.minecraft.world.entity.decoration.ArmorStand.class,
                             new AABB(client.player.blockPosition()).inflate(64),
@@ -81,19 +82,19 @@ public final class KuudraWaypoints {
                                 return name.startsWith("PROGRESS: ") && !name.endsWith("COMPLETE");
                             })) {
                         double x = s.getX(), y = s.getY(), z = s.getZ();
-                        if (cfg.ballistaBuildBeacons)
+                        if (cfg.waypoints.ballistaBuildBeacons)
                             beams.add(new Beam(x, y, z, bc[0], bc[1], bc[2], bc[3], 10f));
-                        if (cfg.ballistaProgressText) {
+                        if (cfg.waypoints.ballistaProgressText) {
                             String[] parts = ChatUtils.stripColor(s.getName().getString()).split(" ");
                             String key = "p2_" + s.getId(); seenKeys.add(key);
                             textEntries.put(key, new TextData(parts.length > 1 ? parts[parts.length - 1] : "",
-                                    x, y + 1.2, z, cfg.ballistaTextColor));
+                                    x, y + 1.2, z, ChromaColour.specialToSimpleRGB(cfg.waypoints.ballistaTextColor)));
                         }
                     }
                 }
             } else {
-                if (cfg.fuelOrbBeacons) {
-                    float[] c = argbToFloats(cfg.fuelOrbBeaconColor);
+                if (cfg.waypoints.fuelOrbBeacons) {
+                    float[] c = argbToFloats(ChromaColour.specialToSimpleRGB(cfg.waypoints.fuelOrbBeaconColor));
                     for (var g : client.player.level().getEntitiesOfClass(Giant.class,
                             new AABB(client.player.blockPosition()).inflate(64)))
                         beams.add(new Beam(g.getX() - 2.5, g.getY() + 9.5, g.getZ() + 3.0,

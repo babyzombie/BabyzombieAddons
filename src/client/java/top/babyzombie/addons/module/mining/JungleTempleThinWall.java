@@ -20,7 +20,7 @@ final class JungleTempleThinWall {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
             if (shown) return;
-            if (!ModConfigManager.get().mining.jungleTempleThinWall) return;
+            if (!ModConfigManager.get().mining.crystalHollows.jungleTempleThinWall) return;
 
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock() || !tracker.isIn("Crystal Hollows")) return;

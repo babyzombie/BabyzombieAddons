@@ -26,7 +26,7 @@ public final class BazaarSellFromSacks {
 
     public static void init() {
         ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, event) -> {
-            var mode = ModConfigManager.get().misc.bzGetFromSacks;
+            var mode = ModConfigManager.get().skyblock.bzGetFromSacks;
             if (mode == BzGetFromSacksMode.OFF) return false;
             if (cooldown > ServerTick.getTime()) return false;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;

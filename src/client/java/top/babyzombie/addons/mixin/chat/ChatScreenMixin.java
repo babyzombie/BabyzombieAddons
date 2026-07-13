@@ -26,7 +26,7 @@ public class ChatScreenMixin {
 
     @Inject(method = "extractRenderState*", at = @At("RETURN"))
     private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
-        if (!ModConfigManager.get().chatChannel.chatChannelSwitcher) return;
+        if (!ModConfigManager.get().general.chat.channelSwitcher) return;
         if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
         if (!HudManager.shouldShow("ChatChannelSwitcher")) return;
 
@@ -60,7 +60,7 @@ public class ChatScreenMixin {
     @Inject(method = "mouseClicked", at = @At("HEAD"))
     private void onMouseClicked(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
         if (event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return;
-        if (!ModConfigManager.get().chatChannel.chatChannelSwitcher) return;;
+        if (!ModConfigManager.get().general.chat.channelSwitcher) return;;
         if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
         if (!HudManager.shouldShow("ChatChannelSwitcher")) return;
 

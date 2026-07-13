@@ -161,7 +161,7 @@ public final class SlayerHUD {
 
         // ---- Reheated Gummy Polar Bear ----
         if (HudManager.shouldShow("ReheatedGummyPolarBear")) {
-            var cfg = config.reheatedGummyPolarBear;
+            var cfg = config.itemSkillTimers.reheatedGummyPolarBear;
             if (cfg != ModConfig.GummyPolarBearMode.OFF) {
                 var tracker2 = HypixelLocationTracker.getInstance();
                 if (!tracker2.isInDungeon() && !tracker2.isInRift()) {

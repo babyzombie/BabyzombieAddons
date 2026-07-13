@@ -224,7 +224,7 @@ public final class HudEditScreen extends Screen {
     }
 
     private boolean showElement(HudManager.HudElement e) {
-        return e.showCondition.getAsBoolean() || ModConfigManager.get().debug.debugMode;
+        return e.showCondition.getAsBoolean() || ModConfigManager.get().misc.debugMode;
     }
 
     private int demoWidth(HudManager.HudElement e) {

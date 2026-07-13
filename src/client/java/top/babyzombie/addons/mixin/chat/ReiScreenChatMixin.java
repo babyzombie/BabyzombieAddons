@@ -28,7 +28,7 @@ public abstract class ReiScreenChatMixin {
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void onKeyPressed(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof AbstractContainerScreen) return;
-        if (!ModConfigManager.get().general.chatInContainer) return;
+        if (!ModConfigManager.get().general.chat.chatInContainer) return;
         var screen = (Screen) (Object) this;
 
         // ESC：走 onClose → setScreen(null) → ChatOverlaySetScreenMixin 路径（与发送消息相同）
@@ -85,7 +85,7 @@ public abstract class ReiScreenChatMixin {
             ContainerChatHelper.getOverlay().extractRenderState(g, mouseX, mouseY, a);
         }
         if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS) {
-            boolean sharing = ContainerChatHelper.isActive() && ModConfigManager.get().general.chatInContainer;
+            boolean sharing = ContainerChatHelper.isActive() && ModConfigManager.get().general.chat.chatInContainer;
             StarIndicator.draw(g, mouseX, mouseY, sharing);
         }
     }

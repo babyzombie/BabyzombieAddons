@@ -1,6 +1,7 @@
 package top.babyzombie.addons.module.slayer;
 
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
+import io.github.notenoughupdates.moulconfig.ChromaColour;
 import net.minecraft.world.entity.Entity;
 import top.babyzombie.addons.config.ModConfig.SlayerBossBoxMode;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -14,7 +15,7 @@ public final class SlayerBossBox {
     public static void init() {
         RenderPhaseRegister.register(ctx -> {
             var cfg = ModConfigManager.get().slayer;
-            if (cfg.boxSlayerBoss == SlayerBossBoxMode.OFF) return;
+            if (cfg.slayerBossBox.boxSlayerBoss == SlayerBossBoxMode.OFF) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
 
             Entity boss = SlayerBossDetector.bossEntity;
@@ -23,10 +24,10 @@ public final class SlayerBossBox {
             var def = SlayerBossDetector.BOSS_DEFS.get(SlayerBossDetector.slayerType);
             if (def == null) return;
 
-            boolean depthTest = !cfg.boxBossRenderThroughWalls;
-            boolean filled = cfg.boxSlayerBoss == SlayerBossBoxMode.BOX;
+            boolean depthTest = !cfg.slayerBossBox.boxBossRenderThroughWalls;
+            boolean filled = cfg.slayerBossBox.boxSlayerBoss == SlayerBossBoxMode.BOX;
 
-            int color = cfg.boxBossColor;
+            int color = ChromaColour.specialToSimpleRGB(cfg.slayerBossBox.boxBossColor);
             float r = ((color >> 16) & 0xFF) / 255f;
             float g = ((color >> 8) & 0xFF) / 255f;
             float b = (color & 0xFF) / 255f;
@@ -42,7 +43,7 @@ public final class SlayerBossBox {
             double z2 = boss.getZ() + def.wZ / 2;
 
             // Wireframe box
-            WorldRenderUtils.drawWireframeBox(ctx, x1, y1, z1, x2, y2, z2, r, g, b, a, depthTest, cfg.boxBossLineWidth);
+            WorldRenderUtils.drawWireframeBox(ctx, x1, y1, z1, x2, y2, z2, r, g, b, a, depthTest, cfg.slayerBossBox.boxBossLineWidth);
 
             // Filled box
             if (filled) {
@@ -50,8 +51,8 @@ public final class SlayerBossBox {
             }
 
             // Beacon beam (at box origin corner)
-            if (cfg.boxBossBeam) {
-                BeamRenderer.drawBeam(ctx, boss.getX(), boss.getY(), boss.getZ(), 2048, 0.15f, cfg.boxBossBeamColor);
+            if (cfg.slayerBossBox.boxBossBeam) {
+                BeamRenderer.drawBeam(ctx, boss.getX(), boss.getY(), boss.getZ(), 2048, 0.15f, ChromaColour.specialToSimpleRGB(cfg.slayerBossBox.boxBossBeamColor));
             }
 
             // Inferno minion boxes
@@ -65,12 +66,12 @@ public final class SlayerBossBox {
                     double my2 = minion.getY() + def.h;
                     double mz2 = minion.getZ() + def.wZ / 2;
 
-                    WorldRenderUtils.drawWireframeBox(ctx, mx1, my1, mz1, mx2, my2, mz2, r, g, b, a, depthTest, cfg.boxBossLineWidth);
+                    WorldRenderUtils.drawWireframeBox(ctx, mx1, my1, mz1, mx2, my2, mz2, r, g, b, a, depthTest, cfg.slayerBossBox.boxBossLineWidth);
                     if (filled) {
                         WorldRenderUtils.drawFilledBox(ctx, mx1, my1, mz1, mx2, my2, mz2, r, g, b, a * 0.5f, depthTest);
                     }
-                    if (cfg.boxBossBeam) {
-                        BeamRenderer.drawBeam(ctx, minion.getX(), minion.getY(), minion.getZ(), 2048, 0.15f, cfg.boxBossBeamColor);
+                    if (cfg.slayerBossBox.boxBossBeam) {
+                        BeamRenderer.drawBeam(ctx, minion.getX(), minion.getY(), minion.getZ(), 2048, 0.15f, ChromaColour.specialToSimpleRGB(cfg.slayerBossBox.boxBossBeamColor));
                     }
                 }
             }

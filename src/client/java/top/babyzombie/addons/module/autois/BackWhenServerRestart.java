@@ -23,8 +23,8 @@ public class BackWhenServerRestart {
 
     static void init() {
         ClientReceiveMessageEvents.GAME.register((component, o) -> {
-            if (ModConfigManager.get().general.autois) return;
-            if (!ModConfigManager.get().general.backOnServerRestart) return;
+            if (ModConfigManager.get().skyblock.autois.enabled) return;
+            if (!ModConfigManager.get().skyblock.autois.backOnServerRestart) return;
             if (Minecraft.getInstance().player == null) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             if (!HypixelLocationTracker.getInstance().isIn("Private Island")) return;
@@ -41,7 +41,7 @@ public class BackWhenServerRestart {
         });
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register(((client, level) -> {
-            if (restart && afk && ModConfigManager.get().general.backOnServerRestart) {
+            if (restart && afk && ModConfigManager.get().skyblock.autois.backOnServerRestart) {
                 Scheduler.schedule(200, () -> {
                     if (HypixelLocationTracker.getInstance().isInSkyblock()
                         && HypixelLocationTracker.getInstance().isIn("Hub")

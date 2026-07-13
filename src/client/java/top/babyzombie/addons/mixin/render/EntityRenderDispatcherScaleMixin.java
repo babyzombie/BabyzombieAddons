@@ -26,8 +26,8 @@ public class EntityRenderDispatcherScaleMixin {
                                    CallbackInfo ci) {
         if (PlayerScaleState.LOCAL_PLAYER_STATES.remove(renderState)) {
             var cfg = ModConfigManager.get().general;
-            if (cfg.playerScaleX != 1.0f || cfg.playerScaleY != 1.0f || cfg.playerScaleZ != 1.0f) {
-                poseStack.scale(cfg.playerScaleX, cfg.playerScaleY, cfg.playerScaleZ);
+            if (cfg.playerScale.x != 1.0f || cfg.playerScale.y != 1.0f || cfg.playerScale.z != 1.0f) {
+                poseStack.scale(cfg.playerScale.x, cfg.playerScale.y, cfg.playerScale.z);
             }
         }
     }

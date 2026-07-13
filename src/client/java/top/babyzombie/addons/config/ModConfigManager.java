@@ -1,46 +1,38 @@
 package top.babyzombie.addons.config;
 
-import net.azureaaron.dandelion.api.ConfigManager;
-import net.azureaaron.dandelion.api.ConfigType;
-import net.azureaaron.dandelion.api.DandelionConfigScreen;
+import io.github.notenoughupdates.moulconfig.Config;
+import io.github.notenoughupdates.moulconfig.gui.GuiElementComponent;
+import io.github.notenoughupdates.moulconfig.gui.MoulConfigEditor;
+import io.github.notenoughupdates.moulconfig.managed.ManagedConfig;
+import io.github.notenoughupdates.moulconfig.platform.MoulConfigScreenComponent;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
-import top.babyzombie.addons.config.ModConfig.ConfigBackend;
-import top.babyzombie.addons.config.categories.*;
-import top.babyzombie.addons.util.ChatUtils;
 
-import java.nio.file.Path;
-import java.util.function.UnaryOperator;
+import java.io.File;
 
 public final class ModConfigManager {
 
-    private static final Path CONFIG_FILE = FabricLoader.getInstance().getConfigDir()
-            .resolve("babyzombieaddons").resolve("settings.json");
+    private static final File CONFIG_FILE = FabricLoader.getInstance().getConfigDir()
+            .resolve("babyzombieaddons").resolve("settings.json").toFile();
 
-    private static final ConfigManager<ModConfig> CONFIG_MANAGER = ConfigManager.create(
-            ModConfig.class, CONFIG_FILE, UnaryOperator.identity()
+    private static final ManagedConfig<ModConfig> MANAGED_CONFIG = ManagedConfig.create(
+            CONFIG_FILE, ModConfig.class
     );
-
-    private static final boolean YACL_LOADED = FabricLoader.getInstance().isModLoaded("yet_another_config_lib_v3");
 
     private ModConfigManager() {}
 
     public static void init() {
-        CONFIG_MANAGER.load();
+        MANAGED_CONFIG.reloadFromFile();
     }
 
     public static ModConfig get() {
-        return CONFIG_MANAGER.instance();
-    }
-
-    public static ModConfig getUnpatched() {
-        return CONFIG_MANAGER.unpatchedInstance();
+        return MANAGED_CONFIG.getInstance();
     }
 
     public static void save() {
-        CONFIG_MANAGER.save();
+        MANAGED_CONFIG.saveToFile();
     }
 
     public static Screen createGUI(@Nullable Screen parent) {
@@ -48,34 +40,16 @@ public final class ModConfigManager {
     }
 
     public static Screen createGUI(@Nullable Screen parent, String search) {
-        ConfigType configType;
-        if (get().debug.configBackend == ConfigBackend.YACL) {
-            if (YACL_LOADED) {
-                configType = ConfigType.YACL;
-            } else {
-                configType = ConfigType.MOUL_CONFIG;
-                ChatUtils.showMessage(Component.translatable("config.babyzombieaddons.yacl_missing").getString());
+        MANAGED_CONFIG.rebuildConfigProcessor();
+        MANAGED_CONFIG.openConfigGui();
+        // Set wide mode after screen creation (editor layout is built during render init)
+        Screen screen = Minecraft.getInstance().screen;
+        if (screen instanceof MoulConfigScreenComponent msc) {
+            if (msc.getGuiContext().getRoot() instanceof GuiElementComponent gec
+                    && gec.getElement() instanceof MoulConfigEditor<?> editor) {
+                editor.wide = get().misc.wideMoulConfig;
             }
-        } else {
-            configType = ConfigType.MOUL_CONFIG;
         }
-
-        return DandelionConfigScreen.create(CONFIG_MANAGER, (defaults, config, builder) -> builder
-                .title(Component.translatable("config.babyzombieaddons.title"))
-                .category(GeneralCategory.create(defaults, config))
-                .category(SkyblockCategory.create(defaults, config))
-                .category(DungeonCategory.create(defaults, config))
-                .category(KuudraCategory.create(defaults, config))
-                .category(SlayerCategory.create(defaults, config))
-                .category(MiningCategory.create(defaults, config))
-                .category(FishingCategory.create(defaults, config))
-                .category(GardenCategory.create(defaults, config))
-                .category(PartyCategory.create(defaults, config))
-                .category(PopupCategory.create(defaults, config))
-                .category(EventsCategory.create(defaults, config))
-                .category(MiscCategory.create(defaults, config))
-                .category(HuntingCategory.create(defaults, config))
-                .search(search)
-        ).generateScreen(parent, configType);
+        return screen;
     }
 }

@@ -37,26 +37,15 @@ repositories {
         url = "https://api.modrinth.com/maven"
     }
 
-    // Dandelion
-    maven {
-        url = 'https://maven.azureaaron.net/releases'
-        content { includeGroup 'net.azureaaron' }
-    }
-    maven {
-        url = 'https://maven.azureaaron.net/snapshots'
-        content { includeGroup 'net.azureaaron' }
-    }
-
     // ModMenu
     maven {
         url = 'https://maven.terraformersmc.com/releases'
         content { includeGroup 'com.terraformersmc' }
     }
 
-    // YACL
+    // MoulConfig
     maven {
-        url = 'https://maven.isxander.dev/releases'
-        content { includeGroup 'dev.isxander'; includeGroup 'org.quiltmc.parsers' }
+        url = 'https://maven.notenoughupdates.org/releases/'
     }
 
     // REI
@@ -75,16 +64,13 @@ dependencies {
     // Core API — compile only, provided at runtime by the Fabric wrapper above
     clientImplementation("net.hypixel:mod-api:${project.hm_api_version}")
 
-    // Dandelion (bundled)
-    include(clientImplementation("net.azureaaron:dandelion:${project.dandelion_version}"))
-
-    // YACL (Dandelion rendering backend)
-    clientImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric"
+    // MoulConfig (config GUI)
+    include(clientImplementation("org.notenoughupdates.moulconfig:modern-26.1:4.7.2"))
 
     // ModMenu
     clientImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
-    // Fabric Language Kotlin (required by Dandelion/MoulConfig)
+    // Fabric Language Kotlin (required by MoulConfig)
     clientImplementation "net.fabricmc:fabric-language-kotlin:${project.flk_version}"
 
     // Gson (config persistence)
@@ -108,7 +94,6 @@ processResources {
                 "minecraft_version": project.minecraft_version.replace("-rc-", "-rc."),
                 "loader_version": project.loader_version,
                 "fabric_version": project.fabric_api_version,
-                "yacl_mod_version": project.yacl_version,
                 "mod_menu_mod_version": project.mod_menu_version.split('-')[0]
     }
 }

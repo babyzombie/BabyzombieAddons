@@ -68,7 +68,7 @@ public final class CakeBuffTracker {
         // Cancel the original Hypixel cake message
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             if (overlay) return true;
-            if (!ModConfigManager.get().general.cakeBuffTracker) return true;
+            if (!ModConfigManager.get().skyblock.cakeBuffTracker) return true;
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isIn("Private Island")) return true;
 
@@ -91,7 +91,7 @@ public final class CakeBuffTracker {
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
                 Identifier.fromNamespaceAndPath("babyzombieaddons", "cake_buff_tracker"),
                 (context, tickCounter) -> {
-            if (!ModConfigManager.get().general.cakeBuffTracker) return;
+            if (!ModConfigManager.get().skyblock.cakeBuffTracker) return;
             if (checklistText == null) return;
             long elapsed = ServerTick.getTime() - lastEatTime;
             if (elapsed > 30_000) {

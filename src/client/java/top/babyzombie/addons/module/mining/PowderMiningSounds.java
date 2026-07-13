@@ -15,7 +15,7 @@ public final class PowderMiningSounds {
 
     public static void init() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!ModConfigManager.get().mining.powderMiningSounds) return;
+            if (!ModConfigManager.get().mining.crystalHollows.powderMiningSounds) return;
             if (!isInCrystalHollows()) return;
             if (client.player != null && client.player.swinging) {
                 blockBreakTimer = ServerTick.getTime() + 5000;
@@ -23,7 +23,7 @@ public final class PowderMiningSounds {
         });
 
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {
-            if (!ModConfigManager.get().mining.powderMiningSounds) return false;
+            if (!ModConfigManager.get().mining.crystalHollows.powderMiningSounds) return false;
             if (!isInCrystalHollows()) return false;
             if (blockBreakTimer < ServerTick.getTime()) return false;
             if(Minecraft.getInstance().player == null) return false;

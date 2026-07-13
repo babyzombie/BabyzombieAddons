@@ -162,7 +162,7 @@ public final class PopupEventsModule {
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
             var cfg = ModConfigManager.get().popup;
-            if (cfg.popupBaitLow <= 0) return InteractionResult.PASS;
+            if (ModConfigManager.get().fishing.popupBaitLow <= 0) return InteractionResult.PASS;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return InteractionResult.PASS;
             var held = player.getItemInHand(hand);
             if (!(held.getItem() instanceof FishingRodItem)) return InteractionResult.PASS;
@@ -171,9 +171,9 @@ public final class PopupEventsModule {
             String id = ItemUtils.getSkyblockId(baitStack);
             if (id == null || !id.endsWith("_BAIT")) return InteractionResult.PASS;
             int quantity = baitStack.getCount();
-            if (quantity >= cfg.popupBaitLow) return InteractionResult.PASS;
+            if (quantity >= ModConfigManager.get().fishing.popupBaitLow) return InteractionResult.PASS;
             String baitName = ChatUtils.stripColor(baitStack.getHoverName().getString());
-            notify(EventType.BAIT, baitName, String.valueOf(cfg.popupBaitLow));
+            notify(EventType.BAIT, baitName, String.valueOf(ModConfigManager.get().fishing.popupBaitLow));
             return InteractionResult.PASS;
         });
     }

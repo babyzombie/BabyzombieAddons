@@ -17,8 +17,8 @@ public final class AutotipModule {
             "^You tipped \\d+ players? in \\d+ (?:different )?games?!$");
 
     private static final Runnable tipTask = () -> {
-        var config = ModConfigManager.get().autotip;
-        if (!config.enabled || !HypixelLocationTracker.getInstance().isOnHypixel()) return;
+        var config = ModConfigManager.get().general;
+        if (!config.autotip.enabled || !HypixelLocationTracker.getInstance().isOnHypixel()) return;
 
         // MVP++ 自带 autotip，无需本模组发送
         var info = HypixelPlayerInfoTracker.getInstance().getLastInfo();
@@ -34,7 +34,7 @@ public final class AutotipModule {
 
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             if (overlay) return true;
-            if (!ModConfigManager.get().autotip.hideMessages) return true;
+            if (!ModConfigManager.get().general.autotip.hideMessages) return true;
             if (!HypixelLocationTracker.getInstance().isOnHypixel()) return true;
 
             String text = ChatUtils.stripColor(message.getString());

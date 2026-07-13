@@ -299,7 +299,7 @@ public final class SlayerBossDetector {
         }
 
         var cfg = ModConfigManager.get().slayer;
-        if (cfg.blazeSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) return;
+        if (cfg.slayerBossInfo.blazeSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) return;
 
         List<String> bossStatus = new ArrayList<>();
         String[] parts = timeLeft != null ? timeLeft.split(" ") : new String[0];
@@ -432,33 +432,33 @@ public final class SlayerBossDetector {
 
         switch (slayerType) {
             case "Revenant Horror" -> {
-                if (cfg.zombieSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
+                if (cfg.slayerBossInfo.zombieSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
                 String status = extractBossStatus();
                 renderStr = "§bRevenant Horror " + hp
-                        + (cfg.zombieSlayerInfo == ModConfig.SlayerBossInfoMode.FULL && !status.isEmpty()
+                        + (cfg.slayerBossInfo.zombieSlayerInfo == ModConfig.SlayerBossInfoMode.FULL && !status.isEmpty()
                         ? '\n' + status : "");
             }
             case "Tarantula Broodfather" -> {
-                if (cfg.spiderSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
+                if (cfg.slayerBossInfo.spiderSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
                 String status = extractBossStatus();
                 renderStr = "§4Tarantula Broodfather " + hp
-                        + (cfg.spiderSlayerInfo == ModConfig.SlayerBossInfoMode.FULL && !status.isEmpty()
+                        + (cfg.slayerBossInfo.spiderSlayerInfo == ModConfig.SlayerBossInfoMode.FULL && !status.isEmpty()
                         ? '\n' + status : "");
             }
             case "Sven Packmaster" -> {
-                if (cfg.wolfSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
+                if (cfg.slayerBossInfo.wolfSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
                 String status = extractBossStatus();
                 renderStr = "§fSven Packmaster " + hp
-                        + (cfg.wolfSlayerInfo == ModConfig.SlayerBossInfoMode.FULL && !status.isEmpty()
+                        + (cfg.slayerBossInfo.wolfSlayerInfo == ModConfig.SlayerBossInfoMode.FULL && !status.isEmpty()
                         ? '\n' + status : "");
             }
             case "Voidgloom Seraph" -> {
-                if (cfg.endermanSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
+                if (cfg.slayerBossInfo.endermanSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
                 String hitInfo = (hpTag != null && hpTag.contains("Hit"))
                         ? "\n§fHit Phase: " + ChatUtils.stripColor(hpTag).replaceAll("[^0-9]", "") + " Hits"
                         : "";
                 renderStr = "§5Voidgloom Seraph " + hp + hitInfo;
-                if (cfg.endermanSlayerInfo == ModConfig.SlayerBossInfoMode.FULL) {
+                if (cfg.slayerBossInfo.endermanSlayerInfo == ModConfig.SlayerBossInfoMode.FULL) {
                     if (voidgloom.lazer > 0) {
                         long rem = voidgloom.lazer - ServerTick.getTime();
                         if (rem > 0) renderStr += "\n§aLazer: §e" + ChatUtils.formatTime(rem);
@@ -472,7 +472,7 @@ public final class SlayerBossDetector {
                 }
             }
             case "Inferno Demonlord" -> {
-                if (cfg.blazeSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
+                if (cfg.slayerBossInfo.blazeSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
                 String[] parts = timeLeft != null ? timeLeft.split(" ") : new String[0];
                 List<String> bossStatus = new ArrayList<>();
                 if (parts.length > 1) {
@@ -482,11 +482,11 @@ public final class SlayerBossDetector {
                             ChatUtils.stripColor(parts[0]), ""));
                 }
                 renderStr = "§bInferno Demonlord " + (hp.contains(" ") ? hp.split(" ")[hp.split(" ").length - 1] : hp)
-                        + (cfg.blazeSlayerInfo == ModConfig.SlayerBossInfoMode.FULL && parts.length > 1
+                        + (cfg.slayerBossInfo.blazeSlayerInfo == ModConfig.SlayerBossInfoMode.FULL && parts.length > 1
                         ? '\n' + String.join(" ", bossStatus) : "");
             }
             case "Riftstalker Bloodfiend" -> {
-                if (cfg.vampireSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
+                if (cfg.slayerBossInfo.vampireSlayerInfo == ModConfig.SlayerBossInfoMode.OFF) { renderStr = ""; return; }
                 StringBuilder vampireStatus = new StringBuilder();
                 String[] parts = timeLeft != null ? timeLeft.split(" ") : new String[0];
                 if (parts.length > 1) {
@@ -512,7 +512,7 @@ public final class SlayerBossDetector {
                     hpDisplay = hp.split(" ")[hp.split(" ").length - 1];
                 }
                 renderStr = "§4Bloodfiend " + hpDisplay
-                        + (cfg.vampireSlayerInfo == ModConfig.SlayerBossInfoMode.FULL
+                        + (cfg.slayerBossInfo.vampireSlayerInfo == ModConfig.SlayerBossInfoMode.FULL
                         ? '\n' + vampireStatus.toString().stripTrailing() : "");
             }
         }

@@ -20,8 +20,8 @@ public final class KickRecoveryModule {
         // Detect kick / failed-warp messages
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            var cfg = ModConfigManager.get().general;
-            if (cfg.autoBackToSkyblock == ModConfig.KickRecovery.OFF) return;
+            var cfg = ModConfigManager.get().skyblock;
+            if (cfg.autois.autoBackToSkyblock == ModConfig.KickRecovery.OFF) return;
             if (message.getString().equals("You were kicked while joining that server!")
                     || message.getString().equals("你被踢出了该服务器！")
                     || message.getString().equals("Oops! You are not on SkyBlock so we couldn't warp you!")) {
@@ -30,7 +30,7 @@ public final class KickRecoveryModule {
                 Scheduler.schedule(20, () -> lobbyConfirmRegistered = false);
 
                 // /play skyblock only when autoIS is NOT active (autoIS handles it with higher priority)
-                if (cfg.autoBackToSkyblock == ModConfig.KickRecovery.LOBBY_AND_SKYBLOCK && !cfg.autois) {
+                if (cfg.autois.autoBackToSkyblock == ModConfig.KickRecovery.LOBBY_AND_SKYBLOCK && !cfg.autois.enabled) {
                     Scheduler.schedule(1300, () -> ChatUtils.sendCommand("play skyblock"));
                 }
             }

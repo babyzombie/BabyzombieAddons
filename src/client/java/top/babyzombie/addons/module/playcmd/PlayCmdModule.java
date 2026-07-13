@@ -17,7 +17,7 @@ public final class PlayCmdModule {
         PlayAutocomplete.init();
 
         SendCommandEvents.BEFORE_SEND.register(command -> {
-            if (command.trim().equals("play") && ModConfigManager.get().misc.playCmd
+            if (command.trim().equals("play") && ModConfigManager.get().general.playCmd
                     && HypixelLocationTracker.getInstance().isOnHypixel()) {
                 openGUI();
                 return true;
@@ -27,7 +27,7 @@ public final class PlayCmdModule {
     }
 
     public static boolean isPlayCmdEnabled() {
-        return ModConfigManager.get().misc.playCmd;
+        return ModConfigManager.get().general.playCmd;
     }
 
     public static void openGUI() {

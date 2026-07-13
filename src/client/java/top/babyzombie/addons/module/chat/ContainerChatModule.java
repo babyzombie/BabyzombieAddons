@@ -11,7 +11,7 @@ public final class ContainerChatModule {
 
     public static void init() {
         ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, event) -> {
-            if (!ModConfigManager.get().general.chatInContainer) return false;
+            if (!ModConfigManager.get().general.chat.chatInContainer) return false;
             if (ContainerChatHelper.isBlocklistedContainer(screen)) return false;
             if ((event.modifiers() & GLFW.GLFW_MOD_ALT) == 0) return false;
             if (slot == null || !slot.hasItem()) return false;

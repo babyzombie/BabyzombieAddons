@@ -33,7 +33,7 @@ public final class PlayAutocomplete {
     /** Build the custom /play command node. Call from PlayCmdModule.init(). */
     public static void init() {
         commandNode = literal("play")
-                .requires(source -> ModConfigManager.get().misc.playCmd
+                .requires(source -> ModConfigManager.get().general.playCmd
                         && HypixelLocationTracker.getInstance().isOnHypixel())
                 .executes(ctx -> 1) // no-op, GUI is handled by SendCommandEvents
                 .then(argument("game", StringArgumentType.greedyString())

@@ -33,7 +33,7 @@ public final class MithrilGourmandModule {
         }
 
         var config = ModConfigManager.get().mining;
-        if (!config.mithrilGourmandAutoExpresso) {
+        if (!config.mithrilGourmand.autoExpresso) {
             lastTriggeredBossbarId = null;
             return;
         }
@@ -59,7 +59,7 @@ public final class MithrilGourmandModule {
             return;
         }
 
-        if (smallestRemaining <= config.mithrilGourmandTriggerSeconds
+        if (smallestRemaining <= config.mithrilGourmand.triggerSeconds
                 && !candidateId.equals(lastTriggeredBossbarId)) {
             ChatUtils.sendCommand("tptodonexpresso");
             lastTriggeredBossbarId = candidateId;

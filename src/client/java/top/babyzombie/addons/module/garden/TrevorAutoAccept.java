@@ -36,13 +36,13 @@ public final class TrevorAutoAccept {
             String text = ChatUtils.stripColor(message.getString());
 
             // Auto-accept
-            if (cfg.trevorAutoAccept && text.startsWith("Accept the trapper's task to hunt the animal?")) {
+            if (cfg.trevor.autoAccept && text.startsWith("Accept the trapper's task to hunt the animal?")) {
                 String cmd = findClickCommand(message, "YES");
                 if (cmd != null) ChatUtils.sendCommand(cmd);
             }
 
             // Auto-call
-            if (cfg.trevorAutoCall && !autoCallDisabled) {
+            if (cfg.trevor.autoCall && !autoCallDisabled) {
                 if (text.startsWith("You can find your ") && text.contains(" animal near the ")) {
                     taskStartTime = ServerTick.getTime();
                 } else if (text.equals("Return to the Trapper soon to get a new animal to hunt!")) {

@@ -21,7 +21,7 @@ public class InventoryScreenMixin {
             ContainerChatHelper.getOverlay().extractRenderState(g, mouseX, mouseY, a);
         }
         if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS) {
-            boolean sharing = ContainerChatHelper.isActive() && ModConfigManager.get().general.chatInContainer;
+            boolean sharing = ContainerChatHelper.isActive() && ModConfigManager.get().general.chat.chatInContainer;
             StarIndicator.draw(g, mouseX, mouseY, sharing);
         }
     }

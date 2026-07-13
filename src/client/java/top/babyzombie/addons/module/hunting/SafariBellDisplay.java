@@ -41,7 +41,7 @@ public final class SafariBellDisplay {
 
     public static void init() {
         RenderPhaseRegister.register(ctx -> {
-            if (!ModConfigManager.get().hunting.safariBellDisplay) return;
+            if (!ModConfigManager.get().hunting.safari.bellDisplay) return;
             if (!HypixelLocationTracker.getInstance().isInSafari()) return;
 
             for (int i = 0; i < BELL_POS.length; i++) {

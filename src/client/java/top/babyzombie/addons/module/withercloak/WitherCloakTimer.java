@@ -19,7 +19,7 @@ public final class WitherCloakTimer {
 
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay || !ModConfigManager.get().witherCloak.witherCloakTimer) return;
+            if (overlay || !ModConfigManager.get().dungeon.witherCloak.witherCloakTimer) return;
             String text = ChatUtils.stripColor(message.getString()).trim();
 
             switch (text) {

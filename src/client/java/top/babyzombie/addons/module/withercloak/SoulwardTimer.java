@@ -18,7 +18,7 @@ public final class SoulwardTimer {
 
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!overlay || !ModConfigManager.get().witherCloak.soulwardTimer) return;
+            if (!overlay || !ModConfigManager.get().dungeon.witherCloak.soulwardTimer) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             String text = ChatUtils.stripColor(message.getString());
 

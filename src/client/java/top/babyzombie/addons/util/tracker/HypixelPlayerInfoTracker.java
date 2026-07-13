@@ -33,7 +33,7 @@ public final class HypixelPlayerInfoTracker {
                     packet.getPrefix().orElse(null)
             );
 
-            if (ModConfigManager.get().debug.hypixelModApiDebugLog) {
+            if (ModConfigManager.get().misc.hypixelModApiDebugLog) {
                 ChatUtils.showMessage("§7[ModAPI] §ePlayerInfo §7→ §f" + packet);
             }
         });

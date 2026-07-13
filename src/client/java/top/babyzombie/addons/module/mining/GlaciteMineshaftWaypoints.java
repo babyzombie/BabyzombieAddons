@@ -53,7 +53,7 @@ public final class GlaciteMineshaftWaypoints {
             if (nowIn && !inMineshaft) {
                 enterMineshaftTime = ServerTick.getTime();
                 // Auto warp if owner
-                var warpMode = ModConfigManager.get().mining.glaciteMineshaftWarp;
+                var warpMode = ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaftWarp;
                 if (mineshaftOwner && (warpMode == MineshaftWarpMode.SEND_PTME
                         || warpMode == MineshaftWarpMode.PTME_AND_WARP)) {
                     enterMineshaftTime = ServerTick.getTime();
@@ -76,7 +76,7 @@ public final class GlaciteMineshaftWaypoints {
         // Portal detection
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            var warpMode = ModConfigManager.get().mining.glaciteMineshaftWarp;
+            var warpMode = ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaftWarp;
             if (warpMode == MineshaftWarpMode.OFF) return;
             if (!isInDwarvenMines()) return;
             if (ChatUtils.stripColor(message.getString()).equals("WOW! You found a Glacite Mineshaft portal!")) {
@@ -101,7 +101,7 @@ public final class GlaciteMineshaftWaypoints {
         // Mineshaft owner detection
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (ModConfigManager.get().mining.glaciteMineshaftWarp == MineshaftWarpMode.OFF) return;
+            if (ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaftWarp == MineshaftWarpMode.OFF) return;
             if (!isInDwarvenMines()) return;
             var m = MINESHAFT_ENTER_PAT.matcher(message.getString());
             if (m.find()) {
@@ -154,7 +154,7 @@ public final class GlaciteMineshaftWaypoints {
             var t = HypixelLocationTracker.getInstance();
 
             // Corpse waypoints in mineshaft — detect and render
-            if (ModConfigManager.get().mining.mineshaftWaypoints
+            if (ModConfigManager.get().mining.glaciteTunnels.mineshaftWaypoints
                     && t.isIn("Mineshaft")) {
                 var player = Minecraft.getInstance().player;
                 if (player != null) {

@@ -17,8 +17,8 @@ public final class AutoJoinModule {
         // guaranteed to be initialized.
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             if (hasJoined) return;
-            if (!ModConfigManager.get().autoJoin.autoJoinServer) return;
-            String ip = ModConfigManager.get().autoJoin.autoJoinServerIP;
+            if (!ModConfigManager.get().general.autoJoinServer.enabled) return;
+            String ip = ModConfigManager.get().general.autoJoinServer.ip;
             if (ip.isBlank()) return;
             hasJoined = true;
 

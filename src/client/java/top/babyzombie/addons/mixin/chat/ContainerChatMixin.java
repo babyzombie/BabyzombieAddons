@@ -31,7 +31,7 @@ public abstract class ContainerChatMixin extends Screen {
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void onKeyPressed(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
-        if (!ModConfigManager.get().general.chatInContainer) return;
+        if (!ModConfigManager.get().general.chat.chatInContainer) return;
         var opts = Minecraft.getInstance().options;
 
         if (ContainerChatHelper.isActive()) {
@@ -69,7 +69,7 @@ public abstract class ContainerChatMixin extends Screen {
         }
         // ALT 按住时：保护→⭐ 常显；分享→箭头 仅开关打开时
         if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS) {
-            boolean sharing = ContainerChatHelper.isActive() && ModConfigManager.get().general.chatInContainer;
+            boolean sharing = ContainerChatHelper.isActive() && ModConfigManager.get().general.chat.chatInContainer;
             StarIndicator.draw(g, mouseX, mouseY, sharing);
         }
     }

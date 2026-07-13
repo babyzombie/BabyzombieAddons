@@ -31,7 +31,7 @@ public final class EndStoneSwordTimer {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
             var cfg = ModConfigManager.get().slayer;
-            if (cfg.endStoneSwordTimer == ModConfig.EndStoneSwordMode.OFF) return;
+            if (cfg.itemSkillTimers.endStoneSwordTimer == ModConfig.EndStoneSwordMode.OFF) return;
 
             String text = ChatUtils.stripColor(message.getString());
             Matcher m = RESIST_PATTERN.matcher(text);
@@ -51,8 +51,8 @@ public final class EndStoneSwordTimer {
      */
     public static boolean shouldPreventUse(Player player, InteractionHand hand) {
         var cfg = ModConfigManager.get().slayer;
-        if (cfg.endStoneSwordTimer != ModConfig.EndStoneSwordMode.PREVENT_REUSE
-                && cfg.endStoneSwordTimer != ModConfig.EndStoneSwordMode.BOTH) {
+        if (cfg.itemSkillTimers.endStoneSwordTimer != ModConfig.EndStoneSwordMode.PREVENT_REUSE
+                && cfg.itemSkillTimers.endStoneSwordTimer != ModConfig.EndStoneSwordMode.BOTH) {
             return false;
         }
         ItemStack held = player.getItemInHand(hand);

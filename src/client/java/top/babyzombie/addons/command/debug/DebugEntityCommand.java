@@ -91,7 +91,7 @@ public final class DebugEntityCommand {
         src.sendFeedback(Component.translatable("babyzombieaddons.debug.entities.header",
                 entities.size(), distance));
 
-        int max = ModConfigManager.get().debug.maxDebugEntities;
+        int max = ModConfigManager.get().misc.maxDebugEntities;
         int count = 0;
         for (var entity : entities) {
             if (count >= max) {

@@ -37,7 +37,7 @@ public final class PreventInstantReel {
         // 拦截右键收杆
         UseItemCallback.EVENT.register((player, world, hand) -> {
             var cfg = ModConfigManager.get().fishing;
-            if (!cfg.preventInstantReel) return InteractionResult.PASS;
+            if (!cfg.preventInstantReel.enabled) return InteractionResult.PASS;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return InteractionResult.PASS;
             if (HypixelLocationTracker.getInstance().isInKuudra()) return InteractionResult.PASS;
             if (player.fishing == null) return InteractionResult.PASS;
@@ -46,7 +46,7 @@ public final class PreventInstantReel {
             var held = player.getItemInHand(hand);
             if (!(held.getItem() instanceof FishingRodItem)) return InteractionResult.PASS;
 
-            if (ServerTick.getTime() - castTime < cfg.preventInstantReelDelay) {
+            if (ServerTick.getTime() - castTime < cfg.preventInstantReel.delay) {
                 return InteractionResult.FAIL;
             }
             return InteractionResult.PASS;

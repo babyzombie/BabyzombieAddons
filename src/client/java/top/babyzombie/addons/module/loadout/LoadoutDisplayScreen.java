@@ -57,7 +57,7 @@ public class LoadoutDisplayScreen extends Screen {
         super(Component.literal("Loadouts"));
         this.parentContainer = pc;
         this.clientLevel = Minecraft.getInstance().level;
-        this.entityMode = ModConfigManager.get().loadout.entityRenderMode;
+        this.entityMode = ModConfigManager.get().skyblock.loadout.entityRenderMode;
         refreshSlots();
         // 延迟刷新（等服务器发物品）
         Minecraft.getInstance().execute(() -> Minecraft.getInstance().execute(this::refreshSlots));

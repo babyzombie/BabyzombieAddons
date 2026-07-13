@@ -70,7 +70,7 @@ public final class AutoRequeue {
         var cfg = ModConfigManager.get().dungeon;
         var t = HypixelLocationTracker.getInstance();
         boolean isKuudra = t.isInKuudra();
-        ModConfig.RequeueMode mode = isKuudra ? cfg.kuudraRequeue : cfg.dungeonRequeue;
+        ModConfig.RequeueMode mode = isKuudra ? cfg.requeue.kuudraRequeue : cfg.requeue.dungeonRequeue;
         if (mode == ModConfig.RequeueMode.OFF) return;
         if (ended) return;
         if (mode == ModConfig.RequeueMode.ON_FAIL && win) return;
@@ -79,9 +79,9 @@ public final class AutoRequeue {
         if (!canRequeue || cancelAutoJoin) return;
 
         ended = true;
-        int delay = isKuudra ? cfg.kuudraRequeueDelay : cfg.dungeonRequeueDelay;
-        if (!cfg.requeueMessage.isEmpty() && PartyTracker.getInstance().isSelfLeader()) {
-            String msg = cfg.requeueMessage.replace("%delay%", String.valueOf(delay));
+        int delay = isKuudra ? cfg.requeue.kuudraRequeueDelay : cfg.requeue.dungeonRequeueDelay;
+        if (!cfg.requeue.requeueMessage.isEmpty() && PartyTracker.getInstance().isSelfLeader()) {
+            String msg = cfg.requeue.requeueMessage.replace("%delay%", String.valueOf(delay));
             ChatUtils.sendCommand("pc " + msg);
         }
 
@@ -95,7 +95,7 @@ public final class AutoRequeue {
     static void cancel() {
         cancelAutoJoin = true;
         waitingForRevive = false;
-        String cancelMsg = ModConfigManager.get().dungeon.requeueCancelMessage;
+        String cancelMsg = ModConfigManager.get().dungeon.requeue.requeueCancelMessage;
         if (!cancelMsg.isEmpty()) ChatUtils.sendCommand("pc " + cancelMsg);
     }
 }

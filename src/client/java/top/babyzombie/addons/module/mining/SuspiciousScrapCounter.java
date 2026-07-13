@@ -19,7 +19,7 @@ public final class SuspiciousScrapCounter {
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().mining.suspiciousScrapCounter) return;
+            if (!ModConfigManager.get().mining.glaciteTunnels.suspiciousScrapCounter) return;
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isIn("Mineshaft")) return;
             if (ChatUtils.stripColor(message.getString()).startsWith("EXCAVATOR! You found a Suspicious Scrap!")) {
@@ -30,7 +30,7 @@ public final class SuspiciousScrapCounter {
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
                 Identifier.fromNamespaceAndPath("babyzombieaddons", "suspicious_scrap"),
                 (context, tickCounter) -> {
-            if (!ModConfigManager.get().mining.suspiciousScrapCounter) return;
+            if (!ModConfigManager.get().mining.glaciteTunnels.suspiciousScrapCounter) return;
             if (count <= 0) return;
             var font = Minecraft.getInstance().font;
             int x = HudManager.x("SuspiciousScrap"), y = HudManager.y("SuspiciousScrap");

@@ -34,7 +34,7 @@ public final class ChatChannelModule {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
             if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
-            if (!ModConfigManager.get().chatChannel.chatChannelSwitcher) return;
+            if (!ModConfigManager.get().general.chat.channelSwitcher) return;
             detectAndSetChannel(message.getString());
         });
     }

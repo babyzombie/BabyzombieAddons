@@ -31,7 +31,7 @@ public final class ReaperArmorTimer {
 
     public static void onSound(String name, float pitch) {
         var cfg = ModConfigManager.get().slayer;
-        if (!cfg.reaperArmorTimer) return;
+        if (!cfg.itemSkillTimers.reaperArmorTimer) return;
         if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
 
         if (!name.equals("zombie/remedy")) return;

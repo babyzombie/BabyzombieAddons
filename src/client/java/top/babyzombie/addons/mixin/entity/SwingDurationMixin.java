@@ -14,9 +14,9 @@ public class SwingDurationMixin {
     @Inject(method = "getCurrentSwingDuration", at = @At("RETURN"), cancellable = true)
     private void overrideSwingDuration(CallbackInfoReturnable<Integer> cir) {
         if ((Object) this != Minecraft.getInstance().player) return;
-        var cfg = ModConfigManager.get().handRender;
-        if (!cfg.customSwingDuration) return;
-        int duration = cfg.swingDurationTicks;
+        var cfg = ModConfigManager.get().general;
+        if (!cfg.handRender.customSwingDuration) return;
+        int duration = cfg.handRender.swingDurationTicks;
         if (duration <= 0) {
             cir.setReturnValue(Integer.MAX_VALUE);
         } else {

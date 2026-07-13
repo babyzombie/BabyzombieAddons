@@ -13,7 +13,7 @@ public abstract class ThirdPersonCrosshairMixin {
     @Redirect(method = "extractCrosshair", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/CameraType;isFirstPerson()Z"))
     private boolean bypassIsFirstPerson(CameraType cameraType) {
-        if (ModConfigManager.get().general.showCrosshairInThirdPerson) {
+        if (ModConfigManager.get().general.playerScale.showCrosshairInThirdPerson) {
             return true;
         }
         return cameraType.isFirstPerson();

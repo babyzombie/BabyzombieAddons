@@ -30,7 +30,7 @@ public class ChatOverlaySetScreenMixin {
         Screen current = self.screen;
         if (current instanceof AbstractContainerScreen<?> container
                 && screen instanceof ChatScreen chatScreen
-                && ModConfigManager.get().general.chatInContainer
+                && ModConfigManager.get().general.chat.chatInContainer
                 && !ContainerChatHelper.isBlocklistedContainer(container)) {
             ContainerChatHelper.activate(container, chatScreen);
             ci.cancel();

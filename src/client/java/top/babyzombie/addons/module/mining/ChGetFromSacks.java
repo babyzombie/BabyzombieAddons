@@ -19,7 +19,7 @@ public final class ChGetFromSacks {
         // NPC triggers
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().mining.getFromSacks) return;
+            if (!ModConfigManager.get().mining.crystalHollows.getFromSacks) return;
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isIn("Crystal Hollows")) return;
 
@@ -53,7 +53,7 @@ public final class ChGetFromSacks {
         // gfs failed → open recipe viewer
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().mining.getFromSacks) return;
+            if (!ModConfigManager.get().mining.crystalHollows.getFromSacks) return;
             if (!triedGfsApparatus) return;
             if (ChatUtils.stripColor(message.getString()).equals("You have no Precursor Apparatus in your Sacks!")) {
                 triedGfsApparatus = false;
@@ -65,7 +65,7 @@ public final class ChGetFromSacks {
         // Auto-close recipe viewer after supercraft
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().mining.getFromSacks) return;
+            if (!ModConfigManager.get().mining.crystalHollows.getFromSacks) return;
             if (!gettingApparatus) return;
             if (ChatUtils.stripColor(message.getString()).equals("You Supercrafted Precursor Apparatus!")) {
                 var client = Minecraft.getInstance();

@@ -25,7 +25,7 @@ public final class GreatSpookModule {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
-            if (!ModConfigManager.get().events.greatSpook) return;
+            if (!ModConfigManager.get().events.greatSpook.enabled) return;
 
             String rawText = message.getString();
             String text = ChatUtils.stripColor(rawText);
@@ -54,7 +54,7 @@ public final class GreatSpookModule {
                     || text.startsWith("[FEAR] Public Speaking Demon: Say something interesting ")) {
                 if (ServerTick.getTime() < publicSpeakingDemonCooldown + 20_000) return;
 
-                String cfgText = ModConfigManager.get().events.publicSpeakingDemon;
+                String cfgText = ModConfigManager.get().events.greatSpook.publicSpeakingDemon;
                 String sayStr;
                 if (ServerTick.getTime() > publicSpeakingDemonCooldown + 60_000
                         && cfgText != null && !cfgText.isEmpty()) {
@@ -69,7 +69,7 @@ public final class GreatSpookModule {
     }
 
     private static void scheduleCommand(String cmd) {
-        boolean delay = ModConfigManager.get().events.greatSpookDelay;
+        boolean delay = ModConfigManager.get().events.greatSpook.delay;
         int ms = delay ? (int) (500 + Math.random() * 500) : 0;
         if (ms == 0) {
             ChatUtils.sendCommand(cmd);

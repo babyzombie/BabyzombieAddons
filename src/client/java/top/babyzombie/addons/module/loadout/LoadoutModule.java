@@ -29,19 +29,19 @@ public final class LoadoutModule {
         });
 
         if (!FabricLoader.getInstance().isModLoaded("skyblocker")) {
-            ModConfigManager.get().loadout.enabled = false;
+            ModConfigManager.get().skyblock.loadout.enabled = false;
             return;
         }
 
         // 不等物品加载，直接替换屏幕（避免闪烁）
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
             if (!(screen instanceof AbstractContainerScreen<?> cs)) return;
-            if (!ModConfigManager.get().loadout.enabled) return;
+            if (!ModConfigManager.get().skyblock.loadout.enabled) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             if (closingGuard > 0) return;
             // autoClose 开启 + pending 时不替换页面（PetManager 会关掉它）
             if (top.babyzombie.addons.util.pet.PetManager.getInstance().isLoadoutSwitchPending()
-                && ModConfigManager.get().loadout.autoClose) return;
+                && ModConfigManager.get().skyblock.loadout.autoClose) return;
             if (!LOADOUT_TITLE.matcher(ChatUtils.stripColor(cs.getTitle().getString())).matches()) return;
             if (!(cs.getMenu() instanceof ChestMenu)) return;
             if (client.screen instanceof LoadoutDisplayScreen) return;

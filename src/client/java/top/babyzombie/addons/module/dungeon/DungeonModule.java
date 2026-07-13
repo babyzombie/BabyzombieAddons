@@ -91,8 +91,8 @@ public final class DungeonModule {
             if (o) return;
             if (!AutoRequeue.canRequeue || AutoRequeue.cancelAutoJoin) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra() && !HypixelLocationTracker.getInstance().isInDungeon()) return;
-            if (ModConfigManager.get().dungeon.dungeonRequeue == ModConfig.RequeueMode.OFF && HypixelLocationTracker.getInstance().isInDungeon()) return;
-            if (ModConfigManager.get().dungeon.kuudraRequeue == ModConfig.RequeueMode.OFF && HypixelLocationTracker.getInstance().isInKuudra()) return;
+            if (ModConfigManager.get().dungeon.requeue.dungeonRequeue == ModConfig.RequeueMode.OFF && HypixelLocationTracker.getInstance().isInDungeon()) return;
+            if (ModConfigManager.get().dungeon.requeue.kuudraRequeue == ModConfig.RequeueMode.OFF && HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (!PartyTracker.getInstance().isSelfLeader()) return;
             var pm = PartyModule.PARTY_CHAT.matcher(ChatUtils.stripColor(m.getString()));
             if (!pm.find()) return;
@@ -102,7 +102,7 @@ public final class DungeonModule {
                 return;
             }
             if (t.startsWith("!")) t = t.replace("!", "");
-            for (String kw : ModConfigManager.get().dungeon.requeueCancelKeywords.toLowerCase().split("\\|")) {
+            for (String kw : ModConfigManager.get().dungeon.requeue.requeueCancelKeywords.toLowerCase().split("\\|")) {
                 if (!kw.isEmpty() && t.equals(kw)) {
                     AutoRequeue.cancel();
                     return;

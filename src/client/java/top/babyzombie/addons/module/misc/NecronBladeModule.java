@@ -55,7 +55,7 @@ public final class NecronBladeModule {
         double dz = sound.getZ() - player.getZ();
         if (dx * dx + dy * dy + dz * dz > SELF_RADIUS * SELF_RADIUS) return sound;
 
-        float volume = ModConfigManager.get().misc.necronBladeExplosionVolume;
+        float volume = ModConfigManager.get().skyblock.necronBlade.explosionVolume;
         if (volume >= 1.0f) return sound;
         var resolved = sound.getSound();
         return new SimpleSoundInstance(
@@ -73,14 +73,14 @@ public final class NecronBladeModule {
     /** @return true to cancel the particle */
     private static boolean cancelParticle(Particle particle) {
         if (!(particle instanceof HugeExplosionParticle)) return false;
-        var cfg = ModConfigManager.get().misc;
+        var cfg = ModConfigManager.get().skyblock;
 
         // Self: full check (ID + Implosion scroll + in Skyblock)
-        if (cfg.necronBladeHideExplosionParticles && shouldModify()
+        if (cfg.necronBlade.hideExplosionParticles && shouldModify()
                 && isNearPlayer(particle, Minecraft.getInstance().player, SELF_RADIUS)) return true;
 
         // Others: ID whitelist only + distance 1
-        if (cfg.necronBladeHideOthersParticles && isNearWitherBladeUser(particle)) return true;
+        if (cfg.necronBlade.hideOthersParticles && isNearWitherBladeUser(particle)) return true;
 
         return false;
     }

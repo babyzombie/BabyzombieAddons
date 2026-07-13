@@ -74,13 +74,13 @@ public final class AutoReconnectHelper {
 
     public static boolean shouldStartCountdown() {
         var config = ModConfigManager.get();
-        if (!config.general.autoReconnectEnabled) return false;
+        if (!config.general.autoReconnect.enabled) return false;
         if (lastServerIp == null) return false;
-        return retryCount < config.general.autoReconnectMaxRetries || config.general.autoReconnectMaxRetries == 0;
+        return retryCount < config.general.autoReconnect.maxRetries || config.general.autoReconnect.maxRetries == 0;
     }
 
     public static int getDelay() {
-        return ModConfigManager.get().general.autoReconnectDelay;
+        return ModConfigManager.get().general.autoReconnect.delay;
     }
 
     public static void startCountdown(int seconds) {

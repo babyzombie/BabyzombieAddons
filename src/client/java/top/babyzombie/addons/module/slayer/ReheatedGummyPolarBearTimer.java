@@ -55,7 +55,7 @@ public final class ReheatedGummyPolarBearTimer {
         // Tick every second (20 ticks)
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var cfg = ModConfigManager.get().slayer;
-            if (cfg.reheatedGummyPolarBear == ModConfig.GummyPolarBearMode.OFF) return;
+            if (cfg.itemSkillTimers.reheatedGummyPolarBear == ModConfig.GummyPolarBearMode.OFF) return;
 
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock()) return;
@@ -73,7 +73,7 @@ public final class ReheatedGummyPolarBearTimer {
             profileTimers.put(profileId, remaining);
 
             // Only show in Smoldering Tomb if mode == 1
-            if (cfg.reheatedGummyPolarBear == ModConfig.GummyPolarBearMode.EVERYWHERE_EXCEPT_DUNGEON
+            if (cfg.itemSkillTimers.reheatedGummyPolarBear == ModConfig.GummyPolarBearMode.EVERYWHERE_EXCEPT_DUNGEON
                     || "Smoldering Tomb".equals(tracker.getLocation())) switch (remaining) {
                 case 300 -> {
                     if (!alerted5min) {

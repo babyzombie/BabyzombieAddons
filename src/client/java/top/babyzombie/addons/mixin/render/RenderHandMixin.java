@@ -24,7 +24,7 @@ public class RenderHandMixin {
 
     @Inject(method = "renderHandsWithItems", at = @At("HEAD"), cancellable = true)
     private void disableHandRender(CallbackInfo ci) {
-        if (ModConfigManager.get().handRender.disableAll) {
+        if (ModConfigManager.get().general.handRender.disableAll) {
             ci.cancel();
         }
     }
@@ -82,12 +82,12 @@ public class RenderHandMixin {
                     target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
                     ordinal = 0))
     private void applyItemScale0(AbstractClientPlayer player, float frameInterp, float xRot, InteractionHand hand, float attack, ItemStack itemStack, float inverseArmHeight, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, CallbackInfo ci) {
-        var cfg = ModConfigManager.get().handRender;
+        var cfg = ModConfigManager.get().general;
         float inv = hand == InteractionHand.MAIN_HAND
                 ? (player.getMainArm() == HumanoidArm.RIGHT ? 1.0F : -1.0F)
                 : (player.getMainArm() == HumanoidArm.RIGHT ? -1.0F : 1.0F);
-        poseStack.translate(inv * cfg.itemOffsetX, cfg.itemOffsetY, 0.0F);
-        poseStack.scale(cfg.itemScale, cfg.itemScale, cfg.itemScale);
+        poseStack.translate(inv * cfg.handRender.itemOffsetX, cfg.handRender.itemOffsetY, 0.0F);
+        poseStack.scale(cfg.handRender.itemScale, cfg.handRender.itemScale, cfg.handRender.itemScale);
     }
 
     @Inject(method = "renderArmWithItem",
@@ -95,12 +95,12 @@ public class RenderHandMixin {
                     target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
                     ordinal = 1))
     private void applyItemScale1(AbstractClientPlayer player, float frameInterp, float xRot, InteractionHand hand, float attack, ItemStack itemStack, float inverseArmHeight, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, CallbackInfo ci) {
-        var cfg = ModConfigManager.get().handRender;
+        var cfg = ModConfigManager.get().general;
         float inv = hand == InteractionHand.MAIN_HAND
                 ? (player.getMainArm() == HumanoidArm.RIGHT ? 1.0F : -1.0F)
                 : (player.getMainArm() == HumanoidArm.RIGHT ? -1.0F : 1.0F);
-        poseStack.translate(inv * cfg.itemOffsetX, cfg.itemOffsetY, 0.0F);
-        poseStack.scale(cfg.itemScale, cfg.itemScale, cfg.itemScale);
+        poseStack.translate(inv * cfg.handRender.itemOffsetX, cfg.handRender.itemOffsetY, 0.0F);
+        poseStack.scale(cfg.handRender.itemScale, cfg.handRender.itemScale, cfg.handRender.itemScale);
     }
 
     @Inject(method = "renderPlayerArm",
@@ -109,7 +109,7 @@ public class RenderHandMixin {
                     ordinal = 2,
                     shift = At.Shift.AFTER))
     private void applyArmScale(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, float inverseArmHeight, float attackValue, HumanoidArm arm, CallbackInfo ci) {
-        float s = ModConfigManager.get().handRender.itemScale;
+        float s = ModConfigManager.get().general.handRender.itemScale;
         float inv = arm == HumanoidArm.RIGHT ? 1.0F : -1.0F;
         float t = 1.0F / s - 1.0F;
         poseStack.scale(s, s, s);

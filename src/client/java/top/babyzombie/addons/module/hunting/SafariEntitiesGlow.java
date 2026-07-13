@@ -24,8 +24,8 @@ public final class SafariEntitiesGlow {
             if (!HypixelLocationTracker.getInstance().isInSafari()) return;
 
             var cfg = ModConfigManager.get().hunting;
-            boolean glowShulker = cfg.safariShulkerGlow;
-            boolean glowHideyho = cfg.safariHideyhoGlow;
+            boolean glowShulker = cfg.safari.shulkerGlow;
+            boolean glowHideyho = cfg.safari.hideyhoGlow;
             if (!glowShulker && !glowHideyho) return;
 
             for (var entity : client.level.entitiesForRendering()) {

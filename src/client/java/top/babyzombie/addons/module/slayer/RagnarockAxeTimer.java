@@ -22,7 +22,7 @@ public final class RagnarockAxeTimer {
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             var cfg = ModConfigManager.get().slayer;
-            if (cfg.ragnarockAxeTimer == ModConfig.RagnarockAxeMode.OFF) return;
+            if (cfg.itemSkillTimers.ragnarockAxeTimer == ModConfig.RagnarockAxeMode.OFF) return;
 
             String text = message.getString();
 
@@ -58,7 +58,7 @@ public final class RagnarockAxeTimer {
         long now = ServerTick.getTime();
         if (castTime == 0 && duration == 0 && cooldown == 0) { text = ""; return; }
 
-        int mode = ModConfigManager.get().slayer.ragnarockAxeTimer.ordinal();
+        int mode = ModConfigManager.get().slayer.itemSkillTimers.ragnarockAxeTimer.ordinal();
 
         if (castTime > 0) {
             if (castTime > now) {

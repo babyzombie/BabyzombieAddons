@@ -17,7 +17,7 @@ public final class GravityStormTimer {
 
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!overlay || !ModConfigManager.get().witherCloak.gravityStormTimer) return;
+            if (!overlay || !ModConfigManager.get().dungeon.witherCloak.gravityStormTimer) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             String text = ChatUtils.stripColor(message.getString());
 

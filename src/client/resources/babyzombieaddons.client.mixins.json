@@ -55,8 +55,11 @@
     "screen.InventoryScreenMixin",
     "screen.KeyMappingMixin",
     "screen.ScreenMixin",
+    "screen.MoulConfigTranslationMixin",
+    "screen.GuiOptionEditorDropdownMixin",
 
-    "screen.MoulConfigAdapterMixin",
+
+
 
     "screen.PauseScreenMixin",
 

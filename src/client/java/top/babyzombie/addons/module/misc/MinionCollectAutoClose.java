@@ -23,7 +23,7 @@ public final class MinionCollectAutoClose {
         // Detect "Collect All" click — record the tick for freshness guard
         ContainerClickEvents.BEFORE_CONTAINER_INPUT.register((player, containerId, slotId, buttonNum, input) -> {
             if (input != ContainerInput.PICKUP) return false;
-            if (!ModConfigManager.get().general.minionCollectAutoClose) return false;
+            if (!ModConfigManager.get().skyblock.minionCollectAutoClose) return false;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
 
             var client = Minecraft.getInstance();

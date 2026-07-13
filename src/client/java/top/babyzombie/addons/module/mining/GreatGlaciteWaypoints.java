@@ -21,7 +21,7 @@ public final class GreatGlaciteWaypoints {
 
     public static void init() {
         RenderPhaseRegister.register(ctx -> {
-            if (!ModConfigManager.get().mining.greatGlaciteWaypoints) return;
+            if (!ModConfigManager.get().mining.glaciteTunnels.greatGlaciteWaypoints) return;
             if (!isInGlaciteArea()) return;
 
             var player = Minecraft.getInstance().player;

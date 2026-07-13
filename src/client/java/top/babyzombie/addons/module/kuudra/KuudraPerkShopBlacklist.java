@@ -9,7 +9,7 @@ public final class KuudraPerkShopBlacklist {
 
     public static void init() {
         ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, event) -> {
-            if (!ModConfigManager.get().kuudra.perkShopBlacklist) return false;
+            if (!ModConfigManager.get().kuudra.perkShop.perkShopBlacklist) return false;
 
             String title = ChatUtils.stripColor(screen.getTitle().getString());
             if (!title.equals("Perk Menu")) return false;
@@ -18,7 +18,7 @@ public final class KuudraPerkShopBlacklist {
 
             String name = ChatUtils.stripColor(slot.getItem().getDisplayName().getString());
             String clean = name.replaceAll("^[\\[\\]\\s]+|[\\[\\]\\s]+$", "");
-            for (String entry : ModConfigManager.get().kuudra.perkShopBlacklistItems.split(",")) {
+            for (String entry : ModConfigManager.get().kuudra.perkShop.perkShopBlacklistItems.split(",")) {
                 String e = ChatUtils.stripColor(entry).trim();
                 if (!e.isEmpty() && clean.contains(e)) {
                     return true;

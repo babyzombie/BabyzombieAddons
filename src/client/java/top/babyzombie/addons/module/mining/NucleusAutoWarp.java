@@ -14,7 +14,7 @@ public final class NucleusAutoWarp {
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().mining.nucleusAutoWarp) return;
+            if (!ModConfigManager.get().mining.crystalHollows.nucleusAutoWarp) return;
             if(!HypixelLocationTracker.getInstance().isIn("Crystal Hollows")) return;
             if (!ChatUtils.stripColor(message.getString()).equals("You have already obtained this Crystal!")) return;
 

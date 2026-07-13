@@ -19,7 +19,7 @@ public final class ChestMarkers {
 
     public static void init() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!ModConfigManager.get().mining.chestMarkers) return;
+            if (!ModConfigManager.get().mining.crystalHollows.chestMarkers) return;
             if (!isInCrystalHollows()) return;
             if (client.player == null || client.player.tickCount % 20 != 0) return;
 
@@ -41,7 +41,7 @@ public final class ChestMarkers {
         });
 
         RenderPhaseRegister.register(ctx -> {
-            if (!ModConfigManager.get().mining.chestMarkers) return;
+            if (!ModConfigManager.get().mining.crystalHollows.chestMarkers) return;
             if (!isInCrystalHollows() || chests.isEmpty()) return;
 
             double e = 0.02;
@@ -49,7 +49,7 @@ public final class ChestMarkers {
                 WorldRenderUtils.drawWireframeBox(ctx,
                     pos.getX() - e, pos.getY() - e, pos.getZ() - e,
                     pos.getX() + 1 + e, pos.getY() + 1 + e, pos.getZ() + 1 + e,
-                    R, G, B, A, false, ModConfigManager.get().mining.chestLineWidth);
+                    R, G, B, A, false, ModConfigManager.get().mining.crystalHollows.chestLineWidth);
             }
         });
     }

@@ -63,7 +63,7 @@ public final class PetDisplayHud {
 
     /** Recompute all display strings and item stacks from current PetManager state. */
     private static void refreshCache() {
-        var config = ModConfigManager.get().pet;
+        var config = ModConfigManager.get().skyblock;
 
         PetManager pm = PetManager.getInstance();
         PetData current = pm.getCurrentPet();
@@ -78,11 +78,11 @@ public final class PetDisplayHud {
         LevelInfo info = current.getLevelInfo();
         cachedCurrentLine1 = "§7Lv.§f" + info.level() + " " + tierColor(current.tier()) + PetData.formatPetName(current.type());
 
-        cachedCurrentXpLine = config.petExpDisplay ? xpLine(info, current.exp()) : null;
+        cachedCurrentXpLine = config.pet.expDisplay ? xpLine(info, current.exp()) : null;
 
-        if (config.petItemDisplay && current.heldItem() != null) {
+        if (config.pet.itemDisplay && current.heldItem() != null) {
             cachedCurrentItemLine = PetHeadTexture.getItemDisplayName(current.heldItem());
-            cachedCurrentItemIcon = config.petItemIconDisplay
+            cachedCurrentItemIcon = config.pet.itemIconDisplay
                 ? PetHeadTexture.getItemIcon(current.heldItem()) : null;
         } else {
             cachedCurrentItemLine = null;
@@ -91,7 +91,7 @@ public final class PetDisplayHud {
 
         // Shared pets
         cachedSharedPets.clear();
-        if (config.petSharedDisplay) {
+        if (config.pet.sharedDisplay) {
             List<PetData> sharedPets = pm.getSharedPets();
             PlayerPetState state = pm.getPetState();
             int maxSlots = state.dianaSharingIsCaring ? 3 : 1;
@@ -101,7 +101,7 @@ public final class PetDisplayHud {
                 PetData shared = sharedPets.get(i);
                 LevelInfo si = shared.getLevelInfo();
                 String sLine1 = "§7Lv.§f" + si.level() + " " + tierColor(shared.tier()) + PetData.formatPetName(shared.type());
-                String sXpLine = config.petExpDisplay ? xpLine(si, shared.exp()) : null;
+                String sXpLine = config.pet.expDisplay ? xpLine(si, shared.exp()) : null;
                 cachedSharedPets.add(new CachedSharedPet(
                     PetHeadTexture.getPetHead(shared.type()), sLine1, sXpLine));
             }
@@ -109,8 +109,8 @@ public final class PetDisplayHud {
     }
 
     private static void render(GuiGraphicsExtractor gui) {
-        var config = ModConfigManager.get().pet;
-        if (!config.petDisplay) return;
+        var config = ModConfigManager.get().skyblock;
+        if (!config.pet.enabled) return;
         if (!HudManager.shouldShow(ELEMENT_NAME)) return;
 
         // Refresh cached data at most once per second

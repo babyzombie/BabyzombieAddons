@@ -21,19 +21,19 @@ public final class ScathaCooldown {
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().mining.scathaCooldown) return;
+            if (!ModConfigManager.get().mining.crystalHollows.scathaCooldown) return;
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isIn("Crystal Hollows")) return;
             if (ChatUtils.stripColor(message.getString()).equals("You hear the sound of something approaching...")) {
                 time = ServerTick.getTime();
-                if (ModConfigManager.get().mining.scathaReleaseKey) KeyMapping.releaseAll();
+                if (ModConfigManager.get().mining.crystalHollows.scathaReleaseKey) KeyMapping.releaseAll();
             }
         });
 
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
                 Identifier.fromNamespaceAndPath("babyzombieaddons", "scatha_cooldown"),
                 (context, tickCounter) -> {
-            if (!ModConfigManager.get().mining.scathaCooldown) return;
+            if (!ModConfigManager.get().mining.crystalHollows.scathaCooldown) return;
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isIn("Crystal Hollows")) return;
             if (time == 0) return;

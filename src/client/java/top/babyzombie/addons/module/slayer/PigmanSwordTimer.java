@@ -28,7 +28,7 @@ public final class PigmanSwordTimer {
             String heldName = ChatUtils.stripColor(held.getDisplayName().getString());
 
             // Pigman Sword — enable sound listener on right-click while holding
-            if (ModConfigManager.get().slayer.pigmanSwordTimer
+            if (ModConfigManager.get().slayer.itemSkillTimers.pigmanSwordTimer
                     && client.options.keyUse.isDown()
                     && heldName.contains("Pigman Sword")
                     && time == 0) { // not in cooldown
@@ -40,7 +40,7 @@ public final class PigmanSwordTimer {
             }
 
             // Holy Ice — enable sound listener on right-click while holding
-            if (ModConfigManager.get().slayer.holyIceTimer
+            if (ModConfigManager.get().slayer.itemSkillTimers.holyIceTimer
                     && client.options.keyUse.isDown()
                     && heldName.contains("Holy Ice")) {
                 holyIceListening = true;
@@ -57,13 +57,13 @@ public final class PigmanSwordTimer {
      */
     public static void onSound(String name) {
         if (name.equals("zpigangry")) {
-            if (!ModConfigManager.get().slayer.pigmanSwordTimer) return;
+            if (!ModConfigManager.get().slayer.itemSkillTimers.pigmanSwordTimer) return;
             if (!pigmanListening) return;
             time = ServerTick.getTime();
             pigmanListening = false;
         }
         if (name.equals("drink")) {
-            if (!ModConfigManager.get().slayer.holyIceTimer) return;
+            if (!ModConfigManager.get().slayer.itemSkillTimers.holyIceTimer) return;
             if (!holyIceListening) return;
             HolyIceTimer.activated = true;
             HolyIceTimer.time = ServerTick.getTime();

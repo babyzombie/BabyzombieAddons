@@ -442,7 +442,7 @@ public final class PetManager {
                 scanLoadoutPet(cs);
                 if (loadoutSwitchPending) {
                     loadoutSwitchPending = false;
-                    if (ModConfigManager.get().loadout.autoClose) {
+                    if (ModConfigManager.get().skyblock.loadout.autoClose) {
                         var client = Minecraft.getInstance();
                         client.execute(() -> {
                             if (client.player != null) client.player.closeContainer();

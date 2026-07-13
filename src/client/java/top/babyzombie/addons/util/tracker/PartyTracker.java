@@ -80,7 +80,7 @@ public final class PartyTracker {
             }
             for (var cb : callbacks) cb.accept(lastInfo);
 
-            if (ModConfigManager.get().debug.hypixelModApiDebugLog) {
+            if (ModConfigManager.get().misc.hypixelModApiDebugLog) {
                 ChatUtils.showMessage("§7[ModAPI] §dParty §7→ §f" + packet);
             }
         });

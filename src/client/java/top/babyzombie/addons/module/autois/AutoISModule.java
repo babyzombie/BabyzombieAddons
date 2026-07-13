@@ -28,7 +28,7 @@ public final class AutoISModule {
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
                 Identifier.fromNamespaceAndPath("babyzombieaddons", "autois"),
                 (context, tickCounter) -> {
-                    if (!ModConfigManager.get().general.autois) return;
+                    if (!ModConfigManager.get().skyblock.autois.enabled) return;
                     var font = Minecraft.getInstance().font;
                     String text = Component.translatable("hud.babyzombieaddons.autois").getString();
                     if (warpCooldown > 0) text += " §7(" + warpCooldown + "s)";
@@ -38,23 +38,23 @@ public final class AutoISModule {
                 });
 
         EntityRenderEvents.BEFORE_RENDER.register(entity -> {
-            var cfg = ModConfigManager.get().general;
-            return cfg.autois && cfg.hideEntities;
+            var cfg = ModConfigManager.get().skyblock;
+            return cfg.autois.enabled && cfg.autois.hideEntities;
         });
 
         ParticleRenderEvents.BEFORE_ADD.register(particle -> {
-            var cfg = ModConfigManager.get().general;
-            return cfg.autois && cfg.hideEntities;
+            var cfg = ModConfigManager.get().skyblock;
+            return cfg.autois.enabled && cfg.autois.hideEntities;
         });
 
         // Reset cooldown on world change so the timer waits before checking again
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((minecraft, level) -> {
-            warpCooldown = ModConfigManager.get().general.autoisDelay;
+            warpCooldown = ModConfigManager.get().skyblock.autois.delay;
         });
 
         // Persistent repeating timer — checks every second whether we need to warp
         Scheduler.scheduleRepeating(20, () -> {
-            if (!ModConfigManager.get().general.autois) return;
+            if (!ModConfigManager.get().skyblock.autois.enabled) return;
 
             if (warpCooldown > 0) {
                 warpCooldown--;
@@ -64,23 +64,23 @@ public final class AutoISModule {
             var tracker = HypixelLocationTracker.getInstance();
             if (tracker.isInLimbo()) {
                 ChatUtils.sendCommand("lobby");
-                warpCooldown = ModConfigManager.get().general.autoisDelay;
+                warpCooldown = ModConfigManager.get().skyblock.autois.delay;
                 return;
             }
             if (!tracker.isOnHypixel()) return;
 
             if (tracker.isInSkyblock()) {
-                var dest = ModConfigManager.get().general.autoisDest;
+                var dest = ModConfigManager.get().skyblock.autois.dest;
                 if (dest == ModConfig.AutoISDest.ISLAND && !tracker.isIn("Private Island")) {
                     ChatUtils.sendCommand("is");
-                    warpCooldown = ModConfigManager.get().general.autoisDelay;
+                    warpCooldown = ModConfigManager.get().skyblock.autois.delay;
                 } else if (dest == ModConfig.AutoISDest.GARDEN && !tracker.isIn("Garden")) {
                     ChatUtils.sendCommand("warp garden");
-                    warpCooldown = ModConfigManager.get().general.autoisDelay;
+                    warpCooldown = ModConfigManager.get().skyblock.autois.delay;
                 }
             } else {
                 ChatUtils.sendCommand("play skyblock");
-                warpCooldown = ModConfigManager.get().general.autoisDelay;
+                warpCooldown = ModConfigManager.get().skyblock.autois.delay;
             }
         });
     }

@@ -3,7 +3,6 @@ package top.babyzombie.addons.module.misc;
 import com.sun.management.OperatingSystemMXBean;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
-import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
@@ -24,11 +23,11 @@ public final class WindowTitleModule {
     }
 
     private static void onTick(Minecraft client) {
-        ModConfig.WindowTitleConfig wt = ModConfigManager.get().windowTitle;
-        if (!wt.enabled) return;
+        var wt = ModConfigManager.get().general;
+        if (!wt.windowTitle.enabled) return;
         if (client.player == null) return;
 
-        int interval = Math.clamp(wt.updateInterval, 1, 20);
+        int interval = Math.clamp(wt.windowTitle.updateInterval, 1, 20);
         if (client.player.tickCount % interval != 0) return;
 
         String title = buildTitle(cachedOriginalTitle);
@@ -39,15 +38,15 @@ public final class WindowTitleModule {
 
     /// 拼装窗口标题，返回 null 表示不要修改
     public static String buildTitle(String originalTitle) {
-        ModConfig.WindowTitleConfig wt = ModConfigManager.get().windowTitle;
-        if (!wt.enabled) return null;
+        var wt = ModConfigManager.get().general;
+        if (!wt.windowTitle.enabled) return null;
 
         StringBuilder sb = new StringBuilder();
 
         HypixelLocationTracker tracker = HypixelLocationTracker.getInstance();
 
         // ── 前缀 ──
-        if (wt.overrideOriginal && wt.showLocation && tracker.isOnHypixel()) {
+        if (wt.windowTitle.overrideOriginal && wt.windowTitle.showLocation && tracker.isOnHypixel()) {
             // 覆盖模式仅在位置显示开启时生效：在 Hypixel 用 "Hypixel" 顶替原前缀
             sb.append("Hypixel");
         } else {
@@ -59,28 +58,28 @@ public final class WindowTitleModule {
         // ── 自定义片段（位置 → 内存 → 延迟）──
         List<String> parts = new ArrayList<>();
 
-        if (wt.showLocation) {
+        if (wt.windowTitle.showLocation) {
             String loc = buildLocationString(tracker);
             if (loc != null) {
                 parts.add(loc);
             }
         }
 
-        if (wt.showMemory) {
+        if (wt.windowTitle.showMemory) {
             Runtime rt = Runtime.getRuntime();
             long used = rt.totalMemory() - rt.freeMemory();
             long max = rt.maxMemory();
             parts.add(formatMB(used) + "/" + formatMB(max));
         }
 
-        if (wt.showSystemMemory) {
+        if (wt.windowTitle.showSystemMemory) {
             OperatingSystemMXBean os = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
             long total = os.getTotalMemorySize();
             long used = total - os.getFreeMemorySize();
             parts.add("Sys " + formatMB(used) + "/" + formatMB(total));
         }
 
-        if (wt.showPing) {
+        if (wt.windowTitle.showPing) {
             int ping = ServerTick.getPing();
             if (ping >= 0) {
                 parts.add("Ping " + ping + "ms");

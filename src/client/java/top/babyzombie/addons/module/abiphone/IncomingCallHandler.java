@@ -25,7 +25,7 @@ public class IncomingCallHandler {
             if (!HypixelLocationTracker.getInstance().isOnHypixel()) return false;
             if (command.equals("call")
                     && HypixelLocationTracker.getInstance().isInSkyblock()
-                    && ModConfigManager.get().misc.abiphoneGui) {
+                    && ModConfigManager.get().skyblock.abiphoneGui) {
                 var client = Minecraft.getInstance();
                 var tracker = HypixelLocationTracker.getInstance();
                 var contacts = AbiphoneTracker.getInstance()

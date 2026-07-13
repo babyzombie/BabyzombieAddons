@@ -23,7 +23,7 @@ public final class ChargedCreeperHider {
 
     public static void init() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!ModConfigManager.get().witherCloak.hideChargedCreepers) return;
+            if (!ModConfigManager.get().dungeon.witherCloak.hideChargedCreepers) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
 
             boolean active = WitherCloakTimer.active;

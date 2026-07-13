@@ -10,7 +10,7 @@ public final class CrystalHollowsPassRenew {
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;
-            if (!ModConfigManager.get().mining.crystalHollowsPassAutoRenew) return;
+            if (!ModConfigManager.get().mining.crystalHollows.passAutoRenew) return;
             if (ChatUtils.stripColor(message.getString())
                     .equals("Click here to purchase a new 6 hour pass for 10,000 Coins")) {
                 ChatUtils.sendCommand("purchasecrystalhollowspass");

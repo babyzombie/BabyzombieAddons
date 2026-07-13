@@ -82,7 +82,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         toggleHandRenderKey = KeyBindingUtil.register(
                 "key.babyzombieaddons.toggle_hand_render", GLFW.GLFW_KEY_UNKNOWN);
 
-        handRenderSwapActive = ModConfigManager.get().handRender.swapHands;
+        handRenderSwapActive = ModConfigManager.get().general.handRender.swapHands;
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;

@@ -36,7 +36,7 @@ public final class RareSeaCreaturesAlert {
     public static void init() {
         RenderPhaseRegister.register(ctx -> {
             var cfg = ModConfigManager.get().fishing;
-            if (!cfg.rareSeaCreaturesAlert) return;
+            if (!cfg.rareSeaCreatures.alert) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
 
             var player = Minecraft.getInstance().player;
@@ -66,12 +66,12 @@ public final class RareSeaCreaturesAlert {
             }
 
             // Title 提示（带冷却）
-            if (cfg.rareSeaCreaturesAlertTitle && count > 0 && firstCleanedName != null) {
+            if (cfg.rareSeaCreatures.alertTitle && count > 0 && firstCleanedName != null) {
                 long tick = level.getGameTime();
                 if (tick - lastTitleTick >= TITLE_COOLDOWN_TICKS) {
                     lastTitleTick = tick;
                     ChatUtils.showTitle(
-                            Component.translatable("fishing.rareSeaCreaturesAlert.title").getString(),
+                            Component.translatable("fishing.rareSeaCreatures.alert.title").getString(),
                             firstCleanedName,
                             0, 30, 10);
                 }

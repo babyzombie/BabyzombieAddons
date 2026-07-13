@@ -42,7 +42,6 @@
     "fabric-language-kotlin": ">=1.0"
   },
   "suggests": {
-    "yet-another-config-lib": ">=${yacl_mod_version}",
     "modmenu": ">=${mod_menu_mod_version}",
     "roughlyenoughitems": ">=26.1",
     "skyblocker": ">=26.1"

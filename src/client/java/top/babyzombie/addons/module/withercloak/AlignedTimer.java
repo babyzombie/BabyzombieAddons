@@ -18,7 +18,7 @@ public final class AlignedTimer {
     public static void init() {
         // Self-alignment via chat
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay || !ModConfigManager.get().witherCloak.alignedTimer) return;
+            if (overlay || !ModConfigManager.get().dungeon.witherCloak.alignedTimer) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             String text = ChatUtils.stripColor(message.getString());
 
@@ -30,7 +30,7 @@ public final class AlignedTimer {
 
         // Aligned by another player
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay || !ModConfigManager.get().witherCloak.alignedTimer) return;
+            if (overlay || !ModConfigManager.get().dungeon.witherCloak.alignedTimer) return;
             String text = message.getString();
             if (text.contains("casted Cells Alignment on you")) {
                 String player = text.split(" ")[0];

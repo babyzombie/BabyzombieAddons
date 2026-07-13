@@ -83,7 +83,7 @@ public class HypixelLocationTracker {
             uuid, prev.profileId(), prev.location()
         );
 
-        if (ModConfigManager.get().debug.hypixelModApiDebugLog) {
+        if (ModConfigManager.get().misc.hypixelModApiDebugLog) {
             ChatUtils.showMessage("§7[ModAPI] §aLocation §7→ §f" + packet);
         }
 
