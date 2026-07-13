@@ -38,3 +38,6 @@ bin/
 
 run/
 run-*/
+
+# trae
+.trae/

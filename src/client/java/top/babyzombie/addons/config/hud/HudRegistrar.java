@@ -2,6 +2,7 @@ package top.babyzombie.addons.config.hud;
 
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.module.mining.profit.MiningProfitHud;
 
 public final class HudRegistrar {
     private HudRegistrar() {}
@@ -89,6 +90,10 @@ public final class HudRegistrar {
                 "§5§lScatha: §8§l29.999s",
                 "config.babyzombieaddons.option.scathaCooldown",
                 () -> get().mining.scathaCooldown);
+        HudManager.register(MiningProfitHud.ELEMENT_NAME, 20, 20, 1.0f,
+                "§6Mining Profit\n§dGem §7$/hr: §a$1.23M\n§6Ore §7Total: §e$456K\n§8Price: §7Bazaar",
+                "config.babyzombieaddons.option.profitTracker",
+                () -> get().mining.profitTracker);
 
         // --- Chat Channel ---
         HudManager.register("ChatChannelSwitcher", 410, 480, 1.0f,
