@@ -109,8 +109,6 @@
   "config.babyzombieaddons.option.cakeBuffTracker.desc": "在 HUD 上显示已食用蛋糕清单，持续 30 秒。",
   "config.babyzombieaddons.option.minionCollectAutoClose": "收小人自动关闭界面",
   "config.babyzombieaddons.option.minionCollectAutoClose.desc": "在小人（Minion）界面点击\"Collect All\"后自动关闭容器界面。",
-  "config.babyzombieaddons.option.loadoutSwitchAutoClose": "切换 Loadout 后自动关闭界面",
-  "config.babyzombieaddons.option.loadoutSwitchAutoClose.desc": "切换 Loadout 后等待页面加载完毕、扫描完宠物信息后自动关闭 Loadouts 菜单。",
   "config.babyzombieaddons.option.serverResourcePackAutoAccept": "自动接受服务器资源包",
   "config.babyzombieaddons.option.serverResourcePackAutoAccept.desc": "不弹出确认窗口，自动接受 Hypixel 的服务器资源包。",
   "config.babyzombieaddons.option.skipSecondPerson": "跳过第二人称视角",
@@ -755,5 +753,21 @@
   "config.babyzombieaddons.option.safariShulkerGlow": "Safari 潜影贝高亮",
   "config.babyzombieaddons.option.safariShulkerGlow.desc": "在 Safari 区域用潜影贝自身的颜色高亮所有潜影贝，可穿墙显示。",
   "config.babyzombieaddons.option.safariHideyhoGlow": "Safari Hideyho 高亮",
-  "config.babyzombieaddons.option.safariHideyhoGlow.desc": "在 Safari 区域高亮 Hideyho NPC，可穿墙显示。"
+  "config.babyzombieaddons.option.safariHideyhoGlow.desc": "在 Safari 区域高亮 Hideyho NPC，可穿墙显示。",
+
+  "config.babyzombieaddons.group.loadout": "装备配置显示",
+  "config.babyzombieaddons.option.loadoutGui": "启用自定义 Loadout GUI",
+  "config.babyzombieaddons.option.loadoutGui.desc": "用自定义界面替换 Hypixel 的原版 Loadout 箱子页面，显示玩家/盔甲架模型。§c需要 Skyblocker。§r",
+  "config.babyzombieaddons.option.loadoutEntityRenderMode": "预设渲染实体",
+  "config.babyzombieaddons.option.loadoutEntityRenderMode.desc": "预设格子中渲染的实体类型。",
+  "config.babyzombieaddons.option.loadoutEntityRenderMode.ARMOR_STAND": "盔甲架",
+  "config.babyzombieaddons.option.loadoutEntityRenderMode.FAKE_PLAYER": "假玩家（眼不动）",
+  "config.babyzombieaddons.option.loadoutEntityRenderMode.FAKE_PLAYER_EYES": "假玩家（眼睛跟鼠标）",
+  "config.babyzombieaddons.option.loadoutAutoClose": "切换预设后自动关闭",
+  "config.babyzombieaddons.option.loadoutAutoClose.desc": "点击预设后自动关闭页面。",
+
+  "babyzombieaddons.loadout.prev_page": "◀ 上页",
+  "babyzombieaddons.loadout.next_page": "下页 ▶",
+  "babyzombieaddons.loadout.close": "✕ 关闭",
+  "babyzombieaddons.loadout.back": "↺ 返回原版"
 }

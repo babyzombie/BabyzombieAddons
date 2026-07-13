@@ -109,8 +109,6 @@
   "config.babyzombieaddons.option.cakeBuffTracker.desc": "Show consumed cake checklist on HUD for 30 seconds.",
   "config.babyzombieaddons.option.minionCollectAutoClose": "Auto-Close Minion GUI",
   "config.babyzombieaddons.option.minionCollectAutoClose.desc": "When clicking \"Collect All\" in a Minion GUI, automatically close the container screen.",
-  "config.babyzombieaddons.option.loadoutSwitchAutoClose": "Auto-Close After Loadout Switch",
-  "config.babyzombieaddons.option.loadoutSwitchAutoClose.desc": "After switching a loadout, wait for the page to load and scan pet info, then automatically close the Loadouts menu.",
   "config.babyzombieaddons.option.serverResourcePackAutoAccept": "Auto-Accept Server Resource Pack",
   "config.babyzombieaddons.option.serverResourcePackAutoAccept.desc": "Automatically accept the Hypixel server resource pack without showing the confirmation prompt.",
   "config.babyzombieaddons.option.skipSecondPerson": "Skip Second Person View",
@@ -755,5 +753,21 @@
   "config.babyzombieaddons.option.safariShulkerGlow": "Safari Shulker Glow",
   "config.babyzombieaddons.option.safariShulkerGlow.desc": "Highlight all shulkers in the Safari zone with their own colour, visible through walls.",
   "config.babyzombieaddons.option.safariHideyhoGlow": "Safari Hideyho Glow",
-  "config.babyzombieaddons.option.safariHideyhoGlow.desc": "Highlight the Hideyho NPC in the Safari zone, visible through walls."
+  "config.babyzombieaddons.option.safariHideyhoGlow.desc": "Highlight the Hideyho NPC in the Safari zone, visible through walls.",
+
+  "config.babyzombieaddons.group.loadout": "Loadout Display",
+  "config.babyzombieaddons.option.loadoutGui": "Custom Loadout GUI",
+  "config.babyzombieaddons.option.loadoutGui.desc": "Replace Hypixel's vanilla Loadout chest page with a custom screen showing player / armor stand models. §cRequires Skyblocker.§r",
+  "config.babyzombieaddons.option.loadoutEntityRenderMode": "Preset Entity Type",
+  "config.babyzombieaddons.option.loadoutEntityRenderMode.desc": "Entity type rendered in each preset cell.",
+  "config.babyzombieaddons.option.loadoutEntityRenderMode.ARMOR_STAND": "Armor Stand",
+  "config.babyzombieaddons.option.loadoutEntityRenderMode.FAKE_PLAYER": "Fake Player (eyes static)",
+  "config.babyzombieaddons.option.loadoutEntityRenderMode.FAKE_PLAYER_EYES": "Fake Player (eyes follow mouse)",
+  "config.babyzombieaddons.option.loadoutAutoClose": "Auto-close after switching",
+  "config.babyzombieaddons.option.loadoutAutoClose.desc": "Close the page automatically after clicking a preset.",
+
+  "babyzombieaddons.loadout.prev_page": "◀ Prev",
+  "babyzombieaddons.loadout.next_page": "Next ▶",
+  "babyzombieaddons.loadout.close": "✕ Close",
+  "babyzombieaddons.loadout.back": "↺ Back"
 }

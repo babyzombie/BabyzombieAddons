@@ -12,6 +12,7 @@ import top.babyzombie.addons.config.ConfigUtils;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfig.AutoISDest;
 import top.babyzombie.addons.config.ModConfig.BzGetFromSacksMode;
+import top.babyzombie.addons.config.ModConfig.EntityRenderMode;
 import top.babyzombie.addons.config.ModConfig.KickRecovery;
 import top.babyzombie.addons.module.raredrop.RareDropScreen;
 
@@ -46,8 +47,6 @@ public final class SkyblockCategory {
                         () -> config.general.cakeBuffTracker, v -> config.general.cakeBuffTracker = v))
                 .option(createBool("minionCollectAutoClose", defaults.general.minionCollectAutoClose,
                         () -> config.general.minionCollectAutoClose, v -> config.general.minionCollectAutoClose = v))
-                .option(createBool("loadoutSwitchAutoClose", defaults.general.loadoutSwitchAutoClose,
-                        () -> config.general.loadoutSwitchAutoClose, v -> config.general.loadoutSwitchAutoClose = v))
                 .group(OptionGroup.createBuilder()
                         .name(Component.translatable("config.babyzombieaddons.group.autois"))
                         .collapsed(true)
@@ -116,6 +115,23 @@ public final class SkyblockCategory {
                                 defaults.misc.necronBladeHideOthersParticles,
                                 () -> config.misc.necronBladeHideOthersParticles,
                                 v -> config.misc.necronBladeHideOthersParticles = v))
+                        .build())
+                .group(OptionGroup.createBuilder()
+                        .name(Component.translatable("config.babyzombieaddons.group.loadout"))
+                        .collapsed(true)
+                        .option(createBool("loadoutGui", defaults.loadout.enabled,
+                                () -> config.loadout.enabled, v -> config.loadout.enabled = v))
+                        .option(Option.<EntityRenderMode>createBuilder()
+                                .name(Component.translatable("config.babyzombieaddons.option.loadoutEntityRenderMode"))
+                                .description(Component.translatable("config.babyzombieaddons.option.loadoutEntityRenderMode.desc"))
+                                .binding(defaults.loadout.entityRenderMode,
+                                        () -> config.loadout.entityRenderMode,
+                                        v -> config.loadout.entityRenderMode = v)
+                                .controller(ConfigUtils.createEnumController(m ->
+                                        Component.translatable("config.babyzombieaddons.option.loadoutEntityRenderMode." + m.name())))
+                                .build())
+                        .option(createBool("loadoutAutoClose", defaults.loadout.autoClose,
+                                () -> config.loadout.autoClose, v -> config.loadout.autoClose = v))
                         .build())
                 .build();
     }

@@ -61,6 +61,7 @@ public class ModConfig {
     public WindowTitleConfig windowTitle = new WindowTitleConfig();
     public FishingConfig fishing = new FishingConfig();
     public HuntingConfig hunting = new HuntingConfig();
+    public LoadoutConfig loadout = new LoadoutConfig();
 
     // ---- General ----
 
@@ -74,7 +75,6 @@ public class ModConfig {
         public boolean backOnServerRestart = false;
         public boolean cakeBuffTracker = false;
         public boolean minionCollectAutoClose = false;
-        public boolean loadoutSwitchAutoClose = false;
         public int skipSecondPerson = 0;
         public boolean useTpsAdjustedTime = false;
         public WorldRenderPhase renderPhase = WorldRenderPhase.AFTER_ENTITIES;
@@ -366,5 +366,15 @@ public class ModConfig {
         public boolean safariBellDisplay = false;
         public boolean safariShulkerGlow = false;
         public boolean safariHideyhoGlow = false;
+    }
+
+    // ---- Loadout Display ----
+
+    public enum EntityRenderMode { ARMOR_STAND, FAKE_PLAYER, FAKE_PLAYER_EYES }
+
+    public static class LoadoutConfig {
+        public boolean enabled = false;
+        public EntityRenderMode entityRenderMode = EntityRenderMode.ARMOR_STAND;
+        public boolean autoClose = false;
     }
 }

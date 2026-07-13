@@ -53,6 +53,9 @@ public final class PetManager {
     // Loadout switch pending flag — set by preset click, consumed by whenScreenOpened
     private boolean loadoutSwitchPending;
 
+    public boolean isLoadoutSwitchPending() { return loadoutSwitchPending; }
+    public void setLoadoutSwitchPending(boolean v) { this.loadoutSwitchPending = v; }
+
     private String currentProfileKey;
     private final List<PetData> pets = new ArrayList<>();
     @Nullable
@@ -434,12 +437,12 @@ public final class PetManager {
         // Always scan the pet when the Loadouts menu opens (harmless, idempotent)
         ScreenLoadWaiter.whenScreenOpened(
             title -> ChatUtils.stripColor(title).matches("\\(\\d+/\\d+\\) Loadouts"),
-            53, 0,
+            21, 0, // 等宠物槽位(21)加载即可，不用等整个页面(53)
             cs -> {
                 scanLoadoutPet(cs);
                 if (loadoutSwitchPending) {
                     loadoutSwitchPending = false;
-                    if (ModConfigManager.get().general.loadoutSwitchAutoClose) {
+                    if (ModConfigManager.get().loadout.autoClose) {
                         var client = Minecraft.getInstance();
                         client.execute(() -> {
                             if (client.player != null) client.player.closeContainer();
@@ -477,7 +480,7 @@ public final class PetManager {
      * The pet is in row 3, column 4 (0-indexed: row 2, col 3 → slot 21)
      * of the 6-row Loadouts chest menu.
      */
-    private void scanLoadoutPet(AbstractContainerScreen<?> screen) {
+    public void scanLoadoutPet(AbstractContainerScreen<?> screen) {
         int petSlot = 21; // 3rd row, 4th column (1-indexed)
         var slots = screen.getMenu().slots;
         if (petSlot >= slots.size()) return;

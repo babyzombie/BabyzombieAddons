@@ -28,6 +28,7 @@ import top.babyzombie.addons.module.events.GreatSpookModule;
 import top.babyzombie.addons.module.events.RaffleTaskModule;
 import top.babyzombie.addons.module.kuudra.KuudraModule;
 import top.babyzombie.addons.module.hunting.HuntingModule;
+import top.babyzombie.addons.module.loadout.LoadoutModule;
 import top.babyzombie.addons.module.pet.PetDisplayHud;
 import top.babyzombie.addons.module.kuudra.ArrowPoisonRefill;
 import top.babyzombie.addons.module.mining.MiningModule;
@@ -132,5 +133,6 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         PetManager.getInstance().init();
         PetDisplayHud.init();
         HuntingModule.init();
+        LoadoutModule.init();
     }
 }
