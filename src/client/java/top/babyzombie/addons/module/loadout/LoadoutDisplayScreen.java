@@ -219,15 +219,17 @@ public class LoadoutDisplayScreen extends Screen {
         if (!isEmpty(s)) {
             renderItem(g, s, x, y);
             checkH(mx, my, x, y, iconSz, iconSz, sid, s);
-            String v = getProp(sid);
-            String txt = v != null && !v.equalsIgnoreCase("None") ? v
-                : ChatUtils.stripColor(s.getHoverName().getString());
-            drawWrapped(g, Component.literal(txt).withColor(0xFF55FF55), x, y + iconSz, textW);
+            String raw = getPropRaw(sid);
+            Component txt;
+            if (raw != null && !ChatUtils.stripColor(raw).equalsIgnoreCase("None")) {
+                txt = Component.literal(raw); // § 代码 → 颜色
+            } else {
+                txt = s.getHoverName(); // 用原生的带 Style 的 Component
+            }
+            drawWrapped(g, txt, x, y + iconSz, textW);
         } else {
             renderEmpty(g, x, y, iconSz);
-            String v = getProp(sid);
-            String txt = v != null && !v.equalsIgnoreCase("None") ? v : "-";
-            drawWrapped(g, Component.literal(txt).withColor(0xFF888888), x, y + iconSz, textW);
+            drawWrapped(g, Component.literal("-").withColor(0xFF888888), x, y + iconSz, textW);
         }
     }
 
@@ -326,7 +328,6 @@ public class LoadoutDisplayScreen extends Screen {
 
             if (lk) g.centeredText(this.font, "§c§l🔒", cx + cell / 2, cy + 2, 0xFFFF5555);
             else if (em) g.centeredText(this.font, "§7空", cx + cell / 2, cy + 2, 0xFF888888);
-            else if (cur) g.centeredText(this.font, "§a§l✔", cx + cell / 2, cy + 2, 0xFF55FF55);
 
             String nm = ChatUtils.stripColor(ps.getHoverName().getString());
             if (this.font.width(nm) > cell) nm = this.font.plainSubstrByWidth(nm, cell - 4) + "..";
@@ -526,21 +527,31 @@ public class LoadoutDisplayScreen extends Screen {
     private void checkH(int mx, int my, int x, int y, int w, int h, int sid, ItemStack st) {
         if (mx >= x && mx < x + w && my >= y && my < y + h) { hls = sid; if (!isEmpty(st)) hoveredItem = st; }
     }
-    private String getProp(int sid) {
+    /** 返回带 § 颜色代码的原始属性文本，用于带颜色渲染 */
+    private String getPropRaw(int sid) {
         if (sid < 0 || sid >= slots.length) return null;
-        ItemStack st = slots[sid]; if (isEmpty(st)) return null;
+        ItemStack st = slots[sid];
+        if (isEmpty(st)) return null;
         ItemLore lore = st.get(DataComponents.LORE);
         if (lore != null) {
             for (var l : lore.lines()) {
                 String s = ChatUtils.stripColor(l.getString());
-                if (s.startsWith("Current: ")) return s.substring(9);
+                if (s.startsWith("Current: ")) {
+                    return ChatUtils.toLegacyString(l).replaceFirst("^.*Current:\\s*", "").trim();
+                }
             }
-            // Tuning 特殊：读 "Your tuning:" 下一行
+            // Tuning 特殊
+            var comps = new ArrayList<net.minecraft.network.chat.Component>();
             var all = new ArrayList<String>();
-            lore.lines().forEach(l -> all.add(ChatUtils.stripColor(l.getString())));
+            lore.lines().forEach(l -> {
+                comps.add(l);
+                all.add(ChatUtils.stripColor(l.getString()));
+            });
             int idx = all.indexOf("Your tuning:");
-            if (idx >= 0 && idx + 1 < all.size()) return all.get(idx + 1);
+            if (idx >= 0 && idx + 1 < comps.size()) {
+                return ChatUtils.toLegacyString(comps.get(idx + 1));
+            }
         }
-        return ChatUtils.stripColor(st.getHoverName().getString());
+        return ChatUtils.toLegacyString(st.getHoverName());
     }
 }

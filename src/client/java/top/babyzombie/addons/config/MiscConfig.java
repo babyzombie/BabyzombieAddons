@@ -5,6 +5,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
+import io.github.notenoughupdates.moulconfig.observer.Property;
 
 public class MiscConfig {
 
@@ -12,7 +13,7 @@ public class MiscConfig {
     @ConfigOption(name = "config.babyzombieaddons.option.wideMoulConfig", desc = "config.babyzombieaddons.option.wideMoulConfig.desc")
     @ConfigEditorBoolean
     @SearchTag("wide")
-    public boolean wideMoulConfig = false;
+    public Property<Boolean> wideMoulConfig = Property.of(false);
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.debugMode", desc = "config.babyzombieaddons.option.debugMode.desc")

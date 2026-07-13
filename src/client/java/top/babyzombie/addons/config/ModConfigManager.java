@@ -4,7 +4,9 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.gui.CloseEventListener;
 import io.github.notenoughupdates.moulconfig.gui.GuiContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiElementComponent;
+import io.github.notenoughupdates.moulconfig.gui.MoulConfigEditor;
 import io.github.notenoughupdates.moulconfig.managed.ManagedConfig;
+import io.github.notenoughupdates.moulconfig.observer.Property;
 import io.github.notenoughupdates.moulconfig.managed.ManagedConfigBuilder;
 import io.github.notenoughupdates.moulconfig.platform.MoulConfigScreenComponent;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
@@ -65,11 +67,18 @@ public final class ModConfigManager {
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> save());
     }
 
+    private static MoulConfigEditor<?> currentEditor;
+
     private ModConfigManager() {}
 
     public static void init() {
         MANAGED_CONFIG.reloadFromFile();
         save();
+        // Reactively update editor wide mode when toggle changes
+        Property<Boolean> wideProp = get().misc.wideMoulConfig;
+        wideProp.addObserver((oldVal, newVal) -> {
+            if (currentEditor != null) currentEditor.wide = newVal;
+        });
     }
 
     public static ModConfig get() {
@@ -87,25 +96,27 @@ public final class ModConfigManager {
     public static Screen createGUI(@Nullable Screen parent, String search) {
         MANAGED_CONFIG.rebuildConfigProcessor();
         var editor = MANAGED_CONFIG.getEditor();
-        editor.wide = get().misc.wideMoulConfig;
-        var screen = new MoulConfigScreenComponent(
-                Component.empty(),
-                new GuiContext(new GuiElementComponent(editor)),
-                null
-        ) {
-            @Override
-            public void onClose() {
-                if (getGuiContext().onBeforeClose() == CloseEventListener.CloseAction.NO_OBJECTIONS_TO_CLOSE) {
-                    save();
-                    if (parent != null) {
-                        Minecraft.getInstance().setScreen(parent);
-                    } else {
-                        Minecraft.getInstance().setScreen(null);
-                    }
-                }
-            }
-        };
+        currentEditor = editor;
+        editor.wide = get().misc.wideMoulConfig.get();
+        var screen = new MoulConfigScreen(editor, parent);
         Minecraft.getInstance().setScreen(screen);
         return screen;
+    }
+
+    private static final class MoulConfigScreen extends MoulConfigScreenComponent {
+        private final @Nullable Screen parent;
+
+        MoulConfigScreen(MoulConfigEditor<?> editor, @Nullable Screen parent) {
+            super(Component.empty(), new GuiContext(new GuiElementComponent(editor)), null);
+            this.parent = parent;
+        }
+
+        @Override
+        public void onClose() {
+            if (getGuiContext().onBeforeClose() == CloseEventListener.CloseAction.NO_OBJECTIONS_TO_CLOSE) {
+                save();
+                Minecraft.getInstance().setScreen(parent);
+            }
+        }
     }
 }
