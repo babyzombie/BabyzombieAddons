@@ -60,11 +60,7 @@ public class LoadoutDisplayScreen extends Screen {
         this.entityMode = ModConfigManager.get().loadout.entityRenderMode;
         refreshSlots();
         // 延迟刷新（等服务器发物品）
-        if (Minecraft.getInstance() != null) {
-            Minecraft.getInstance().execute(() -> Minecraft.getInstance().execute(() -> {
-                refreshSlots();
-            }));
-        }
+        Minecraft.getInstance().execute(() -> Minecraft.getInstance().execute(this::refreshSlots));
     }
 
     private void refreshSlots() {
@@ -354,6 +350,8 @@ public class LoadoutDisplayScreen extends Screen {
 
     private void renderBottom(GuiGraphicsExtractor g, int mx, int my) {
         int bh = 20, by = this.height - bh - 4, cx = this.width / 2, gb = 10;
+        boolean hasPrev = !isEmpty(slots[PREV]) && !isGlassPane(slots[PREV]);
+        boolean hasNext = !isEmpty(slots[NEXT]) && !isGlassPane(slots[NEXT]);
         String prev = Component.translatable("babyzombieaddons.loadout.prev_page").getString();
         String next = Component.translatable("babyzombieaddons.loadout.next_page").getString();
         String close = Component.translatable("babyzombieaddons.loadout.close").getString();
@@ -361,13 +359,15 @@ public class LoadoutDisplayScreen extends Screen {
         int pw = this.font.width("  " + prev + "  ") + 8, cw = this.font.width("  " + close + "  ") + 8;
         int nw = this.font.width("  " + next + "  ") + 8, bw = this.font.width("  " + back + "  ") + 8;
         String pt = pageTitle().replaceAll("[^0-9/]", "");
-        int sx = cx - (pw + gb + this.font.width(pt) + gb + bw + gb + cw + gb + nw) / 2;
+        int ptw = this.font.width(pt);
+        int totalW = (hasPrev ? pw + gb : 0) + ptw + gb + bw + gb + cw + gb + (hasNext ? nw : 0);
+        int sx = cx - totalW / 2;
         hbb = -1; int x = sx;
-        btn(g, prev, x, by, pw, bh, mx, my, 0); x += pw + gb;
-        g.centeredText(this.font, pt, x + this.font.width(pt) / 2, by + bh / 2 - 6, 0x80FFFFFF); x += this.font.width(pt) + gb;
+        if (hasPrev) { btn(g, prev, x, by, pw, bh, mx, my, 0); x += pw + gb; }
+        g.centeredText(this.font, pt, x + ptw / 2, by + bh / 2 - 6, 0x80FFFFFF); x += ptw + gb;
         btn(g, back, x, by, bw, bh, mx, my, 1); x += bw + gb;
         btn(g, close, x, by, cw, bh, mx, my, 2); x += cw + gb;
-        btn(g, next, x, by, nw, bh, mx, my, 3);
+        if (hasNext) { btn(g, next, x, by, nw, bh, mx, my, 3); }
     }
 
     private void btn(GuiGraphicsExtractor g, String l, int x, int y, int w, int h, int mx, int my, int id) {
@@ -419,6 +419,22 @@ public class LoadoutDisplayScreen extends Screen {
         if (e.key() == GLFW.GLFW_KEY_MINUS) { clickPreset(10); return true; }
         // = → preset 12
         if (e.key() == GLFW.GLFW_KEY_EQUAL) { clickPreset(11); return true; }
+        // W/A → 上一页
+        if (e.key() == GLFW.GLFW_KEY_W || e.key() == GLFW.GLFW_KEY_A) {
+            if (!isEmpty(slots[PREV]) && !isGlassPane(slots[PREV])) {
+                sendClick(PREV, 0);
+                if (minecraft != null) minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+            }
+            return true;
+        }
+        // S/D → 下一页
+        if (e.key() == GLFW.GLFW_KEY_S || e.key() == GLFW.GLFW_KEY_D) {
+            if (!isEmpty(slots[NEXT]) && !isGlassPane(slots[NEXT])) {
+                sendClick(NEXT, 0);
+                if (minecraft != null) minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+            }
+            return true;
+        }
         return super.keyPressed(e);
     }
 
