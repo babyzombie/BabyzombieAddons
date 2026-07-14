@@ -25,7 +25,7 @@ public class PopupConfig {
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.popupSound", desc = "config.babyzombieaddons.option.popupSound.desc")
-    @ConfigEditorDropdown
+    @ConfigEditorDropdown @SearchTag("popup") @SearchTag("sound")
     public PopupSound popupSound = PopupSound.BELL;
 
     @Expose

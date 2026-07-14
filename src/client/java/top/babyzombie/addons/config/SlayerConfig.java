@@ -13,7 +13,7 @@ import top.babyzombie.addons.config.ModConfig.*;
 
 public class SlayerConfig {
 
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.bossRespawnAlert", desc = "config.babyzombieaddons.option.bossRespawnAlert.desc") @ConfigEditorBoolean
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.bossRespawnAlert", desc = "config.babyzombieaddons.option.bossRespawnAlert.desc") @ConfigEditorBoolean @SearchTag("respawn") @SearchTag("boss") @SearchTag("alert")
     public boolean bossRespawnAlert = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.noslayerquest", desc = "config.babyzombieaddons.option.noslayerquest.desc") @ConfigEditorBoolean @SearchTag("auto")
     public boolean noslayerquest = false;
@@ -64,15 +64,15 @@ public class SlayerConfig {
     public static class SlayerBossBox {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxSlayerBoss", desc = "config.babyzombieaddons.option.boxSlayerBoss.desc") @ConfigEditorDropdown @SearchTag("box")
         public SlayerBossBoxMode boxSlayerBoss = SlayerBossBoxMode.OFF;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossRenderThroughWalls", desc = "config.babyzombieaddons.option.boxBossRenderThroughWalls.desc") @ConfigEditorBoolean
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossRenderThroughWalls", desc = "config.babyzombieaddons.option.boxBossRenderThroughWalls.desc") @ConfigEditorBoolean @SearchTag("box") @SearchTag("boss") @SearchTag("wall") @SearchTag("render")
         public boolean boxBossRenderThroughWalls = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossLineWidth", desc = "config.babyzombieaddons.option.boxBossLineWidth.desc") @ConfigEditorSlider(minValue = 1, maxValue = 16, minStep = 1)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossLineWidth", desc = "config.babyzombieaddons.option.boxBossLineWidth.desc") @ConfigEditorSlider(minValue = 1, maxValue = 16, minStep = 1) @SearchTag("box") @SearchTag("boss") @SearchTag("line") @SearchTag("width")
         public int boxBossLineWidth = 5;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossColor", desc = "config.babyzombieaddons.option.boxBossColor.desc") @ConfigEditorColour
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossColor", desc = "config.babyzombieaddons.option.boxBossColor.desc") @ConfigEditorColour @SearchTag("box") @SearchTag("boss") @SearchTag("color")
         public ChromaColour boxBossColor = ChromaColour.fromStaticRGB(255, 255, 255, 255);
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossBeam", desc = "config.babyzombieaddons.option.boxBossBeam.desc") @ConfigEditorBoolean
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossBeam", desc = "config.babyzombieaddons.option.boxBossBeam.desc") @ConfigEditorBoolean @SearchTag("box") @SearchTag("boss") @SearchTag("beam")
         public boolean boxBossBeam = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossBeamColor", desc = "config.babyzombieaddons.option.boxBossBeamColor.desc") @ConfigEditorColour
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxBossBeamColor", desc = "config.babyzombieaddons.option.boxBossBeamColor.desc") @ConfigEditorColour @SearchTag("box") @SearchTag("boss") @SearchTag("beam") @SearchTag("color")
         public ChromaColour boxBossBeamColor = ChromaColour.fromStaticRGB(255, 255, 255, 255);
     }
 }

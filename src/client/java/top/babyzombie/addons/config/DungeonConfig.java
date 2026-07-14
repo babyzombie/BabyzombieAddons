@@ -38,13 +38,13 @@ public class DungeonConfig {
     public static class Requeue {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.dungeonRequeue", desc = "config.babyzombieaddons.option.dungeonRequeue.desc") @ConfigEditorDropdown @SearchTag("requeue")
         public RequeueMode dungeonRequeue = RequeueMode.OFF;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.dungeonRequeueDelay", desc = "config.babyzombieaddons.option.dungeonRequeueDelay.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.dungeonRequeueDelay", desc = "config.babyzombieaddons.option.dungeonRequeueDelay.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("requeue") @SearchTag("delay")
         public int dungeonRequeueDelay = 0;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.requeueMessage", desc = "config.babyzombieaddons.option.requeueMessage.desc") @ConfigEditorText
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.requeueMessage", desc = "config.babyzombieaddons.option.requeueMessage.desc") @ConfigEditorText @SearchTag("requeue") @SearchTag("message")
         public String requeueMessage = "going in %delay%";
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.requeueCancelMessage", desc = "config.babyzombieaddons.option.requeueCancelMessage.desc") @ConfigEditorText
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.requeueCancelMessage", desc = "config.babyzombieaddons.option.requeueCancelMessage.desc") @ConfigEditorText @SearchTag("requeue") @SearchTag("cancel")
         public String requeueCancelMessage = "ok";
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.requeueCancelKeywords", desc = "config.babyzombieaddons.option.requeueCancelKeywords.desc") @ConfigEditorText
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.requeueCancelKeywords", desc = "config.babyzombieaddons.option.requeueCancelKeywords.desc") @ConfigEditorText @SearchTag("requeue") @SearchTag("cancel") @SearchTag("keyword")
         public String requeueCancelKeywords = "c|cancel|n|nr|wait|stop|dt|don't|gtg|tyfr|tyfrs|gtg tyfr|gtg tyfrs|no key|别急|等会|等下|先别开";
     }
 
@@ -53,7 +53,7 @@ public class DungeonConfig {
         public boolean witherCloakTimer = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.soulwardTimer", desc = "config.babyzombieaddons.option.soulwardTimer.desc") @ConfigEditorBoolean @SearchTag("soulward")
         public boolean soulwardTimer = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.alignedTimer", desc = "config.babyzombieaddons.option.alignedTimer.desc") @ConfigEditorBoolean
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.alignedTimer", desc = "config.babyzombieaddons.option.alignedTimer.desc") @ConfigEditorBoolean @SearchTag("aligned") @SearchTag("timer")
         public boolean alignedTimer = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.gravityStormTimer", desc = "config.babyzombieaddons.option.gravityStormTimer.desc") @ConfigEditorBoolean @SearchTag("gravity")
         public boolean gravityStormTimer = false;

@@ -15,10 +15,10 @@ public class GardenConfig {
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.xpOrbSoundRemoval", desc = "config.babyzombieaddons.option.xpOrbSoundRemoval.desc") @ConfigEditorSlider(minValue = 0, maxValue = 100, minStep = 1) @SearchTag("xp")
     public int xpOrbSoundRemoval = 100;
 
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.signAutoRotate", desc = "config.babyzombieaddons.option.signAutoRotate.desc") @ConfigEditorBoolean
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.signAutoRotate", desc = "config.babyzombieaddons.option.signAutoRotate.desc") @ConfigEditorBoolean @SearchTag("sign") @SearchTag("rotate") @SearchTag("garden")
     public boolean signAutoRotate = false;
 
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.farmingToolSwingSuppression", desc = "config.babyzombieaddons.option.farmingToolSwingSuppression.desc") @ConfigEditorBoolean
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.farmingToolSwingSuppression", desc = "config.babyzombieaddons.option.farmingToolSwingSuppression.desc") @ConfigEditorBoolean @SearchTag("farming") @SearchTag("swing") @SearchTag("tool") @SearchTag("garden")
     public boolean farmingToolSwingSuppression = false;
 
     @Expose

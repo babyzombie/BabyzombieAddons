@@ -34,7 +34,7 @@ public class MiningConfig {
         public boolean passAutoRenew = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.chestMarkers", desc = "config.babyzombieaddons.option.chestMarkers.desc") @ConfigEditorBoolean @SearchTag("chest")
         public boolean chestMarkers = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.chestLineWidth", desc = "config.babyzombieaddons.option.chestLineWidth.desc") @ConfigEditorSlider(minValue = 1, maxValue = 16, minStep = 1)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.chestLineWidth", desc = "config.babyzombieaddons.option.chestLineWidth.desc") @ConfigEditorSlider(minValue = 1, maxValue = 16, minStep = 1) @SearchTag("chest") @SearchTag("line") @SearchTag("width")
         public int chestLineWidth = 3;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.getFromSacks", desc = "config.babyzombieaddons.option.getFromSacks.desc") @ConfigEditorBoolean @SearchTag("sack")
         public boolean getFromSacks = false;
@@ -64,7 +64,7 @@ public class MiningConfig {
     public static class MithrilGourmand {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.mithrilGourmandAutoExpresso", desc = "config.babyzombieaddons.option.mithrilGourmandAutoExpresso.desc") @ConfigEditorBoolean @SearchTag("gourmand")
         public boolean autoExpresso = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.mithrilGourmandTriggerSeconds", desc = "config.babyzombieaddons.option.mithrilGourmandTriggerSeconds.desc") @ConfigEditorSlider(minValue = 3, maxValue = 20, minStep = 1)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.mithrilGourmandTriggerSeconds", desc = "config.babyzombieaddons.option.mithrilGourmandTriggerSeconds.desc") @ConfigEditorSlider(minValue = 3, maxValue = 20, minStep = 1) @SearchTag("gourmand") @SearchTag("trigger") @SearchTag("seconds")
         public int triggerSeconds = 10;
     }
 }
