@@ -10,7 +10,7 @@ import top.babyzombie.addons.BabyzombieAddonsClient;
 
 @Mixin(KeyMapping.class)
 public abstract class KeyMappingMixin {
-    @Shadow public abstract boolean same(KeyMapping keyMapping);
+    @Shadow public abstract boolean same(KeyMapping that);
 
     @Inject(method = "setDown", at = @At("HEAD"), cancellable = true)
     public void setDown$BabyzombieAddons(boolean bl, CallbackInfo ci) {

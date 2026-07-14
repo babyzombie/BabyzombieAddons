@@ -816,7 +816,9 @@
   "config.babyzombieaddons.option.safariBellDisplay": "Safari Bell Display",
   "config.babyzombieaddons.option.safariBellDisplay.desc": "Show rainbow-colored beacon beams at bell locations in the Safari zone.",
   "config.babyzombieaddons.option.safariShulkerGlow": "Safari Shulker Glow",
-  "config.babyzombieaddons.option.safariShulkerGlow.desc": "Highlight all shulkers in the Safari zone with their own colour, visible through walls.",
+  "config.babyzombieaddons.option.safariShulkerGlow.desc": "Highlight all shulkers in the Safari zone with a custom colour, visible through walls.",
+  "config.babyzombieaddons.option.safariShulkerGlowColor": "Safari Shulker Glow Color",
+  "config.babyzombieaddons.option.safariShulkerGlowColor.desc": "Custom colour for the shulker glow effect. Default cyan.",
   "config.babyzombieaddons.option.safariHideyhoGlow": "Safari Hideyho Glow",
   "config.babyzombieaddons.option.safariHideyhoGlow.desc": "Highlight the Hideyho NPC in the Safari zone, visible through walls.",
 
@@ -834,5 +836,18 @@
   "babyzombieaddons.loadout.prev_page": "◀ Prev",
   "babyzombieaddons.loadout.next_page": "Next ▶",
   "babyzombieaddons.loadout.close": "✕ Close",
-  "babyzombieaddons.loadout.back": "↺ Back"
+  "babyzombieaddons.loadout.back": "↺ Back",
+
+  "config.babyzombieaddons.option.cancelKeyRelease": "Cancel Key Release",
+  "config.babyzombieaddons.option.cancelKeyRelease.desc": "Hold to prevent key-release events on other keys.",
+  "config.babyzombieaddons.option.secondPerson": "Quick Look Behind",
+  "config.babyzombieaddons.option.secondPerson.desc": "Hold to temporarily switch to front-facing camera.",
+  "config.babyzombieaddons.option.toggleHandRenderKey": "Swap Hands Key",
+  "config.babyzombieaddons.option.toggleHandRenderKey.desc": "Press to toggle the hand render swap state.",
+  "config.babyzombieaddons.option.popupYes": "Popup – Accept",
+  "config.babyzombieaddons.option.popupYes.desc": "Press to accept the current popup notification.",
+  "config.babyzombieaddons.option.popupNo": "Popup – Dismiss",
+  "config.babyzombieaddons.option.popupNo.desc": "Press to dismiss the current popup notification.",
+  "config.babyzombieaddons.option.copyItemInfo": "Copy Item Info",
+  "config.babyzombieaddons.option.copyItemInfo.desc": "Press while hovering an item in a container to copy its NBT/ID."
 }

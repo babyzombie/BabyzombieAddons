@@ -5,11 +5,13 @@ import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import net.minecraft.client.Minecraft;
+import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfig.*;
 import top.babyzombie.addons.config.hud.HudManager;
 
@@ -17,16 +19,20 @@ public class GeneralConfig {
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.updateChecker", desc = "config.babyzombieaddons.option.updateChecker.desc") @ConfigEditorBoolean @SearchTag("update")
     public boolean updateChecker = true;
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.hudEdit", desc = "config.babyzombieaddons.option.hudEdit.desc") @ConfigEditorButton(buttonText = "OPEN")
+    public transient Runnable hudEdit = () -> HudManager.openEditScreen(Minecraft.getInstance().screen);
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.replaceReportWithServerList", desc = "config.babyzombieaddons.option.replaceReportWithServerList.desc") @ConfigEditorBoolean @SearchTag("report")
     public boolean replaceReportWithServerList = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.serverResourcePackAutoAccept", desc = "config.babyzombieaddons.option.serverResourcePackAutoAccept.desc") @ConfigEditorBoolean @SearchTag("resourcepack")
     public boolean serverResourcePackAutoAccept = false;
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.hudEdit", desc = "config.babyzombieaddons.option.hudEdit.desc") @ConfigEditorButton(buttonText = "OPEN")
-    public transient Runnable hudEdit = () -> HudManager.openEditScreen(Minecraft.getInstance().screen);
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.cancelKeyRelease", desc = "config.babyzombieaddons.option.cancelKeyRelease.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_LEFT_ALT) @SearchTag("key")
+    public int cancelKeyRelease = GLFW.GLFW_KEY_LEFT_ALT;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.playCmd", desc = "config.babyzombieaddons.option.playCmd.desc") @ConfigEditorBoolean @SearchTag("play")
     public boolean playCmd = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.skipSecondPerson", desc = "config.babyzombieaddons.option.skipSecondPerson.desc") @ConfigEditorSlider(minValue = 0, maxValue = 30, minStep = 1) @SearchTag("camera")
     public int skipSecondPerson = 0;
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.secondPerson", desc = "config.babyzombieaddons.option.secondPerson.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("camera") @SearchTag("key")
+    public int secondPerson = GLFW.GLFW_KEY_UNKNOWN;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.useTpsAdjustedTime", desc = "config.babyzombieaddons.option.useTpsAdjustedTime.desc") @ConfigEditorBoolean @SearchTag("tps")
     public boolean useTpsAdjustedTime = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.renderPhase", desc = "config.babyzombieaddons.option.renderPhase.desc") @ConfigEditorDropdown
@@ -93,6 +99,8 @@ public class GeneralConfig {
         public boolean disableAll = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.swapHands", desc = "config.babyzombieaddons.option.swapHands.desc") @ConfigEditorBoolean
         public boolean swapHands = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.toggleHandRenderKey", desc = "config.babyzombieaddons.option.toggleHandRenderKey.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("hand") @SearchTag("key")
+        public int toggleHandRenderKey = GLFW.GLFW_KEY_UNKNOWN;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.customSwingDuration", desc = "config.babyzombieaddons.option.customSwingDuration.desc") @ConfigEditorBoolean
         public boolean customSwingDuration = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.swingDurationTicks", desc = "config.babyzombieaddons.option.swingDurationTicks.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1200, minStep = 1)

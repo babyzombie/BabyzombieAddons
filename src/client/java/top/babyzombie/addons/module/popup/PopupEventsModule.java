@@ -78,14 +78,15 @@ public final class PopupEventsModule {
     private static long expireTime;
     private static long totalTime;
     private static EventType eventType;
-    private static KeyMapping keyYes;
-    private static KeyMapping keyNo;
+    public static KeyMapping keyYes;
+    public static KeyMapping keyNo;
 
     private PopupEventsModule() {}
 
     public static void init() {
-        keyYes = KeyBindingUtil.register("key.babyzombieaddons.popup_yes", GLFW.GLFW_KEY_Y);
-        keyNo  = KeyBindingUtil.register("key.babyzombieaddons.popup_no",  GLFW.GLFW_KEY_N);
+        var modCfg = ModConfigManager.get();
+        keyYes = KeyBindingUtil.register("key.babyzombieaddons.popup_yes", modCfg.popup.popupYes);
+        keyNo  = KeyBindingUtil.register("key.babyzombieaddons.popup_no",  modCfg.popup.popupNo);
 
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;

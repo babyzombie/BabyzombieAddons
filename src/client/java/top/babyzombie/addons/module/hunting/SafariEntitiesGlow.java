@@ -3,13 +3,12 @@ package top.babyzombie.addons.module.hunting;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.DyeColor;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.render.GlowController;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 /**
- * 在 Safari 区域高亮特定实体：潜影贝（自身颜色）、Hideyho NPC（淡蓝色）。
+ * 在 Safari 区域高亮特定实体：潜影贝（自定义颜色）、Hideyho NPC（淡蓝色）。
  */
 public final class SafariEntitiesGlow {
 
@@ -30,8 +29,7 @@ public final class SafariEntitiesGlow {
 
             for (var entity : client.level.entitiesForRendering()) {
                 if (glowShulker && entity instanceof Shulker shulker) {
-                    DyeColor color = shulker.getColor();
-                    int argb = 0xFF000000 | (color != null ? color.getTextColor() : 0xFFFFFF);
+                    int argb = cfg.safari.shulkerGlowColor.getEffectiveColourRGB();
                     GlowController.setGlow(shulker, true, argb, true);
                 }
                 if (glowHideyho && entity instanceof Player player

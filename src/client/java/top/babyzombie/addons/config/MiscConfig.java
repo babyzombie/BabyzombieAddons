@@ -2,10 +2,12 @@ package top.babyzombie.addons.config;
 import com.google.gson.annotations.Expose;
 
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import io.github.notenoughupdates.moulconfig.observer.Property;
+import org.lwjgl.glfw.GLFW;
 
 public class MiscConfig {
 
@@ -26,6 +28,12 @@ public class MiscConfig {
     @ConfigEditorBoolean
     @SearchTag("debug")
     public boolean hypixelModApiDebugLog = false;
+
+    @Expose
+    @ConfigOption(name = "config.babyzombieaddons.option.copyItemInfo", desc = "config.babyzombieaddons.option.copyItemInfo.desc")
+    @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN)
+    @SearchTag("copy") @SearchTag("key")
+    public int copyItemInfo = GLFW.GLFW_KEY_UNKNOWN;
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.maxDebugEntities", desc = "config.babyzombieaddons.option.maxDebugEntities.desc")

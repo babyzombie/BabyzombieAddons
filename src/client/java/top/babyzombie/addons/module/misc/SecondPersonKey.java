@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
+import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.KeyBindingUtil;
 
 /**
@@ -12,8 +12,7 @@ import top.babyzombie.addons.util.KeyBindingUtil;
  * Releasing restores the previous perspective.
  */
 public final class SecondPersonKey {
-    public static final KeyMapping KEY = KeyBindingUtil.register(
-        "key.babyzombieaddons.second_person", GLFW.GLFW_KEY_UNKNOWN);
+    public static KeyMapping KEY;
 
     private static boolean wasDown;
     private static CameraType previous = CameraType.FIRST_PERSON;
@@ -21,6 +20,11 @@ public final class SecondPersonKey {
     private SecondPersonKey() {}
 
     public static void init() {
+        if (KEY == null) {
+            KEY = KeyBindingUtil.register(
+                "key.babyzombieaddons.second_person",
+                ModConfigManager.get().general.secondPerson);
+        }
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var player = Minecraft.getInstance().player;
             if (player == null) return;

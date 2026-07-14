@@ -15,7 +15,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
+import top.babyzombie.addons.BabyzombieAddonsClient;
 import top.babyzombie.addons.config.gui.WideSliderEditor;
+import top.babyzombie.addons.module.misc.CopyItemInfoKey;
+import top.babyzombie.addons.module.misc.SecondPersonKey;
+import top.babyzombie.addons.module.popup.PopupEventsModule;
+import top.babyzombie.addons.util.KeyBindingUtil;
 
 import java.io.File;
 
@@ -88,11 +93,34 @@ public final class ModConfigManager {
         MANAGED_CONFIG.saveToFile();
     }
 
+    /** 打开设置页面前：从 KeyMapping 读值 → 写入 config 字段，保证 UI 显示最新值 */
+    static void syncConfigFromKeyMappings() {
+        var cfg = get();
+        cfg.general.cancelKeyRelease = KeyBindingUtil.keyCodeFrom(BabyzombieAddonsClient.cancelKeyBindingRelease);
+        cfg.general.secondPerson = KeyBindingUtil.keyCodeFrom(SecondPersonKey.KEY);
+        cfg.general.handRender.toggleHandRenderKey = KeyBindingUtil.keyCodeFrom(BabyzombieAddonsClient.toggleHandRenderKey);
+        cfg.popup.popupYes = KeyBindingUtil.keyCodeFrom(PopupEventsModule.keyYes);
+        cfg.popup.popupNo = KeyBindingUtil.keyCodeFrom(PopupEventsModule.keyNo);
+        cfg.misc.copyItemInfo = KeyBindingUtil.keyCodeFrom(CopyItemInfoKey.KEY);
+    }
+
+    /** 关闭设置页面后：从 config 字段 → 写入 KeyMapping */
+    static void syncConfigToKeyMappings() {
+        var cfg = get();
+        KeyBindingUtil.syncToKeyMapping(BabyzombieAddonsClient.cancelKeyBindingRelease, cfg.general.cancelKeyRelease);
+        KeyBindingUtil.syncToKeyMapping(SecondPersonKey.KEY, cfg.general.secondPerson);
+        KeyBindingUtil.syncToKeyMapping(BabyzombieAddonsClient.toggleHandRenderKey, cfg.general.handRender.toggleHandRenderKey);
+        KeyBindingUtil.syncToKeyMapping(PopupEventsModule.keyYes, cfg.popup.popupYes);
+        KeyBindingUtil.syncToKeyMapping(PopupEventsModule.keyNo, cfg.popup.popupNo);
+        KeyBindingUtil.syncToKeyMapping(CopyItemInfoKey.KEY, cfg.misc.copyItemInfo);
+    }
+
     public static Screen createGUI(@Nullable Screen parent) {
         return createGUI(parent, "");
     }
 
     public static Screen createGUI(@Nullable Screen parent, String search) {
+        syncConfigFromKeyMappings();
         MANAGED_CONFIG.rebuildConfigProcessor();
         var editor = MANAGED_CONFIG.getEditor();
         currentEditor = editor;
@@ -114,6 +142,7 @@ public final class ModConfigManager {
         public void onClose() {
             if (getGuiContext().onBeforeClose() == CloseEventListener.CloseAction.NO_OBJECTIONS_TO_CLOSE) {
                 save();
+                syncConfigToKeyMappings();
                 Minecraft.getInstance().setScreen(parent);
             }
         }

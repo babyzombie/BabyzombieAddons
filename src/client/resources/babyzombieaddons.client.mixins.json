@@ -53,6 +53,7 @@
     "screen.ContainerClickMixin",
     "screen.HandleContainerInputMixin",
     "screen.InventoryScreenMixin",
+    "screen.KeyMappingAccessor",
     "screen.KeyMappingMixin",
     "screen.ScreenMixin",
     "screen.MoulConfigTranslationMixin",
