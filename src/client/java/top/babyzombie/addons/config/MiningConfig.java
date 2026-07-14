@@ -59,6 +59,8 @@ public class MiningConfig {
         public boolean suspiciousScrapCounter = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.greatGlaciteWaypoints", desc = "config.babyzombieaddons.option.greatGlaciteWaypoints.desc") @ConfigEditorBoolean @SearchTag("glacite")
         public boolean greatGlaciteWaypoints = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.lanternReminder", desc = "config.babyzombieaddons.option.lanternReminder.desc") @ConfigEditorBoolean @SearchTag("mineshaft") @SearchTag("lantern")
+        public boolean lanternReminder = false;
     }
 
     public static class MithrilGourmand {

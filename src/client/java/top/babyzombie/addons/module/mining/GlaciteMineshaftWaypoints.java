@@ -42,6 +42,9 @@ public final class GlaciteMineshaftWaypoints {
     private static String ownServerName;
     private static final Set<BlockPos> visitedCorpses = new HashSet<>();
 
+    private static final Set<String> LANTERN_IDS = Set.of(
+            "LANTERN", "MITHRIL_LANTERN", "TITANIUM_LANTERN", "GLACITE_LANTERN", "WILL_O_WASP");
+
     private GlaciteMineshaftWaypoints() {}
 
     public static void init() {
@@ -52,6 +55,7 @@ public final class GlaciteMineshaftWaypoints {
             boolean nowIn = t.isIn("Mineshaft");
             if (nowIn && !inMineshaft) {
                 enterMineshaftTime = ServerTick.getTime();
+                checkLanternReminder();
                 // Auto warp if owner
                 var warpMode = ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaftWarp;
                 if (mineshaftOwner && (warpMode == MineshaftWarpMode.SEND_PTME
@@ -228,6 +232,25 @@ public final class GlaciteMineshaftWaypoints {
 
     private static boolean isInDwarvenMines() {
         return HypixelLocationTracker.getInstance().isIn("Dwarven Mines");
+    }
+
+    private static void checkLanternReminder() {
+        if (!ModConfigManager.get().mining.glaciteTunnels.lanternReminder) return;
+        var player = Minecraft.getInstance().player;
+        if (player == null) return;
+        var inv = player.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            var item = inv.getItem(i);
+            if (item.isEmpty()) continue;
+            String id = ItemUtils.getSkyblockId(item);
+            if (id != null && LANTERN_IDS.contains(id)) {
+                String displayName = ChatUtils.toLegacyString(item.getDisplayName());
+                ChatUtils.showTitle("",
+                        ChatUtils.translate("babyzombieaddons.glacite.lantern_reminder", displayName),
+                        0, 50, 10);
+                return;
+            }
+        }
     }
 
     private static String tr(String key) {
