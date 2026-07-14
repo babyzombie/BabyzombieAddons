@@ -7,7 +7,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.config.SkyblockConfig.Pet.PetDisplayElement;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.util.pet.PetData;
 import top.babyzombie.addons.util.pet.PetData.LevelInfo;
@@ -22,11 +24,15 @@ import java.util.List;
  * HUD overlay that displays the current summoned pet and exp-sharing pets.
  *
  * Layout (summoned pet, full size):
- *   [head icon]  Lvl {level} {Name}          ← name coloured by rarity
- *                {xp} / {toNext} ({pct}%)     ← toggleable
- *                {heldItem} [icon]            ← toggleable + icon toggleable
+ *   [head icon]  (controlled by showPetIcon toggle)
+ *   DraggableList elements in user-defined order:
+ *     PET_NAME          → Lv.{level} {Name} coloured by rarity
+ *     PET_TOTAL_XP      → {totalExp}
+ *     PET_XP_PROGRESS   → {xpInLevel} / {toNext} ({pct}%)  (overflow / 0 if maxed)
+ *     PET_ITEM          → {heldItem} text only
+ *     PET_ITEM_WITH_ICON → {heldItem} text + small icon to the right
  *
- * Shared pets are printed at half size below a strikethrough separator.
+ * Shared pets are printed at 0.75× size below a strikethrough separator.
  * Only active slots are shown (1 by default, 3 with Diana's Sharing is Caring).
  *
  * Data is recomputed at most once per second to avoid per-frame overhead.
@@ -36,16 +42,16 @@ public final class PetDisplayHud {
     private static final String ELEMENT_NAME = "PetDisplay";
     private static final long REFRESH_INTERVAL_MS = 1000;
 
+    /** A single renderable line: text always present, icon only for PET_ITEM_WITH_ICON. */
+    private record CachedLine(String text, @Nullable ItemStack icon) {}
+
     // ===== Cached display data (refreshed at most once per second) =====
     private static long lastRefreshTime;
     private static ItemStack cachedCurrentHead;
-    private static String cachedCurrentLine1;
-    private static String cachedCurrentXpLine;
-    private static String cachedCurrentItemLine;
-    private static ItemStack cachedCurrentItemIcon;
+    private static List<CachedLine> cachedCurrentLines = List.of();
     private static final List<CachedSharedPet> cachedSharedPets = new ArrayList<>();
 
-    private record CachedSharedPet(ItemStack head, String line1, String xpLine) {}
+    private record CachedSharedPet(ItemStack head, List<CachedLine> lines) {}
 
     private PetDisplayHud() {}
 
@@ -70,24 +76,13 @@ public final class PetDisplayHud {
 
         if (current == null) {
             cachedCurrentHead = null;
+            cachedCurrentLines = List.of();
             cachedSharedPets.clear();
             return;
         }
 
         cachedCurrentHead = PetHeadTexture.getPetHead(current.type());
-        LevelInfo info = current.getLevelInfo();
-        cachedCurrentLine1 = "§7Lv.§f" + info.level() + " " + tierColor(current.tier()) + PetData.formatPetName(current.type());
-
-        cachedCurrentXpLine = config.pet.expDisplay ? xpLine(info, current.exp()) : null;
-
-        if (config.pet.itemDisplay && current.heldItem() != null) {
-            cachedCurrentItemLine = PetHeadTexture.getItemDisplayName(current.heldItem());
-            cachedCurrentItemIcon = config.pet.itemIconDisplay
-                ? PetHeadTexture.getItemIcon(current.heldItem()) : null;
-        } else {
-            cachedCurrentItemLine = null;
-            cachedCurrentItemIcon = null;
-        }
+        cachedCurrentLines = buildLines(current, config.pet.mainPetElements);
 
         // Shared pets
         cachedSharedPets.clear();
@@ -99,14 +94,79 @@ public final class PetDisplayHud {
 
             for (int i = 0; i < activeCount; i++) {
                 PetData shared = sharedPets.get(i);
-                LevelInfo si = shared.getLevelInfo();
-                String sLine1 = "§7Lv.§f" + si.level() + " " + tierColor(shared.tier()) + PetData.formatPetName(shared.type());
-                String sXpLine = config.pet.expDisplay ? xpLine(si, shared.exp()) : null;
                 cachedSharedPets.add(new CachedSharedPet(
-                    PetHeadTexture.getPetHead(shared.type()), sLine1, sXpLine));
+                    PetHeadTexture.getPetHead(shared.type()),
+                    buildLines(shared, config.pet.sharedPetElements)
+                ));
             }
         }
     }
+
+    /** Build the list of CachedLine for a pet based on the given element list. */
+    private static List<CachedLine> buildLines(PetData pet, List<PetDisplayElement> elements) {
+        if (pet == null || elements == null || elements.isEmpty()) return List.of();
+
+        List<CachedLine> lines = new ArrayList<>();
+        LevelInfo info = pet.getLevelInfo();
+
+        for (PetDisplayElement elem : elements) {
+            switch (elem) {
+                case PET_NAME -> lines.add(buildNameLine(pet, info));
+                case PET_TOTAL_XP -> lines.add(buildTotalXpLine(pet));
+                case PET_XP_PROGRESS -> {
+                    // If pet is maxed and total XP is also shown, skip — total XP already covers it
+                    if (info.isMaxed() && elements.contains(PetDisplayElement.PET_TOTAL_XP)) {
+                        break;
+                    }
+                    lines.add(buildXpProgressLine(pet, info));
+                }
+                case PET_ITEM -> {
+                    if (pet.heldItem() != null) {
+                        lines.add(new CachedLine(PetHeadTexture.getItemDisplayName(pet.heldItem()), null));
+                    }
+                }
+                case PET_ITEM_WITH_ICON -> {
+                    if (pet.heldItem() != null) {
+                        lines.add(new CachedLine(
+                            PetHeadTexture.getItemDisplayName(pet.heldItem()),
+                            PetHeadTexture.getItemIcon(pet.heldItem())
+                        ));
+                    }
+                }
+            }
+        }
+        return lines;
+    }
+
+    // ── Individual line builders ──
+
+    private static CachedLine buildNameLine(PetData pet, LevelInfo info) {
+        return new CachedLine(
+            "§7Lv.§f" + info.level() + " " + tierColor(pet.tier()) + PetData.formatPetName(pet.type()),
+            null
+        );
+    }
+
+    private static CachedLine buildTotalXpLine(PetData pet) {
+        return new CachedLine("§e" + fmt(pet.exp()), null);
+    }
+
+    private static CachedLine buildXpProgressLine(PetData pet, LevelInfo info) {
+        if (info.isMaxed()) {
+            // Overflow experience / 0
+            return new CachedLine("§e" + fmt(pet.exp()) + " §8/ §70", null);
+        }
+        double pct = info.xpToNext() > 0
+            ? (info.xpInLevel() / info.xpToNext()) * 100.0
+            : 0.0;
+        return new CachedLine(
+            "§e" + fmt(info.xpInLevel()) + " §8/ §7" + fmt(info.xpToNext())
+                + "  §b" + String.format("%.1f", pct) + "%",
+            null
+        );
+    }
+
+    // ── Render ──
 
     private static void render(GuiGraphicsExtractor gui) {
         var config = ModConfigManager.get().skyblock;
@@ -132,64 +192,52 @@ public final class PetDisplayHud {
         pose.translate(x, y);
         pose.scale(s, s);
 
-        int textX = 18; // 16px icon + 2px gap
         int curY = 1;
-        int lh = font.lineHeight; // 9
+        int lh = font.lineHeight;
 
         // ===== Summoned Pet (full size) =====
         {
-            gui.item(cachedCurrentHead, 0, 0);
-            gui.text(font, cachedCurrentLine1, textX, curY, 0xFFFFFFFF, true);
-
-            if (cachedCurrentXpLine != null) {
-                curY += lh;
-                gui.text(font, cachedCurrentXpLine, textX, curY, 0xFFFFFFFF, true);
+            if (config.pet.showPetIcon) {
+                gui.item(cachedCurrentHead, -16, 0);
             }
-
-            if (cachedCurrentItemLine != null) {
-                curY += lh;
-                int line3Width = font.width(cachedCurrentItemLine);
-
-                if (cachedCurrentItemIcon != null && !cachedCurrentItemIcon.isEmpty()) {
-                    int iconX = textX + line3Width + 2;
-                    int iconY = curY + 1;
-                    pose.pushMatrix();
-                    pose.translate(iconX, iconY);
-                    pose.scale(0.5f, 0.5f);
-                    gui.item(cachedCurrentItemIcon, 0, 0);
-                    pose.popMatrix();
-                }
-                gui.text(font, cachedCurrentItemLine, textX, curY, 0xFFFFFFFF, true);
-            }
+            renderLines(gui, font, cachedCurrentLines, 0, curY, lh);
         }
 
         // ===== Shared Pets (0.75×) =====
         if (!cachedSharedPets.isEmpty()) {
-            // Separator
-            curY += lh;
-            gui.text(font, "§8§m                              ", textX, curY, 0xFFFFFFFF, true);
+            // Calculate main pet height to place separator correctly
+            curY += cachedCurrentLines.size() * lh;
+            // Separator — dynamic width based on the widest main-pet line
+            {
+                int maxWidth = 0;
+                for (CachedLine line : cachedCurrentLines) {
+                    int w = font.width(line.text());
+                    if (w > maxWidth) maxWidth = w;
+                }
+                int spaceW = font.width(" ");
+                int count = Math.max(10, maxWidth / spaceW + 1);
+                gui.text(font, "§8§m" + " ".repeat(count), 0, curY, 0xFFFFFFFF, true);
+            }
             curY += lh / 2 + 1;
-
-            int halfTextX = 18;
-            int halfSpacing = lh;
-            int row2line = Math.round(Math.max(12, lh * 1.5f)) + 1;
-            int row1line = Math.round(Math.max(12, lh * 0.75f)) + 1;
 
             for (CachedSharedPet shared : cachedSharedPets) {
                 pose.pushMatrix();
                 pose.translate(0, curY);
                 pose.scale(0.75f, 0.75f);
 
-                gui.item(shared.head, 0, 0);
-                gui.text(font, shared.line1, halfTextX, 0, 0xFFFFFFFF, true);
+                if (config.pet.showPetIcon) {
+                    gui.item(shared.head, -16, 0);
+                }
+                renderLines(gui, font, shared.lines, 0, 0, lh);
 
-                if (shared.xpLine != null) {
-                    gui.text(font, shared.xpLine, halfTextX, halfSpacing, 0xFFFFFFFF, true);
-                    pose.popMatrix();
-                    curY += row2line;
+                pose.popMatrix();
+
+                // Calculate how tall this shared pet block is
+                int sharedLineCount = shared.lines.size();
+                if (sharedLineCount == 0) {
+                    curY += Math.round(Math.max(12, lh * 0.75f)) + 1;
                 } else {
-                    pose.popMatrix();
-                    curY += row1line;
+                    curY += Math.round(Math.max(12, lh * 1.5f)) + 1;
                 }
             }
         }
@@ -197,19 +245,31 @@ public final class PetDisplayHud {
         pose.popMatrix();
     }
 
-    // ===== Helpers =====
-
-    /** Build the XP line string. */
-    private static String xpLine(LevelInfo info, double totalExp) {
-        if (info.isMaxed()) {
-            return "§e" + fmt(totalExp);
+    /** Render a list of CachedLine at the given position. */
+    private static void renderLines(GuiGraphicsExtractor gui, Font font,
+                                     List<CachedLine> lines, int textX, int startY,
+                                     int lineHeight) {
+        int curY = startY;
+        var pose = gui.pose();
+        for (CachedLine line : lines) {
+            String displayText = line.text();
+            if (line.icon() != null && !line.icon().isEmpty()) {
+                // Draw text first, then icon to the right
+                int textWidth = font.width(displayText);
+                int iconX = textX + textWidth + 2;
+                int iconY = curY + 1;
+                pose.pushMatrix();
+                pose.translate(iconX, iconY);
+                pose.scale(0.5f, 0.5f);
+                gui.item(line.icon(), 0, 0);
+                pose.popMatrix();
+            }
+            gui.text(font, displayText, textX, curY, 0xFFFFFFFF, true);
+            curY += lineHeight;
         }
-        double pct = info.xpToNext() > 0
-            ? (info.xpInLevel() / info.xpToNext()) * 100.0
-            : 0.0;
-        return "§e" + fmt(info.xpInLevel()) + " §8/ §7" + fmt(info.xpToNext())
-            + "  §b" + String.format("%.1f", pct) + "%";
     }
+
+    // ===== Helpers =====
 
     /** Format a double with thousands separators, no decimal places. */
     private static String fmt(double n) {

@@ -362,13 +362,17 @@ public final class PetManager {
         });
     }
 
-    /** GUI click: right-click removes pet, left-click selects it (all sources). */
+    /** GUI click: right-click removes pet, left-click selects/despawns (works in all screens). */
     private void registerGuiClick() {
         ContainerClickEvents.BEFORE_CONTAINER_INPUT.register((player, containerId, slotId, buttonNum, input) -> {
             if (input != ContainerInput.PICKUP) return false;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
-            if (Minecraft.getInstance().screen != null && ChatUtils.stripColor(Minecraft.getInstance().screen.getTitle().getString()).matches("(\\(\\d+/\\d+\\) )?Pets"))
+
+            // Only track clicks in the Pets menu
+            var screen = Minecraft.getInstance().screen;
+            if (screen == null || !ChatUtils.stripColor(screen.getTitle().getString()).matches("(\\(\\d+/\\d+\\) )?Pets")) {
                 return false;
+            }
             var slot = player.containerMenu.getSlot(slotId);
             if (slot == null || !slot.hasItem()) return false;
             ItemStack stack = slot.getItem();
@@ -377,13 +381,27 @@ public final class PetManager {
             String uuid = getItemUuid(stack);
             if (uuid == null) return false;
 
+            // Check if this pet is currently summoned (has "Click to despawn!" lore)
+            boolean isDespawnable = false;
+            ItemLore lore = stack.get(DataComponents.LORE);
+            if (lore != null) {
+                for (Component line : lore.lines()) {
+                    if ("Click to despawn!".equals(ChatUtils.stripColor(line.getString()))) {
+                        isDespawnable = true;
+                        break;
+                    }
+                }
+            }
+
             if (buttonNum == 1) {
+                // Right-click: convert to item → remove from tracking
                 removePet(uuid);
                 if (uuid.equals(currentPetUuid)) setCurrentPet(null);
             } else if (buttonNum == 0) {
+                // Left-click: summon/despawn
                 for (PetData p : pets) {
                     if (uuid.equals(p.uuid())) {
-                        setCurrentPet(uuid.equals(currentPetUuid) ? null : p);
+                        setCurrentPet(isDespawnable ? null : p);
                         break;
                     }
                 }

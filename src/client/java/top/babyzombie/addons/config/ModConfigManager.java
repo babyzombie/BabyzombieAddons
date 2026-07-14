@@ -43,7 +43,6 @@ import java.io.File;
  * │ @ConfigAccordionId      (已弃用)     │ → 改用 @Accordion                 │
  * └──────────────────────────────────────┴──────────────────────────────────┘
  */
-@SuppressWarnings("unchecked")
 public final class ModConfigManager {
 
     private static final File CONFIG_FILE = FabricLoader.getInstance().getConfigDir()

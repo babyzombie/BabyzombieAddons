@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
@@ -11,6 +12,9 @@ import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfig.*;
 import top.babyzombie.addons.module.raredrop.RareDropScreen;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkyblockConfig {
 
@@ -56,16 +60,46 @@ public class SkyblockConfig {
     }
 
     public static class Pet {
+        // ── DraggableList element enum ──
+        public enum PetDisplayElement {
+            PET_NAME,
+            PET_TOTAL_XP,
+            PET_XP_PROGRESS,
+            PET_ITEM,
+            PET_ITEM_WITH_ICON;
+
+            @Override
+            public String toString() {
+                return switch (this) {
+                    case PET_NAME          -> "§7Lv.§f200 §6Golden Dragon";
+                    case PET_TOTAL_XP      -> "§e59,160,153";
+                    case PET_XP_PROGRESS   -> "§e114,514 §8/ §71,919,810 §b5.96%";
+                    case PET_ITEM          -> "§6Hephaestus Relic";
+                    case PET_ITEM_WITH_ICON -> "§6Hephaestus Relic ✿";
+                };
+            }
+        }
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.petDisplay", desc = "config.babyzombieaddons.option.petDisplay.desc") @ConfigEditorBoolean
         public boolean enabled = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.petExpDisplay", desc = "config.babyzombieaddons.option.petExpDisplay.desc") @ConfigEditorBoolean
-        public boolean expDisplay = true;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.petItemDisplay", desc = "config.babyzombieaddons.option.petItemDisplay.desc") @ConfigEditorBoolean
-        public boolean itemDisplay = true;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.petItemIconDisplay", desc = "config.babyzombieaddons.option.petItemIconDisplay.desc") @ConfigEditorBoolean
-        public boolean itemIconDisplay = true;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.petShowIcon", desc = "config.babyzombieaddons.option.petShowIcon.desc") @ConfigEditorBoolean
+        public boolean showPetIcon = true;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.petMainLines", desc = "config.babyzombieaddons.option.petMainLines.desc")
+        @ConfigEditorDraggableList
+        public List<PetDisplayElement> mainPetElements = new ArrayList<>(List.of(
+            PetDisplayElement.PET_NAME, PetDisplayElement.PET_XP_PROGRESS, PetDisplayElement.PET_ITEM_WITH_ICON
+        ));
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.petSharedDisplay", desc = "config.babyzombieaddons.option.petSharedDisplay.desc") @ConfigEditorBoolean
         public boolean sharedDisplay = true;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.petSharedLines", desc = "config.babyzombieaddons.option.petSharedLines.desc")
+        @ConfigEditorDraggableList
+        public List<PetDisplayElement> sharedPetElements = new ArrayList<>(List.of(
+            PetDisplayElement.PET_NAME, PetDisplayElement.PET_XP_PROGRESS
+        ));
     }
 
     public static class NecronBlade {

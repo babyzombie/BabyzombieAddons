@@ -7,8 +7,14 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -37,6 +43,9 @@ public final class PetHeadTexture {
     /** Extracts the base64 skull texture Value from an SNBT string. */
     private static final Pattern SKULL_VALUE_PATTERN =
         Pattern.compile("Value:\"([A-Za-z0-9+/=]+)\"");
+    /** Extracts ItemModel from an SNBT string, e.g. {@code ItemModel:"minecraft:iron_pickaxe"}. */
+    private static final Pattern ITEM_MODEL_PATTERN =
+        Pattern.compile("ItemModel:\"([^\"]+)\"");
 
     private static final Map<String, ItemStack> cache = new HashMap<>();
     private static boolean fallbackWarned;
@@ -138,28 +147,64 @@ public final class PetHeadTexture {
         try {
             String raw = Files.readString(file);
             JsonObject obj = JsonParser.parseString(raw).getAsJsonObject();
-            String nbttag = obj.get("nbttag").getAsString();
 
-            Matcher m = SKULL_VALUE_PATTERN.matcher(nbttag);
-            if (!m.find()) return null;
+            // Resolve base item (handle legacy "minecraft:skull" + damage=3 → PLAYER_HEAD)
+            String itemId = obj.has("itemid") ? obj.get("itemid").getAsString() : null;
+            if (itemId == null) return null;
+            int damage = obj.has("damage") ? obj.get("damage").getAsInt() : 0;
+            Item item;
+            if ("minecraft:skull".equals(itemId)) {
+                item = legacySkullItem(damage);
+            } else {
+                item = BuiltInRegistries.ITEM.getValue(Identifier.parse(itemId));
+            }
+            if (item == null) return null;
+            var stack = new ItemStack(item);
 
-            String base64Value = m.group(1);
-            return createSkull(base64Value);
+            // Apply NBT data components
+            String nbttag = obj.has("nbttag") ? obj.get("nbttag").getAsString() : null;
+            if (nbttag != null) {
+                // Skull texture → PROFILE (regex for old SNBT compatibility)
+                Matcher skullM = SKULL_VALUE_PATTERN.matcher(nbttag);
+                if (skullM.find()) {
+                    stack.set(DataComponents.PROFILE, createSkullProfile(skullM.group(1)));
+                }
+                // ItemModel → ITEM_MODEL component
+                Matcher modelM = ITEM_MODEL_PATTERN.matcher(nbttag);
+                if (modelM.find()) {
+                    stack.set(DataComponents.ITEM_MODEL, Identifier.parse(modelM.group(1)));
+                }
+                // Complete NBT → CUSTOM_DATA
+                try {
+                    CompoundTag tag = TagParser.parseCompoundFully(nbttag);
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                } catch (Exception ignored) {}
+            }
+            return stack;
         } catch (IOException | RuntimeException e) {
             return null;
         }
     }
 
-    private static ItemStack createSkull(String base64Value) {
-        // Derive a deterministic UUID from the texture content
+    /** Map legacy "minecraft:skull" damage values to modern skull items. */
+    private static Item legacySkullItem(int damage) {
+        return switch (damage) {
+            case 0 -> Items.SKELETON_SKULL;
+            case 1 -> Items.WITHER_SKELETON_SKULL;
+            case 2 -> Items.ZOMBIE_HEAD;
+            case 4 -> Items.CREEPER_HEAD;
+            case 5 -> Items.DRAGON_HEAD;
+            default -> Items.PLAYER_HEAD; // damage=3 or any other
+        };
+    }
+
+    /** Create a ResolvableProfile from a base64 skull texture value. */
+    private static ResolvableProfile createSkullProfile(String base64Value) {
         UUID uuid = UUID.nameUUIDFromBytes(base64Value.getBytes(StandardCharsets.UTF_8));
         var multimap = LinkedHashMultimap.<String, Property>create();
         multimap.put("textures", new Property("textures", base64Value, null));
         var gp = new GameProfile(uuid, "", new PropertyMap(multimap));
-
-        var stack = new ItemStack(Items.PLAYER_HEAD);
-        stack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(gp));
-        return stack;
+        return ResolvableProfile.createResolved(gp);
     }
 
     @Nullable
