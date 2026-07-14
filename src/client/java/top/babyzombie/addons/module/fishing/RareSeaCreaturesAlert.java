@@ -14,12 +14,6 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 /// 过滤出名字含  或  且有  的，插橙色信标光柱。
 public final class RareSeaCreaturesAlert {
 
-    /// 扫描半径（格）
-    private static final double SCAN_RANGE = 16.0;
-
-    /// 橙色信标光柱颜色 (ARGB)
-    private static final int BEAM_COLOR = 0xFFFF6600;
-
     /// Title 提示冷却（tick）= 5 秒
     private static final int TITLE_COOLDOWN_TICKS = 100;
 
@@ -36,7 +30,8 @@ public final class RareSeaCreaturesAlert {
     public static void init() {
         RenderPhaseRegister.register(ctx -> {
             var cfg = ModConfigManager.get().fishing;
-            if (!cfg.rareSeaCreatures.alert) return;
+            var rareCfg = cfg.rareSeaCreatures;
+            if (!rareCfg.alert) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
 
             var player = Minecraft.getInstance().player;
@@ -45,51 +40,47 @@ public final class RareSeaCreaturesAlert {
             var level = player.level();
             if (level == null) return;
 
+            double scanRange = Math.min(25.0, Math.max(1.0, rareCfg.scanRange));
             var stands = level.getEntitiesOfClass(
                     ArmorStand.class,
-                    new AABB(player.blockPosition()).inflate(SCAN_RANGE, 128, SCAN_RANGE),
+                    new AABB(player.blockPosition()).inflate(scanRange, 128, scanRange),
                     e -> !e.isDeadOrDying()
             );
 
             int count = 0;
             String firstCleanedName = null;
             for (var stand : stands) {
-                String name = stand.getName().getString();
-                if ((name.contains(AQUATIC) || name.contains(MAGMATIC)) && name.contains(ELUSIVE)) {
-                    BeamRenderer.drawBeam(ctx, stand.getX(), stand.getY() - 5, stand.getZ(),
-                            2048, 0.15f, BEAM_COLOR);
-                    if (firstCleanedName == null) {
-                        firstCleanedName = cleanSeaCreatureName(name);
+                String rawName = stand.getName().getString();
+                if (!((rawName.contains(AQUATIC) || rawName.contains(MAGMATIC)) && rawName.contains(ELUSIVE))) continue;
+
+                var def = RareSeaCreatureDefinitions.match(rawName);
+                if (def != null && rareCfg.excludeHighlightEnabled && def.isExcluded(rareCfg)) continue;
+
+                int beamColor = def != null ? def.rarity.beamColorArgb : RareSeaCreatureDefinitions.UNKNOWN_BEAM_COLOR;
+                BeamRenderer.drawBeam(ctx, stand.getX(), stand.getY() - 5, stand.getZ(),
+                        2048, 0.15f, beamColor);
+
+                if (firstCleanedName == null) {
+                    String cleaned = RareSeaCreatureDefinitions.cleanNameForMatch(rawName);
+                    if (!cleaned.isEmpty()) {
+                        String titleColor = def != null ? def.rarity.titleColorCode : RareSeaCreatureDefinitions.UNKNOWN_TITLE_COLOR_CODE;
+                        firstCleanedName = titleColor + cleaned;
                     }
-                    count++;
                 }
+                count++;
             }
 
             // Title 提示（带冷却）
-            if (cfg.rareSeaCreatures.alertTitle && count > 0 && firstCleanedName != null) {
+            if (rareCfg.alertTitle && count > 0 && firstCleanedName != null) {
                 long tick = level.getGameTime();
                 if (tick - lastTitleTick >= TITLE_COOLDOWN_TICKS) {
                     lastTitleTick = tick;
                     ChatUtils.showTitle(
-                            Component.translatable("fishing.rareSeaCreatures.alert.title").getString(),
+                            Component.translatable("fishing.rareSeaCreaturesAlert.title").getString(),
                             firstCleanedName,
                             0, 30, 10);
                 }
             }
         });
-    }
-
-    /// 清理盔甲架名称：移除表情/私有区字符、等级标签、血量数字，
-    /// 保留颜色符号。
-    private static String cleanSeaCreatureName(String rawName) {
-        // 1. 复用 ChatUtils 移除表情和私有区字符
-        String s = ChatUtils.removeEmoji(rawName);
-        // 2. 移除等级标签 [Lv100] / [LV100]
-        s = s.replaceAll("\\[[Ll][Vv]\\s*\\d+\\]", "");
-        // 3. 移除血量数字 (如 1,145,140, 10k, 1.2M)
-        s = s.replaceAll("[\\d,./]+[kKmMbB]?", "").replace("❤", "");
-        // 4. 合并多余空格并 trim
-        s = s.replaceAll(" {2,}", " ").trim();
-        return "§6" + s;
     }
 }
