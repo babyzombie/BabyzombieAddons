@@ -713,6 +713,16 @@
   "config.babyzombieaddons.option.necronBladeHideExplosionParticles.desc": "手持凋零之刃时隐藏附近的大型爆炸粒子。",
   "config.babyzombieaddons.option.necronBladeHideOthersParticles": "隐藏他人的爆炸粒子",
   "config.babyzombieaddons.option.necronBladeHideOthersParticles.desc": "隐藏附近其他玩家使用凋零之刃时产生的大型爆炸粒子。",
+  "config.babyzombieaddons.option.necronBladeShadowWarpVolume": "暗影瞬移音量",
+  "config.babyzombieaddons.option.necronBladeShadowWarpVolume.desc": "手持凋零之刃时暗影瞬移（Shadow Warp）传送音效的音量。",
+  "config.babyzombieaddons.option.necronBladeWitherShieldVolume": "凋零护盾音量",
+  "config.babyzombieaddons.option.necronBladeWitherShieldVolume.desc": "手持凋零之刃时凋零护盾（Wither Shield）触发音效的音量。",
+
+  "config.babyzombieaddons.group.teleportSword": "传送剑",
+  "config.babyzombieaddons.option.teleportSwordTeleportVolume": "传送音量",
+  "config.babyzombieaddons.option.teleportSwordTeleportVolume.desc": "手持终界之影 / 虚空之影时传送音效的音量。",
+  "config.babyzombieaddons.option.teleportSwordEtherwarpVolume": "以太传送音量",
+  "config.babyzombieaddons.option.teleportSwordEtherwarpVolume.desc": "手持终界之影 / 虚空之影时以太传送（Etherwarp）音效的音量。",
 
   "config.babyzombieaddons.group.windowTitle": "窗口标题",
   "config.babyzombieaddons.option.windowTitleEnabled": "启用自定义标题",

@@ -41,6 +41,9 @@ public class SkyblockConfig {
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.necronBlade", desc = "") @Accordion
     public NecronBlade necronBlade = new NecronBlade();
 
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.teleportSword", desc = "") @Accordion
+    public TeleportSword teleportSword = new TeleportSword();
+
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.loadout", desc = "") @Accordion
     public Loadout loadout = new Loadout();
 
@@ -103,12 +106,30 @@ public class SkyblockConfig {
     }
 
     public static class NecronBlade {
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.necronBladeExplosionVolume", desc = "config.babyzombieaddons.option.necronBladeExplosionVolume.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f) @SearchTag("necron") @SearchTag("explosion") @SearchTag("volume")
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.necronBladeExplosionVolume", desc = "config.babyzombieaddons.option.necronBladeExplosionVolume.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f)
+        @SearchTag("necron") @SearchTag("explosion") @SearchTag("implosion") @SearchTag("wither") @SearchTag("hyperion") @SearchTag("valkyrie") @SearchTag("scylla") @SearchTag("astraea") @SearchTag("volume")
         public float explosionVolume = 1.0f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.necronBladeHideExplosionParticles", desc = "config.babyzombieaddons.option.necronBladeHideExplosionParticles.desc") @ConfigEditorBoolean @SearchTag("necron") @SearchTag("explosion") @SearchTag("particle")
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.necronBladeShadowWarpVolume", desc = "config.babyzombieaddons.option.necronBladeShadowWarpVolume.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f)
+        @SearchTag("necron") @SearchTag("shadow") @SearchTag("warp") @SearchTag("wither") @SearchTag("hyperion") @SearchTag("valkyrie") @SearchTag("scylla") @SearchTag("astraea") @SearchTag("volume")
+        public float shadowWarpVolume = 1.0f;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.necronBladeWitherShieldVolume", desc = "config.babyzombieaddons.option.necronBladeWitherShieldVolume.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f)
+        @SearchTag("necron") @SearchTag("wither") @SearchTag("shield") @SearchTag("hyperion") @SearchTag("valkyrie") @SearchTag("scylla") @SearchTag("astraea") @SearchTag("volume")
+        public float witherShieldVolume = 1.0f;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.necronBladeHideExplosionParticles", desc = "config.babyzombieaddons.option.necronBladeHideExplosionParticles.desc") @ConfigEditorBoolean
+        @SearchTag("necron") @SearchTag("explosion") @SearchTag("implosion") @SearchTag("wither") @SearchTag("hyperion") @SearchTag("valkyrie") @SearchTag("scylla") @SearchTag("astraea") @SearchTag("particle")
         public boolean hideExplosionParticles = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.necronBladeHideOthersParticles", desc = "config.babyzombieaddons.option.necronBladeHideOthersParticles.desc") @ConfigEditorBoolean @SearchTag("necron") @SearchTag("particle")
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.necronBladeHideOthersParticles", desc = "config.babyzombieaddons.option.necronBladeHideOthersParticles.desc") @ConfigEditorBoolean
+        @SearchTag("necron") @SearchTag("explosion") @SearchTag("implosion") @SearchTag("wither") @SearchTag("hyperion") @SearchTag("valkyrie") @SearchTag("scylla") @SearchTag("astraea") @SearchTag("particle")
         public boolean hideOthersParticles = false;
+    }
+
+    public static class TeleportSword {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.teleportSwordTeleportVolume", desc = "config.babyzombieaddons.option.teleportSwordTeleportVolume.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f)
+        @SearchTag("teleport") @SearchTag("warp") @SearchTag("aote") @SearchTag("aotv") @SearchTag("aspect") @SearchTag("volume")
+        public float teleportVolume = 1.0f;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.teleportSwordEtherwarpVolume", desc = "config.babyzombieaddons.option.teleportSwordEtherwarpVolume.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f)
+        @SearchTag("teleport") @SearchTag("etherwarp") @SearchTag("aote") @SearchTag("aotv") @SearchTag("aspect") @SearchTag("volume")
+        public float etherwarpVolume = 1.0f;
     }
 
     public static class Loadout {

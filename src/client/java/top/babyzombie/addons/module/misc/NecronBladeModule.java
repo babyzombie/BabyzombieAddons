@@ -20,13 +20,16 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import java.util.Set;
 
 /**
- * Controls explosion sound volume and particles when holding a Necron's Blade
- * with the Implosion scroll (Hyperion/Scylla/Valkyrie/Astraea).
+ * Controls sound volume and particles for Necron's Blade (Hyperion/Scylla/Valkyrie/Astraea)
+ * and teleport swords (Aspect of the End / Aspect of the Void).
  */
 public final class NecronBladeModule {
 
-    private static final Set<String> WHITELIST = Set.of(
+    private static final Set<String> WITHER_BLADE_IDS = Set.of(
             "NECRON_BLADE", "HYPERION", "VALKYRIE", "SCYLLA", "ASTRAEA"
+    );
+    private static final Set<String> TELEPORT_SWORD_IDS = Set.of(
+            "ASPECT_OF_THE_END", "ASPECT_OF_THE_VOID"
     );
     private static final double SELF_RADIUS = 3.0;
     private static final double OTHERS_RADIUS = 1.0;
@@ -41,21 +44,44 @@ public final class NecronBladeModule {
     // ===== Sound =====
 
     private static SoundInstance modifySound(SoundInstance sound) {
-        if (!shouldModify()) return sound;
-
         var theSound = sound.getSound();
         if (theSound == null) return sound;
         String path = theSound.getLocation().getPath();
-        if (!path.startsWith("random/explode")) return sound;
 
         var player = Minecraft.getInstance().player;
         if (player == null) return sound;
-        double dx = sound.getX() - player.getX();
-        double dy = sound.getY() - player.getY();
-        double dz = sound.getZ() - player.getZ();
-        if (dx * dx + dy * dy + dz * dz > SELF_RADIUS * SELF_RADIUS) return sound;
 
-        float volume = ModConfigManager.get().skyblock.necronBlade.explosionVolume;
+        // Explosion sound — requires Implosion scroll
+        if (path.startsWith("random/explode") && shouldModifyExplosion()) {
+            return applyVolume(sound, ModConfigManager.get().skyblock.necronBlade.explosionVolume);
+        }
+
+        // Shadow warp / teleport sound
+        if (path.startsWith("mob/endermen/portal")) {
+            // Teleport sword takes priority
+            if (isHoldingTeleportSword()) {
+                return applyVolume(sound, ModConfigManager.get().skyblock.teleportSword.teleportVolume);
+            }
+            if (isHoldingWitherBlade()) {
+                return applyVolume(sound, ModConfigManager.get().skyblock.necronBlade.shadowWarpVolume);
+            }
+        }
+
+        // Wither shield sound
+        if (path.equals("mob/zombie/remedy") && isHoldingWitherBlade()) {
+            return applyVolume(sound, ModConfigManager.get().skyblock.necronBlade.witherShieldVolume);
+        }
+
+        // Etherwarp sound (teleport sword)
+        if (path.startsWith("mob/enderdragon/hit") && isHoldingTeleportSword()) {
+            return applyVolume(sound, ModConfigManager.get().skyblock.teleportSword.etherwarpVolume);
+        }
+
+        return sound;
+    }
+
+    /** Applies a volume override to the sound if volume < 1.0. */
+    private static SoundInstance applyVolume(SoundInstance sound, float volume) {
         if (volume >= 1.0f) return sound;
         var resolved = sound.getSound();
         return new SimpleSoundInstance(
@@ -76,7 +102,7 @@ public final class NecronBladeModule {
         var cfg = ModConfigManager.get().skyblock;
 
         // Self: full check (ID + Implosion scroll + in Skyblock)
-        if (cfg.necronBlade.hideExplosionParticles && shouldModify()
+        if (cfg.necronBlade.hideExplosionParticles && shouldModifyExplosion()
                 && isNearPlayer(particle, Minecraft.getInstance().player, SELF_RADIUS)) return true;
 
         // Others: ID whitelist only + distance 1
@@ -96,7 +122,7 @@ public final class NecronBladeModule {
         for (var other : player.level().getEntitiesOfClass(Player.class, range)) {
             if (other == player) continue;
             var held = other.getMainHandItem();
-            if (ItemUtils.getSkyblockId(held) != null && WHITELIST.contains(ItemUtils.getSkyblockId(held))) return true;
+            if (ItemUtils.getSkyblockId(held) != null && WITHER_BLADE_IDS.contains(ItemUtils.getSkyblockId(held))) return true;
         }
         return false;
     }
@@ -112,16 +138,35 @@ public final class NecronBladeModule {
 
     // ===== Shared =====
 
-    private static boolean shouldModify() {
+    /** Checks if the player is holding a Necron's Blade with Implosion scroll in Skyblock. */
+    private static boolean shouldModifyExplosion() {
         var player = Minecraft.getInstance().player;
         if (player == null) return false;
         if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
-        return hasNecronBlade(player.getMainHandItem());
+        return hasImplosionScroll(player.getMainHandItem());
     }
 
-    static boolean hasNecronBlade(ItemStack stack) {
+    /** Checks if the player is holding any wither blade in Skyblock. */
+    private static boolean isHoldingWitherBlade() {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return false;
+        if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
+        String id = ItemUtils.getSkyblockId(player.getMainHandItem());
+        return id != null && WITHER_BLADE_IDS.contains(id);
+    }
+
+    /** Checks if the player is holding a teleport sword in Skyblock. */
+    private static boolean isHoldingTeleportSword() {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return false;
+        if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
+        String id = ItemUtils.getSkyblockId(player.getMainHandItem());
+        return id != null && TELEPORT_SWORD_IDS.contains(id);
+    }
+
+    static boolean hasImplosionScroll(ItemStack stack) {
         String id = ItemUtils.getSkyblockId(stack);
-        if (id == null || !WHITELIST.contains(id)) return false;
+        if (id == null || !WITHER_BLADE_IDS.contains(id)) return false;
         var customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return false;
         var scrolls = customData.copyTag().getList("ability_scroll").orElse(null);
