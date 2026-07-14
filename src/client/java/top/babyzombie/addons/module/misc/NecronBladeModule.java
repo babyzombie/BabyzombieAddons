@@ -51,10 +51,13 @@ public final class NecronBladeModule {
         var player = Minecraft.getInstance().player;
         if (player == null) return sound;
 
-        // Explosion sound — requires Implosion scroll
-        if (path.startsWith("random/explode") && shouldModifyExplosion()) {
+        // Explosion sound — requires Implosion scroll + near player
+        if (path.startsWith("random/explode") && shouldModifyExplosion() && isNearPlayerSound(sound, player)) {
             return applyVolume(sound, ModConfigManager.get().skyblock.necronBlade.explosionVolume);
         }
+
+        // Only process ability sounds near the player
+        if (!isNearPlayerSound(sound, player)) return sound;
 
         // Shadow warp / teleport sound
         if (path.startsWith("mob/endermen/portal")) {
@@ -78,6 +81,13 @@ public final class NecronBladeModule {
         }
 
         return sound;
+    }
+
+    private static boolean isNearPlayerSound(SoundInstance sound, Player player) {
+        double dx = sound.getX() - player.getX();
+        double dy = sound.getY() - player.getY();
+        double dz = sound.getZ() - player.getZ();
+        return dx * dx + dy * dy + dz * dz <= SELF_RADIUS * SELF_RADIUS;
     }
 
     /** Applies a volume override to the sound if volume < 1.0. */
