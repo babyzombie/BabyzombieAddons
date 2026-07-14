@@ -74,11 +74,11 @@ public final class GlaciteMineshaftWaypoints {
         });
 
         // Portal detection
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay) return true;
             var warpMode = ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaftWarp;
-            if (warpMode == MineshaftWarpMode.OFF) return;
-            if (!isInDwarvenMines()) return;
+            if (warpMode == MineshaftWarpMode.OFF) return true;
+            if (!isInDwarvenMines()) return true;
             if (ChatUtils.stripColor(message.getString()).equals("WOW! You found a Glacite Mineshaft portal!")) {
                 portalTimer = ServerTick.getTime() + 30_000;
                 if (warpMode != MineshaftWarpMode.TITLE_ONLY) {
@@ -96,22 +96,24 @@ public final class GlaciteMineshaftWaypoints {
                                 : tr("babyzombieaddons.glacite.portal_sub"),
                         0, 50, 10);
             }
+            return true;
         });
 
         // Mineshaft owner detection
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay) return;
-            if (ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaftWarp == MineshaftWarpMode.OFF) return;
-            if (!isInDwarvenMines()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay) return true;
+            if (ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaftWarp == MineshaftWarpMode.OFF) return true;
+            if (!isInDwarvenMines()) return true;
             var m = MINESHAFT_ENTER_PAT.matcher(message.getString());
             if (m.find()) {
                 var self = Minecraft.getInstance().player;
-                String name = ChatUtils.stripRank(ChatUtils.stripColor(m.group(1)));
+                String name = ChatUtils.stripRank(ChatUtils.removeEmoji(ChatUtils.stripColor(m.group(1))));
                 if (self != null && name.equals(self.getName().getString())) {
                     mineshaftOwner = true;
                     ownServerName = HypixelLocationTracker.getInstance().getServerName();
                 }
             }
+            return true;
         });
 
         // Party transfer response → warp after becoming leader
