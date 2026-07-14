@@ -29,31 +29,52 @@ public final class TrevorAutoAccept {
             autoCallDisabled = false;
         });
 
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay) return;
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay) return true;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return true;
             var cfg = ModConfigManager.get().garden;
             String text = ChatUtils.stripColor(message.getString());
 
             // Auto-accept
-            if (cfg.trevor.autoAccept && text.startsWith("Accept the trapper's task to hunt the animal?")) {
+            if (cfg.trevor.autoAccept && text.startsWith("\nAccept the trapper's task to hunt the animal?")) {
                 String cmd = findClickCommand(message, "YES");
                 if (cmd != null) ChatUtils.sendCommand(cmd);
             }
 
             // Auto-call
             if (cfg.trevor.autoCall && !autoCallDisabled) {
-                if (text.startsWith("You can find your ") && text.contains(" animal near the ")) {
+                if (text.startsWith("[NPC] Trevor: You can find your ") && text.contains(" animal near the ")) {
                     taskStartTime = ServerTick.getTime();
                 } else if (text.equals("Return to the Trapper soon to get a new animal to hunt!")) {
                     long elapsed = ServerTick.getTime() - taskStartTime;
                     if (taskStartTime == 0 || elapsed >= 31000) {
+                        var player = Minecraft.getInstance().player;
+                        if (player != null) {
+                            var btn = Component.translatable("babyzombieaddons.trevor.auto_call_disable_btn")
+                                    .withStyle(style -> style
+                                            .withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/bza trevorautocall"))
+                                            .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
+                                                    Component.translatable("babyzombieaddons.trevor.auto_call_disable_hover"))));
+                            player.sendSystemMessage(
+                                    Component.translatable("babyzombieaddons.trevor.auto_call").append(" ").append(btn));
+                        }
                         doCall();
                     } else {
                         waitingToCall = true;
+                        var player = Minecraft.getInstance().player;
+                        if (player != null) {
+                            var btn = Component.translatable("babyzombieaddons.trevor.auto_call_disable_btn")
+                                    .withStyle(style -> style
+                                            .withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/bza trevorautocall"))
+                                            .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
+                                                    Component.translatable("babyzombieaddons.trevor.auto_call_disable_hover"))));
+                            player.sendSystemMessage(
+                                    Component.translatable("babyzombieaddons.trevor.auto_call_wait").append(" ").append(btn));
+                        }
                     }
                 }
             }
+            return true;
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -70,16 +91,6 @@ public final class TrevorAutoAccept {
     private static void doCall() {
         ChatUtils.sendCommand("call trevor_the_trapper");
         waitingToCall = false;
-        var player = Minecraft.getInstance().player;
-        if (player != null) {
-            var btn = Component.translatable("babyzombieaddons.trevor.auto_call_disable_btn")
-                    .withStyle(style -> style
-                            .withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/bza trevorautocall"))
-                            .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
-                                    Component.translatable("babyzombieaddons.trevor.auto_call_disable_hover"))));
-            player.sendSystemMessage(
-                    Component.translatable("babyzombieaddons.trevor.auto_call").append(" ").append(btn));
-        }
     }
 
     private static String findClickCommand(Component component, String target) {
