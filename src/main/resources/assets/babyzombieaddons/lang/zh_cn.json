@@ -720,9 +720,9 @@
 
   "config.babyzombieaddons.group.teleportSword": "传送剑",
   "config.babyzombieaddons.option.teleportSwordTeleportVolume": "传送音量",
-  "config.babyzombieaddons.option.teleportSwordTeleportVolume.desc": "手持终界之影 / 虚空之影时传送音效的音量。",
+  "config.babyzombieaddons.option.teleportSwordTeleportVolume.desc": "手持 Aspect of the End / Aspect of the Void 时传送音效的音量。",
   "config.babyzombieaddons.option.teleportSwordEtherwarpVolume": "以太传送音量",
-  "config.babyzombieaddons.option.teleportSwordEtherwarpVolume.desc": "手持终界之影 / 虚空之影时以太传送（Etherwarp）音效的音量。",
+  "config.babyzombieaddons.option.teleportSwordEtherwarpVolume.desc": "手持 Aspect of the End / Aspect of the Void 时以太传送（Etherwarp）音效的音量。",
 
   "config.babyzombieaddons.group.windowTitle": "窗口标题",
   "config.babyzombieaddons.option.windowTitleEnabled": "启用自定义标题",
