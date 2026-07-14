@@ -78,9 +78,9 @@ public class LoadoutDisplayScreen extends Screen {
         for (int i = 0; i < 12; i++) {
             ItemStack ps = slots[PRESET_SLOTS[i]];
             if (isEmpty(ps) || isGlassPane(ps)) continue;
-            if (isLocked(ps)) continue; // 锁的跳过
-
-            boolean empty = isEmptyPreset(ps);
+            // Locked presets still build entity for display behind iron bars
+            boolean lk = isLocked(ps);
+            boolean empty = isEmptyPreset(ps) && !lk;
             var data = LoadoutItemResolver.parsePresetLore(ps);
             presetData[i] = data;
 
@@ -263,7 +263,7 @@ public class LoadoutDisplayScreen extends Screen {
             ItemStack ps = slots[sid];
             if (isEmpty(ps) || isGlassPane(ps)) continue;
 
-            boolean lk = isLocked(ps), em = isEmptyPreset(ps), cur = !lk && !em && isCurrentPreset(ps);
+            boolean lk = isLocked(ps), em = isEmptyPreset(ps) && !lk, cur = !lk && !em && isCurrentPreset(ps);
             int bg = lk ? 0x40FF0000 : (cur ? 0x6000AA00 : (hp == i ? 0x60FFFFFF : 0x30FFFFFF));
             g.fill(cx, cy, cx + cell, cy + cell, bg);
 
@@ -271,13 +271,28 @@ public class LoadoutDisplayScreen extends Screen {
             int entityScale = cell / 3;
             LivingEntity re = presetEntities[i];
             boolean follow = entityMode == EntityRenderMode.FAKE_PLAYER_EYES;
-            if (!lk && re != null) {
+            if (re != null) {
                 // 实体放在中间偏上
                 int ex = cx + cell / 4, ew = cell / 2;
                 float emx = follow ? (float) mx : ex + ew / 2f;
                 float emy = follow ? (float) my : cy + m + reh / 2f;
                 InventoryScreen.extractEntityInInventoryFollowsMouse(
                     g, ex, cy + m, ex + ew, cy + m + reh, entityScale, 0.0625f, emx, emy, re);
+
+                // 锁定位置：铁栅栏平铺覆盖
+                if (lk) {
+                    var bars = new ItemStack(Items.IRON_BARS);
+                    int padX = 8;
+                    int startX = ex - padX;
+                    int endX = ex + ew + padX;
+                    int startY = cy + m;
+                    int endY = cy + m + reh;
+                    for (int bx = startX; bx < endX; bx += 16) {
+                        for (int by = startY; by < endY; by += 16) {
+                            g.item(bars, bx, by);
+                        }
+                    }
+                }
             }
 
             // 左侧5个图标(饰品+宠物) + 右侧5行文本(统一间距)
