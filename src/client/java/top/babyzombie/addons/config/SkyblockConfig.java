@@ -23,6 +23,9 @@ public class SkyblockConfig {
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.abiphoneGui", desc = "config.babyzombieaddons.option.abiphoneGui.desc") @ConfigEditorBoolean @SearchTag("abiphone")
     public boolean abiphoneGui = false;
 
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.fallSoundVolume", desc = "config.babyzombieaddons.option.fallSoundVolume.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f) @SearchTag("fall") @SearchTag("sound") @SearchTag("volume")
+    public float fallSoundVolume = 1.0f;
+
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.bzGetFromSacks", desc = "config.babyzombieaddons.option.bzGetFromSacks.desc") @ConfigEditorDropdown @SearchTag("bazaar")
     public BzGetFromSacksMode bzGetFromSacks = BzGetFromSacksMode.OFF;
 

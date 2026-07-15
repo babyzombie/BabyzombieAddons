@@ -500,6 +500,8 @@
   "config.babyzombieaddons.option.bzGetFromSacks.GET_AND_RECLICK": "提取 + 自动重点",
   "config.babyzombieaddons.option.abiphoneGui": "Abiphone 联系人界面",
   "config.babyzombieaddons.option.abiphoneGui.desc": "用图形化联系人列表替换 /call 指令。",
+  "config.babyzombieaddons.option.fallSoundVolume": "落地声音量",
+  "config.babyzombieaddons.option.fallSoundVolume.desc": "调节自己在 SkyBlock 中的落地声（GENERIC_SMALL_FALL / GENERIC_BIG_FALL）音量。0 为完全静音。",
   "config.babyzombieaddons.option.playCmd": "Play 命令界面",
   "config.babyzombieaddons.option.playCmd.desc": "用游戏模式选择界面替换 /play 指令，并提供 Tab 补全。",
   "config.babyzombieaddons.option.serverVisitExpireMinutes": "服务器记录过期时间（分钟）",

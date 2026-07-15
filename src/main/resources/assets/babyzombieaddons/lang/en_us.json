@@ -500,6 +500,8 @@
   "config.babyzombieaddons.option.bzGetFromSacks.GET_AND_RECLICK": "Get + Re-click",
   "config.babyzombieaddons.option.abiphoneGui": "Abiphone Contact GUI",
   "config.babyzombieaddons.option.abiphoneGui.desc": "Replace /call with a graphical contact list.",
+  "config.babyzombieaddons.option.fallSoundVolume": "Fall Sound Volume",
+  "config.babyzombieaddons.option.fallSoundVolume.desc": "Adjust your own fall sound (GENERIC_SMALL_FALL / GENERIC_BIG_FALL) volume in SkyBlock. Set to 0 to mute completely.",
   "config.babyzombieaddons.option.playCmd": "Play Command GUI",
   "config.babyzombieaddons.option.playCmd.desc": "Replace /play with a game mode selection GUI and enable tab completion.",
   "config.babyzombieaddons.option.serverVisitExpireMinutes": "Server Visit Expiry (min)",
