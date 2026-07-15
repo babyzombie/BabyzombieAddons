@@ -73,7 +73,12 @@ public class LoadoutDisplayScreen extends Screen {
     }
 
     private void buildEntities() {
-        if (entitiesBuilt || clientLevel == null) return;
+        if (clientLevel == null) return;
+        if (entitiesBuilt) {
+            // 索引异步加载，第一次可能没就绪——重试
+            if (!LoadoutItemResolver.isReady()) entitiesBuilt = false;
+            return;
+        }
         LoadoutItemResolver.ensureIndex();
         for (int i = 0; i < 12; i++) {
             ItemStack ps = slots[PRESET_SLOTS[i]];
@@ -108,6 +113,9 @@ public class LoadoutDisplayScreen extends Screen {
                 if (id != null) presetEquipIcons[i][4] = LoadoutItemResolver.createItemFromRepo(id);
             }
         }
+        // 索引尚未就绪（异步构建），不标记完成，等下次帧重试
+        // 同时不设置 presetData/实体装备，避免裸装闪烁
+        if (!LoadoutItemResolver.isReady()) return;
         entitiesBuilt = true;
     }
 
