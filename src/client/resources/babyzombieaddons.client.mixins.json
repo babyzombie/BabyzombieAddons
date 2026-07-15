@@ -20,6 +20,8 @@
     "render.PingDebugMonitorMixin",
     "render.PlayerScaleMixin",
     "render.RenderHandMixin",
+    "render.RenderSetupAccessor",
+    "render.RenderTypeAccessor",
     "render.ThirdPersonCrosshairMixin",
 
     "chat.ChatComponentMixin",

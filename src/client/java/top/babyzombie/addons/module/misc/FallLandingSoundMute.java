@@ -17,7 +17,7 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 public final class FallLandingSoundMute {
     private FallLandingSoundMute() {}
 
-    private static final double SELF_RADIUS = 2.0;
+    private static final double SELF_RADIUS = 1.0;
 
     public static void init() {
         PlaySoundEvents.MODIFY.register(sound -> {
@@ -32,8 +32,8 @@ public final class FallLandingSoundMute {
 
             // 只处理实体落地声
             var loc = snd.getLocation();
-            if (!loc.equals(SoundEvents.GENERIC_SMALL_FALL.location())
-                    && !loc.equals(SoundEvents.GENERIC_BIG_FALL.location())) {
+            if (!loc.getPath().equals("damage/fallsmall")
+                    && !loc.getPath().equals("damage/fallbig")) {
                 return sound;
             }
 

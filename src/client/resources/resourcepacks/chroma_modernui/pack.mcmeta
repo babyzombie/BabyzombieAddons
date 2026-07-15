@@ -8,13 +8,5 @@
       "translate": "resourcepack.babyzombieaddons.chroma_modernui.description",
       "fallback": "Chroma × Modern UI Compat — Makes Aaron Mod's animated chroma fonts work under Modern UI's text engine"
     }
-  },
-  "language": {
-    "zh_cn": {
-      "resourcepack.babyzombieaddons.chroma_modernui.description": "Chroma × Modern UI 兼容 — 让 Aaron Mod 的动态彩色字体在 Modern UI 文字引擎下生效"
-    },
-    "en_us": {
-      "resourcepack.babyzombieaddons.chroma_modernui.description": "Chroma × Modern UI Compat — Makes Aaron Mod's animated chroma fonts work under Modern UI's text engine"
-    }
   }
 }

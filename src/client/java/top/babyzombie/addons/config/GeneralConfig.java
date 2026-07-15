@@ -46,8 +46,8 @@ public class GeneralConfig {
     public AutoReconnect autoReconnect = new AutoReconnect();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.autoJoinServer", desc = "") @Accordion
     public AutoJoinServer autoJoinServer = new AutoJoinServer();
-    @Expose @ConfigOption(name = "config.babyzombieaddons.group.playerScale", desc = "") @Accordion
-    public PlayerScale playerScale = new PlayerScale();
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.selfPlayerRender", desc = "") @Accordion
+    public SelfPlayerRender selfPlayerRender = new SelfPlayerRender();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.handRender", desc = "") @Accordion
     public HandRender handRender = new HandRender();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.windowTitle", desc = "") @Accordion
@@ -83,13 +83,15 @@ public class GeneralConfig {
         public String ip = "";
     }
 
-    public static class PlayerScale {
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleX", desc = "config.babyzombieaddons.option.playerScaleX.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f) @SearchTag("scale") @SearchTag("player")
+    public static class SelfPlayerRender {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleX", desc = "config.babyzombieaddons.option.playerScaleX.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 2.0f, minStep = 0.01f) @SearchTag("scale") @SearchTag("player")
         public float x = 1.0f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleY", desc = "config.babyzombieaddons.option.playerScaleY.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f) @SearchTag("scale") @SearchTag("player")
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleY", desc = "config.babyzombieaddons.option.playerScaleY.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 2.0f, minStep = 0.01f) @SearchTag("scale") @SearchTag("player")
         public float y = 1.0f;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleZ", desc = "config.babyzombieaddons.option.playerScaleZ.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f) @SearchTag("scale") @SearchTag("player")
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerScaleZ", desc = "config.babyzombieaddons.option.playerScaleZ.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 2.0f, minStep = 0.01f) @SearchTag("scale") @SearchTag("player")
         public float z = 1.0f;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.playerAlpha", desc = "config.babyzombieaddons.option.playerAlpha.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f) @SearchTag("alpha") @SearchTag("transparency") @SearchTag("player")
+        public float alpha = 1.0f;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.showCrosshairInThirdPerson", desc = "config.babyzombieaddons.option.showCrosshairInThirdPerson.desc") @ConfigEditorBoolean @SearchTag("crosshair") @SearchTag("thirdperson")
         public boolean showCrosshairInThirdPerson = false;
     }
@@ -107,6 +109,8 @@ public class GeneralConfig {
         public int swingDurationTicks = 6;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.itemScale", desc = "config.babyzombieaddons.option.itemScale.desc") @ConfigEditorSlider(minValue = 0.1f, maxValue = 1.0f, minStep = 0.01f) @SearchTag("hand") @SearchTag("item") @SearchTag("scale")
         public float itemScale = 1.0f;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.handAlpha", desc = "config.babyzombieaddons.option.handAlpha.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f) @SearchTag("hand") @SearchTag("alpha") @SearchTag("transparency")
+        public float alpha = 1.0f;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.itemOffsetX", desc = "config.babyzombieaddons.option.itemOffsetX.desc") @ConfigEditorSlider(minValue = -1.0f, maxValue = 1.0f, minStep = 0.01f) @SearchTag("hand") @SearchTag("item") @SearchTag("offset")
         public float itemOffsetX = 0.0f;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.itemOffsetY", desc = "config.babyzombieaddons.option.itemOffsetY.desc") @ConfigEditorSlider(minValue = -1.0f, maxValue = 1.0f, minStep = 0.01f) @SearchTag("hand") @SearchTag("item") @SearchTag("offset")

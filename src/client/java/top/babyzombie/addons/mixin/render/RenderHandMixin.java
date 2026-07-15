@@ -12,13 +12,24 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.BabyzombieAddonsClient;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.AlphaSubmitNodeCollector;
 
 @Mixin(ItemInHandRenderer.class)
 public class RenderHandMixin {
+
+    /// ---- 手臂/物品透明度 ----
+
+    @ModifyVariable(method = "renderHandsWithItems", at = @At("HEAD"), argsOnly = true, name = "submitNodeCollector")
+    private SubmitNodeCollector wrapHandCollector(SubmitNodeCollector submitNodeCollector) {
+        float alpha = ModConfigManager.get().general.handRender.alpha;
+        if (alpha >= 1.0f) return submitNodeCollector;
+        return new AlphaSubmitNodeCollector(submitNodeCollector, alpha);
+    }
 
     /// ---- disableAll ----
 
