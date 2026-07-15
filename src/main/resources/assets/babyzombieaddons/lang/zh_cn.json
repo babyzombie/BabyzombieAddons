@@ -654,7 +654,6 @@
   "babyzombieaddons.debug.entity.scale": "  §7缩放: §e%s",
   "babyzombieaddons.help": "§6§lBabyzombieAddons 指令帮助\n§6/bza §7- 打开设置界面\n§6/bza play §7- 打开游戏模式菜单\n§6/bza sc [频道] [附言] §7- 发送自己的坐标\n§6/bza la [频道] [附言] §7- 发送指针指向的坐标\n§6/bza yaw <yaw> <pitch> §7- 设置视角朝向\n§6/bza l §7- 前往 Limbo\n§6/bza wp §7- 路径点管理，输入 /bza wp 查看用法",
   "babyzombieaddons.waypoint.usage": "§6/bza wp add <x> <y> <z> <名称> [秒数]  §7- 在指定坐标添加\n§6/bza wp add here <名称> [秒数]      §7- 在当前位置添加\n§6/bza wp add looking <名称> [秒数]   §7- 在指针位置添加\n§6/bza wp delete <名称>                §7- 删除坐标点\n§7持续时间填 -1 为永久, 0 为切换世界时清除, 大于 0 为到期清除",
-  "config.babyzombieaddons.yacl_missing": "§eYACL 未安装，已回退到内置配置界面",
   "babyzombieaddons.debug.pet.summoned_header": "§6§l=== 召唤宠物 === §7(追踪 %s 只宠物)",
   "babyzombieaddons.debug.pet.none": "§7(无)",
   "babyzombieaddons.debug.pet.unknown": "未知",

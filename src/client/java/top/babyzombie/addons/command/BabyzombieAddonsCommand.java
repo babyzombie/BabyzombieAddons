@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import top.babyzombie.addons.command.debug.*;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.module.chat.PartyModule;
 import top.babyzombie.addons.module.playcmd.PlayCmdModule;
 import top.babyzombie.addons.util.ChatUtils;
@@ -27,6 +28,7 @@ public final class BabyzombieAddonsCommand {
             var bza = literal("bza").executes(BabyzombieAddonsCommand::settings)
                     .then(literal("s").executes(BabyzombieAddonsCommand::settings))
                     .then(literal("settings").executes(BabyzombieAddonsCommand::settings))
+                    .then(literal("hud").executes(BabyzombieAddonsCommand::hud))
                     .then(literal("play").executes(BabyzombieAddonsCommand::play))
                     .then(literal("help").executes(BabyzombieAddonsCommand::help))
                     .then(literal("l").executes(ctx -> { ChatUtils.sendCommand("limbo"); return 1; }))
@@ -81,6 +83,12 @@ public final class BabyzombieAddonsCommand {
     static int settings(CommandContext<FabricClientCommandSource> ctx) {
         Minecraft.getInstance().execute(() ->
                 Minecraft.getInstance().setScreenAndShow(ModConfigManager.createGUI(null)));
+        return 1;
+    }
+
+    static int hud(CommandContext<FabricClientCommandSource> ctx) {
+        Minecraft.getInstance().execute(() ->
+                HudManager.openEditScreen(null));
         return 1;
     }
 

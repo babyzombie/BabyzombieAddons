@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
@@ -207,7 +208,7 @@ public class LoadoutDisplayScreen extends Screen {
         if (player == null || clientLevel == null) return null;
         return new ClientMannequin(clientLevel, Minecraft.getInstance().playerSkinRenderCache()) {
             @Override
-            public net.minecraft.world.entity.player.PlayerSkin getSkin() {
+            public PlayerSkin getSkin() {
                 return player.getSkin();
             }
         };
@@ -416,17 +417,21 @@ public class LoadoutDisplayScreen extends Screen {
             // 锁/空/当前预设不响应左键
             if (!isLocked(ps) && !isEmptyPreset(ps) && !isCurrentPreset(ps)) {
                 sendClick(sid, btn);
-                if (minecraft != null) minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+                minecraft.execute(() -> minecraft.execute(this::refreshSlots));
             }
             return true;
         }
         if (hls >= 0) { sendClick(hls, btn); return true; }
         if (hbb >= 0) {
             switch (hbb) {
-                case 0: sendClick(PREV, btn); if (minecraft != null) minecraft.execute(() -> minecraft.execute(this::refreshSlots)); break;
+                case 0: sendClick(PREV, btn);
+                    minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+                    break;
                 case 1: returnToOrig(); break;
                 case 2: sendClick(CLOSE, btn); doClose(); break;
-                case 3: sendClick(NEXT, btn); if (minecraft != null) minecraft.execute(() -> minecraft.execute(this::refreshSlots)); break;
+                case 3: sendClick(NEXT, btn);
+                    minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+                    break;
             }
             return true;
         }
@@ -450,7 +455,7 @@ public class LoadoutDisplayScreen extends Screen {
         if (e.key() == kb.prevPage) {
             if (!isEmpty(slots[PREV]) && !isGlassPane(slots[PREV])) {
                 sendClick(PREV, 0);
-                if (minecraft != null) minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+                minecraft.execute(() -> minecraft.execute(this::refreshSlots));
             }
             return true;
         }
@@ -458,7 +463,7 @@ public class LoadoutDisplayScreen extends Screen {
         if (e.key() == kb.nextPage) {
             if (!isEmpty(slots[NEXT]) && !isGlassPane(slots[NEXT])) {
                 sendClick(NEXT, 0);
-                if (minecraft != null) minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+                minecraft.execute(() -> minecraft.execute(this::refreshSlots));
             }
             return true;
         }
@@ -472,11 +477,11 @@ public class LoadoutDisplayScreen extends Screen {
         ItemStack ps = slots[sid];
         if (isEmpty(ps) || isGlassPane(ps) || isLocked(ps) || isEmptyPreset(ps) || isCurrentPreset(ps)) return;
         sendClick(sid, 0);
-        if (minecraft != null) minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+        minecraft.execute(() -> minecraft.execute(this::refreshSlots));
     }
 
     private void sendClick(int slot, int btn) {
-        if (minecraft == null || minecraft.player == null || minecraft.gameMode == null) return;
+        if (minecraft.player == null || minecraft.gameMode == null) return;
         if (isPresetSlot(slot))
             top.babyzombie.addons.util.pet.PetManager.getInstance().setLoadoutSwitchPending(true);
         minecraft.gameMode.handleContainerInput(parentContainer.getMenu().containerId, slot, btn,
@@ -491,12 +496,12 @@ public class LoadoutDisplayScreen extends Screen {
     private void returnToOrig() {
         LoadoutModule.closingGuard = 3;
         LoadoutModule.onCustomScreenClosed();
-        if (minecraft != null) minecraft.setScreenAndShow(parentContainer);
+        minecraft.setScreenAndShow(parentContainer);
     }
 
     private void doClose() {
         LoadoutModule.onCustomScreenClosed();
-        if (minecraft != null && minecraft.player != null)
+        if (minecraft.player != null)
             minecraft.player.closeContainer();
     }
 
