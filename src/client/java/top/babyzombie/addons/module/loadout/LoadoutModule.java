@@ -34,7 +34,7 @@ public final class LoadoutModule {
         }
 
         // 不等物品加载，直接替换屏幕（避免闪烁）
-        ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+        ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
             if (!(screen instanceof AbstractContainerScreen<?> cs)) return;
             if (!ModConfigManager.get().skyblock.loadout.enabled) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
@@ -48,7 +48,7 @@ public final class LoadoutModule {
 
             cachedContainer = cs;
             guiActive = true;
-            client.execute(() -> client.setScreenAndShow(new LoadoutDisplayScreen(cs)));
+            client.execute(() -> client.setScreen(new LoadoutDisplayScreen(cs)));
         });
 
         // 非 Loadout 页面打开时重置状态

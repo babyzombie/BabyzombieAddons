@@ -31,7 +31,7 @@ public final class PlayCmdModule {
     }
 
     public static void openGUI() {
-        Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreenAndShow(new PlayScreen()));
+        Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(new PlayScreen()));
     }
 
     // Each game: {en, cmd, zh}

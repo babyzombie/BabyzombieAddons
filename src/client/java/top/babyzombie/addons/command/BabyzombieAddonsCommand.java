@@ -82,7 +82,7 @@ public final class BabyzombieAddonsCommand {
 
     static int settings(CommandContext<FabricClientCommandSource> ctx) {
         Minecraft.getInstance().execute(() ->
-                Minecraft.getInstance().setScreenAndShow(ModConfigManager.createGUI(null)));
+                Minecraft.getInstance().setScreen(ModConfigManager.createGUI(null)));
         return 1;
     }
 

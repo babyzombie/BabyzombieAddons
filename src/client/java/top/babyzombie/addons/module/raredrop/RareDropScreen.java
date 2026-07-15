@@ -202,7 +202,7 @@ public class RareDropScreen extends Screen {
     @Override
     public void onClose() {
         RareDropModule.saveLists();
-        if (parent != null) Minecraft.getInstance().setScreenAndShow(parent);
+        if (parent != null) Minecraft.getInstance().setScreen(parent);
         else super.onClose();
     }
 }

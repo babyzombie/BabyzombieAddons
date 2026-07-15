@@ -135,8 +135,12 @@ public class LoadoutDisplayScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float delta) {
+        try {
+            extractBackground(g, mx, my, delta);
+        } catch (Exception _) {
+            g.fill(0, 0, width, height, 0xC0101010);
+        }
         if (layoutDirty) recalc();
-        // 前 60 帧密集刷新，之后每 20 帧检查
         ++frameCount;
         if ((frameCount < 60 && frameCount % 4 == 0) || (frameCount >= 60 && frameCount % 20 == 0)) {
             if (needsRefresh()) refreshSlots();
@@ -496,7 +500,7 @@ public class LoadoutDisplayScreen extends Screen {
     private void returnToOrig() {
         LoadoutModule.closingGuard = 3;
         LoadoutModule.onCustomScreenClosed();
-        minecraft.setScreenAndShow(parentContainer);
+        minecraft.setScreen(parentContainer);
     }
 
     private void doClose() {
