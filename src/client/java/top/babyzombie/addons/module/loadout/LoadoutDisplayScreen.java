@@ -437,33 +437,32 @@ public class LoadoutDisplayScreen extends Screen {
     public boolean keyPressed(KeyEvent e) {
         if (e.key() == GLFW.GLFW_KEY_ESCAPE) { doClose(); return true; }
         if (e.key() == GLFW.GLFW_KEY_E) { doClose(); return true; }
-        // 1-9 → presets 1-9
-        if (e.key() >= GLFW.GLFW_KEY_1 && e.key() <= GLFW.GLFW_KEY_9) {
-            int idx = e.key() - GLFW.GLFW_KEY_1;
-            clickPreset(idx); return true;
+
+        var kb = ModConfigManager.get().skyblock.loadout.keyBindings;
+        int[] presetKeys = kb.presetKeys();
+        for (int i = 0; i < presetKeys.length; i++) {
+            if (e.key() == presetKeys[i]) {
+                clickPreset(i);
+                return true;
+            }
         }
-        // 0 → preset 10
-        if (e.key() == GLFW.GLFW_KEY_0) { clickPreset(9); return true; }
-        // - → preset 11
-        if (e.key() == GLFW.GLFW_KEY_MINUS) { clickPreset(10); return true; }
-        // = → preset 12
-        if (e.key() == GLFW.GLFW_KEY_EQUAL) { clickPreset(11); return true; }
-        // W/A → 上一页
-        if (e.key() == GLFW.GLFW_KEY_W || e.key() == GLFW.GLFW_KEY_A) {
+
+        if (e.key() == kb.prevPage) {
             if (!isEmpty(slots[PREV]) && !isGlassPane(slots[PREV])) {
                 sendClick(PREV, 0);
                 if (minecraft != null) minecraft.execute(() -> minecraft.execute(this::refreshSlots));
             }
             return true;
         }
-        // S/D → 下一页
-        if (e.key() == GLFW.GLFW_KEY_S || e.key() == GLFW.GLFW_KEY_D) {
+
+        if (e.key() == kb.nextPage) {
             if (!isEmpty(slots[NEXT]) && !isGlassPane(slots[NEXT])) {
                 sendClick(NEXT, 0);
                 if (minecraft != null) minecraft.execute(() -> minecraft.execute(this::refreshSlots));
             }
             return true;
         }
+
         return super.keyPressed(e);
     }
 

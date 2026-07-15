@@ -6,10 +6,12 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import net.minecraft.client.Minecraft;
+import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfig.*;
 import top.babyzombie.addons.module.raredrop.RareDropScreen;
 
@@ -142,5 +144,45 @@ public class SkyblockConfig {
         public EntityRenderMode entityRenderMode = EntityRenderMode.ARMOR_STAND;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutAutoClose", desc = "config.babyzombieaddons.option.loadoutAutoClose.desc") @ConfigEditorBoolean @SearchTag("loadout") @SearchTag("autoclose")
         public boolean autoClose = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.group.loadoutKeyBindings", desc = "config.babyzombieaddons.group.loadoutKeyBindings.desc") @Accordion
+        public KeyBindings keyBindings = new KeyBindings();
+
+        public static class KeyBindings {
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset1", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_1) @SearchTag("loadout") @SearchTag("key")
+            public int preset1 = GLFW.GLFW_KEY_1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset2", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_2) @SearchTag("loadout") @SearchTag("key")
+            public int preset2 = GLFW.GLFW_KEY_2;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset3", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_3) @SearchTag("loadout") @SearchTag("key")
+            public int preset3 = GLFW.GLFW_KEY_3;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset4", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_4) @SearchTag("loadout") @SearchTag("key")
+            public int preset4 = GLFW.GLFW_KEY_4;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset5", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_5) @SearchTag("loadout") @SearchTag("key")
+            public int preset5 = GLFW.GLFW_KEY_5;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset6", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_6) @SearchTag("loadout") @SearchTag("key")
+            public int preset6 = GLFW.GLFW_KEY_6;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset7", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_7) @SearchTag("loadout") @SearchTag("key")
+            public int preset7 = GLFW.GLFW_KEY_7;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset8", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_8) @SearchTag("loadout") @SearchTag("key")
+            public int preset8 = GLFW.GLFW_KEY_8;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset9", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_9) @SearchTag("loadout") @SearchTag("key")
+            public int preset9 = GLFW.GLFW_KEY_9;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset10", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_0) @SearchTag("loadout") @SearchTag("key")
+            public int preset10 = GLFW.GLFW_KEY_0;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset11", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_MINUS) @SearchTag("loadout") @SearchTag("key")
+            public int preset11 = GLFW.GLFW_KEY_MINUS;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset12", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_EQUAL) @SearchTag("loadout") @SearchTag("key")
+            public int preset12 = GLFW.GLFW_KEY_EQUAL;
+
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPrevPage", desc = "config.babyzombieaddons.option.loadoutKeyPrevPage.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_A) @SearchTag("loadout") @SearchTag("key")
+            public int prevPage = GLFW.GLFW_KEY_A;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyNextPage", desc = "config.babyzombieaddons.option.loadoutKeyNextPage.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_D) @SearchTag("loadout") @SearchTag("key")
+            public int nextPage = GLFW.GLFW_KEY_D;
+
+            /** 获取预设 1-12 的键码数组，方便 keyPressed 中遍历匹配 */
+            public int[] presetKeys() {
+                return new int[]{preset1, preset2, preset3, preset4, preset5, preset6, preset7, preset8, preset9, preset10, preset11, preset12};
+            }
+        }
     }
 }
