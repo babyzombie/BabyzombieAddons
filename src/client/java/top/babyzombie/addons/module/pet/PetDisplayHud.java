@@ -45,13 +45,17 @@ public final class PetDisplayHud {
     /** A single renderable line: text always present, icon only for PET_ITEM_WITH_ICON. */
     private record CachedLine(String text, @Nullable ItemStack icon) {}
 
-    // ===== Cached display data (refreshed at most once per second) =====
+    // ===== Cached display data (text lines: 1s refresh, heads: every frame) =====
     private static long lastRefreshTime;
-    private static ItemStack cachedCurrentHead;
+    @Nullable
+    private static String cachedPetType;
+    @Nullable
+    private static String cachedResolvedSkin;
     private static List<CachedLine> cachedCurrentLines = List.of();
     private static final List<CachedSharedPet> cachedSharedPets = new ArrayList<>();
 
-    private record CachedSharedPet(ItemStack head, List<CachedLine> lines) {}
+    private record CachedSharedPet(String petType, @Nullable String resolvedSkin,
+                                   List<CachedLine> lines) {}
 
     private PetDisplayHud() {}
 
@@ -67,7 +71,7 @@ public final class PetDisplayHud {
         );
     }
 
-    /** Recompute all display strings and item stacks from current PetManager state. */
+    /** Recompute display strings from current PetManager state. Heads are created per-frame. */
     private static void refreshCache() {
         var config = ModConfigManager.get().skyblock;
 
@@ -75,13 +79,15 @@ public final class PetDisplayHud {
         PetData current = pm.getCurrentPet();
 
         if (current == null) {
-            cachedCurrentHead = null;
+            cachedPetType = null;
+            cachedResolvedSkin = null;
             cachedCurrentLines = List.of();
             cachedSharedPets.clear();
             return;
         }
 
-        cachedCurrentHead = PetHeadTexture.getPetHead(current.type());
+        cachedPetType = current.type();
+        cachedResolvedSkin = current.resolvedSkin();
         cachedCurrentLines = buildLines(current, config.pet.mainPetElements);
 
         // Shared pets
@@ -95,7 +101,8 @@ public final class PetDisplayHud {
             for (int i = 0; i < activeCount; i++) {
                 PetData shared = sharedPets.get(i);
                 cachedSharedPets.add(new CachedSharedPet(
-                    PetHeadTexture.getPetHead(shared.type()),
+                    shared.type(),
+                    shared.resolvedSkin(),
                     buildLines(shared, config.pet.sharedPetElements)
                 ));
             }
@@ -173,14 +180,20 @@ public final class PetDisplayHud {
         if (!config.pet.enabled) return;
         if (!HudManager.shouldShow(ELEMENT_NAME)) return;
 
-        // Refresh cached data at most once per second
+        var client = Minecraft.getInstance();
+        long gameTime = client.level != null ? client.level.getGameTime() : 0;
+
+        // Refresh cached text data at most once per second
         long now = System.currentTimeMillis();
         if (now - lastRefreshTime >= REFRESH_INTERVAL_MS) {
             refreshCache();
             lastRefreshTime = now;
         }
 
-        if (cachedCurrentHead == null) return;
+        if (cachedPetType == null) return;
+
+        // Heads are created every frame for animation support
+        ItemStack currentHead = PetHeadTexture.getPetHead(cachedPetType, cachedResolvedSkin, gameTime);
 
         var font = Minecraft.getInstance().font;
         int x = HudManager.x(ELEMENT_NAME);
@@ -198,7 +211,13 @@ public final class PetDisplayHud {
         // ===== Summoned Pet (full size) =====
         {
             if (config.pet.showPetIcon) {
-                gui.item(cachedCurrentHead, -16, 0);
+                // Scale icon to match ~2 lines of text height
+                float iconScale = (lh * 2.0f) / 16.0f;
+                pose.pushMatrix();
+                pose.translate(-16.0f * iconScale - 2.0f, 0.0f);
+                pose.scale(iconScale, iconScale);
+                gui.item(currentHead, 0, 0);
+                pose.popMatrix();
             }
             renderLines(gui, font, cachedCurrentLines, 0, curY, lh);
         }
@@ -226,7 +245,7 @@ public final class PetDisplayHud {
                 pose.scale(0.75f, 0.75f);
 
                 if (config.pet.showPetIcon) {
-                    gui.item(shared.head, -16, 0);
+                    gui.item(PetHeadTexture.getPetHead(shared.petType, shared.resolvedSkin, gameTime), -16, 0);
                 }
                 renderLines(gui, font, shared.lines, 0, 0, lh);
 

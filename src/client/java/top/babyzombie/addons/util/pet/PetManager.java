@@ -18,6 +18,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
+import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.ScreenLoadWaiter;
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
@@ -265,6 +266,31 @@ public final class PetManager {
         return extra.getString("uuid").orElse(null);
     }
 
+    /** Extract the {@code skin} field from a petInfo JSON string. */
+    @Nullable
+    public static String getSkinFromPetInfo(String petInfoJson) {
+        try {
+            JsonObject obj = JsonParser.parseString(petInfoJson).getAsJsonObject();
+            if (obj.has("skin") && !obj.get("skin").isJsonNull()) {
+                return obj.get("skin").getAsString();
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
+
+    /**
+     * Resolve the pet skin variant and return a copy of the pet with
+     * {@link PetData#resolvedSkin()} set. Called once at scan time.
+     */
+    private static PetData resolveAndApplySkin(PetData pet, String petInfoJson, ItemStack stack) {
+        String skin = getSkinFromPetInfo(petInfoJson);
+        if (skin == null || skin.isEmpty()) return pet;
+        String skullTexture = ItemUtils.getSkullTexture(stack);
+        String resolved = top.babyzombie.addons.module.pet.PetSkinTexture.getInstance()
+            .resolveSkinVariant(skin, skullTexture, petInfoJson);
+        return pet.withResolvedSkin(resolved);
+    }
+
     // ===== Item Repo =====
 
     private static final Map<String, String> displayNameCache = new HashMap<>();
@@ -357,7 +383,9 @@ public final class PetManager {
             ItemStack stack = player.getItemInHand(hand);
             String petInfo = getPetInfoFromStack(stack);
             if (petInfo == null) return InteractionResult.PASS;
-            addPet(PetData.fromPetInfo(petInfo));
+            PetData pet = PetData.fromPetInfo(petInfo);
+            pet = resolveAndApplySkin(pet, petInfo, stack);
+            addPet(pet);
             return InteractionResult.PASS;
         });
     }
@@ -507,6 +535,7 @@ public final class PetManager {
         String petInfo = getPetInfoFromStack(stack);
         if (petInfo == null) return;
         PetData pet = PetData.fromPetInfo(petInfo);
+        pet = resolveAndApplySkin(pet, petInfo, stack);
         if (pet.uuid() != null) {
             addPet(pet);
             setCurrentPet(pet);
@@ -564,7 +593,9 @@ public final class PetManager {
 
             String uuid = getItemUuid(stack);
             if (uuid != null) removePet(uuid);
-            addPet(PetData.fromPetInfo(petInfo));
+            PetData pet = PetData.fromPetInfo(petInfo);
+            pet = resolveAndApplySkin(pet, petInfo, stack);
+            addPet(pet);
 
             if (isDespawnable && uuid != null) {
                 for (PetData p : pets) {

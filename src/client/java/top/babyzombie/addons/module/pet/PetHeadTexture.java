@@ -74,6 +74,24 @@ public final class PetHeadTexture {
     }
 
     /**
+     * Get a player-head ItemStack for a pet, optionally with its equipped skin.
+     *
+     * @param petType      the pet type (e.g. "GOLDEN_DRAGON")
+     * @param resolvedSkin the resolved skin variant name, or null
+     * @param gameTime     current client world tick for animation frame selection
+     */
+    public static ItemStack getPetHead(String petType, @Nullable String resolvedSkin, long gameTime) {
+        if (resolvedSkin != null) {
+            var config = top.babyzombie.addons.config.ModConfigManager.get().skyblock;
+            if (config.pet.showPetSkin) {
+                ItemStack skinHead = PetSkinTexture.getInstance().getSkinHead(resolvedSkin, gameTime);
+                if (skinHead != null) return skinHead;
+            }
+        }
+        return getPetHead(petType);
+    }
+
+    /**
      * Get an ItemStack icon for a held item or any repo item by its ID.
      * Looks for {@code items/{itemId}.json} (no tier suffix).
      */

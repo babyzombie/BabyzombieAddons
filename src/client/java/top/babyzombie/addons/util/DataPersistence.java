@@ -54,7 +54,7 @@ public final class DataPersistence {
         if (!Files.exists(file)) return null;
         try {
             return GSON.fromJson(Files.readString(file), clazz);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

@@ -89,6 +89,9 @@ public class SkyblockConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.petShowIcon", desc = "config.babyzombieaddons.option.petShowIcon.desc") @ConfigEditorBoolean @SearchTag("pet") @SearchTag("icon")
         public boolean showPetIcon = true;
 
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.petShowSkin", desc = "config.babyzombieaddons.option.petShowSkin.desc") @ConfigEditorBoolean @SearchTag("pet") @SearchTag("skin")
+        public boolean showPetSkin = true;
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.petMainLines", desc = "config.babyzombieaddons.option.petMainLines.desc") @SearchTag("pet") @SearchTag("display")
         @ConfigEditorDraggableList
         public List<PetDisplayElement> mainPetElements = new ArrayList<>(List.of(

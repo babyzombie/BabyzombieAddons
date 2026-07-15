@@ -17,7 +17,8 @@ public record PetData(
     @Nullable String heldItem,
     int candyUsed,
     @Nullable String uuid,
-    @Nullable String uniqueId
+    @Nullable String uniqueId,
+    @Nullable String resolvedSkin
 ) {
     public static final List<String> TIER_NAMES = List.of(
         "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC"
@@ -91,13 +92,19 @@ public record PetData(
             obj.has("uuid") && !obj.get("uuid").isJsonNull()
                 ? obj.get("uuid").getAsString() : null,
             obj.has("uniqueId") && !obj.get("uniqueId").isJsonNull()
-                ? obj.get("uniqueId").getAsString() : null
+                ? obj.get("uniqueId").getAsString() : null,
+            null  // resolvedSkin — set later by PetManager via withResolvedSkin()
         );
     }
 
     /** Return a copy of this PetData with the given exp value. */
     public PetData withExp(double newExp) {
-        return new PetData(type, newExp, tier, heldItem, candyUsed, uuid, uniqueId);
+        return new PetData(type, newExp, tier, heldItem, candyUsed, uuid, uniqueId, resolvedSkin);
+    }
+
+    /** Return a copy of this PetData with the given resolved skin variant name. */
+    public PetData withResolvedSkin(@Nullable String variantName) {
+        return new PetData(type, exp, tier, heldItem, candyUsed, uuid, uniqueId, variantName);
     }
 
     /**

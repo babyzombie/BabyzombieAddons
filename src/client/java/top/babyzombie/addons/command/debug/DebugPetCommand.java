@@ -49,6 +49,8 @@ public final class DebugPetCommand {
                 current.heldItem() != null ? current.heldItem() : t(PFX + "held_item_none"),
                 PetExperienceTracker.resolvePetItemMultiplier(current.heldItem(), null)));
             src.sendFeedback(Component.translatable(PFX + "candy", current.candyUsed()));
+            src.sendFeedback(Component.translatable(PFX + "skin",
+                current.resolvedSkin() != null ? current.resolvedSkin() : t(PFX + "none")));
         } else {
             src.sendFeedback(Component.translatable(PFX + "none"));
         }
