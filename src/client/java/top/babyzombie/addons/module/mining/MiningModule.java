@@ -23,13 +23,14 @@ public final class MiningModule {
         PowderMiningSounds.init();
         DrillSwingSuppression.init();
         MithrilGourmandModule.init();
+        CorleoneTimer.init();
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
-            if (world == null) return;
             MiningAbilityAlerts.readyTime = 0;
             ScathaCooldown.time = 0;
             SuspiciousScrapCounter.count = 0;
             JungleTempleThinWall.shown = false;
+            CorleoneTimer.reset();
         });
     }
 }

@@ -48,6 +48,8 @@ public class MiningConfig {
         public boolean powderMiningSounds = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.jungleTempleThinWall", desc = "config.babyzombieaddons.option.jungleTempleThinWall.desc") @ConfigEditorBoolean @SearchTag("jungle")
         public boolean jungleTempleThinWall = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.corleoneTimer", desc = "config.babyzombieaddons.option.corleoneTimer.desc") @ConfigEditorBoolean @SearchTag("corleone")
+        public boolean corleoneTimer = false;
     }
 
     public static class GlaciteTunnels {

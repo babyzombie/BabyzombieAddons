@@ -13,6 +13,7 @@
     "render.EntityRenderDispatcherScaleMixin",
     "render.EntityRenderMixin",
     "render.EntityRendererMixin",
+    "render.LivingEntityRendererMixin",
     "render.LevelRendererMixin",
     "render.OutlineBufferSourceMixin",
     "render.RenderPipelineMixin",

@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.world.entity.*;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.PlayerUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -152,6 +153,14 @@ public final class DebugEntityCommand {
         var scaleStr = getEntityScale(entity);
         if (scaleStr != null) {
             nameHover += "\n" + Tstr("debug.entity.scale", scaleStr);
+        }
+
+        // For player entities, append skin texture URL at the bottom of hover
+        if (entity.getType() == EntityType.PLAYER) {
+            String skinUrl = PlayerUtils.getSkinTextureUrl(PlayerUtils.getPlayerProfile(entity));
+            if (skinUrl != null) {
+                nameHover += "\n" + Tstr("debug.entity.skin", skinUrl);
+            }
         }
 
         lines.add(hover(nameLine.toString(), nameHover));

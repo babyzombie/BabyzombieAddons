@@ -36,6 +36,8 @@ public class SkyblockConfig {
     public boolean cakeBuffTracker = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.minionCollectAutoClose", desc = "config.babyzombieaddons.option.minionCollectAutoClose.desc") @ConfigEditorBoolean @SearchTag("minion")
     public boolean minionCollectAutoClose = false;
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.showInvisibleNameTags", desc = "config.babyzombieaddons.option.showInvisibleNameTags.desc") @ConfigEditorBoolean @SearchTag("invisible") @SearchTag("nametag")
+    public boolean showInvisibleNameTags = false;
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.autois", desc = "") @Accordion
     public AutoIS autois = new AutoIS();
