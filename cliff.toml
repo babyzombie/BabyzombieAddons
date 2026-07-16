@@ -7,6 +7,7 @@ commit_parsers = [
     { message = '^\- ', group = "修复" },
     { message = '^\* ', group = "优化" },
     { message = '^Merge branch', skip = true },
+    { message = "^Revert", skip = true },
     { message = ".*", group = "其他" },
 ]
 

@@ -96,10 +96,16 @@ public final class PetDisplayHud {
             List<PetData> sharedPets = pm.getSharedPets();
             PlayerPetState state = pm.getPetState();
             int maxSlots = state.dianaSharingIsCaring ? 3 : 1;
-            int activeCount = Math.min(sharedPets.size(), maxSlots);
 
-            for (int i = 0; i < activeCount; i++) {
+            String currentUuid = current.uuid();
+            int limit = Math.min(sharedPets.size(), maxSlots);
+            for (int i = 0; i < limit; i++) {
                 PetData shared = sharedPets.get(i);
+                if (config.pet.hideSharedIfCurrent
+                    && currentUuid != null
+                    && currentUuid.equals(shared.uuid())) {
+                    continue;
+                }
                 cachedSharedPets.add(new CachedSharedPet(
                     shared.type(),
                     shared.resolvedSkin(),

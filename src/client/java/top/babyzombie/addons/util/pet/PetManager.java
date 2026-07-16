@@ -23,9 +23,9 @@ import top.babyzombie.addons.util.ScreenLoadWaiter;
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.hysky.skyblocker.skyblock.item.SkyblockInventoryScreen;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
@@ -483,7 +483,7 @@ public final class PetManager {
         // Always scan the pet when the Loadouts menu opens (harmless, idempotent)
         ScreenLoadWaiter.whenScreenOpened(
             title -> ChatUtils.stripColor(title).matches("\\(\\d+/\\d+\\) Loadouts"),
-            21, 0, // 等宠物槽位(21)加载即可，不用等整个页面(53)
+            43, 0, // 等所有内容(43)加载即可，不用等整个页面(53)
             cs -> {
                 scanLoadoutPet(cs);
                 if (loadoutSwitchPending) {
@@ -527,19 +527,65 @@ public final class PetManager {
      * of the 6-row Loadouts chest menu.
      */
     public void scanLoadoutPet(AbstractContainerScreen<?> screen) {
-        int petSlot = 21; // 3rd row, 4th column (1-indexed)
+        scanLoadoutPetAndEquipment(screen, true, true);
+    }
+
+    /**
+     * Scan the Loadouts menu for pet + equipment, and sync equipment to
+     * Skyblocker's SkyblockInventoryScreen.equipment[] so the inventory
+     * equipment display stays up-to-date after a loadout switch.
+     *
+     * @param scanPet   whether to scan the pet slot
+     * @param syncEquip whether to sync equipment to Skyblocker
+     */
+    public void scanLoadoutPetAndEquipment(AbstractContainerScreen<?> screen,
+                                            boolean scanPet, boolean syncEquip) {
         var slots = screen.getMenu().slots;
-        if (petSlot >= slots.size()) return;
-        ItemStack stack = slots.get(petSlot).getItem();
-        if (stack.isEmpty()) return;
-        String petInfo = getPetInfoFromStack(stack);
-        if (petInfo == null) return;
-        PetData pet = PetData.fromPetInfo(petInfo);
-        pet = resolveAndApplySkin(pet, petInfo, stack);
-        if (pet.uuid() != null) {
-            addPet(pet);
-            setCurrentPet(pet);
+
+        // --- Pet (slot 21) ---
+        if (scanPet) {
+            int petSlot = 21;
+            if (petSlot < slots.size()) {
+                ItemStack stack = slots.get(petSlot).getItem();
+                if (!stack.isEmpty()) {
+                    String petInfo = getPetInfoFromStack(stack);
+                    if (petInfo != null) {
+                        PetData pet = PetData.fromPetInfo(petInfo);
+                        pet = resolveAndApplySkin(pet, petInfo, stack);
+                        if (pet.uuid() != null) {
+                            addPet(pet);
+                            setCurrentPet(pet);
+                        }
+                    }
+                }
+            }
         }
+
+        // --- Equipment (slots 10/19/28/37: necklace/cloak/belt/glove) ---
+        if (syncEquip) {
+            syncEquipmentToSkyblocker(slots);
+        }
+    }
+
+    /** Write equipment from Loadouts container column 1 to Skyblocker's static array. */
+    private static void syncEquipmentToSkyblocker(java.util.List<net.minecraft.world.inventory.Slot> slots) {
+        if (!FabricLoader.getInstance().isModLoaded("skyblocker")) return;
+
+        var equipment = SkyblockInventoryScreen.equipment;
+        int[] equipSlots = {10, 19, 28, 37}; // necklace, cloak, belt, glove
+        for (int i = 0; i < 4 && i < equipment.length; i++) {
+            if (equipSlots[i] < slots.size()) {
+                ItemStack stack = slots.get(equipSlots[i]).getItem();
+                equipment[i] = (stack.isEmpty() || isPlaceholder(stack))
+                    ? ItemStack.EMPTY : stack.copy();
+            }
+        }
+    }
+
+    /** Detect Hypixel placeholder items that appear before real equipment loads. */
+    private static boolean isPlaceholder(ItemStack stack) {
+        String name = ChatUtils.stripColor(stack.getHoverName().getString()).toLowerCase(java.util.Locale.ROOT);
+        return name.startsWith("empty") || name.startsWith("slot ");
     }
 
     // ===== Internal Helpers =====

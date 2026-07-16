@@ -106,6 +106,9 @@ public class SkyblockConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.petSharedDisplay", desc = "config.babyzombieaddons.option.petSharedDisplay.desc") @ConfigEditorBoolean @SearchTag("pet") @SearchTag("shared")
         public boolean sharedDisplay = true;
 
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.petHideSharedIfCurrent", desc = "config.babyzombieaddons.option.petHideSharedIfCurrent.desc") @ConfigEditorBoolean @SearchTag("pet") @SearchTag("shared")
+        public boolean hideSharedIfCurrent = false;
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.petSharedLines", desc = "config.babyzombieaddons.option.petSharedLines.desc") @SearchTag("pet") @SearchTag("shared")
         @ConfigEditorDraggableList
         public List<PetDisplayElement> sharedPetElements = new ArrayList<>(List.of(
@@ -181,6 +184,9 @@ public class SkyblockConfig {
             public int prevPage = GLFW.GLFW_KEY_A;
             @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyNextPage", desc = "config.babyzombieaddons.option.loadoutKeyNextPage.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_D) @SearchTag("loadout") @SearchTag("key")
             public int nextPage = GLFW.GLFW_KEY_D;
+
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyClose", desc = "config.babyzombieaddons.option.loadoutKeyClose.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_E) @SearchTag("loadout") @SearchTag("key")
+            public int closeKey = GLFW.GLFW_KEY_E;
 
             /** 获取预设 1-12 的键码数组，方便 keyPressed 中遍历匹配 */
             public int[] presetKeys() {

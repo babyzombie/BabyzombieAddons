@@ -87,6 +87,8 @@
   "config.babyzombieaddons.option.petSharedDisplay.desc": "Show exp sharing pets below the main pet display.",
   "config.babyzombieaddons.option.petSharedLines": "Shared Pet Display Lines",
   "config.babyzombieaddons.option.petSharedLines.desc": "Choose which info to display below exp sharing pets and their order.",
+  "config.babyzombieaddons.option.petHideSharedIfCurrent": "Hide Current Pet",
+  "config.babyzombieaddons.option.petHideSharedIfCurrent.desc": "Don't show in shared section if already the current pet.",
   "config.babyzombieaddons.group.autois": "AutoIS Settings",
   "config.babyzombieaddons.option.updateChecker": "Update Checker",
   "config.babyzombieaddons.option.updateChecker.desc": "Check for new versions when joining a world.",
@@ -725,13 +727,11 @@
   "config.babyzombieaddons.option.necronBladeShadowWarpVolume.desc": "Volume of Shadow Warp teleport sounds while holding a Necron's Blade.",
   "config.babyzombieaddons.option.necronBladeWitherShieldVolume": "Wither Shield Volume",
   "config.babyzombieaddons.option.necronBladeWitherShieldVolume.desc": "Volume of Wither Shield activation sounds while holding a Necron's Blade.",
-
   "config.babyzombieaddons.group.teleportSword": "Teleport Sword",
   "config.babyzombieaddons.option.teleportSwordTeleportVolume": "Teleport Volume",
   "config.babyzombieaddons.option.teleportSwordTeleportVolume.desc": "Volume of teleport sounds while holding Aspect of the End / Aspect of the Void.",
   "config.babyzombieaddons.option.teleportSwordEtherwarpVolume": "Etherwarp Volume",
   "config.babyzombieaddons.option.teleportSwordEtherwarpVolume.desc": "Volume of Etherwarp sounds while holding Aspect of the End / Aspect of the Void.",
-
   "config.babyzombieaddons.group.windowTitle": "Window Title",
   "config.babyzombieaddons.option.windowTitleEnabled": "Enable Custom Title",
   "config.babyzombieaddons.option.windowTitleEnabled.desc": "Show custom information (memory, ping, location) in the game window title.",
@@ -747,7 +747,6 @@
   "config.babyzombieaddons.option.windowTitleShowPing.desc": "Display network latency in milliseconds.",
   "config.babyzombieaddons.option.windowTitleShowLocation": "Show Hypixel Location",
   "config.babyzombieaddons.option.windowTitleShowLocation.desc": "Display current location in the title (Limbo / Lobby / Server Type - Map). Enable the \"Replace with Hypixel\" sub-option below for a cleaner look.",
-
   "config.babyzombieaddons.option.showClickEventInHover": "Show Click Action in Tooltip",
   "config.babyzombieaddons.option.showClickEventInHover.desc": "When hovering over clickable text in chat, show what it does (run command, open URL, copy text, etc.).",
   "babyzombieaddons.clickhover.run_command": "Click to run: %s",
@@ -830,8 +829,7 @@
   "babyzombieaddons.debug.tablist.no_connection": "§cNot connected to a server",
   "babyzombieaddons.debug.tablist.empty": "§eTab list is empty",
   "babyzombieaddons.debug.tablist.copied": "§aTab list copied to clipboard",
-  "fishing.rareSeaCreaturesAlert.title": "Rare Sea Creature",
-
+  "fishing.rareSeaCreaturesAlert.title": "§bRare Sea Creature",
   "config.babyzombieaddons.category.hunting": "Hunting",
   "config.babyzombieaddons.group.safari": "Safari",
   "config.babyzombieaddons.option.safariBellDisplay": "Safari Bell Display",
@@ -842,7 +840,6 @@
   "config.babyzombieaddons.option.safariShulkerGlowColor.desc": "Custom colour for the shulker glow effect. Default cyan.",
   "config.babyzombieaddons.option.safariHideyhoGlow": "Safari Hideyho Glow",
   "config.babyzombieaddons.option.safariHideyhoGlow.desc": "Highlight the Hideyho NPC in the Safari zone, visible through walls.",
-
   "config.babyzombieaddons.group.loadout": "Loadout Display",
   "config.babyzombieaddons.option.loadoutGui": "Custom Loadout GUI",
   "config.babyzombieaddons.option.loadoutGui.desc": "Replace Hypixel's vanilla Loadout chest page with a custom screen showing player / armor stand models. §cRequires Skyblocker.§r",
@@ -853,7 +850,6 @@
   "config.babyzombieaddons.option.loadoutEntityRenderMode.FAKE_PLAYER_EYES": "Fake Player (eyes follow mouse)",
   "config.babyzombieaddons.option.loadoutAutoClose": "Auto-close after switching",
   "config.babyzombieaddons.option.loadoutAutoClose.desc": "Close the page automatically after clicking a preset.",
-
   "config.babyzombieaddons.group.loadoutKeyBindings": "Keyboard Shortcuts",
   "config.babyzombieaddons.group.loadoutKeyBindings.desc": "Keyboard shortcuts for the Loadout display screen.",
   "config.babyzombieaddons.option.loadoutKeyPreset1": "Preset 1",
@@ -873,12 +869,12 @@
   "config.babyzombieaddons.option.loadoutKeyPrevPage.desc": "Key to go to the previous page of loadouts.",
   "config.babyzombieaddons.option.loadoutKeyNextPage": "Next Page",
   "config.babyzombieaddons.option.loadoutKeyNextPage.desc": "Key to go to the next page of loadouts.",
-
+  "config.babyzombieaddons.option.loadoutKeyClose": "Close",
+  "config.babyzombieaddons.option.loadoutKeyClose.desc": "Key to close the loadout screen (ESC always works).",
   "babyzombieaddons.loadout.prev_page": "◀ Prev",
   "babyzombieaddons.loadout.next_page": "Next ▶",
   "babyzombieaddons.loadout.close": "✕ Close",
   "babyzombieaddons.loadout.back": "↺ Back",
-
   "config.babyzombieaddons.option.cancelKeyRelease": "Cancel Key Release",
   "config.babyzombieaddons.option.cancelKeyRelease.desc": "Hold to prevent key-release events on other keys.",
   "config.babyzombieaddons.option.secondPerson": "Quick Look Behind",

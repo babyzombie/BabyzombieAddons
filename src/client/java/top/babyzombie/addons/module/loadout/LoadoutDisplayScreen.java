@@ -445,7 +445,7 @@ public class LoadoutDisplayScreen extends Screen {
     @Override
     public boolean keyPressed(KeyEvent e) {
         if (e.key() == GLFW.GLFW_KEY_ESCAPE) { doClose(); return true; }
-        if (e.key() == GLFW.GLFW_KEY_E) { doClose(); return true; }
+        if (e.key() == ModConfigManager.get().skyblock.loadout.keyBindings.closeKey) { doClose(); return true; }
 
         var kb = ModConfigManager.get().skyblock.loadout.keyBindings;
         int[] presetKeys = kb.presetKeys();

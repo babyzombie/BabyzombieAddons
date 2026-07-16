@@ -87,6 +87,8 @@
   "config.babyzombieaddons.option.petSharedDisplay.desc": "在主宠物下方显示经验共享宠物。",
   "config.babyzombieaddons.option.petSharedLines": "共享宠物信息行",
   "config.babyzombieaddons.option.petSharedLines.desc": "选择要在经验共享宠物下方显示的信息及其顺序。",
+  "config.babyzombieaddons.option.petHideSharedIfCurrent": "隐藏当前宠物",
+  "config.babyzombieaddons.option.petHideSharedIfCurrent.desc": "当前宠物在共享中时不重复显示。",
   "config.babyzombieaddons.group.autois": "AutoIS 设置",
   "config.babyzombieaddons.option.updateChecker": "检查更新",
   "config.babyzombieaddons.option.updateChecker.desc": "进入世界时检查是否有新版本。",
@@ -725,13 +727,11 @@
   "config.babyzombieaddons.option.necronBladeShadowWarpVolume.desc": "手持凋零之刃时暗影瞬移（Shadow Warp）传送音效的音量。",
   "config.babyzombieaddons.option.necronBladeWitherShieldVolume": "凋零护盾音量",
   "config.babyzombieaddons.option.necronBladeWitherShieldVolume.desc": "手持凋零之刃时凋零护盾（Wither Shield）触发音效的音量。",
-
   "config.babyzombieaddons.group.teleportSword": "传送剑",
   "config.babyzombieaddons.option.teleportSwordTeleportVolume": "传送音量",
   "config.babyzombieaddons.option.teleportSwordTeleportVolume.desc": "手持 Aspect of the End / Aspect of the Void 时传送音效的音量。",
   "config.babyzombieaddons.option.teleportSwordEtherwarpVolume": "以太传送音量",
   "config.babyzombieaddons.option.teleportSwordEtherwarpVolume.desc": "手持 Aspect of the End / Aspect of the Void 时以太传送（Etherwarp）音效的音量。",
-
   "config.babyzombieaddons.group.windowTitle": "窗口标题",
   "config.babyzombieaddons.option.windowTitleEnabled": "启用自定义标题",
   "config.babyzombieaddons.option.windowTitleEnabled.desc": "在游戏窗口标题中显示自定义信息（内存、延迟、位置）。",
@@ -747,7 +747,6 @@
   "config.babyzombieaddons.option.windowTitleShowPing.desc": "以毫秒为单位显示网络延迟。",
   "config.babyzombieaddons.option.windowTitleShowLocation": "显示 Hypixel 位置",
   "config.babyzombieaddons.option.windowTitleShowLocation.desc": "在标题栏显示当前位置（Limbo / 大厅 / 服务器类型 - 地图）。启用后可配合下方「覆盖为 Hypixel」使用。",
-
   "config.babyzombieaddons.option.showClickEventInHover": "在悬停提示中显示点击操作",
   "config.babyzombieaddons.option.showClickEventInHover.desc": "聊天中的可点击文本在悬停时显示具体操作（执行指令、打开链接、复制文本等）。",
   "babyzombieaddons.clickhover.run_command": "点击执行: %s",
@@ -830,8 +829,7 @@
   "babyzombieaddons.debug.tablist.no_connection": "§c未连接到服务器",
   "babyzombieaddons.debug.tablist.empty": "§eTab 列表为空",
   "babyzombieaddons.debug.tablist.copied": "§a已复制 Tab 列表到剪贴板",
-  "fishing.rareSeaCreaturesAlert.title": "稀有海怪",
-
+  "fishing.rareSeaCreaturesAlert.title": "§b稀有海怪",
   "config.babyzombieaddons.category.hunting": "狩猎",
   "config.babyzombieaddons.group.safari": "Safari",
   "config.babyzombieaddons.option.safariBellDisplay": "Safari 铃铛显示",
@@ -842,7 +840,6 @@
   "config.babyzombieaddons.option.safariShulkerGlowColor.desc": "潜影贝发光的自定义颜色。默认青色。",
   "config.babyzombieaddons.option.safariHideyhoGlow": "Safari Hideyho 高亮",
   "config.babyzombieaddons.option.safariHideyhoGlow.desc": "在 Safari 区域高亮 Hideyho NPC，可穿墙显示。",
-
   "config.babyzombieaddons.group.loadout": "装备配置显示",
   "config.babyzombieaddons.option.loadoutGui": "启用自定义 Loadout GUI",
   "config.babyzombieaddons.option.loadoutGui.desc": "用自定义界面替换 Hypixel 的原版 Loadout 箱子页面，显示玩家/盔甲架模型。§c需要 Skyblocker。§r",
@@ -853,7 +850,6 @@
   "config.babyzombieaddons.option.loadoutEntityRenderMode.FAKE_PLAYER_EYES": "假玩家（眼睛跟鼠标）",
   "config.babyzombieaddons.option.loadoutAutoClose": "切换预设后自动关闭",
   "config.babyzombieaddons.option.loadoutAutoClose.desc": "点击预设后自动关闭页面。",
-
   "config.babyzombieaddons.group.loadoutKeyBindings": "键盘快捷键",
   "config.babyzombieaddons.group.loadoutKeyBindings.desc": "装备配置页面的键盘快捷键。",
   "config.babyzombieaddons.option.loadoutKeyPreset1": "预设 1",
@@ -873,12 +869,12 @@
   "config.babyzombieaddons.option.loadoutKeyPrevPage.desc": "切换到上一页装备配置的按键。",
   "config.babyzombieaddons.option.loadoutKeyNextPage": "下一页",
   "config.babyzombieaddons.option.loadoutKeyNextPage.desc": "切换到下一页装备配置的按键。",
-
+  "config.babyzombieaddons.option.loadoutKeyClose": "关闭",
+  "config.babyzombieaddons.option.loadoutKeyClose.desc": "关闭装备配置页面的按键（ESC 始终生效）。",
   "babyzombieaddons.loadout.prev_page": "◀ 上页",
   "babyzombieaddons.loadout.next_page": "下页 ▶",
   "babyzombieaddons.loadout.close": "✕ 关闭",
   "babyzombieaddons.loadout.back": "↺ 返回原版",
-
   "config.babyzombieaddons.option.cancelKeyRelease": "取消按键释放",
   "config.babyzombieaddons.option.cancelKeyRelease.desc": "按住时阻止其他按键的释放事件。",
   "config.babyzombieaddons.option.secondPerson": "一键回头",
