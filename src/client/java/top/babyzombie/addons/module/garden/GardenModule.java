@@ -4,6 +4,8 @@ public final class GardenModule {
     private GardenModule() {}
 
     public static void init() {
+        PlotUtils.ensureLoaded();
+        PlotBorderDisplay.init();
         PestDisplay.init();
         SignAutoRotate.init();
         XpOrbSoundReducer.init();
