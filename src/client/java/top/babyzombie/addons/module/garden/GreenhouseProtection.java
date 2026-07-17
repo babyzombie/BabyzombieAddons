@@ -2,11 +2,14 @@ package top.babyzombie.addons.module.garden;
 
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.config.GardenConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
@@ -105,17 +108,26 @@ public final class GreenhouseProtection {
 
     private GreenhouseProtection() {}
 
+    /// 方块上方扫描盔甲架的 Y 范围
+    private static final int ARMOR_STAND_SCAN_RANGE_Y = 5;
+
     public static void init() {
         AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
             if (!cfg().enabled) return InteractionResult.PASS;
             if (!HypixelLocationTracker.getInstance().isIn("Garden")) return InteractionResult.PASS;
             if (!GreenhouseDetector.isCurrentPlotGreenhouse()) return InteractionResult.PASS;
 
+            // 先扫上方盔甲架（杂交作物优先）
+            String armorStandCrop = getProtectedArmorStandCrop(world, pos);
+            if (armorStandCrop != null) return InteractionResult.FAIL;
+
+            // 否则按原版方块判断
             Block block = world.getBlockState(pos).getBlock();
             BooleanSupplier enabled = BLOCK_PROTECTION.get(block);
             if (enabled != null && enabled.getAsBoolean()) {
                 return InteractionResult.FAIL;
             }
+
             return InteractionResult.PASS;
         });
 
@@ -143,6 +155,33 @@ public final class GreenhouseProtection {
             }
             return InteractionResult.PASS;
         });
+    }
+
+    /**
+     * 扫描方块上方 ±5 格范围内是否有受保护的盔甲架作物。
+     *
+     * @return 匹配到的作物名（用于判断杂交作物优先），未匹配返回 null
+     */
+    private static String getProtectedArmorStandCrop(Level level, BlockPos pos) {
+        AABB scanBox = new AABB(
+                pos.getX(), pos.getY() - ARMOR_STAND_SCAN_RANGE_Y, pos.getZ(),
+                pos.getX() + 1, pos.getY() + ARMOR_STAND_SCAN_RANGE_Y + 1, pos.getZ() + 1
+        );
+        for (var entity : level.getEntitiesOfClass(ArmorStand.class, scanBox, as -> true)) {
+            var headItem = entity.getItemBySlot(EquipmentSlot.HEAD);
+            if (headItem.isEmpty()) continue;
+
+            String rawName = headItem.getHoverName().getString();
+            String clean = net.minecraft.ChatFormatting.stripFormatting(rawName).toLowerCase().trim();
+            if (clean.isEmpty()) continue;
+
+            String baseName = clean.replaceAll("\\d{1,3}$", "");
+            BooleanSupplier enabled = ARMOR_STAND_PROTECTION.get(baseName);
+            if (enabled != null && enabled.getAsBoolean()) {
+                return baseName;
+            }
+        }
+        return null;
     }
 
     private static GardenConfig.GreenhouseProtection cfg() {
