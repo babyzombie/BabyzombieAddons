@@ -27,6 +27,8 @@ public class FishingConfig {
         public boolean alert = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle", desc = "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle.desc") @ConfigEditorBoolean @SearchTag("rare")
         public boolean alertTitle = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesAlertTitleRepeat", desc = "config.babyzombieaddons.option.rareSeaCreaturesAlertTitleRepeat.desc") @ConfigEditorBoolean @SearchTag("rare")
+        public boolean alertTitleRepeat = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesScanRange", desc = "config.babyzombieaddons.option.rareSeaCreaturesScanRange.desc") @ConfigEditorSlider(minValue = 1, maxValue = 25, minStep = 1) @SearchTag("rare")
         public int scanRange = 16;
 

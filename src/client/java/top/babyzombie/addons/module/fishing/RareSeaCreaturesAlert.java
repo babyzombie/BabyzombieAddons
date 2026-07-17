@@ -18,6 +18,9 @@ import java.util.Set;
 /// 过滤出名字含  或  且有  的，插橙色信标光柱。
 public final class RareSeaCreaturesAlert {
 
+    /// 重复 Title 提示冷却（tick）= 5 秒
+    private static final int TITLE_REPEAT_COOLDOWN_TICKS = 100;
+
     /// 稀有海怪标记字符
     private static final String AQUATIC = "\uE072";
     private static final String MAGMATIC = "\uE07D";
@@ -26,10 +29,16 @@ public final class RareSeaCreaturesAlert {
     /// 已弹出过 Title 的实体 ID 集合，每个实体只弹一次
     private static final Set<Integer> alertedEntityIds = new HashSet<>();
 
+    /// 重复 Title 模式下的上次提示 tick
+    private static long lastRepeatedTitleTick = -TITLE_REPEAT_COOLDOWN_TICKS;
+
     private RareSeaCreaturesAlert() {}
 
     public static void init() {
-        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((level, world) -> alertedEntityIds.clear());
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((level, world) -> {
+            alertedEntityIds.clear();
+            lastRepeatedTitleTick = -TITLE_REPEAT_COOLDOWN_TICKS;
+        });
 
         RenderPhaseRegister.register(ctx -> {
             var cfg = ModConfigManager.get().fishing;
@@ -64,7 +73,8 @@ public final class RareSeaCreaturesAlert {
                 BeamRenderer.drawBeam(ctx, stand.getX(), stand.getY() - 5, stand.getZ(),
                         2048, 0.15f, beamColor);
 
-                if (firstCleanedName == null && !alertedEntityIds.contains(stand.getId())) {
+                boolean canUseForTitle = rareCfg.alertTitleRepeat || !alertedEntityIds.contains(stand.getId());
+                if (firstCleanedName == null && canUseForTitle) {
                     String cleaned = RareSeaCreatureDefinitions.cleanNameForMatch(rawName);
                     if (!cleaned.isEmpty()) {
                         String titleColor = def != null ? def.rarity.titleColorCode : RareSeaCreatureDefinitions.UNKNOWN_TITLE_COLOR_CODE;
@@ -75,13 +85,27 @@ public final class RareSeaCreaturesAlert {
                 count++;
             }
 
-            // Title 提示（每个实体只弹一次）
+            // Title 提示：可选“每个实体只弹一次”或“带冷却重复提示”
             if (rareCfg.alertTitle && count > 0 && firstCleanedName != null && titleEntityId != null) {
-                alertedEntityIds.add(titleEntityId);
-                ChatUtils.showTitle(
-                        Component.translatable("fishing.rareSeaCreaturesAlert.title").getString(),
-                        firstCleanedName,
-                        0, 50, 10);
+                if (rareCfg.alertTitleRepeat) {
+                    long tick = level.getGameTime();
+                    if (tick < lastRepeatedTitleTick) {
+                        lastRepeatedTitleTick = -TITLE_REPEAT_COOLDOWN_TICKS;
+                    }
+                    if (tick - lastRepeatedTitleTick >= TITLE_REPEAT_COOLDOWN_TICKS) {
+                        lastRepeatedTitleTick = tick;
+                        ChatUtils.showTitle(
+                                Component.translatable("fishing.rareSeaCreaturesAlert.title").getString(),
+                                firstCleanedName,
+                                0, 50, 10);
+                    }
+                } else {
+                    alertedEntityIds.add(titleEntityId);
+                    ChatUtils.showTitle(
+                            Component.translatable("fishing.rareSeaCreaturesAlert.title").getString(),
+                            firstCleanedName,
+                            0, 50, 10);
+                }
             }
         });
     }

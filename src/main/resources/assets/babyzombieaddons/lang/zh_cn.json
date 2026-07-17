@@ -764,6 +764,8 @@
   "config.babyzombieaddons.option.rareSeaCreaturesAlert.desc": "高亮附近的稀有海怪",
   "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle": "Title 提示附近的稀有海怪",
   "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle.desc": "附近有稀有海怪时显示 Title 提示其名称。",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlertTitleRepeat": "重复提示海怪 Title",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlertTitleRepeat.desc": "开启后，附近稀有海怪会按冷却重复显示 Title；关闭后，每个海怪实体只提示一次。",
   "config.babyzombieaddons.option.rareSeaCreaturesScanRange": "扫描半径",
   "config.babyzombieaddons.option.rareSeaCreaturesScanRange.desc": "稀有海怪扫描半径（1-25 格）。",
   "config.babyzombieaddons.group.rareSeaCreatures": "稀有海怪",

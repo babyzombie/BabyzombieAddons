@@ -764,6 +764,8 @@
   "config.babyzombieaddons.option.rareSeaCreaturesAlert.desc": "Highlight nearby rare sea creatures",
   "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle": "Title Alert for Nearby Rare Sea Creatures",
   "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle.desc": "Show a title with the creature name when rare sea creatures are nearby.",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlertTitleRepeat": "Repeat Rare Sea Creature Title",
+  "config.babyzombieaddons.option.rareSeaCreaturesAlertTitleRepeat.desc": "When enabled, repeat Title alerts for nearby rare sea creatures with a cooldown. When disabled, each entity only alerts once.",
   "config.babyzombieaddons.option.rareSeaCreaturesScanRange": "Scan Range",
   "config.babyzombieaddons.option.rareSeaCreaturesScanRange.desc": "Scan radius for rare sea creatures (1–25 blocks).",
   "config.babyzombieaddons.group.rareSeaCreatures": "Rare Sea Creatures",
