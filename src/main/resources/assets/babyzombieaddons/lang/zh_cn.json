@@ -523,6 +523,8 @@
   "config.babyzombieaddons.option.ghFire.desc": "防止破坏火焰和灵魂火焰。",
   "config.babyzombieaddons.option.ghCoco": "可可豆",
   "config.babyzombieaddons.option.ghCoco.desc": "防止攻击可可豆盔甲架。",
+  "config.babyzombieaddons.option.ghNetherWart": "地狱疣",
+  "config.babyzombieaddons.option.ghNetherWart.desc": "防止破坏地狱疣。",
   "config.babyzombieaddons.option.ghMushroom": "蘑菇",
   "config.babyzombieaddons.option.ghMushroom.desc": "防止破坏蘑菇方块。",
   "config.babyzombieaddons.option.ghAllInAloe": "All-in Aloe",

@@ -67,6 +67,8 @@ public class GardenConfig {
         public boolean fire = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.ghCoco", desc = "config.babyzombieaddons.option.ghCoco.desc") @ConfigEditorBoolean @SearchTag("coco") @SearchTag("greenhouse")
         public boolean coco = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.ghNetherWart", desc = "config.babyzombieaddons.option.ghNetherWart.desc") @ConfigEditorBoolean @SearchTag("nether") @SearchTag("wart") @SearchTag("greenhouse")
+        public boolean netherWart = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.ghMushroom", desc = "config.babyzombieaddons.option.ghMushroom.desc") @ConfigEditorBoolean @SearchTag("mushroom") @SearchTag("greenhouse")
         public boolean mushroom = false;
 

@@ -523,6 +523,8 @@
   "config.babyzombieaddons.option.ghFire.desc": "Prevent breaking fire and soul fire.",
   "config.babyzombieaddons.option.ghCoco": "Cocoa",
   "config.babyzombieaddons.option.ghCoco.desc": "Prevent attacking cocoa armor stands.",
+  "config.babyzombieaddons.option.ghNetherWart": "Nether Wart",
+  "config.babyzombieaddons.option.ghNetherWart.desc": "Prevent breaking nether wart.",
   "config.babyzombieaddons.option.ghMushroom": "Mushroom",
   "config.babyzombieaddons.option.ghMushroom.desc": "Prevent breaking mushroom blocks.",
   "config.babyzombieaddons.option.ghAllInAloe": "All-in Aloe",

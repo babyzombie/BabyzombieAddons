@@ -44,6 +44,7 @@ public final class GreenhouseProtection {
         BLOCK_PROTECTION.put(Blocks.ROSE_BUSH,         () -> cfg().roseBush);
         BLOCK_PROTECTION.put(Blocks.SUNFLOWER,         () -> cfg().sunflower);
         BLOCK_PROTECTION.put(Blocks.DEAD_BUSH,         () -> cfg().deadBush);
+        BLOCK_PROTECTION.put(Blocks.NETHER_WART,       () -> cfg().netherWart);
         BLOCK_PROTECTION.put(Blocks.FIRE,              () -> cfg().fire);
         BLOCK_PROTECTION.put(Blocks.SOUL_FIRE,         () -> cfg().fire);
         BLOCK_PROTECTION.put(Blocks.RED_MUSHROOM,      () -> cfg().mushroom);
