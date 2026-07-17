@@ -63,6 +63,7 @@ public final class LoadoutItemResolver {
         name = name.replaceAll("\\s{2,}", " ").trim();
 
         // 第 5 步：去重铸前缀
+        if (name.startsWith("Shiny ")) name = name.substring("Shiny ".length()).trim();
         name = stripReforgePrefix(name);
         return name.trim();
     }
@@ -84,7 +85,6 @@ public final class LoadoutItemResolver {
         for (String prefix : sorted) {
             String prefixLower = prefix.toLowerCase(Locale.ROOT) + " ";
             if (lower.startsWith(prefixLower)) {
-                LOGGER.debug("Stripped prefix '{}' from '{}'", prefix, name);
                 return name.substring(prefix.length()).trim();
             }
         }
@@ -135,8 +135,6 @@ public final class LoadoutItemResolver {
                 LOGGER.warn("Failed to read reforgestones.json", e);
             }
         }
-
-        LOGGER.info("Loaded {} reforge prefixes from item repo", set.size());
         return set;
     }
 
