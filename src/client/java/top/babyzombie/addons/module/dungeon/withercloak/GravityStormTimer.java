@@ -1,0 +1,33 @@
+package top.babyzombie.addons.module.dungeon.withercloak;
+
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.DungeonCooldown;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.ServerTick;
+
+/**
+ * Tracks Gravity Storm cooldown via action bar mana cost detection.
+ */
+public final class GravityStormTimer {
+    static long time;
+
+    private GravityStormTimer() {}
+
+    public static void init() {
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+            if (!overlay || !ModConfigManager.get().dungeon.witherCloak.gravityStormTimer) return;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
+            String text = ChatUtils.stripColor(message.getString());
+
+            if (text.matches(".*-\\d+ Mana \\(Gravity Storm\\).*")) {
+                long now = ServerTick.getTime();
+                if (HypixelLocationTracker.getInstance().isInDungeon())
+                    time = DungeonCooldown.calculate(now, 30000);
+                else
+                    time = now;
+            }
+        });
+    }
+}

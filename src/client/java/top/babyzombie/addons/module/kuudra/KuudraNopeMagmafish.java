@@ -9,8 +9,8 @@ public final class KuudraNopeMagmafish {
     private KuudraNopeMagmafish() {}
 
     private static final String TARGET_MSG = "[NPC] Elle: Nope, that's just a Magmafish!";
-    private static final String TITLE = "Nope, that's just a Magmafish!";
-    private static final String SUBTITLE = "               --[NPC] Elle";
+    private static final String TITLE = "§fNope, that's just a Magmafish!";
+    private static final String SUBTITLE = "               §7--§e[NPC] §cElle";
 
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {

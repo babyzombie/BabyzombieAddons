@@ -7,7 +7,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import org.lwjgl.glfw.GLFW;
-import top.babyzombie.addons.module.popup.PopupEventsModule.PopupSound;
+import top.babyzombie.addons.module.chat.popup.PopupEventsModule.PopupSound;
 
 public class PopupConfig {
 

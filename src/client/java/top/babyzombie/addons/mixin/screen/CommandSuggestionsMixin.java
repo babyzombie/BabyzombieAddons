@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.babyzombie.addons.module.playcmd.PlayAutocomplete;
-import top.babyzombie.addons.module.playcmd.PlayCmdModule;
+import top.babyzombie.addons.module.chat.playcmd.PlayAutocomplete;
+import top.babyzombie.addons.module.chat.playcmd.PlayCmdModule;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.ArrayList;

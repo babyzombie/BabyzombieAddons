@@ -19,7 +19,7 @@ import top.babyzombie.addons.BabyzombieAddonsClient;
 import top.babyzombie.addons.config.gui.WideSliderEditor;
 import top.babyzombie.addons.module.misc.CopyItemInfoKey;
 import top.babyzombie.addons.module.misc.SecondPersonKey;
-import top.babyzombie.addons.module.popup.PopupEventsModule;
+import top.babyzombie.addons.module.chat.popup.PopupEventsModule;
 import top.babyzombie.addons.util.KeyBindingUtil;
 
 import java.io.File;

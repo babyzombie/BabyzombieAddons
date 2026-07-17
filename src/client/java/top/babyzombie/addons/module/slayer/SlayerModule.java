@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import top.babyzombie.addons.event.PlaySoundEvents;
+import top.babyzombie.addons.module.slayer.itemtimer.*;
 import top.babyzombie.addons.util.ChatUtils;
 
 public final class SlayerModule {
@@ -65,7 +66,6 @@ public final class SlayerModule {
 
         // ---- Reset on world load ----
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
-            if (world == null) { SlayerBossDetector.reset(); return; }
             PigmanSwordTimer.time = 0;
             HolyIceTimer.time = 0;
             HolyIceTimer.activated = false;

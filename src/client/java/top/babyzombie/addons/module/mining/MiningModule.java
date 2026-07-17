@@ -1,6 +1,10 @@
 package top.babyzombie.addons.module.mining;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
+import top.babyzombie.addons.module.mining.crystalhollows.*;
+import top.babyzombie.addons.module.mining.glacitetunnels.GlaciteMineshaftWaypoints;
+import top.babyzombie.addons.module.mining.glacitetunnels.GreatGlaciteWaypoints;
+import top.babyzombie.addons.module.mining.glacitetunnels.SuspiciousScrapCounter;
 
 public final class MiningModule {
     private MiningModule() {}

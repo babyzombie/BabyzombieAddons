@@ -11,7 +11,7 @@ import top.babyzombie.addons.command.debug.*;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.module.chat.PartyModule;
-import top.babyzombie.addons.module.playcmd.PlayCmdModule;
+import top.babyzombie.addons.module.chat.playcmd.PlayCmdModule;
 import top.babyzombie.addons.util.ChatUtils;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import top.babyzombie.addons.module.playcmd.PlayAutocomplete;
+import top.babyzombie.addons.module.chat.playcmd.PlayAutocomplete;
 
 @Mixin(targets = "net.minecraft.network.protocol.game.ClientboundCommandsPacket$NodeResolver")
 public class ClientboundCommandsPacketMixin {

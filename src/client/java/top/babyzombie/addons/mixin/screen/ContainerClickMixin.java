@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.module.chat.ItemProtectBridge;
 import top.babyzombie.addons.module.misc.CopyItemInfoKey;
+import top.babyzombie.addons.module.misc.pet.PetPageKeyHandler;
 import top.babyzombie.addons.util.ItemUtils;
 
 @Mixin(AbstractContainerScreen.class)
@@ -47,7 +48,7 @@ public abstract class ContainerClickMixin {
     }
 
     // 复制物品信息按键
-    @Inject(method = "keyPressed", at = @At("HEAD"))
+    @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void onKeyPressed(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         if (CopyItemInfoKey.KEY.matches(event)) {
             if (hoveredSlot != null && hoveredSlot.hasItem()) {
@@ -58,6 +59,10 @@ public abstract class ContainerClickMixin {
                     player.playSound(SoundEvents.NOTE_BLOCK_PLING.value(), 0.5f, 2.0f);
                 }
             }
+        }
+        // 宠物页面按键
+        if (PetPageKeyHandler.handleKeyPress(event.key())) {
+            cir.setReturnValue(true);
         }
     }
 }

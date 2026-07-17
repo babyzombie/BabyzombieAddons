@@ -286,7 +286,7 @@ public final class PetManager {
         String skin = getSkinFromPetInfo(petInfoJson);
         if (skin == null || skin.isEmpty()) return pet;
         String skullTexture = ItemUtils.getSkullTexture(stack);
-        String resolved = top.babyzombie.addons.module.pet.PetSkinTexture.getInstance()
+        String resolved = top.babyzombie.addons.module.misc.pet.PetSkinTexture.getInstance()
             .resolveSkinVariant(skin, skullTexture, petInfoJson);
         return pet.withResolvedSkin(resolved);
     }
