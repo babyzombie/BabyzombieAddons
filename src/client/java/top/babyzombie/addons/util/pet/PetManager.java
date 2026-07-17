@@ -16,10 +16,7 @@ import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
-import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.DataPersistence;
-import top.babyzombie.addons.util.ItemUtils;
-import top.babyzombie.addons.util.ScreenLoadWaiter;
+import top.babyzombie.addons.util.*;
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -517,6 +514,8 @@ public final class PetManager {
             if (row < 1 || row > 4 || col < 5 || col > 7) return false;
 
             loadoutSwitchPending = true;
+            // 超时 取消 自动关闭
+            Scheduler.schedule(20, () -> loadoutSwitchPending = false);
             return false;
         });
     }

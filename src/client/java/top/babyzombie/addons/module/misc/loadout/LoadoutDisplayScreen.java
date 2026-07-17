@@ -418,8 +418,9 @@ public class LoadoutDisplayScreen extends Screen {
         if (hp >= 0) {
             int sid = PRESET_SLOTS[hp];
             ItemStack ps = slots[sid];
-            // 锁/空/当前预设不响应左键
-            if (!isLocked(ps) && !isEmptyPreset(ps) && !isCurrentPreset(ps)) {
+            boolean isRightClick = btn == 1;
+            // 锁不响应任何点击；空/当前预设只响应右键
+            if (!isLocked(ps) && (isRightClick || (!isEmptyPreset(ps) && !isCurrentPreset(ps)))) {
                 sendClick(sid, btn);
                 minecraft.execute(() -> minecraft.execute(this::refreshSlots));
             }
