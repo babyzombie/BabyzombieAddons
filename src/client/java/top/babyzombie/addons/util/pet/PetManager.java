@@ -48,11 +48,22 @@ public final class PetManager {
     );
     private static final Pattern HELD_ITEM_PATTERN =
         Pattern.compile("Held Item: (.+)", Pattern.CASE_INSENSITIVE);
-    // Loadout switch pending flag — set by preset click, consumed by whenScreenOpened
+    // Loadout switch pending flag — set by preset click, consumed by whenScreenOpened.
+    // Timestamp guards against stale flags persisting across separate page visits.
     private boolean loadoutSwitchPending;
+    private long loadoutSwitchPendingTime;
 
     public boolean isLoadoutSwitchPending() { return loadoutSwitchPending; }
-    public void setLoadoutSwitchPending(boolean v) { this.loadoutSwitchPending = v; }
+    public void setLoadoutSwitchPending(boolean v) {
+        this.loadoutSwitchPending = v;
+        if (v) this.loadoutSwitchPendingTime = System.currentTimeMillis();
+    }
+
+    /** True only if the pending flag was set recently (within 3 seconds). */
+    private boolean isRecentLoadoutSwitch() {
+        return loadoutSwitchPending
+            && System.currentTimeMillis() - loadoutSwitchPendingTime < 3_000;
+    }
 
     private String currentProfileKey;
     private final List<PetData> pets = new ArrayList<>();
@@ -483,7 +494,7 @@ public final class PetManager {
             43, 0, // 等所有内容(43)加载即可，不用等整个页面(53)
             cs -> {
                 scanLoadoutPet(cs);
-                if (loadoutSwitchPending) {
+                if (isRecentLoadoutSwitch()) {
                     loadoutSwitchPending = false;
                     if (ModConfigManager.get().skyblock.loadout.autoClose) {
                         var client = Minecraft.getInstance();
@@ -514,8 +525,6 @@ public final class PetManager {
             if (row < 1 || row > 4 || col < 5 || col > 7) return false;
 
             loadoutSwitchPending = true;
-            // 超时 取消 自动关闭
-            Scheduler.schedule(20, () -> loadoutSwitchPending = false);
             return false;
         });
     }
