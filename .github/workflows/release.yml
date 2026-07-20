@@ -154,7 +154,7 @@ jobs:
           if [ -z "$RELEASE_ID" ]; then
             echo "在 Gitee 上创建 release: $TAG"
             PAYLOAD=$(jq -n --arg tag "$TAG" --arg name "Release $TAG" --arg body "$BODY" \
-              '{tag_name: $tag, name: $name, body: $body}')
+              '{tag_name: $tag, name: $name, body: $body, target_commitish: "master"}')
             RESP=$(curl -sS -w "\n%{http_code}" -X POST "$API/releases?$TOKEN" \
               -H "Content-Type: application/json" -d "$PAYLOAD")
             HTTP_CODE=$(echo "$RESP" | tail -1)
