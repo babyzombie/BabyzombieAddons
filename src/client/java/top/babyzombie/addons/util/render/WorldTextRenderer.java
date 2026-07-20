@@ -104,6 +104,11 @@ public final class WorldTextRenderer {
                         ));
                 renderPass.bindTexture("Sampler0", texRef.textureView,
                         RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST));
+                var lightmapTex = client.gameRenderer.lightmap();
+                if (lightmapTex != null) {
+                    renderPass.bindTexture("Sampler1", lightmapTex,
+                            RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR));
+                }
                 renderPass.setVertexBuffer(0, execInfo.vertexBuffer().slice());
                 renderPass.setIndexBuffer(execInfo.indexBuffer(), execInfo.indexType());
                 renderPass.drawIndexed(execInfo.indexCount(), 1, execInfo.firstIndex(), execInfo.baseVertex(), 0);

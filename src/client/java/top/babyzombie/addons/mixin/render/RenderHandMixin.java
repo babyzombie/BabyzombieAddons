@@ -24,7 +24,7 @@ public class RenderHandMixin {
 
     /// ---- 手臂/物品透明度 ----
 
-    @ModifyVariable(method = "renderHandsWithItems", at = @At("HEAD"), argsOnly = true, name = "submitNodeCollector")
+    @ModifyVariable(method = "submitHandsWithItems", at = @At("HEAD"), argsOnly = true, name = "submitNodeCollector")
     private SubmitNodeCollector wrapHandCollector(SubmitNodeCollector submitNodeCollector) {
         float alpha = ModConfigManager.get().general.handRender.alpha;
         if (alpha >= 1.0f) return submitNodeCollector;
@@ -33,7 +33,7 @@ public class RenderHandMixin {
 
     /// ---- disableAll ----
 
-    @Inject(method = "renderHandsWithItems", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "submitHandsWithItems", at = @At("HEAD"), cancellable = true)
     private void disableHandRender(CallbackInfo ci) {
         if (ModConfigManager.get().general.handRender.disableAll) {
             ci.cancel();
@@ -42,9 +42,9 @@ public class RenderHandMixin {
 
     /// ---- swapHands ----
 
-    @ModifyArg(method = "renderHandsWithItems",
+    @ModifyArg(method = "submitHandsWithItems",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderArmWithItem(Lnet/minecraft/client/player/AbstractClientPlayer;FFLnet/minecraft/world/InteractionHand;FLnet/minecraft/world/item/ItemStack;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
+                    target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;submitArmWithItem(Lnet/minecraft/client/player/AbstractClientPlayer;FFLnet/minecraft/world/InteractionHand;FLnet/minecraft/world/item/ItemStack;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
                     ordinal = 0),
             index = 3)
     private InteractionHand swapMainHand(InteractionHand hand) {
@@ -54,9 +54,9 @@ public class RenderHandMixin {
         return hand;
     }
 
-    @ModifyArg(method = "renderHandsWithItems",
+    @ModifyArg(method = "submitHandsWithItems",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderArmWithItem(Lnet/minecraft/client/player/AbstractClientPlayer;FFLnet/minecraft/world/InteractionHand;FLnet/minecraft/world/item/ItemStack;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
+                    target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;submitArmWithItem(Lnet/minecraft/client/player/AbstractClientPlayer;FFLnet/minecraft/world/InteractionHand;FLnet/minecraft/world/item/ItemStack;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
                     ordinal = 1),
             index = 3)
     private InteractionHand swapOffHand(InteractionHand hand) {
@@ -66,7 +66,7 @@ public class RenderHandMixin {
         return hand;
     }
 
-    @Redirect(method = "renderArmWithItem",
+    @Redirect(method = "submitArmWithItem",
             at = @At(value = "FIELD",
                     target = "Lnet/minecraft/world/InteractionHand;MAIN_HAND:Lnet/minecraft/world/InteractionHand;", opcode = Opcodes.GETSTATIC))
     private InteractionHand redirectMainHand() {
@@ -76,7 +76,7 @@ public class RenderHandMixin {
         return InteractionHand.MAIN_HAND;
     }
 
-    @Redirect(method = "renderArmWithItem",
+    @Redirect(method = "submitArmWithItem",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/player/AbstractClientPlayer;getMainArm()Lnet/minecraft/world/entity/HumanoidArm;"))
     private HumanoidArm redirectMainArm(AbstractClientPlayer player) {
@@ -88,7 +88,7 @@ public class RenderHandMixin {
 
     /// ---- item scale ----
 
-    @Inject(method = "renderArmWithItem",
+    @Inject(method = "submitArmWithItem",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
                     ordinal = 0))
@@ -101,7 +101,7 @@ public class RenderHandMixin {
         poseStack.scale(cfg.handRender.itemScale, cfg.handRender.itemScale, cfg.handRender.itemScale);
     }
 
-    @Inject(method = "renderArmWithItem",
+    @Inject(method = "submitArmWithItem",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
                     ordinal = 1))

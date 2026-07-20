@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -19,6 +20,7 @@ import top.babyzombie.addons.util.PlayerScaleState;
 public class EntityRenderDispatcherScaleMixin {
 
     /** 标记当前 submit 是否为本地玩家，供 {@link #wrapCollector} 使用 */
+    @Unique
     private boolean renderingLocalPlayer;
 
     @Inject(method = "submit",
