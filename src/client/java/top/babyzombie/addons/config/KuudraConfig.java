@@ -74,7 +74,7 @@ public class KuudraConfig {
         public ToxicArrowMinTier toxicArrowMinTier = ToxicArrowMinTier.T3;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.toxicArrowTiming", desc = "config.babyzombieaddons.option.toxicArrowTiming.desc") @ConfigEditorDropdown @SearchTag("toxic") @SearchTag("arrow")
         public ToxicArrowTiming toxicArrowTiming = ToxicArrowTiming.KUUDRA_STUNNED;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.toxicArrowThreshold", desc = "config.babyzombieaddons.option.toxicArrowThreshold.desc") @ConfigEditorSlider(minValue = 0, maxValue = 32, minStep = 1) @SearchTag("toxic") @SearchTag("arrow") @SearchTag("threshold")
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.toxicArrowThreshold", desc = "config.babyzombieaddons.option.toxicArrowThreshold.desc") @ConfigEditorSlider(minValue = 0, maxValue = 64, minStep = 1) @SearchTag("toxic") @SearchTag("arrow") @SearchTag("threshold")
         public int toxicArrowThreshold = 0;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.toxicArrowPerMissing", desc = "config.babyzombieaddons.option.toxicArrowPerMissing.desc") @ConfigEditorSlider(minValue = 0, maxValue = 16, minStep = 1) @SearchTag("toxic") @SearchTag("arrow") @SearchTag("missing")
         public int toxicArrowPerMissing = 0;

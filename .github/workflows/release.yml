@@ -13,6 +13,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    outputs:
+      is-main-release: ${{ steps.version.outputs.is_main_release }}
+      base-tag: ${{ steps.version.outputs.base_tag }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,11 +33,22 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Set release version
+      - name: Parse version
+        id: version
         run: |
-          VERSION="${{ github.ref_name }}"
-          VERSION="${VERSION#v}"
-          sed -i "s/^mod_version=.*/mod_version=$VERSION/" gradle.properties
+          TAG="${{ github.ref_name }}"
+          TAG="${TAG#v}"
+          # 判断是否为子分支 tag（如 3.2.0+26.2）
+          if [[ "$TAG" == *+* ]]; then
+            echo "is_main_release=false" >> $GITHUB_OUTPUT
+            BASE="${TAG%%+*}"
+            echo "base_tag=v${BASE}" >> $GITHUB_OUTPUT
+            sed -i "s/^mod_version=.*/mod_version=${TAG}/" gradle.properties
+          else
+            echo "is_main_release=true" >> $GITHUB_OUTPUT
+            echo "base_tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            sed -i "s/^mod_version=.*/mod_version=${TAG}/" gradle.properties
+          fi
 
       - name: Build
         run: ./gradlew build
@@ -46,13 +61,13 @@ jobs:
 
   release:
     needs: build
+    if: needs.build.outputs.is-main-release == 'true'
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout (for changelog)
         uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 0
 
       - name: Download all artifacts
@@ -86,50 +101,87 @@ jobs:
           BODY=$(cat changelog.md)
           API="https://gitee.com/api/v5/repos/$GITEE_OWNER/$GITEE_REPO"
           TOKEN="access_token=$GITEE_TOKEN"
-
-          # 查 Gitee 上是否已有同名 tag 的 release
           RESP=$(curl -sS "$API/releases/tags/$TAG?$TOKEN")
           RELEASE_ID=$(echo "$RESP" | jq -r '.id // empty')
-
           if [ -z "$RELEASE_ID" ]; then
             echo "在 Gitee 上创建 release: $TAG"
             PAYLOAD=$(jq -n --arg tag "$TAG" --arg name "Release $TAG" --arg body "$BODY" \
-              '{tag_name: $tag, name: $name, body: $body, target_commitish: "main"}')
+              '{tag_name: $tag, name: $name, body: $body}')
             RESP=$(curl -sS -X POST "$API/releases?$TOKEN" \
-              -H "Content-Type: application/json" \
-              -d "$PAYLOAD")
+              -H "Content-Type: application/json" -d "$PAYLOAD")
             RELEASE_ID=$(echo "$RESP" | jq -r '.id')
-            echo "创建的 release ID: $RELEASE_ID"
           else
             echo "Gitee 上已存在 release (ID: $RELEASE_ID)，更新描述"
             PAYLOAD=$(jq -n --arg body "$BODY" '{body: $body}')
             curl -sS -X PATCH "$API/releases/$RELEASE_ID?$TOKEN" \
-              -H "Content-Type: application/json" \
-              -d "$PAYLOAD" > /dev/null
+              -H "Content-Type: application/json" -d "$PAYLOAD" > /dev/null
           fi
-
-          # 上传 JAR 附件（最多重试 3 次）
           FAILED=0
           for f in artifacts/*.jar; do
             echo "上传: $f"
-            UPLOAD_OK=0
             for i in 1 2 3 4; do
-              echo "  第 $i 次尝试..."
               RESP=$(curl -sS --retry 2 --connect-timeout 30 --max-time 120 \
                 -X POST "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
-                -F "file=@$f" 2>&1) && UPLOAD_OK=1 && break
-              echo "  失败，${i}/3 次"
+                -F "file=@$f" 2>&1) && break
               sleep 5
             done
-            if [ "$UPLOAD_OK" -eq 1 ]; then
-              echo "$RESP" | jq -r '.name + " -> " + (.browser_download_url // "失败")'
-            else
-              echo "::warning ::$f 上传最终失败"
-              FAILED=1
-            fi
           done
           if [ "$FAILED" -eq 1 ]; then
             echo "::error ::部分 JAR 上传 Gitee 失败"
             exit 1
           fi
           echo "Gitee release 同步完成"
+
+  attach-sub:
+    needs: build
+    if: needs.build.outputs.is-main-release == 'false'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Upload to existing GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BASE_TAG="${{ needs.build.outputs.base-tag }}"
+          echo "上传到 release: $BASE_TAG"
+
+          # 在 Gitee 上也传一份
+          for f in artifacts/*.jar; do
+            echo "上传 $f 到 GitHub release $BASE_TAG"
+            gh release upload "$BASE_TAG" "$f" --clobber
+          done
+
+      - name: Upload to Gitee Release
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE }}
+          GITEE_OWNER: Bluesky-kk
+          GITEE_REPO: BabyzombieAddons
+          BASE_TAG: ${{ needs.build.outputs.base-tag }}
+        run: |
+          set -e
+          TAG="$BASE_TAG"
+          API="https://gitee.com/api/v5/repos/$GITEE_OWNER/$GITEE_REPO"
+          TOKEN="access_token=$GITEE_TOKEN"
+          RESP=$(curl -sS "$API/releases/tags/$TAG?$TOKEN")
+          RELEASE_ID=$(echo "$RESP" | jq -r '.id // empty')
+          if [ -z "$RELEASE_ID" ]; then
+            echo "::error ::Gitee 上找不到 release $TAG，请先发布主分支"
+            exit 1
+          fi
+          echo "上传到 Gitee release $TAG (ID: $RELEASE_ID)"
+          FAILED=0
+          for f in artifacts/*.jar; do
+            echo "上传: $f"
+            for i in 1 2 3 4; do
+              RESP=$(curl -sS --retry 2 --connect-timeout 30 --max-time 120 \
+                -X POST "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
+                -F "file=@$f" 2>&1) && break
+              sleep 5
+            done
+          done

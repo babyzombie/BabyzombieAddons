@@ -29,7 +29,6 @@ public final class ReheatedGummyPolarBearTimer {
             .resolve("babyzombieaddons").resolve("ReheatedGummyPolarBear.json");
 
     static final Map<String, Integer> profileTimers = new HashMap<>();
-    private static int tickCounter;
     private static boolean alerted5min, alerted2min, alerted1min;
 
     private ReheatedGummyPolarBearTimer() {}
@@ -37,32 +36,27 @@ public final class ReheatedGummyPolarBearTimer {
     public static void init() {
         load();
 
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay) return;
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay) return true;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return true;
 
             String text = ChatUtils.stripColor(message.getString()).trim();
             if (text.startsWith("You ate a Re-heated Gummy Polar Bear")) {
                 String profileId = HypixelLocationTracker.getInstance().getProfileId();
                 if (profileId != null) {
-                    profileTimers.put(profileId, profileTimers.getOrDefault(profileId, 0) + 3600); // Add 60 minutes
+                    profileTimers.put(profileId, profileTimers.getOrDefault(profileId, 0) + 3600 * 20); // Add 60 minutes
                     alerted5min = false; alerted2min = false; alerted1min = false;
                     save();
                 }
             }
+            return true;
         });
 
-        // Tick every second (20 ticks)
+        // Tick
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            var cfg = ModConfigManager.get().slayer;
-            if (cfg.itemSkillTimers.reheatedGummyPolarBear == ModConfig.GummyPolarBearMode.OFF) return;
-
             var tracker = HypixelLocationTracker.getInstance();
             if (!tracker.isInSkyblock()) return;
-            if (tracker.isInDungeon()) return;
-            if (tracker.isInRift() || tracker.isInSafari()) return;
-
-            if (++tickCounter % 20 != 0) return;
+            if (tracker.isInDungeon() || tracker.isInRift() || tracker.isInSafari()) return;
 
             String profileId = tracker.getProfileId();
             if (profileId == null) return;
@@ -72,24 +66,26 @@ public final class ReheatedGummyPolarBearTimer {
             remaining--;
             profileTimers.put(profileId, remaining);
 
+            var cfg = ModConfigManager.get().slayer;
+
             // Only show in Smoldering Tomb if mode == 1
             if (cfg.itemSkillTimers.reheatedGummyPolarBear == ModConfig.GummyPolarBearMode.EVERYWHERE_EXCEPT_DUNGEON
                     || "Smoldering Tomb".equals(tracker.getLocation())) switch (remaining) {
-                case 300 -> {
+                case 300 * 20 -> {
                     if (!alerted5min) {
                         alerted5min = true;
                         ChatUtils.showTranslatableTitle("", "slayer.gummybear.5min", 0, 50, 10);
                         playSound();
                     }
                 }
-                case 120 -> {
+                case 120 * 20 -> {
                     if (!alerted2min) {
                         alerted2min = true;
                         ChatUtils.showTranslatableTitle("", "slayer.gummybear.2min", 0, 50, 10);
                         playSound();
                     }
                 }
-                case 60 -> {
+                case 60 * 20 -> {
                     if (!alerted1min) {
                         alerted1min = true;
                         ChatUtils.showTranslatableTitle("", "slayer.gummybear.1min", 0, 50, 10);
@@ -103,7 +99,7 @@ public final class ReheatedGummyPolarBearTimer {
                     alerted5min = false; alerted2min = false; alerted1min = false;
                 }
             }
-            if (remaining == 0) profileTimers.remove(profileId);
+            if (remaining <= 0) profileTimers.remove(profileId);
             save();
         });
     }
@@ -125,8 +121,8 @@ public final class ReheatedGummyPolarBearTimer {
     public static String getTimeString(String profileId) {
         Integer remaining = profileTimers.get(profileId);
         if (remaining == null || remaining <= 0) return "";
-        int m = remaining / 60;
-        int s = remaining % 60;
+        int m = remaining / 20 / 60;
+        int s = remaining / 20 % 60;
         return String.format("%02d:%02d", m, s);
     }
 
