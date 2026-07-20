@@ -3,7 +3,7 @@ package top.babyzombie.addons.module.mining.crystalhollows;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.phys.Vec3;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.PlayerUtils;
@@ -89,7 +89,7 @@ public final class CorleoneTimer {
         var aabb = player.getBoundingBox().inflate(32);
         for (var entity : player.level().getEntities(player, aabb, e -> !e.is(player))) {
             if (!entity.isAlive()) continue;
-            if (entity.getType() != EntityType.PLAYER) continue;
+            if (entity.getType() != EntityTypes.PLAYER) continue;
 
             String name = entity.getName().getString();
             if (!BOSS_NAME.equals(name)) continue;
