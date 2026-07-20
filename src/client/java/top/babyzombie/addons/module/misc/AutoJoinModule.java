@@ -24,7 +24,7 @@ public final class AutoJoinModule {
 
             ServerAddress address = ServerAddress.parseString(ip);
             ConnectScreen.startConnecting(
-                    client.screen,
+                    client.gui.screen(),
                     client,
                     address,
                     new ServerData(ip, ip, ServerData.Type.OTHER),

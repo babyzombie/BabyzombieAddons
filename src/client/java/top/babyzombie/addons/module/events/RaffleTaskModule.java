@@ -84,7 +84,7 @@ public final class RaffleTaskModule {
 
             var cs = pendingScreen;
             // 容器在加载前关闭
-            if (client.screen != cs) {
+            if (client.gui.screen() != cs) {
                 pendingParse = false;
                 pendingScreen = null;
                 return;

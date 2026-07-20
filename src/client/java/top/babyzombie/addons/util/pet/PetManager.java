@@ -405,7 +405,7 @@ public final class PetManager {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
 
             // Only track clicks in the Pets menu
-            var screen = Minecraft.getInstance().screen;
+            var screen = Minecraft.getInstance().gui.screen();
             if (screen == null || !ChatUtils.stripColor(screen.getTitle().getString()).matches("(\\(\\d+/\\d+\\) )?Pets")) {
                 return false;
             }
@@ -515,7 +515,7 @@ public final class PetManager {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
 
             var client = Minecraft.getInstance();
-            if (!(client.screen instanceof AbstractContainerScreen<?> screen)) return false;
+            if (!(client.gui.screen() instanceof AbstractContainerScreen<?> screen)) return false;
             String title = ChatUtils.stripColor(screen.getTitle().getString());
             if (!title.matches("\\(\\d+/\\d+\\) Loadouts")) return false;
 

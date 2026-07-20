@@ -91,7 +91,7 @@ public final class HudManager {
     }
 
     public static void openEditScreen(Screen parent) {
-        Minecraft.getInstance().setScreen(new HudEditScreen(parent));
+        Minecraft.getInstance().gui.setScreen(new HudEditScreen(parent));
     }
 
     private static Map<String, float[]> loadRaw() {

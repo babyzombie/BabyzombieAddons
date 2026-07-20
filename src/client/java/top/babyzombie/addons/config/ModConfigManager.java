@@ -126,7 +126,7 @@ public final class ModConfigManager {
         currentEditor = editor;
         editor.wide = get().misc.wideMoulConfig.get();
         var screen = new MoulConfigScreen(editor, parent);
-        Minecraft.getInstance().setScreen(screen);
+        Minecraft.getInstance().gui.setScreen(screen);
         return screen;
     }
 
@@ -143,7 +143,7 @@ public final class ModConfigManager {
             if (getGuiContext().onBeforeClose() == CloseEventListener.CloseAction.NO_OBJECTIONS_TO_CLOSE) {
                 save();
                 syncConfigToKeyMappings();
-                Minecraft.getInstance().setScreen(parent);
+                Minecraft.getInstance().gui.setScreen(parent);
             }
         }
     }

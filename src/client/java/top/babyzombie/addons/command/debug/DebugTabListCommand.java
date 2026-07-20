@@ -27,7 +27,7 @@ public final class DebugTabListCommand {
             return;
         }
 
-        var tabList = client.gui.getTabList();
+        var tabList = client.gui.hud.getTabList();
         var ta = (PlayerTabOverlayAccessor) tabList;
         StringBuilder sb = new StringBuilder();
 

@@ -5,7 +5,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.block.state.BlockState;
 import top.babyzombie.addons.mixin.render.ClientLevelAccessor;
 
@@ -111,7 +111,7 @@ public final class GlowController {
                 BlockState state = level.getBlockState(pos);
                 if (state.isAir()) return;
 
-                display = new Display.BlockDisplay(EntityType.BLOCK_DISPLAY, level);
+                display = new Display.BlockDisplay(EntityTypes.BLOCK_DISPLAY, level);
                 display.setPos(pos.getX(), pos.getY(), pos.getZ());
                 display.setBlockState(state);
                 display.setInvisible(true);

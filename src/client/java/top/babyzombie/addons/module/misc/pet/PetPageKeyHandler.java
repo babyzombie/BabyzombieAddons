@@ -44,7 +44,7 @@ public final class PetPageKeyHandler {
      */
     public static boolean handleKeyPress(int keyCode) {
         var mc = Minecraft.getInstance();
-        if (!(mc.screen instanceof AbstractContainerScreen<?> screen)) return false;
+        if (!(mc.gui.screen() instanceof AbstractContainerScreen<?> screen)) return false;
 
         // 检测宠物菜单标题
         String title = ChatUtils.stripColor(screen.getTitle().getString());

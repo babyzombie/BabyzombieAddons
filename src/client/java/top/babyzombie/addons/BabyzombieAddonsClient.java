@@ -13,6 +13,7 @@ import top.babyzombie.addons.config.hud.HudRegistrar;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.misc.abiphone.AbiphoneTracker;
 import top.babyzombie.addons.module.misc.abiphone.IncomingCallHandler;
+import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import top.babyzombie.addons.module.misc.AutoJoinModule;
 import top.babyzombie.addons.module.misc.autois.AutoISModule;
 import top.babyzombie.addons.module.misc.autois.KickRecoveryModule;

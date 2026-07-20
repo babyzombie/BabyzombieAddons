@@ -156,7 +156,7 @@ public final class DebugEntityCommand {
         }
 
         // For player entities, append skin texture URL at the bottom of hover
-        if (entity.getType() == EntityType.PLAYER) {
+        if (entity.getType() == EntityTypes.PLAYER) {
             String skinUrl = PlayerUtils.getSkinTextureUrl(PlayerUtils.getPlayerProfile(entity));
             if (skinUrl != null) {
                 nameHover += "\n" + Tstr("debug.entity.skin", skinUrl);

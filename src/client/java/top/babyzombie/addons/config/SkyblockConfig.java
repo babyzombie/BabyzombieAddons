@@ -30,7 +30,7 @@ public class SkyblockConfig {
     public BzGetFromSacksMode bzGetFromSacks = BzGetFromSacksMode.OFF;
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.raredropManage", desc = "config.babyzombieaddons.option.raredropManage.desc") @ConfigEditorButton(buttonText = "OPEN") @SearchTag("raredrop") @SearchTag("drop")
-    public transient Runnable raredropManage = () -> Minecraft.getInstance().setScreen(new RareDropScreen(Minecraft.getInstance().screen));
+    public transient Runnable raredropManage = () -> Minecraft.getInstance().gui.setScreen(new RareDropScreen(Minecraft.getInstance().gui.screen()));
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.cakeBuffTracker", desc = "config.babyzombieaddons.option.cakeBuffTracker.desc") @ConfigEditorBoolean @SearchTag("cake")
     public boolean cakeBuffTracker = false;
