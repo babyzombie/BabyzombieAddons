@@ -28,8 +28,9 @@ public final class F4CrowdHiding {
             if (px < -40 || px > 50 || py < 0 || py > 255 || pz < -40 || pz > 50) return false;
 
             if (entity instanceof net.minecraft.world.entity.player.Player otherPlayer) {
+                if (otherPlayer.equals(player)) return false;
                 String name = otherPlayer.getName().getString();
-                if (name.contains(" ")) return false;
+                if (!name.contains(" ")) return false;
                 if (name.contains("Decoy") || name.contains("Spirit Bear")) return false;
                 return mode == ModConfig.CrowdHideMode.HIDE;
             }
@@ -49,8 +50,9 @@ public final class F4CrowdHiding {
 
             for (var entity : client.level.entitiesForRendering()) {
                 if (entity instanceof net.minecraft.world.entity.player.Player otherPlayer) {
+                    if (otherPlayer.equals(client.player)) continue;
                     String name = otherPlayer.getName().getString();
-                    if (name.contains(" ") || name.contains("Decoy") || name.contains("Spirit Bear")) continue;
+                    if (!name.contains(" ") || name.contains("Decoy") || name.contains("Spirit Bear")) continue;
                     entity.discard();
                 } else if (entity.getClass().getSimpleName().equals("Zombie")
                         || entity.getClass().getSimpleName().equals("Skeleton")) {

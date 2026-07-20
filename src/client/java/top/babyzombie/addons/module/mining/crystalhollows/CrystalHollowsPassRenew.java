@@ -8,13 +8,15 @@ public final class CrystalHollowsPassRenew {
     private CrystalHollowsPassRenew() {}
 
     public static void init() {
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay) return;
-            if (!ModConfigManager.get().mining.crystalHollows.passAutoRenew) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay) return true;
+            if (!ModConfigManager.get().mining.crystalHollows.passAutoRenew) return true;
             if (ChatUtils.stripColor(message.getString())
                     .equals("Click here to purchase a new 6 hour pass for 10,000 Coins")) {
                 ChatUtils.sendCommand("purchasecrystallhollowspass");
+                return false;
             }
+            return true;
         });
     }
 }
