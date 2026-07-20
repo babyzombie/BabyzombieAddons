@@ -10,12 +10,8 @@ permissions:
   pull-requests: read
 
 jobs:
-  build:
+  build-main:
     runs-on: ubuntu-latest
-
-    outputs:
-      is-main-release: ${{ steps.version.outputs.is_main_release }}
-      base-tag: ${{ steps.version.outputs.base_tag }}
 
     steps:
       - name: Checkout
@@ -33,35 +29,69 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Parse version
-        id: version
+      - name: Build main
         run: |
           TAG="${{ github.ref_name }}"
-          TAG="${TAG#v}"
-          # 判断是否为子分支 tag（如 3.2.0+26.2）
-          if [[ "$TAG" == *+* ]]; then
-            echo "is_main_release=false" >> $GITHUB_OUTPUT
-            BASE="${TAG%%+*}"
-            echo "base_tag=v${BASE}" >> $GITHUB_OUTPUT
-            sed -i "s/^mod_version=.*/mod_version=${TAG}/" gradle.properties
-          else
-            echo "is_main_release=true" >> $GITHUB_OUTPUT
-            echo "base_tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-            sed -i "s/^mod_version=.*/mod_version=${TAG}/" gradle.properties
-          fi
+          VERSION="${TAG#v}"
+          sed -i "s/^mod_version=.*/mod_version=${VERSION}/" gradle.properties
+          ./gradlew build
 
-      - name: Build
-        run: ./gradlew build
+      - name: Rename JARs (add -main suffix)
+        run: |
+          for f in build/libs/*.jar; do
+            base=$(basename "$f" .jar)
+            mv "$f" "build/libs/${base}-main.jar"
+          done
 
-      - name: Upload artifact
+      - name: Upload main artifact
         uses: actions/upload-artifact@v4
         with:
-          name: BabyzombieAddons-${{ github.ref_name }}
+          name: main-jars
+          path: build/libs/*.jar
+
+  build-sub:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 26.2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: 26.2
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build 26.2
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#v}"
+          sed -i "s/^mod_version=.*/mod_version=${VERSION}/" gradle.properties
+          ./gradlew build
+
+      - name: Rename JARs (add -26.2 suffix)
+        run: |
+          for f in build/libs/*.jar; do
+            base=$(basename "$f" .jar)
+            mv "$f" "build/libs/${base}-26.2.jar"
+          done
+
+      - name: Upload 26.2 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sub-jars
           path: build/libs/*.jar
 
   release:
-    needs: build
-    if: needs.build.outputs.is-main-release == 'true'
+    needs: [build-main, build-sub]
     runs-on: ubuntu-latest
 
     steps:
@@ -90,7 +120,7 @@ jobs:
           files: artifacts/**/*
           generate_release_notes: false
 
-      - name: Sync GitHub Release to Gitee
+      - name: Sync to Gitee
         env:
           GITEE_TOKEN: ${{ secrets.GITEE }}
           GITEE_OWNER: Bluesky-kk
@@ -109,14 +139,12 @@ jobs:
               '{tag_name: $tag, name: $name, body: $body}')
             RESP=$(curl -sS -X POST "$API/releases?$TOKEN" \
               -H "Content-Type: application/json" -d "$PAYLOAD")
-            RELEASE_ID=$(echo "$RESP" | jq -r '.id')
           else
-            echo "Gitee 上已存在 release (ID: $RELEASE_ID)，更新描述"
+            echo "Gitee 上已存在 release，更新描述"
             PAYLOAD=$(jq -n --arg body "$BODY" '{body: $body}')
             curl -sS -X PATCH "$API/releases/$RELEASE_ID?$TOKEN" \
               -H "Content-Type: application/json" -d "$PAYLOAD" > /dev/null
           fi
-          FAILED=0
           for f in artifacts/*.jar; do
             echo "上传: $f"
             for i in 1 2 3 4; do
@@ -126,62 +154,4 @@ jobs:
               sleep 5
             done
           done
-          if [ "$FAILED" -eq 1 ]; then
-            echo "::error ::部分 JAR 上传 Gitee 失败"
-            exit 1
-          fi
-          echo "Gitee release 同步完成"
-
-  attach-sub:
-    needs: build
-    if: needs.build.outputs.is-main-release == 'false'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-          merge-multiple: true
-
-      - name: Upload to existing GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          BASE_TAG="${{ needs.build.outputs.base-tag }}"
-          echo "上传到 release: $BASE_TAG"
-
-          # 在 Gitee 上也传一份
-          for f in artifacts/*.jar; do
-            echo "上传 $f 到 GitHub release $BASE_TAG"
-            gh release upload "$BASE_TAG" "$f" --clobber
-          done
-
-      - name: Upload to Gitee Release
-        env:
-          GITEE_TOKEN: ${{ secrets.GITEE }}
-          GITEE_OWNER: Bluesky-kk
-          GITEE_REPO: BabyzombieAddons
-          BASE_TAG: ${{ needs.build.outputs.base-tag }}
-        run: |
-          set -e
-          TAG="$BASE_TAG"
-          API="https://gitee.com/api/v5/repos/$GITEE_OWNER/$GITEE_REPO"
-          TOKEN="access_token=$GITEE_TOKEN"
-          RESP=$(curl -sS "$API/releases/tags/$TAG?$TOKEN")
-          RELEASE_ID=$(echo "$RESP" | jq -r '.id // empty')
-          if [ -z "$RELEASE_ID" ]; then
-            echo "::error ::Gitee 上找不到 release $TAG，请先发布主分支"
-            exit 1
-          fi
-          echo "上传到 Gitee release $TAG (ID: $RELEASE_ID)"
-          FAILED=0
-          for f in artifacts/*.jar; do
-            echo "上传: $f"
-            for i in 1 2 3 4; do
-              RESP=$(curl -sS --retry 2 --connect-timeout 30 --max-time 120 \
-                -X POST "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
-                -F "file=@$f" 2>&1) && break
-              sleep 5
-            done
-          done
+          echo "Gitee 同步完成"

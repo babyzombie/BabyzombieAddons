@@ -65,7 +65,7 @@ dependencies {
     clientImplementation("net.hypixel:mod-api:${project.hm_api_version}")
 
     // MoulConfig (config GUI)
-    include(clientImplementation("org.notenoughupdates.moulconfig:modern-26.1:4.7.2"))
+    include(clientImplementation("org.notenoughupdates.moulconfig:${project.moulconfig_version}"))
 
     // ModMenu (从 Modrinth 拉，TerraformersMC maven 不稳定)
     clientImplementation "maven.modrinth:modmenu:${project.mod_menu_version}"
