@@ -17,7 +17,6 @@
     "render.EntityRendererMixin",
     "render.LivingEntityRendererMixin",
     "render.LevelRendererMixin",
-    "render.OutlineBufferSourceMixin",
     "render.RenderPipelineMixin",
     "render.ParticleEngineMixin",
     "render.PingDebugMonitorMixin",
@@ -69,7 +68,6 @@
 
     "screen.PauseScreenMixin",
 
-    "compat.ModernUITextRenderTypeMixin"
   ],
   "injectors": {
     "defaultRequire": 1
