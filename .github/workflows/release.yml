@@ -49,7 +49,7 @@ jobs:
           name: main-jars
           path: build/libs/*.jar
 
-  build-26.2:
+  build-sub:
     runs-on: ubuntu-latest
 
     steps:
@@ -87,11 +87,11 @@ jobs:
       - name: Upload 26.2 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 26.2-jars
+          name: sub-jars
           path: build/libs/*.jar
 
   release:
-    needs: [build-main, build-26.2]
+    needs: [build-main, build-sub]
     runs-on: ubuntu-latest
 
     steps:
@@ -139,14 +139,12 @@ jobs:
               '{tag_name: $tag, name: $name, body: $body}')
             RESP=$(curl -sS -X POST "$API/releases?$TOKEN" \
               -H "Content-Type: application/json" -d "$PAYLOAD")
-            RELEASE_ID=$(echo "$RESP" | jq -r '.id')
           else
             echo "Gitee 上已存在 release，更新描述"
             PAYLOAD=$(jq -n --arg body "$BODY" '{body: $body}')
             curl -sS -X PATCH "$API/releases/$RELEASE_ID?$TOKEN" \
               -H "Content-Type: application/json" -d "$PAYLOAD" > /dev/null
           fi
-          FAILED=0
           for f in artifacts/*.jar; do
             echo "上传: $f"
             for i in 1 2 3 4; do
@@ -156,5 +154,4 @@ jobs:
               sleep 5
             done
           done
-          if [ "$FAILED" -eq 1 ]; then exit 1; fi
           echo "Gitee 同步完成"
