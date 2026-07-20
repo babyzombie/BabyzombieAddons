@@ -27,7 +27,7 @@ public final class MinionCollectAutoClose {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
 
             var client = Minecraft.getInstance();
-            if (!(client.screen instanceof AbstractContainerScreen<?> screen)) return false;
+            if (!(client.gui.screen() instanceof AbstractContainerScreen<?> screen)) return false;
             String title = ChatUtils.stripColor(screen.getTitle().getString());
             if (!MINION_TITLE.matcher(title).find()) return false;
 

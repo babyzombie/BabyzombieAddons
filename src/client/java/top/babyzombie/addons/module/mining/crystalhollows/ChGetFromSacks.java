@@ -69,7 +69,7 @@ public final class ChGetFromSacks {
             if (!gettingApparatus) return;
             if (ChatUtils.stripColor(message.getString()).equals("You Supercrafted Precursor Apparatus!")) {
                 var client = Minecraft.getInstance();
-                if (client.screen != null) client.screen.onClose();
+                if (client.gui.screen() != null) client.gui.screen().onClose();
                 gettingApparatus = false;
             }
         });

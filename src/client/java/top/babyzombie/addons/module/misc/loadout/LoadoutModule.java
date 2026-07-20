@@ -43,11 +43,11 @@ public final class LoadoutModule {
                 && ModConfigManager.get().skyblock.loadout.autoClose) return;
             if (!LOADOUT_TITLE.matcher(ChatUtils.stripColor(cs.getTitle().getString())).matches()) return;
             if (!(cs.getMenu() instanceof ChestMenu)) return;
-            if (client.screen instanceof LoadoutDisplayScreen) return;
+            if (client.gui.screen() instanceof LoadoutDisplayScreen) return;
 
             cachedContainer = cs;
             guiActive = true;
-            client.execute(() -> client.setScreen(new LoadoutDisplayScreen(cs)));
+            client.execute(() -> client.gui.setScreen(new LoadoutDisplayScreen(cs)));
         });
 
         // 非 Loadout 页面打开时重置状态

@@ -93,7 +93,7 @@ public final class ScreenLoadWaiter {
                 Waiter w = it.next();
 
                 // Screen closed or replaced
-                if (client.screen != w.screen) {
+                if (client.gui.screen() != w.screen) {
                     it.remove();
                     continue;
                 }

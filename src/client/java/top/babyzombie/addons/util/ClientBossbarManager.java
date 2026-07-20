@@ -160,8 +160,7 @@ public final class ClientBossbarManager {
 
     private static BossHealthOverlay getOverlay() {
         var client = Minecraft.getInstance();
-        if (client.gui == null) return null;
-        return client.gui.getBossOverlay();
+        return client.gui.hud.getBossOverlay();
     }
 
     private static RemainingInfo describeRemaining(UUID id, LerpingBossEvent event) {
@@ -185,10 +184,6 @@ public final class ClientBossbarManager {
         if (MANAGED_BOSSBARS.isEmpty()) return;
 
         BossHealthOverlay overlay = getOverlay();
-        if (overlay == null) {
-            MANAGED_BOSSBARS.clear();
-            return;
-        }
 
         Map<UUID, LerpingBossEvent> events = ((BossHealthOverlayAccessor) overlay).getEvents();
         long now = System.currentTimeMillis();

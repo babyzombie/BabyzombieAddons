@@ -1,6 +1,6 @@
 package top.babyzombie.addons.mixin.chat;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -12,12 +12,12 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.chat.ContainerChatHelper;
 import top.babyzombie.addons.module.chat.ReiHelper;
 
-@Mixin(Minecraft.class)
+@Mixin(Gui.class)
 public class ChatOverlaySetScreenMixin {
 
     @Inject(method = "setScreen", at = @At("HEAD"), cancellable = true)
     private void onSetScreen(Screen screen, CallbackInfo ci) {
-        Minecraft self = (Minecraft) (Object) this;
+        var self = (Gui) (Object) this;
 
         // 情况 1: overlay 活跃 + 被设为 null → ChatScreen 想关闭自己，清理 overlay
         if (ContainerChatHelper.isActive() && screen == null) {
@@ -27,7 +27,7 @@ public class ChatOverlaySetScreenMixin {
         }
 
         // 情况 2: 容器是当前主屏幕 + 有人想换成 ChatScreen → 转为 overlay
-        Screen current = self.screen;
+        Screen current = self.screen();
         if (current instanceof AbstractContainerScreen<?> container
                 && screen instanceof ChatScreen chatScreen
                 && ModConfigManager.get().general.chat.chatInContainer

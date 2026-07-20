@@ -80,11 +80,10 @@ public final class ChatUtils {
 
     public static void showTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         var client = Minecraft.getInstance();
-        if (client.gui == null) return;
-        client.gui.setTimes(fadeIn, stay, fadeOut);
-        client.gui.setTitle(Component.literal(title));
+        client.gui.hud.setTimes(fadeIn, stay, fadeOut);
+        client.gui.hud.setTitle(Component.literal(title));
         if (subtitle != null) {
-            client.gui.setSubtitle(Component.literal(subtitle));
+            client.gui.hud.setSubtitle(Component.literal(subtitle));
         }
     }
 
@@ -98,11 +97,10 @@ public final class ChatUtils {
 
     public static void showTranslatableTitle(String titleKey, String subtitleKey, int fadeIn, int stay, int fadeOut) {
         var client = Minecraft.getInstance();
-        if (client.gui == null) return;
-        client.gui.setTimes(fadeIn, stay, fadeOut);
-        client.gui.setTitle(Component.translatable(titleKey));
+        client.gui.hud.setTimes(fadeIn, stay, fadeOut);
+        client.gui.hud.setTitle(Component.translatable(titleKey));
         if (subtitleKey != null) {
-            client.gui.setSubtitle(Component.translatable(subtitleKey));
+            client.gui.hud.setSubtitle(Component.translatable(subtitleKey));
         }
     }
 

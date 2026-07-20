@@ -501,7 +501,7 @@ public class LoadoutDisplayScreen extends Screen {
     private void returnToOrig() {
         LoadoutModule.closingGuard = 3;
         LoadoutModule.onCustomScreenClosed();
-        minecraft.setScreen(parentContainer);
+        minecraft.gui.setScreen(parentContainer);
     }
 
     private void doClose() {

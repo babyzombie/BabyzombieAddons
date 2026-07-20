@@ -30,7 +30,7 @@ public class IncomingCallHandler {
                 var tracker = HypixelLocationTracker.getInstance();
                 var contacts = AbiphoneTracker.getInstance()
                         .loadItems(tracker.getUuid(), tracker.getProfileId());
-                client.execute(() -> client.setScreen(new AbiphoneContactScreen(contacts)));
+                client.execute(() -> client.gui.setScreen(new AbiphoneContactScreen(contacts)));
                 return true;
             }
             return false;
