@@ -23,6 +23,15 @@ jobs:
           java-version: '25'
           distribution: 'zulu'
 
+      - name: Cache Loom assets
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches/fabric-loom
+            ~/.gradle/caches/minecraft
+          key: loom-${{ runner.os }}-${{ hashFiles('gradle.properties') }}
+          restore-keys: loom-${{ runner.os }}-
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
@@ -63,6 +72,15 @@ jobs:
         with:
           java-version: '25'
           distribution: 'zulu'
+
+      - name: Cache Loom assets
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches/fabric-loom
+            ~/.gradle/caches/minecraft
+          key: loom-${{ runner.os }}-${{ hashFiles('gradle.properties') }}
+          restore-keys: loom-${{ runner.os }}-
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
