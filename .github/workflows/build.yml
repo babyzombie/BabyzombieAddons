@@ -2,9 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [main, 26.1.2, 26.2]
   pull_request:
-    branches: [main, 26.1.2, 26.2]
 
 jobs:
   build:
