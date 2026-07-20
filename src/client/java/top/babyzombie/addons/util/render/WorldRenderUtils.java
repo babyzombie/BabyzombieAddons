@@ -1,5 +1,7 @@
 package top.babyzombie.addons.util.render;
 
+import com.mojang.blaze3d.IndexType;
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
@@ -17,12 +19,10 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryUtil;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalInt;
 
 /** Draws filled boxes, wireframe boxes, and lines in the world using custom render pipelines. */
 public final class WorldRenderUtils {
@@ -81,16 +81,17 @@ public final class WorldRenderUtils {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // Public API — Filled Box  (QUADS mode, solid 6-face box)
+    // Public API — Filled Box
     // ═══════════════════════════════════════════════════════════════
 
-    /** Draw a filled box from (x1,y1,z1) to (x2,y2,z2) with the given color and alpha. */
     public static void drawFilledBox(WorldRenderContext context, double x1, double y1, double z1,
                                       double x2, double y2, double z2,
                                       float r, float g, float b, float a, boolean depthTest) {
         var pipeline = depthTest ? FILLED_DEPTH : FILLED_NO_DEPTH;
+        var format = pipeline.getVertexFormatBinding(0);
+        if (format == null) return;
         if (filledBuf == null) {
-            filledBuf = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+            filledBuf = new BufferBuilder(ALLOCATOR, PrimitiveTopology.QUADS, format);
         }
         var pose = applyCameraTransform(context);
         renderFilledBox(pose, filledBuf, (float) x1, (float) y1, (float) z1, (float) x2, (float) y2, (float) z2, r, g, b, a);
@@ -100,17 +101,18 @@ public final class WorldRenderUtils {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // Public API — Wireframe Box  (LINES_SNIPPET, 12 edge lines)
+    // Public API — Wireframe Box
     // ═══════════════════════════════════════════════════════════════
 
-    /** Draw a wireframe box from (x1,y1,z1) to (x2,y2,z2) with adjustable line width. */
     public static void drawWireframeBox(WorldRenderContext context, double x1, double y1, double z1,
                                          double x2, double y2, double z2,
                                          float r, float g, float b, float a,
                                          boolean depthTest, float lineWidth) {
         var pipeline = depthTest ? LINES_DEPTH : LINES_NO_DEPTH;
+        var format = pipeline.getVertexFormatBinding(0);
+        if (format == null) return;
         if (linesBuf == null) {
-            linesBuf = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+            linesBuf = new BufferBuilder(ALLOCATOR, PrimitiveTopology.LINES, format);
         }
         var pose = applyCameraTransform(context);
         renderWireframeBox(pose, linesBuf, (float) x1, (float) y1, (float) z1, (float) x2, (float) y2, (float) z2, r, g, b, a, lineWidth);
@@ -120,17 +122,18 @@ public final class WorldRenderUtils {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // Public API — Line  (LINES_SNIPPET, single line segment)
+    // Public API — Line
     // ═══════════════════════════════════════════════════════════════
 
-    /** Draw a line from (x1,y1,z1) to (x2,y2,z2) with adjustable line width. */
     public static void drawLine(WorldRenderContext context, double x1, double y1, double z1,
                                  double x2, double y2, double z2,
                                  float r, float g, float b, float a,
                                  boolean depthTest, float lineWidth) {
         var pipeline = depthTest ? LINES_DEPTH : LINES_NO_DEPTH;
+        var format = pipeline.getVertexFormatBinding(0);
+        if (format == null) return;
         if (linesBuf == null) {
-            linesBuf = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+            linesBuf = new BufferBuilder(ALLOCATOR, PrimitiveTopology.LINES, format);
         }
         var pose = applyCameraTransform(context);
         addLineVertex(pose, linesBuf, (float) x1, (float) y1, (float) z1, r, g, b, a, lineWidth);
@@ -218,8 +221,8 @@ public final class WorldRenderUtils {
         MeshData.DrawState drawParameters = builtBuffer.drawState();
         VertexFormat format = drawParameters.format();
 
-        GpuBuffer vertices = uploadVertices(drawParameters, format, builtBuffer, true);
-        draw(pipeline, builtBuffer, drawParameters, vertices, format);
+        GpuBuffer vertices = uploadVertices(format, builtBuffer, true);
+        draw(pipeline, builtBuffer, drawParameters, vertices);
         filledVertexBuffer.rotate();
         builtBuffer.close();
     }
@@ -229,15 +232,15 @@ public final class WorldRenderUtils {
         MeshData.DrawState drawParameters = builtBuffer.drawState();
         VertexFormat format = drawParameters.format();
 
-        GpuBuffer vertices = uploadVertices(drawParameters, format, builtBuffer, false);
-        draw(pipeline, builtBuffer, drawParameters, vertices, format);
+        GpuBuffer vertices = uploadVertices(format, builtBuffer, false);
+        draw(pipeline, builtBuffer, drawParameters, vertices);
         linesVertexBuffer.rotate();
         builtBuffer.close();
     }
 
-    private static GpuBuffer uploadVertices(MeshData.DrawState drawParameters, VertexFormat format,
-                                             MeshData builtBuffer, boolean filled) {
-        int vertexBufferSize = drawParameters.vertexCount() * format.getVertexSize();
+    /** MC 26.2: mapBuffer → writeToBuffer */
+    private static GpuBuffer uploadVertices(VertexFormat format, MeshData builtBuffer, boolean filled) {
+        int vertexBufferSize = builtBuffer.drawState().vertexCount() * format.getVertexSize();
         MappableRingBuffer ringBuffer = filled ? filledVertexBuffer : linesVertexBuffer;
 
         if (ringBuffer == null || ringBuffer.size() < vertexBufferSize) {
@@ -250,45 +253,47 @@ public final class WorldRenderUtils {
         }
 
         CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
-        try (GpuBuffer.MappedView mappedView = commandEncoder.mapBuffer(
-                ringBuffer.currentBuffer().slice(0, builtBuffer.vertexBuffer().remaining()), false, true)) {
-            MemoryUtil.memCopy(builtBuffer.vertexBuffer(), mappedView.data());
-        }
+        commandEncoder.writeToBuffer(
+                ringBuffer.currentBuffer().slice(0, builtBuffer.vertexBuffer().remaining()),
+                builtBuffer.vertexBuffer());
 
         return ringBuffer.currentBuffer();
     }
 
     private static void draw(RenderPipeline pipeline, MeshData builtBuffer,
-                              MeshData.DrawState drawParameters, GpuBuffer vertices, VertexFormat format) {
+                              MeshData.DrawState drawParameters, GpuBuffer vertices) {
         var client = Minecraft.getInstance();
-        GpuBuffer indices;
-        VertexFormat.IndexType indexType;
-
-        if (pipeline.getVertexFormatMode() == VertexFormat.Mode.QUADS) {
-            builtBuffer.sortQuads(ALLOCATOR, RenderSystem.getProjectionType().vertexSorting());
-            indices = pipeline.getVertexFormat().uploadImmediateIndexBuffer(builtBuffer.indexBuffer());
-            indexType = drawParameters.indexType();
-        } else {
-            RenderSystem.AutoStorageIndexBuffer shapeIndexBuffer =
-                RenderSystem.getSequentialBuffer(pipeline.getVertexFormatMode());
-            indices = shapeIndexBuffer.getBuffer(drawParameters.indexCount());
-            indexType = shapeIndexBuffer.type();
+        var mainTarget = client.gameRenderer.mainRenderTarget();
+        var colorView = mainTarget.getColorTextureView();
+        if (colorView == null) {
+            builtBuffer.close();
+            return;
         }
 
+        // MC 26.2: getSequentialBuffer now accepts PrimitiveTopology
+        RenderSystem.AutoStorageIndexBuffer shapeIndexBuffer =
+            RenderSystem.getSequentialBuffer(pipeline.getPrimitiveTopology());
+        GpuBuffer indices = shapeIndexBuffer.getBuffer(drawParameters.indexCount());
+        IndexType indexType = shapeIndexBuffer.type();
+
+        // MC 26.2: getModelViewMatrix() → getModelViewMatrixCopy()
         GpuBufferSlice dynamicTransforms = RenderSystem.getDynamicUniforms()
-            .writeTransform(RenderSystem.getModelViewMatrix(), COLOR_MODULATOR, MODEL_OFFSET, TEXTURE_MATRIX);
+            .writeTransform(RenderSystem.getModelViewMatrixCopy(), COLOR_MODULATOR, MODEL_OFFSET, TEXTURE_MATRIX);
 
         try (RenderPass renderPass = RenderSystem.getDevice()
                 .createCommandEncoder()
                 .createRenderPass(() -> MOD_ID + " world render",
-                    client.getMainRenderTarget().getColorTextureView(), OptionalInt.empty(),
-                    client.getMainRenderTarget().getDepthTextureView(), OptionalDouble.empty())) {
+                    colorView, Optional.empty(),
+                    mainTarget.useDepth ? mainTarget.getDepthTextureView() : null,
+                    OptionalDouble.empty())) {
             renderPass.setPipeline(pipeline);
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.setUniform("DynamicTransforms", dynamicTransforms);
-            renderPass.setVertexBuffer(0, vertices);
+            // MC 26.2: setVertexBuffer takes GpuBufferSlice, not GpuBuffer
+            renderPass.setVertexBuffer(0, vertices.slice());
             renderPass.setIndexBuffer(indices, indexType);
-            renderPass.drawIndexed(0, 0, drawParameters.indexCount(), 1);
+            // MC 26.2: drawIndexed takes 5 args: (indexCount, instanceCount, firstIndex, baseVertex, vertexOffset)
+            renderPass.drawIndexed(drawParameters.indexCount(), 1, 0, 0, 0);
         }
 
         builtBuffer.close();

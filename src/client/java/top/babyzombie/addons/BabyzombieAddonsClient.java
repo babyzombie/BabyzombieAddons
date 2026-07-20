@@ -13,6 +13,7 @@ import top.babyzombie.addons.config.hud.HudRegistrar;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.misc.abiphone.AbiphoneTracker;
 import top.babyzombie.addons.module.misc.abiphone.IncomingCallHandler;
+import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import top.babyzombie.addons.module.misc.AutoJoinModule;
 import top.babyzombie.addons.module.misc.autois.AutoISModule;
 import top.babyzombie.addons.module.misc.autois.KickRecoveryModule;
@@ -133,5 +134,28 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         PetDisplayHud.init();
         HuntingModule.init();
         LoadoutModule.init();
+
+        // TODO: 渲染测试，确认无误后删除
+        top.babyzombie.addons.util.render.RenderPhaseRegister.register(ctx -> {
+            double x = 0, y = -50, z = 0, s = 1.0;
+            // 填充方块
+            top.babyzombie.addons.util.render.WorldRenderUtils.drawFilledBox(ctx,
+                    x, y, z, x + s, y + s, z + s,
+                    0.3f, 0.2f, 0.8f, 0.5f, true);
+            // 线框方块
+            top.babyzombie.addons.util.render.WorldRenderUtils.drawWireframeBox(ctx,
+                    x - 0.05, y - 0.05, z - 0.05,
+                    x + s + 0.05, y + s + 0.05, z + s + 0.05,
+                    0.2f, 1f, 0.3f, 0.9f, false, 2.5f);
+            // 信标光束
+            top.babyzombie.addons.util.render.BeamRenderer.drawBeam(ctx,
+                    x + 0.5, y + s, z + 0.5, 5.0, 0.15f,
+                    (0xCC << 24) | 0x00AAFF);
+            // 浮空文字
+            top.babyzombie.addons.util.render.WorldTextRenderer.renderString(ctx,
+                    "§e✦ Render Test §r✦",
+                    x + 0.5, y + s + 2, z + 0.5,
+                    0xFFFFAA00, 0.05f, false, 0);
+        });
     }
 }

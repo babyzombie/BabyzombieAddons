@@ -1,7 +1,6 @@
 package top.babyzombie.addons.util.render;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -25,8 +24,8 @@ import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalInt;
 
 /** Renders a textured beacon-style beam at arbitrary world coordinates. */
 public final class BeamRenderer {
@@ -55,8 +54,10 @@ public final class BeamRenderer {
                                  double height, float halfWidth,
                                  int argb) {
         var pipeline = BEAM_PIPELINE;
+        var format = pipeline.getVertexFormatBinding(0);
+        if (format == null) return;
         if (beamBuf == null) {
-            beamBuf = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+            beamBuf = new BufferBuilder(ALLOCATOR, PrimitiveTopology.QUADS, format);
         }
 
         // Animation: scroll UV based on game time
@@ -98,20 +99,15 @@ public final class BeamRenderer {
         float h = (float)height;
 
         // Four side quads around local origin
-        // Side -Z  (z=-hw, x: -hw → +hw)
         addQuad(pose, hw1, hw1, hw2, hw1, 0f, h, packedColor, v0, v1);
-        // Side +X  (x=+hw, z: -hw → +hw)
         addQuad(pose, hw2, hw1, hw2, hw2, 0f, h, packedColor, v0, v1);
-        // Side +Z  (z=+hw, x: +hw → -hw)
         addQuad(pose, hw2, hw2, hw1, hw2, 0f, h, packedColor, v0, v1);
-        // Side -X  (x=-hw, z: +hw → -hw)
         addQuad(pose, hw1, hw2, hw1, hw1, 0f, h, packedColor, v0, v1);
     }
 
-    /** Winding reversed relative to vanilla so normals point outward from beam center */
     private static void addQuad(PoseStack.Pose pose,
-                                 float x1, float z1,  // corner A
-                                 float x2, float z2,  // corner B
+                                 float x1, float z1,
+                                 float x2, float z2,
                                  float yBottom, float yTop,
                                  int packedColor, float vBottom, float vTop) {
         beamBuf.addVertex(pose, x2, yTop,    z2).setColor(packedColor).setUv(1f, vTop)   .setLight(FULLBRIGHT).setNormal(pose, 0f, 1f, 0f);
@@ -121,7 +117,7 @@ public final class BeamRenderer {
     }
 
     // ═══════════════════════════════════════════════════════════════════
-    // Upload + Draw
+    // Upload + Draw (MC 26.2: mapBuffer → writeToBuffer, getMainRenderTarget → gameRenderer.mainRenderTarget)
     // ═══════════════════════════════════════════════════════════════════
 
     private static void uploadAndDraw(RenderPipeline pipeline, BufferBuilder buf) {
@@ -138,20 +134,19 @@ public final class BeamRenderer {
         }
 
         var commandEncoder = RenderSystem.getDevice().createCommandEncoder();
-        try (var mappedView = commandEncoder.mapBuffer(
-                beamVertexBuffer.currentBuffer().slice(0, builtBuffer.vertexBuffer().remaining()), false, true)) {
-            MemoryUtil.memCopy(builtBuffer.vertexBuffer(), mappedView.data());
-        }
+        commandEncoder.writeToBuffer(
+                beamVertexBuffer.currentBuffer().slice(0, builtBuffer.vertexBuffer().remaining()),
+                builtBuffer.vertexBuffer());
 
         GpuBuffer vertices = beamVertexBuffer.currentBuffer();
 
         RenderSystem.AutoStorageIndexBuffer shapeIndexBuffer =
-            RenderSystem.getSequentialBuffer(pipeline.getVertexFormatMode());
+            RenderSystem.getSequentialBuffer(pipeline.getPrimitiveTopology());
         GpuBuffer indices = shapeIndexBuffer.getBuffer(drawParams.indexCount());
         var indexType = shapeIndexBuffer.type();
 
         GpuBufferSlice dynamicTransforms = RenderSystem.getDynamicUniforms()
-            .writeTransform(RenderSystem.getModelViewMatrix(), COLOR_MODULATOR, MODEL_OFFSET, TEXTURE_MATRIX);
+            .writeTransform(RenderSystem.getModelViewMatrixCopy(), COLOR_MODULATOR, MODEL_OFFSET, TEXTURE_MATRIX);
 
         var texManager = Minecraft.getInstance().getTextureManager();
         AbstractTexture beamTex = texManager.getTexture(BEAM_TEXTURE_ID);
@@ -159,19 +154,22 @@ public final class BeamRenderer {
         GpuSampler texSampler = RenderSystem.getSamplerCache().getRepeat(FilterMode.NEAREST);
 
         var client = Minecraft.getInstance();
-        if (client.getMainRenderTarget().getColorTextureView() != null) {
+        var mainTarget = client.gameRenderer.mainRenderTarget();
+        var colorView = mainTarget.getColorTextureView();
+        if (colorView != null) {
             try (RenderPass renderPass = RenderSystem.getDevice()
                     .createCommandEncoder()
                     .createRenderPass(() -> MOD_ID + " beam pass",
-                        client.getMainRenderTarget().getColorTextureView(), OptionalInt.empty(),
-                        client.getMainRenderTarget().getDepthTextureView(), OptionalDouble.empty())) {
+                        colorView, Optional.empty(),
+                        mainTarget.useDepth ? mainTarget.getDepthTextureView() : null,
+                        OptionalDouble.empty())) {
                 renderPass.setPipeline(pipeline);
                 RenderSystem.bindDefaultUniforms(renderPass);
                 renderPass.setUniform("DynamicTransforms", dynamicTransforms);
                 renderPass.bindTexture("Sampler0", texView, texSampler);
-                renderPass.setVertexBuffer(0, vertices);
+                renderPass.setVertexBuffer(0, vertices.slice());
                 renderPass.setIndexBuffer(indices, indexType);
-                renderPass.drawIndexed(0, 0, drawParams.indexCount(), 1);
+                renderPass.drawIndexed(drawParams.indexCount(), 1, 0, 0, 0);
             }
         }
 
