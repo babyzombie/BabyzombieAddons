@@ -247,7 +247,7 @@ public final class WorldRenderUtils {
             if (ringBuffer != null) ringBuffer.close();
             String label = MOD_ID + (filled ? " filled" : " lines") + " render";
             ringBuffer = new MappableRingBuffer(() -> label,
-                GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_MAP_WRITE, vertexBufferSize);
+                GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_MAP_WRITE | GpuBuffer.USAGE_COPY_DST, vertexBufferSize);
             if (filled) filledVertexBuffer = ringBuffer;
             else linesVertexBuffer = ringBuffer;
         }

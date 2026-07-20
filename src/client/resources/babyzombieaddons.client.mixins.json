@@ -4,28 +4,6 @@
   "package": "top.babyzombie.addons.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
-    "entity.DisplayAccessor",
-    "entity.SwingDurationMixin",
-
-    "render.ClientLevelAccessor",
-    "render.BlockDisplayRendererMixin",
-    "render.BossHealthOverlayAccessor",
-    "render.PlayerTabOverlayAccessor",
-    "render.BossHealthOverlayMixin",
-    "render.EntityRenderDispatcherScaleMixin",
-    "render.EntityRenderMixin",
-    "render.EntityRendererMixin",
-    "render.LivingEntityRendererMixin",
-    "render.LevelRendererMixin",
-    "render.RenderPipelineMixin",
-    "render.ParticleEngineMixin",
-    "render.PingDebugMonitorMixin",
-    "render.PlayerScaleMixin",
-    "render.RenderHandMixin",
-    "render.RenderSetupAccessor",
-    "render.RenderTypeAccessor",
-    "render.ThirdPersonCrosshairMixin",
-
     "chat.ChatComponentMixin",
     "chat.ChatOverlaySetScreenMixin",
     "chat.ChatScreenAccessor",
@@ -34,7 +12,41 @@
     "chat.ReiScreenChatMixin",
     "chat.SendCommandMixin",
     "chat.StyleMixin",
-
+    "entity.DisplayAccessor",
+    "entity.SwingDurationMixin",
+    "item.ItemStackMaxSizeMixin",
+    "network.ClientboundCommandsPacketMixin",
+    "network.ClientCommonPacketListenerImplMixin",
+    "network.ConnectionMixin",
+    "network.ConnectScreenMixin",
+    "network.DisconnectedScreenMixin",
+    "render.BlockDisplayRendererMixin",
+    "render.BossHealthOverlayAccessor",
+    "render.BossHealthOverlayMixin",
+    "render.ClientLevelAccessor",
+    "render.EntityRenderDispatcherScaleMixin",
+    "render.EntityRendererMixin",
+    "render.EntityRenderMixin",
+    "render.LevelRendererMixin",
+    "render.LivingEntityRendererMixin",
+    "render.ParticleEngineMixin",
+    "render.PingDebugMonitorMixin",
+    "render.PlayerScaleMixin",
+    "render.PlayerTabOverlayAccessor",
+    "render.RenderHandMixin",
+    "render.RenderPipelineMixin",
+    "render.RenderSetupAccessor",
+    "render.RenderTypeAccessor",
+    "screen.CommandSuggestionsMixin",
+    "screen.ContainerClickMixin",
+    "screen.GuiOptionEditorDropdownMixin",
+    "screen.HandleContainerInputMixin",
+    "screen.InventoryScreenMixin",
+    "screen.KeyMappingAccessor",
+    "screen.KeyMappingMixin",
+    "screen.MoulConfigTranslationMixin",
+    "screen.PauseScreenMixin",
+    "screen.ScreenMixin",
     "sound.ChannelAccessor",
     "sound.ChannelHandleAccessor",
     "sound.ChannelMixin",
@@ -42,34 +54,12 @@
     "sound.PlaySoundMixin",
     "sound.SoundEngineAccessor",
     "sound.SoundManagerAccessor",
-
-    "item.ItemStackMaxSizeMixin",
-
-    "network.ClientCommonPacketListenerImplMixin",
-    "network.ClientboundCommandsPacketMixin",
-    "network.ConnectScreenMixin",
-    "network.ConnectionMixin",
-    "network.DisconnectedScreenMixin",
-
-    "window.WindowTitleMixin",
-
-    "screen.CommandSuggestionsMixin",
-    "screen.ContainerClickMixin",
-    "screen.HandleContainerInputMixin",
-    "screen.InventoryScreenMixin",
-    "screen.KeyMappingAccessor",
-    "screen.KeyMappingMixin",
-    "screen.ScreenMixin",
-    "screen.MoulConfigTranslationMixin",
-    "screen.GuiOptionEditorDropdownMixin",
-
-
-
-
-    "screen.PauseScreenMixin",
-
+    "window.WindowTitleMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "render.ThirdPersonCrosshairMixin"
+  ]
 }

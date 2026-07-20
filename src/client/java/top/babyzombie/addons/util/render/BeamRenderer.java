@@ -130,7 +130,7 @@ public final class BeamRenderer {
             if (beamVertexBuffer != null) beamVertexBuffer.close();
             beamVertexBuffer = new MappableRingBuffer(
                 () -> MOD_ID + " beam render",
-                GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_MAP_WRITE, vertexBufferSize);
+                GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_MAP_WRITE | GpuBuffer.USAGE_COPY_DST, vertexBufferSize);
         }
 
         var commandEncoder = RenderSystem.getDevice().createCommandEncoder();
