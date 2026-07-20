@@ -139,6 +139,8 @@ jobs:
               '{tag_name: $tag, name: $name, body: $body}')
             RESP=$(curl -sS -X POST "$API/releases?$TOKEN" \
               -H "Content-Type: application/json" -d "$PAYLOAD")
+            RELEASE_ID=$(echo "$RESP" | jq -r '.id')
+            echo "创建的 release ID: $RELEASE_ID"
           else
             echo "Gitee 上已存在 release，更新描述"
             PAYLOAD=$(jq -n --arg body "$BODY" '{body: $body}')
