@@ -7,6 +7,8 @@
     "entity.DisplayAccessor",
     "entity.SwingDurationMixin",
 
+    "render.ClientLevelAccessor",
+    "render.BlockDisplayRendererMixin",
     "render.BossHealthOverlayAccessor",
     "render.PlayerTabOverlayAccessor",
     "render.BossHealthOverlayMixin",
