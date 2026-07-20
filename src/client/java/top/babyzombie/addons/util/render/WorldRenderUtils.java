@@ -30,10 +30,11 @@ public final class WorldRenderUtils {
     private static final String MOD_ID = "babyzombieaddons";
 
     // ── Pipelines ──────────────────────────────────────────────
+    // 26.2 Vulkan: 深度比较用 GREATER_THAN_OR_EQUAL（不再用 LESS_THAN_OR_EQUAL）
     private static final RenderPipeline FILLED_DEPTH = RenderPipelines.register(
         RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
             .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/bza_filled_depth"))
-            .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true))
             .build()
     );
     private static final RenderPipeline FILLED_NO_DEPTH = RenderPipelines.register(
@@ -45,7 +46,7 @@ public final class WorldRenderUtils {
     private static final RenderPipeline LINES_DEPTH = RenderPipelines.register(
         RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
             .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/bza_lines_depth"))
-            .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true))
             .build()
     );
     private static final RenderPipeline LINES_NO_DEPTH = RenderPipelines.register(
