@@ -67,8 +67,8 @@ dependencies {
     // MoulConfig (config GUI)
     include(clientImplementation("org.notenoughupdates.moulconfig:${project.moulconfig_version}"))
 
-    // ModMenu
-    clientImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
+    // ModMenu (从 Modrinth 拉，TerraformersMC maven 不稳定)
+    clientImplementation "maven.modrinth:modmenu:${project.mod_menu_version}"
 
     // Fabric Language Kotlin (required by MoulConfig)
     clientImplementation "net.fabricmc:fabric-language-kotlin:${project.flk_version}"
