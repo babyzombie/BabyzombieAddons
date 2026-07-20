@@ -13,7 +13,7 @@ public final class CrystalHollowsPassRenew {
             if (!ModConfigManager.get().mining.crystalHollows.passAutoRenew) return;
             if (ChatUtils.stripColor(message.getString())
                     .equals("Click here to purchase a new 6 hour pass for 10,000 Coins")) {
-                ChatUtils.sendCommand("purchasecrystalhollowspass");
+                ChatUtils.sendCommand("purchasecrystallhollowspass");
             }
         });
     }
