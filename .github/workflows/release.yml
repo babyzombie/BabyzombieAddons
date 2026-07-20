@@ -23,6 +23,15 @@ jobs:
           java-version: '25'
           distribution: 'zulu'
 
+      - name: Cache Loom assets
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches/fabric-loom
+            ~/.gradle/caches/minecraft
+          key: loom-${{ runner.os }}-${{ hashFiles('gradle.properties') }}
+          restore-keys: loom-${{ runner.os }}-
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
@@ -63,6 +72,15 @@ jobs:
         with:
           java-version: '25'
           distribution: 'zulu'
+
+      - name: Cache Loom assets
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches/fabric-loom
+            ~/.gradle/caches/minecraft
+          key: loom-${{ runner.os }}-${{ hashFiles('gradle.properties') }}
+          restore-keys: loom-${{ runner.os }}-
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -137,9 +155,16 @@ jobs:
             echo "在 Gitee 上创建 release: $TAG"
             PAYLOAD=$(jq -n --arg tag "$TAG" --arg name "Release $TAG" --arg body "$BODY" \
               '{tag_name: $tag, name: $name, body: $body}')
-            RESP=$(curl -sS -X POST "$API/releases?$TOKEN" \
+            RESP=$(curl -sS -w "\n%{http_code}" -X POST "$API/releases?$TOKEN" \
               -H "Content-Type: application/json" -d "$PAYLOAD")
-            RELEASE_ID=$(echo "$RESP" | jq -r '.id')
+            HTTP_CODE=$(echo "$RESP" | tail -1)
+            BODY_RESP=$(echo "$RESP" | sed '$d')
+            echo "HTTP $HTTP_CODE: $BODY_RESP"
+            RELEASE_ID=$(echo "$BODY_RESP" | jq -r '.id // empty')
+            if [ -z "$RELEASE_ID" ] || [ "$RELEASE_ID" = "null" ]; then
+              echo "::warning ::Gitee 创建 release 失败，跳过同步"
+              exit 0
+            fi
             echo "创建的 release ID: $RELEASE_ID"
           else
             echo "Gitee 上已存在 release，更新描述"
@@ -147,13 +172,15 @@ jobs:
             curl -sS -X PATCH "$API/releases/$RELEASE_ID?$TOKEN" \
               -H "Content-Type: application/json" -d "$PAYLOAD" > /dev/null
           fi
-          for f in artifacts/*.jar; do
-            echo "上传: $f"
-            for i in 1 2 3 4; do
-              RESP=$(curl -sS --retry 2 --connect-timeout 30 --max-time 120 \
-                -X POST "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
-                -F "file=@$f" 2>&1) && break
-              sleep 5
+          if [ -n "$RELEASE_ID" ] && [ "$RELEASE_ID" != "null" ]; then
+            for f in artifacts/*.jar; do
+              echo "上传: $f"
+              for i in 1 2 3 4; do
+                RESP=$(curl -sS --retry 2 --connect-timeout 30 --max-time 120 \
+                  -X POST "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
+                  -F "file=@$f" 2>&1) && break
+                sleep 5
+              done
             done
-          done
+          fi
           echo "Gitee 同步完成"
