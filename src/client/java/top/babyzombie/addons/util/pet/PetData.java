@@ -144,10 +144,11 @@ public record PetData(
 
         // Max-level pets (GOLDEN_DRAGON, JADE_DRAGON, ROSE_DRAGON → Lvl 200)
         if (MAX_LEVEL_PETS.contains(this.type) && level >= 100) {
+            level++; // 100→101: free hatch
             if (xp < 5555) {
-                return new LevelInfo(level + 1, xp, 5555, false);
+                return new LevelInfo(level, xp, 5555, false);
             }
-            level++;
+            level++; // 101→102: costs 5555
             xp -= 5555;
             while (level < 200) {
                 if (xp < LEVEL_200_XP_REPEAT) {
