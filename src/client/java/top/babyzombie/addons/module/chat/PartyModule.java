@@ -68,6 +68,9 @@ public final class PartyModule {
 
     public static void init() {
 
+        // PC command autocomplete
+        PartyCommandAutocomplete.init();
+
         // Auto-accept party invite
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;

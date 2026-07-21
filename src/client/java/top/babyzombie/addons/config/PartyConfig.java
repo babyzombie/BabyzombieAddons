@@ -20,6 +20,11 @@ public class PartyConfig {
     public boolean partySelfExecute = false;
 
     @Expose
+    @ConfigOption(name = "config.babyzombieaddons.option.partyCommandSuggestion", desc = "config.babyzombieaddons.option.partyCommandSuggestion.desc")
+    @ConfigEditorBoolean @SearchTag("party") @SearchTag("command") @SearchTag("suggestion") @SearchTag("pc")
+    public boolean partyCommandSuggestion = false;
+
+    @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.partyAllinvite", desc = "config.babyzombieaddons.option.partyAllinvite.desc")
     @ConfigEditorBoolean @SearchTag("party") @SearchTag("allinvite")
     public boolean partyAllinvite = false;
