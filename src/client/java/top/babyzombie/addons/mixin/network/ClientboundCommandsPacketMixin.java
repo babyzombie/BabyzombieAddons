@@ -6,7 +6,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import top.babyzombie.addons.module.chat.PartyCommandAutocomplete;
 import top.babyzombie.addons.module.chat.playcmd.PlayAutocomplete;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 @Mixin(targets = "net.minecraft.network.protocol.game.ClientboundCommandsPacket$NodeResolver")
 public class ClientboundCommandsPacketMixin {
@@ -16,12 +18,18 @@ public class ClientboundCommandsPacketMixin {
             at = @At("RETURN"),
             cancellable = true
     )
-    private void babyzombieaddons$replacePlayNode(CallbackInfoReturnable<CommandNode> cir) {
+    private void babyzombieaddons$replaceCommandNodes(CallbackInfoReturnable<CommandNode> cir) {
         CommandNode node = cir.getReturnValue();
-        if (node instanceof LiteralCommandNode literalNode
-                && "play".equals(literalNode.getLiteral())
-                && PlayAutocomplete.commandNode != null) {
-            cir.setReturnValue(PlayAutocomplete.commandNode);
+        if (HypixelLocationTracker.getInstance().isOnHypixel() && node instanceof LiteralCommandNode literalNode) {
+            String literal = literalNode.getLiteral();
+            switch (literal) {
+                case "play":
+                    if (PlayAutocomplete.commandNode != null) cir.setReturnValue(PlayAutocomplete.commandNode);
+                    break;
+                case "pc":
+                    if (PartyCommandAutocomplete.commandNode != null) cir.setReturnValue(PartyCommandAutocomplete.commandNode);
+                    break;
+            }
         }
     }
 }
