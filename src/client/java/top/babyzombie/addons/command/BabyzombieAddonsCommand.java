@@ -31,6 +31,7 @@ public final class BabyzombieAddonsCommand {
                     .then(literal("hud").executes(BabyzombieAddonsCommand::hud))
                     .then(literal("play").executes(BabyzombieAddonsCommand::play))
                     .then(literal("help").executes(BabyzombieAddonsCommand::help))
+                    .then(literal("autois").executes(BabyzombieAddonsCommand::toggleAutois))
                     .then(literal("l").executes(ctx -> { ChatUtils.sendCommand("limbo"); return 1; }))
                     .then(literal("trevorautocall").executes(ctx -> {
                         top.babyzombie.addons.module.garden.TrevorAutoAccept.disableAutoCall();
@@ -99,6 +100,16 @@ public final class BabyzombieAddonsCommand {
 
     private static int play(CommandContext<FabricClientCommandSource> ctx) {
         PlayCmdModule.openGUI();
+        return 1;
+    }
+
+    private static int toggleAutois(CommandContext<FabricClientCommandSource> ctx) {
+        boolean enabled = !ModConfigManager.get().skyblock.autois.enabled;
+        ModConfigManager.get().skyblock.autois.enabled = enabled;
+        ctx.getSource().sendFeedback(
+                Component.translatable(enabled
+                        ? "babyzombieaddons.command.autois.enabled"
+                        : "babyzombieaddons.command.autois.disabled"));
         return 1;
     }
 
