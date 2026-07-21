@@ -58,7 +58,6 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
 
     public static net.minecraft.client.KeyMapping cancelKeyBindingRelease;
     public static net.minecraft.client.KeyMapping toggleHandRenderKey;
-    public static boolean handRenderSwapActive;
 
     @Override
     public void onInitializeClient() {
@@ -81,12 +80,10 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         toggleHandRenderKey = KeyBindingUtil.register(
                 "key.babyzombieaddons.toggle_hand_render", ModConfigManager.get().general.handRender.toggleHandRenderKey);
 
-        handRenderSwapActive = ModConfigManager.get().general.handRender.swapHands;
-
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
             while (toggleHandRenderKey.consumeClick()) {
-                handRenderSwapActive = !handRenderSwapActive;
+                ModConfigManager.get().general.handRender.swapHands = !ModConfigManager.get().general.handRender.swapHands;
             }
         });
 

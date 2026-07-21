@@ -48,7 +48,7 @@ public class RenderHandMixin {
                     ordinal = 0),
             index = 3)
     private InteractionHand swapMainHand(InteractionHand hand) {
-        if (BabyzombieAddonsClient.handRenderSwapActive) {
+        if (ModConfigManager.get().general.handRender.swapHands) {
             return InteractionHand.OFF_HAND;
         }
         return hand;
@@ -60,7 +60,7 @@ public class RenderHandMixin {
                     ordinal = 1),
             index = 3)
     private InteractionHand swapOffHand(InteractionHand hand) {
-        if (BabyzombieAddonsClient.handRenderSwapActive) {
+        if (ModConfigManager.get().general.handRender.swapHands) {
             return InteractionHand.MAIN_HAND;
         }
         return hand;
@@ -70,7 +70,7 @@ public class RenderHandMixin {
             at = @At(value = "FIELD",
                     target = "Lnet/minecraft/world/InteractionHand;MAIN_HAND:Lnet/minecraft/world/InteractionHand;", opcode = Opcodes.GETSTATIC))
     private InteractionHand redirectMainHand() {
-        if (BabyzombieAddonsClient.handRenderSwapActive) {
+        if (ModConfigManager.get().general.handRender.swapHands) {
             return InteractionHand.OFF_HAND;
         }
         return InteractionHand.MAIN_HAND;
@@ -80,7 +80,7 @@ public class RenderHandMixin {
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/player/AbstractClientPlayer;getMainArm()Lnet/minecraft/world/entity/HumanoidArm;"))
     private HumanoidArm redirectMainArm(AbstractClientPlayer player) {
-        if (BabyzombieAddonsClient.handRenderSwapActive) {
+        if (ModConfigManager.get().general.handRender.swapHands) {
             return player.getMainArm().getOpposite();
         }
         return player.getMainArm();

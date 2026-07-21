@@ -92,7 +92,7 @@ public class KuudraConfig {
     }
 
     public static class Requeue {
-        @Expose @ConfigEditorInfoText @ConfigOption(name = "config.babyzombieaddons.option.requeueKuudraNote", desc = "") @SearchTag("requeue") @SearchTag("note") @SearchTag("info")
+        @Expose @ConfigEditorInfoText @ConfigOption(name = "", desc = "config.babyzombieaddons.option.requeueKuudraNote") @SearchTag("requeue") @SearchTag("note") @SearchTag("info")
         public String requeueNote = "";
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraRequeue", desc = "config.babyzombieaddons.option.kuudraRequeue.desc") @ConfigEditorDropdown @SearchTag("requeue")
         public RequeueMode kuudraRequeue = RequeueMode.OFF;
