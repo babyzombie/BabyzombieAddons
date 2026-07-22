@@ -7,6 +7,7 @@ import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import com.google.gson.annotations.Expose;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
@@ -94,6 +95,48 @@ public class ModConfig extends Config {
     public enum EntityRenderMode {
         ARMOR_STAND, FAKE_PLAYER, FAKE_PLAYER_EYES;
         @Override public String toString() { return t("config.babyzombieaddons.option.loadoutEntityRenderMode." + name()); }
+    }
+    public enum MusicDisc {
+        DISC_5, DISC_11, DISC_13, BLOCKS, CAT, CHIRP, FAR,
+        LAVA_CHICKEN, MALL, MELLOHI, PIGSTEP, STAL, STRAD,
+        WAIT, WARD, OTHERSIDE, RELIC, CREATOR,
+        CREATOR_MUSIC_BOX, PRECIPICE, TEARS;
+
+        /** 唱片名为专有名词，直接写死，不需翻译。§b = 淡蓝色 */
+        @Override public String toString() {
+            return switch (this) {
+                case DISC_5 -> "§b5";
+                case DISC_11 -> "§b11";
+                case DISC_13 -> "§b13";
+                case BLOCKS -> "§bblocks";
+                case CAT -> "§bcat";
+                case CHIRP -> "§bchirp";
+                case FAR -> "§bfar";
+                case LAVA_CHICKEN -> "§bLava Chicken";
+                case MALL -> "§bmall";
+                case MELLOHI -> "§bmellohi";
+                case PIGSTEP -> "§bPigstep";
+                case STAL -> "§bstal";
+                case STRAD -> "§bstrad";
+                case WAIT -> "§bwait";
+                case WARD -> "§bward";
+                case OTHERSIDE -> "§botherside";
+                case RELIC -> "§bRelic";
+                case CREATOR -> "§bCreator";
+                case CREATOR_MUSIC_BOX -> "§bCreator (Music Box)";
+                case PRECIPICE -> "§bPrecipice";
+                case TEARS -> "§bTears";
+            };
+        }
+
+        public Identifier getSoundId() {
+            String n = name().toLowerCase().replace("disc_", "");
+            return Identifier.fromNamespaceAndPath("minecraft", "music_disc." + n);
+        }
+    }
+    public enum PlayMode {
+        SINGLE, SEQUENTIAL, RANDOM;
+        @Override public String toString() { return t("config.babyzombieaddons.option.playMode." + name()); }
     }
 
     /** Translates a key via Minecraft's I18n system. */

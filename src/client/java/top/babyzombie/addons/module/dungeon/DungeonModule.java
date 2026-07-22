@@ -42,6 +42,7 @@ public final class DungeonModule {
             if (t.equals("Starting in 1 second.")) {
                 instanceStarted = true;
                 AutoRequeue.onInstanceStart();
+                DungeonJukeboxModule.onInstanceStart();
             }
         });
 
@@ -60,6 +61,7 @@ public final class DungeonModule {
                     DailyRunsCounter.incrementAndShow();
                 }
                 AutoRequeue.schedule(win);
+                DungeonJukeboxModule.onInstanceEnd();
             }
         });
 
