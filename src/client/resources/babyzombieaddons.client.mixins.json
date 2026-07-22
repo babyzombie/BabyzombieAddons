@@ -46,6 +46,7 @@
     "sound.SoundManagerAccessor",
 
     "item.ItemStackMaxSizeMixin",
+    "item.BlockItemMixin",
 
     "network.ClientCommonPacketListenerImplMixin",
     "network.ClientboundCommandsPacketMixin",

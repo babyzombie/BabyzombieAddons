@@ -156,6 +156,8 @@
   "config.babyzombieaddons.option.minionCollectAutoClose.desc": "When clicking \"Collect All\" in a Minion GUI, automatically close the container screen.",
   "config.babyzombieaddons.option.showInvisibleNameTags": "Show Invisible Player Name Tags",
   "config.babyzombieaddons.option.showInvisibleNameTags.desc": "Show invisible players' name tags in SkyBlock.",
+  "config.babyzombieaddons.option.disableBlockPlacePrediction": "Disable Block Placement Prediction",
+  "config.babyzombieaddons.option.disableBlockPlacePrediction.desc": "Skips client-side block placement prediction when right-clicking block items. Private Island and regular Garden plots are automatically excluded (greenhouse & barn still apply).",
   "config.babyzombieaddons.option.serverResourcePackAutoAccept": "Auto-Accept Server Resource Pack",
   "config.babyzombieaddons.option.serverResourcePackAutoAccept.desc": "Automatically accept the Hypixel server resource pack without showing the confirmation prompt.",
   "config.babyzombieaddons.option.skipSecondPerson": "Skip Second Person View",
@@ -1060,5 +1062,7 @@
   "config.babyzombieaddons.option.copyItemInfo": "Copy Item Info",
   "config.babyzombieaddons.option.copyItemInfo.desc": "Press while hovering an item in a container to copy its NBT/ID.",
   "babyzombieaddons.debug.hitresult.show_on": "§aShowHitResult ON — green semi-transparent box enabled",
-  "babyzombieaddons.debug.hitresult.show_off": "§cShowHitResult OFF — green semi-transparent box disabled"
+  "babyzombieaddons.debug.hitresult.show_off": "§cShowHitResult OFF — green semi-transparent box disabled",
+  "babyzombieaddons.debug.unhide.skyblock_only": "§cThis command only works in SkyBlock",
+  "babyzombieaddons.debug.unhide.revealed": "§aRemoved invisibility from §6%d §aentities (range: §6%d §ablocks)"
 }
