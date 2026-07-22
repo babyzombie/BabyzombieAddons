@@ -22,13 +22,12 @@
     "network.DisconnectedScreenMixin",
     "render.BlockDisplayRendererMixin",
     "render.BossHealthOverlayAccessor",
-    "render.HudAccessor",
-    "render.PlayerTabOverlayAccessor",
     "render.BossHealthOverlayMixin",
     "render.ClientLevelAccessor",
     "render.EntityRenderDispatcherScaleMixin",
     "render.EntityRendererMixin",
     "render.EntityRenderMixin",
+    "render.HudAccessor",
     "render.LevelRendererMixin",
     "render.LivingEntityRendererMixin",
     "render.ParticleEngineMixin",
@@ -62,6 +61,7 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "item.BlockItemMixin",
     "render.ThirdPersonCrosshairMixin"
   ]
 }
