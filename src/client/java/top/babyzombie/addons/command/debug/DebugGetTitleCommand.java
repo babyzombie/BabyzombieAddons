@@ -3,7 +3,7 @@ package top.babyzombie.addons.command.debug;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.Component;
-import top.babyzombie.addons.mixin.render.GuiAccessor;
+import top.babyzombie.addons.mixin.render.HudAccessor;
 import top.babyzombie.addons.util.ChatUtils;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
@@ -20,16 +20,16 @@ public final class DebugGetTitleCommand {
 
     private static void dumpTitle(FabricClientCommandSource src) {
         var gui = src.getClient().gui;
-        var ga = (GuiAccessor) gui;
+        var ha = (HudAccessor) gui.hud;
 
-        var title = ga.getTitle();
-        var subtitle = ga.getSubtitle();
-        var overlay = ga.getOverlayMessageString();
-        int titleTime = ga.getTitleTime();
-        int fadeIn = ga.getTitleFadeInTime();
-        int stay = ga.getTitleStayTime();
-        int fadeOut = ga.getTitleFadeOutTime();
-        int overlayTime = ga.getOverlayMessageTime();
+        var title = ha.getTitle();
+        var subtitle = ha.getSubtitle();
+        var overlay = ha.getOverlayMessageString();
+        int titleTime = ha.getTitleTime();
+        int fadeIn = ha.getTitleFadeInTime();
+        int stay = ha.getTitleStayTime();
+        int fadeOut = ha.getTitleFadeOutTime();
+        int overlayTime = ha.getOverlayMessageTime();
 
         var sb = new StringBuilder();
         sb.append("§6§l=== Title State ===\n");

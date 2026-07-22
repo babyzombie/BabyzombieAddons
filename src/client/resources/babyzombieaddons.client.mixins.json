@@ -22,7 +22,7 @@
     "network.DisconnectedScreenMixin",
     "render.BlockDisplayRendererMixin",
     "render.BossHealthOverlayAccessor",
-    "render.GuiAccessor",
+    "render.HudAccessor",
     "render.PlayerTabOverlayAccessor",
     "render.BossHealthOverlayMixin",
     "render.ClientLevelAccessor",
