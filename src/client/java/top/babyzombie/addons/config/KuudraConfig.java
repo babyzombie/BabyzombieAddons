@@ -55,6 +55,8 @@ public class KuudraConfig {
         public boolean supplyDropoffBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.supplyDropoffBeaconColor", desc = "config.babyzombieaddons.option.supplyDropoffBeaconColor.desc") @SearchTag("supply") @SearchTag("beacon") @SearchTag("color")
         public ChromaColour supplyDropoffBeaconColor = ChromaColour.fromStaticRGB(255, 255, 0, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.ballistaProximityCircles", desc = "config.babyzombieaddons.option.ballistaProximityCircles.desc") @ConfigEditorBoolean @SearchTag("ballista") @SearchTag("circle")
+        public boolean ballistaProximityCircles = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.ballistaProgressText", desc = "config.babyzombieaddons.option.ballistaProgressText.desc") @ConfigEditorBoolean @SearchTag("ballista")
         public boolean ballistaProgressText = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.ballistaTextColor", desc = "config.babyzombieaddons.option.ballistaTextColor.desc") @SearchTag("ballista") @SearchTag("color")
@@ -63,8 +65,6 @@ public class KuudraConfig {
         public boolean ballistaBuildBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.ballistaBeaconColor", desc = "config.babyzombieaddons.option.ballistaBeaconColor.desc") @SearchTag("ballista") @SearchTag("beacon") @SearchTag("color")
         public ChromaColour ballistaBeaconColor = ChromaColour.fromStaticRGB(76, 127, 255, 255);
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.ballistaProximityCircles", desc = "config.babyzombieaddons.option.ballistaProximityCircles.desc") @ConfigEditorBoolean @SearchTag("ballista") @SearchTag("circle")
-        public boolean ballistaProximityCircles = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fuelOrbBeacons", desc = "config.babyzombieaddons.option.fuelOrbBeacons.desc") @ConfigEditorBoolean @SearchTag("fuel")
         public boolean fuelOrbBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.fuelOrbBeaconColor", desc = "config.babyzombieaddons.option.fuelOrbBeaconColor.desc") @SearchTag("fuel") @SearchTag("beacon") @SearchTag("color")
