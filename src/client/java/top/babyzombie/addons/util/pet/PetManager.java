@@ -53,14 +53,13 @@ public final class PetManager {
     private boolean loadoutSwitchPending;
     private long loadoutSwitchPendingTime;
 
-    public boolean isLoadoutSwitchPending() { return loadoutSwitchPending; }
     public void setLoadoutSwitchPending(boolean v) {
         this.loadoutSwitchPending = v;
         if (v) this.loadoutSwitchPendingTime = System.currentTimeMillis();
     }
 
     /** True only if the pending flag was set recently (within 3 seconds). */
-    private boolean isRecentLoadoutSwitch() {
+    public boolean isRecentLoadoutSwitch() {
         return loadoutSwitchPending
             && System.currentTimeMillis() - loadoutSwitchPendingTime < 3_000;
     }
@@ -495,7 +494,7 @@ public final class PetManager {
             cs -> {
                 scanLoadoutPet(cs);
                 if (isRecentLoadoutSwitch()) {
-                    loadoutSwitchPending = false;
+                    setLoadoutSwitchPending(false);
                     if (ModConfigManager.get().skyblock.loadout.autoClose) {
                         var client = Minecraft.getInstance();
                         client.execute(() -> {
@@ -524,7 +523,7 @@ public final class PetManager {
             int col = slotId % 9;
             if (row < 1 || row > 4 || col < 5 || col > 7) return false;
 
-            loadoutSwitchPending = true;
+            setLoadoutSwitchPending(true);
             return false;
         });
     }

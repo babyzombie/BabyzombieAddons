@@ -141,6 +141,44 @@ public final class WorldRenderUtils {
     }
 
     // ═══════════════════════════════════════════════════════════════
+    // Public API — Circle  (LINES_SNIPPET, ground circle in XZ plane)
+    // ═══════════════════════════════════════════════════════════════
+
+    /** Draw a circle on the XZ plane (horizontal / on the ground) with the given radius. */
+    public static void drawCircle(WorldRenderContext context, double centerX, double centerY, double centerZ,
+                                   double radius, float r, float g, float b, float a,
+                                   boolean depthTest, float lineWidth) {
+        drawCircle(context, centerX, centerY, centerZ, radius, r, g, b, a, depthTest, lineWidth, 64);
+    }
+
+    /** Draw a circle on the XZ plane with a custom number of segments. */
+    public static void drawCircle(WorldRenderContext context, double centerX, double centerY, double centerZ,
+                                   double radius, float r, float g, float b, float a,
+                                   boolean depthTest, float lineWidth, int segments) {
+        var pipeline = depthTest ? LINES_DEPTH : LINES_NO_DEPTH;
+        if (linesBuf == null) {
+            linesBuf = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+        }
+        var pose = applyCameraTransform(context);
+
+        double angleStep = 2.0 * Math.PI / segments;
+        for (int i = 0; i < segments; i++) {
+            double a1 = i * angleStep;
+            double a2 = (i + 1) * angleStep;
+            float x1 = (float)(centerX + radius * Math.cos(a1));
+            float z1 = (float)(centerZ + radius * Math.sin(a1));
+            float x2 = (float)(centerX + radius * Math.cos(a2));
+            float z2 = (float)(centerZ + radius * Math.sin(a2));
+            addLineVertex(pose, linesBuf, x1, (float)centerY, z1, r, g, b, a, lineWidth);
+            addLineVertex(pose, linesBuf, x2, (float)centerY, z2, r, g, b, a, lineWidth);
+        }
+
+        context.matrices().popPose();
+        uploadAndDrawLines(pipeline, linesBuf);
+        linesBuf = null;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
     // Vertex builders
     // ═══════════════════════════════════════════════════════════════
 

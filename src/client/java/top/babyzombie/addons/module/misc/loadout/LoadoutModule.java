@@ -39,7 +39,7 @@ public final class LoadoutModule {
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             if (closingGuard > 0) return;
             // autoClose 开启 + pending 时不替换页面（PetManager 会关掉它）
-            if (top.babyzombie.addons.util.pet.PetManager.getInstance().isLoadoutSwitchPending()
+            if (top.babyzombie.addons.util.pet.PetManager.getInstance().isRecentLoadoutSwitch()
                 && ModConfigManager.get().skyblock.loadout.autoClose) return;
             if (!LOADOUT_TITLE.matcher(ChatUtils.stripColor(cs.getTitle().getString())).matches()) return;
             if (!(cs.getMenu() instanceof ChestMenu)) return;
