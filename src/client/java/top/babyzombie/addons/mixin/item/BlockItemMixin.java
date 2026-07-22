@@ -1,5 +1,6 @@
 package top.babyzombie.addons.mixin.item;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -66,14 +67,35 @@ public class BlockItemMixin {
 
         // 花园 — 普通地皮可放置，温室和谷仓不可
         if (tracker.isIn("Garden")) {
+            // 谷仓中心不可建造区域
+            if (isInBarnNoBuildZone(context)) return false;
+
             Plot plot = PlotUtils.getCurrentPlot();
             if (plot == null) return true;          // 无法判断，默认放行
-            if (plot.id() == 0) return false;       // 谷仓（中心）— 不可放置
-            if (GreenhouseDetector.isCurrentPlotGreenhouse()) return false; // 温室 — 不可放置
+            if (GreenhouseDetector.isCurrentPlotGreenhouse()) {
+                return isInGreenhouseBuildArea(plot, context);  // 温室 10×10 建造区
+            }
             return true;                             // 普通地皮 — 可放置
         }
 
         // 其他 SkyBlock 区域 — 不可放置
         return false;
+    }
+
+    /** 温室内 10×10 可建造区域（相对地皮偏移 43-52，高度 73-74）。 */
+    @Unique
+    private static boolean isInGreenhouseBuildArea(Plot plot, BlockPlaceContext context) {
+        BlockPos pos = context.getClickedPos();
+        return pos.getX() >= plot.minX() + 43 && pos.getX() <= plot.minX() + 52
+            && pos.getZ() >= plot.minZ() + 43 && pos.getZ() <= plot.minZ() + 52
+            && pos.getY() >= 73 && pos.getY() <= 74;
+    }
+
+    /** 谷仓中心不可建造区域：X -33~35, Z -47~-5。 */
+    @Unique
+    private static boolean isInBarnNoBuildZone(BlockPlaceContext context) {
+        BlockPos pos = context.getClickedPos();
+        return pos.getX() >= -33 && pos.getX() <= 35
+            && pos.getZ() >= -47 && pos.getZ() <= -5;
     }
 }

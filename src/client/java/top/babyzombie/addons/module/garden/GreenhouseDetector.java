@@ -3,7 +3,11 @@ package top.babyzombie.addons.module.garden;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import top.babyzombie.addons.util.PlayerUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 花园温室检测工具。
@@ -17,11 +21,14 @@ public final class GreenhouseDetector {
     private static final String GREENHOUSE_NPC_SKIN_HASH =
             "cc8d2a5af975c53cf081b531566148bae366141314b35aa5726e97cc97ef118b";
 
-    /// 缓存
-    private static int cachedPlotId = Integer.MIN_VALUE;
-    private static boolean cachedResult;
+    /// 每个地皮的温室检测结果永久缓存（避免 NPC 未加载时误判为普通地皮）
+    private static final Map<Integer, Boolean> greenhouseCache = new HashMap<>();
 
     private GreenhouseDetector() {}
+
+    static {
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> greenhouseCache.clear());
+    }
 
     /**
      * 检测指定地皮是否为温室。
@@ -32,7 +39,8 @@ public final class GreenhouseDetector {
     public static boolean isGreenhouse(Plot plot) {
         if (plot == null) return false;
 
-        if (plot.id() == cachedPlotId) return cachedResult;
+        Boolean cached = greenhouseCache.get(plot.id());
+        if (cached != null) return cached;
 
         var level = Minecraft.getInstance().level;
         if (level == null) return false;
@@ -42,14 +50,13 @@ public final class GreenhouseDetector {
                 e -> e instanceof Player && e != Minecraft.getInstance().player)) {
             var profile = PlayerUtils.getPlayerProfile(entity);
             String skinUrl = PlayerUtils.getSkinTextureUrl(profile);
-            if (skinUrl != null && skinUrl.contains(GREENHOUSE_NPC_SKIN_HASH)) {
+            if (skinUrl != null && skinUrl.endsWith(GREENHOUSE_NPC_SKIN_HASH)) {
                 found = true;
                 break;
             }
         }
 
-        cachedPlotId = plot.id();
-        cachedResult = found;
+        greenhouseCache.put(plot.id(), found);
         return found;
     }
 

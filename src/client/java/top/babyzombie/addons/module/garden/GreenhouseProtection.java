@@ -59,7 +59,6 @@ public final class GreenhouseProtection {
         // ═══ 原版作物 · 盔甲架映射 ═══
         ARMOR_STAND_PROTECTION.put("pumpkin",   () -> cfg().pumpkin);
         ARMOR_STAND_PROTECTION.put("melon",     () -> cfg().melon);
-        ARMOR_STAND_PROTECTION.put("cactus",    () -> cfg().cactus);
         ARMOR_STAND_PROTECTION.put("wildrose",  () -> cfg().roseBush);
         ARMOR_STAND_PROTECTION.put("sunflower", () -> cfg().sunflower);
         ARMOR_STAND_PROTECTION.put("coco",      () -> cfg().coco);
@@ -117,11 +116,16 @@ public final class GreenhouseProtection {
             if (!HypixelLocationTracker.getInstance().isIn("Garden")) return InteractionResult.PASS;
             if (!GreenhouseDetector.isCurrentPlotGreenhouse()) return InteractionResult.PASS;
 
-            // 先扫上方盔甲架（杂交作物优先）
-            String armorStandCrop = getProtectedArmorStandCrop(world, pos);
-            if (armorStandCrop != null) return InteractionResult.FAIL;
+            // 先扫上方盔甲架，判定作物真实类型（杂交作物优先）
+            String armorStandCrop = findArmorStandCropName(world, pos);
+            if (armorStandCrop != null) {
+                // 有盔甲架 → 按杂交作物配置判断，不回落到方块检测
+                BooleanSupplier enabled = ARMOR_STAND_PROTECTION.get(armorStandCrop);
+                if (enabled != null && enabled.getAsBoolean()) return InteractionResult.FAIL;
+                return InteractionResult.PASS;
+            }
 
-            // 否则按原版方块判断
+            // 无盔甲架 → 按原版方块判断
             Block block = world.getBlockState(pos).getBlock();
             BooleanSupplier enabled = BLOCK_PROTECTION.get(block);
             if (enabled != null && enabled.getAsBoolean()) {
@@ -158,11 +162,11 @@ public final class GreenhouseProtection {
     }
 
     /**
-     * 扫描方块上方 ±5 格范围内是否有受保护的盔甲架作物。
+     * 扫描方块上方 ±5 格范围内是否有盔甲架作物。
      *
-     * @return 匹配到的作物名（用于判断杂交作物优先），未匹配返回 null
+     * @return 匹配到的作物名；未匹配返回 null
      */
-    private static String getProtectedArmorStandCrop(Level level, BlockPos pos) {
+    private static String findArmorStandCropName(Level level, BlockPos pos) {
         AABB scanBox = new AABB(
                 pos.getX(), pos.getY() - ARMOR_STAND_SCAN_RANGE_Y, pos.getZ(),
                 pos.getX() + 1, pos.getY() + ARMOR_STAND_SCAN_RANGE_Y + 1, pos.getZ() + 1
@@ -176,8 +180,7 @@ public final class GreenhouseProtection {
             if (clean.isEmpty()) continue;
 
             String baseName = clean.replaceAll("\\d{1,3}$", "");
-            BooleanSupplier enabled = ARMOR_STAND_PROTECTION.get(baseName);
-            if (enabled != null && enabled.getAsBoolean()) {
+            if (ARMOR_STAND_PROTECTION.containsKey(baseName)) {
                 return baseName;
             }
         }
