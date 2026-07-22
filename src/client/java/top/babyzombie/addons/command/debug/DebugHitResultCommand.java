@@ -10,6 +10,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import top.babyzombie.addons.util.render.WorldRenderContext;
 import top.babyzombie.addons.util.render.WorldRenderUtils;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
@@ -24,6 +25,7 @@ public final class DebugHitResultCommand {
     static {
         LevelRenderEvents.AFTER_TRANSLUCENT_FEATURES.register(ctx -> {
             if (!showHitResult) return;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             var mc = Minecraft.getInstance();
             var hit = mc.hitResult;
             if (hit == null) return;

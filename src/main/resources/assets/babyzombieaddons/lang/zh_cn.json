@@ -156,6 +156,8 @@
   "config.babyzombieaddons.option.minionCollectAutoClose.desc": "在小人（Minion）界面点击\"Collect All\"后自动关闭容器界面。",
   "config.babyzombieaddons.option.showInvisibleNameTags": "显示隐身玩家名称标签",
   "config.babyzombieaddons.option.showInvisibleNameTags.desc": "在 SkyBlock 显示隐身玩家的名称标签。",
+  "config.babyzombieaddons.option.disableBlockPlacePrediction": "禁用客户端方块放置预测",
+  "config.babyzombieaddons.option.disableBlockPlacePrediction.desc": "右键方块物品时跳过客户端的预测放置，消除 SkyBlock 中无权限放置时方块闪现的问题。私人岛屿和花园普通地皮自动排除（温室和谷仓仍会取消预测）。",
   "config.babyzombieaddons.option.serverResourcePackAutoAccept": "自动接受服务器资源包",
   "config.babyzombieaddons.option.serverResourcePackAutoAccept.desc": "不弹出确认窗口，自动接受 Hypixel 的服务器资源包。",
   "config.babyzombieaddons.option.skipSecondPerson": "跳过第二人称视角",
@@ -1060,5 +1062,7 @@
   "config.babyzombieaddons.option.copyItemInfo": "复制物品信息",
   "config.babyzombieaddons.option.copyItemInfo.desc": "在容器中指着物品时按下以复制其 NBT/ID。",
   "babyzombieaddons.debug.hitresult.show_on": "§aShowHitResult ON — 绿色半透明盒子已开启",
-  "babyzombieaddons.debug.hitresult.show_off": "§cShowHitResult OFF — 绿色半透明盒子已关闭"
+  "babyzombieaddons.debug.hitresult.show_off": "§cShowHitResult OFF — 绿色半透明盒子已关闭",
+  "babyzombieaddons.debug.unhide.skyblock_only": "§c此指令仅在 SkyBlock 中生效",
+  "babyzombieaddons.debug.unhide.revealed": "§a已移除 §6%d §a个隐身实体的隐身效果（范围: §6%d §a格）"
 }

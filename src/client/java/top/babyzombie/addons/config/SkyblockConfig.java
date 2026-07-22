@@ -38,6 +38,8 @@ public class SkyblockConfig {
     public boolean minionCollectAutoClose = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.showInvisibleNameTags", desc = "config.babyzombieaddons.option.showInvisibleNameTags.desc") @ConfigEditorBoolean @SearchTag("invisible") @SearchTag("nametag")
     public boolean showInvisibleNameTags = false;
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.disableBlockPlacePrediction", desc = "config.babyzombieaddons.option.disableBlockPlacePrediction.desc") @ConfigEditorBoolean @SearchTag("block") @SearchTag("place") @SearchTag("prediction")
+    public boolean disableBlockPlacePrediction = true;
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.autois", desc = "") @Accordion
     public AutoIS autois = new AutoIS();
