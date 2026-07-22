@@ -61,7 +61,7 @@ public final class KuudraPhaseTimer {
 
     private static void show(String phaseKey, long time) {
         String phase = ChatUtils.translate(phaseKey);
-        ChatUtils.showMessage(ChatUtils.translate("kuudra.phase.time", phase, formatTime(time)));
+        ChatUtils.showTranslatable("kuudra.phase.time", phase, formatTime(time));
     }
 
     private static void printSummary(boolean isT5) {

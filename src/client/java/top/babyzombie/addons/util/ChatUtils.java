@@ -31,9 +31,13 @@ public final class ChatUtils {
     }
 
     public static void showMessage(String message) {
+        showMessage(Component.literal(message));
+    }
+
+    public static void showMessage(Component message) {
         var player = Minecraft.getInstance().player;
         if (player != null) {
-            player.sendSystemMessage(Component.literal(message));
+            player.sendSystemMessage(message);
         }
     }
 

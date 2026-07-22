@@ -112,7 +112,6 @@ public final class ItemUtils {
         var gp = getSkullProfile(stack);
         if (gp == null) return null;
         var textures = gp.properties().get("textures");
-        if (textures == null) return null;
         return textures.stream()
                 .filter(Objects::nonNull)
                 .map(Property::value)

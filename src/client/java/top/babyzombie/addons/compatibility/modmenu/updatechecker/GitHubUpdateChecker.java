@@ -36,10 +36,12 @@ public class GitHubUpdateChecker implements UpdateChecker {
             if (release == null) return null;
 
             if (UpdateCheckUtil.isNewer(release.tag(), currentVersion)) {
+                String updateMessage = release.tag() + "-mc" + mcVersion + " from " + release.source();
                 return new SimpleUpdateInfo(
                         true,
                         release.downloadUrl(),
-                        PRERELEASE_PATTERN.matcher(release.tag()).find() ? UpdateChannel.BETA : UpdateChannel.RELEASE
+                        PRERELEASE_PATTERN.matcher(release.tag()).find() ? UpdateChannel.BETA : UpdateChannel.RELEASE,
+                        updateMessage
                 );
             }
         } catch (Exception ignored) {

@@ -19,7 +19,7 @@ public final class NucleusAutoWarp {
             if (!ChatUtils.stripColor(message.getString()).equals("You have already obtained this Crystal!")) return;
 
             if (warpReady == 0 || ServerTick.getTime() - warpReady > 10_000) {
-                ChatUtils.showMessage(net.minecraft.network.chat.Component.translatable("babyzombieaddons.ch.nucleus").getString());
+                ChatUtils.showTranslatable("babyzombieaddons.ch.nucleus");
                 warpReady = ServerTick.getTime();
             } else if (ServerTick.getTime() - warpReady > 500) {
                 ChatUtils.sendCommand("warp nucleus");

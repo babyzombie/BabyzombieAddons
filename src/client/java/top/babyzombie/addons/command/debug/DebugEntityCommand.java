@@ -111,7 +111,7 @@ public final class DebugEntityCommand {
         return 1;
     }
 
-    private static void dumpEntity(FabricClientCommandSource src, Entity entity) {
+    static void dumpEntity(FabricClientCommandSource src, Entity entity) {
         var mc = Minecraft.getInstance();
         var name = ChatUtils.toLegacyString(entity.getName());
 

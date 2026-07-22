@@ -63,10 +63,16 @@ public class KuudraConfig {
         public boolean ballistaBuildBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.ballistaBeaconColor", desc = "config.babyzombieaddons.option.ballistaBeaconColor.desc") @SearchTag("ballista") @SearchTag("beacon") @SearchTag("color")
         public ChromaColour ballistaBeaconColor = ChromaColour.fromStaticRGB(76, 127, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.ballistaProximityCircles", desc = "config.babyzombieaddons.option.ballistaProximityCircles.desc") @ConfigEditorBoolean @SearchTag("ballista") @SearchTag("circle")
+        public boolean ballistaProximityCircles = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fuelOrbBeacons", desc = "config.babyzombieaddons.option.fuelOrbBeacons.desc") @ConfigEditorBoolean @SearchTag("fuel")
         public boolean fuelOrbBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.fuelOrbBeaconColor", desc = "config.babyzombieaddons.option.fuelOrbBeaconColor.desc") @SearchTag("fuel") @SearchTag("beacon") @SearchTag("color")
         public ChromaColour fuelOrbBeaconColor = ChromaColour.fromStaticRGB(255, 0, 0, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.chuckBeacons", desc = "config.babyzombieaddons.option.chuckBeacons.desc") @ConfigEditorBoolean @SearchTag("chuck")
+        public boolean chuckBeacons = false;
+        @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.chuckBeaconColor", desc = "config.babyzombieaddons.option.chuckBeaconColor.desc") @SearchTag("chuck") @SearchTag("beacon") @SearchTag("color")
+        public ChromaColour chuckBeaconColor = ChromaColour.fromStaticRGB(255, 170, 0, 255);
     }
 
     public static class ArrowPoison {
