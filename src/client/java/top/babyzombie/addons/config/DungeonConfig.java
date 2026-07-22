@@ -81,7 +81,8 @@ public class DungeonConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.jukeboxPlaylist", desc = "config.babyzombieaddons.option.jukeboxPlaylist.desc") @ConfigEditorDraggableList
         public List<MusicDisc> playlist = new ArrayList<>(List.of(
                 MusicDisc.CREATOR, MusicDisc.PIGSTEP, MusicDisc.RELIC,
-                MusicDisc.PRECIPICE, MusicDisc.OTHERSIDE, MusicDisc.TEARS));
+                MusicDisc.PRECIPICE, MusicDisc.OTHERSIDE, MusicDisc.TEARS,
+                MusicDisc.BOUNCE));
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.jukeboxShowHud", desc = "config.babyzombieaddons.option.jukeboxShowHud.desc") @ConfigEditorBoolean @SearchTag("hud")
         public boolean showHud = false;
