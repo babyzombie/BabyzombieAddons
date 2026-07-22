@@ -10,6 +10,7 @@
     "render.ClientLevelAccessor",
     "render.BlockDisplayRendererMixin",
     "render.BossHealthOverlayAccessor",
+    "render.GuiAccessor",
     "render.PlayerTabOverlayAccessor",
     "render.BossHealthOverlayMixin",
     "render.EntityRenderDispatcherScaleMixin",

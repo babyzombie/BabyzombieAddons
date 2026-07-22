@@ -69,6 +69,7 @@ public final class BabyzombieAddonsCommand {
             DebugTabListCommand.register(debug);
             DebugScreenCommand.register(debug);
             DebugHitResultCommand.register(debug);
+            DebugGetTitleCommand.register(debug);
 
             FindCommand.register(bza);
             SendCoordsCommand.register(bza);

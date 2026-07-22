@@ -48,7 +48,7 @@ public final class DebugHitResultCommand {
                     if (level == null) return;
                     var state = level.getBlockState(pos);
                     if (state.isAir()) return;
-                    var shape = state.getCollisionShape(level, pos);
+                    var shape = state.getShape(level, pos);
                     if (shape.isEmpty()) return;
                     for (var box : shape.toAabbs()) {
                         WorldRenderUtils.drawFilledBox(renderCtx,
@@ -136,9 +136,9 @@ public final class DebugHitResultCommand {
             }
         }
 
-        // Block collision shape
-        var shape = state.getCollisionShape(level, pos);
-        sb.append("\n§6§l--- Collision Shape ---\n");
+        // Block hit shape (outline)
+        var shape = state.getShape(level, pos);
+        sb.append("\n§6§l--- Hit Shape ---\n");
         if (shape.isEmpty()) {
             sb.append("§7(empty)\n");
         } else {
