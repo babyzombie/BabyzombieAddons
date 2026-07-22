@@ -160,8 +160,10 @@ public final class WorldRenderUtils {
                                    double radius, float r, float g, float b, float a,
                                    boolean depthTest, float lineWidth, int segments) {
         var pipeline = depthTest ? LINES_DEPTH : LINES_NO_DEPTH;
+        var format = pipeline.getVertexFormatBinding(0);
+        if (format == null) return;
         if (linesBuf == null) {
-            linesBuf = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+            linesBuf = new BufferBuilder(ALLOCATOR, PrimitiveTopology.LINES, format);
         }
         var pose = applyCameraTransform(context);
 
