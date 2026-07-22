@@ -17,17 +17,22 @@ public final class AutoRequeue {
 
     private AutoRequeue() {}
 
-    private static final Runnable REVIVE_CHECK = () -> {
-        var player = Minecraft.getInstance().player;
-        if (player == null) return;
-        if (cancelAutoJoin || !waitingForRevive) {
-            reviveCheckRegistered = false;
-            return;
-        }
-        if (!player.isInvisible()) {
-            waitingForRevive = false;
-            reviveCheckRegistered = false;
-            tryRequeue();
+    private static final Runnable REVIVE_CHECK = new Runnable() {
+        @Override
+        public void run() {
+            var player = Minecraft.getInstance().player;
+            if (player == null) return;
+            if (cancelAutoJoin || !waitingForRevive) {
+                reviveCheckRegistered = false;
+                Scheduler.cancel(this);
+                return;
+            }
+            if (!player.isInvisible()) {
+                waitingForRevive = false;
+                reviveCheckRegistered = false;
+                Scheduler.cancel(this);
+                tryRequeue();
+            }
         }
     };
 

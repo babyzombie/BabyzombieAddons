@@ -3,12 +3,16 @@ import com.google.gson.annotations.Expose;
 
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import top.babyzombie.addons.config.ModConfig.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DungeonConfig {
 
@@ -35,6 +39,9 @@ public class DungeonConfig {
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.witherCloak", desc = "") @Accordion
     public WitherCloak witherCloak = new WitherCloak();
 
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.dungeonJukebox", desc = "") @Accordion
+    public DungeonJukebox dungeonJukebox = new DungeonJukebox();
+
     public static class Requeue {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.dungeonRequeue", desc = "config.babyzombieaddons.option.dungeonRequeue.desc") @ConfigEditorDropdown @SearchTag("requeue")
         public RequeueMode dungeonRequeue = RequeueMode.OFF;
@@ -59,5 +66,24 @@ public class DungeonConfig {
         public boolean gravityStormTimer = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideChargedCreepers", desc = "config.babyzombieaddons.option.hideChargedCreepers.desc") @ConfigEditorBoolean @SearchTag("creeper")
         public boolean hideChargedCreepers = false;
+    }
+
+    public static class DungeonJukebox {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.jukeboxEnabled", desc = "config.babyzombieaddons.option.jukeboxEnabled.desc") @ConfigEditorBoolean @SearchTag("jukebox")
+        public boolean enabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.jukeboxAutoToggleMusic", desc = "config.babyzombieaddons.option.jukeboxAutoToggleMusic.desc") @ConfigEditorBoolean @SearchTag("togglemusic")
+        public boolean autoToggleMusic = true;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.jukeboxPlayMode", desc = "config.babyzombieaddons.option.jukeboxPlayMode.desc") @ConfigEditorDropdown @SearchTag("mode")
+        public PlayMode playMode = PlayMode.RANDOM;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.jukeboxPlaylist", desc = "config.babyzombieaddons.option.jukeboxPlaylist.desc") @ConfigEditorDraggableList
+        public List<MusicDisc> playlist = new ArrayList<>(List.of(
+                MusicDisc.CREATOR, MusicDisc.PIGSTEP, MusicDisc.RELIC,
+                MusicDisc.PRECIPICE, MusicDisc.OTHERSIDE, MusicDisc.TEARS));
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.jukeboxShowHud", desc = "config.babyzombieaddons.option.jukeboxShowHud.desc") @ConfigEditorBoolean @SearchTag("hud")
+        public boolean showHud = false;
     }
 }

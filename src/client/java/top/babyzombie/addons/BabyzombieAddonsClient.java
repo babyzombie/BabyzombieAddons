@@ -18,6 +18,7 @@ import top.babyzombie.addons.module.misc.autois.AutoISModule;
 import top.babyzombie.addons.module.misc.autois.KickRecoveryModule;
 import top.babyzombie.addons.module.misc.AutoReconnectHelper;
 import top.babyzombie.addons.module.misc.BazaarSellFromSacks;
+import top.babyzombie.addons.module.dungeon.DungeonJukeboxModule;
 import top.babyzombie.addons.module.dungeon.DungeonModule;
 import top.babyzombie.addons.module.fishing.PreventInstantReel;
 import top.babyzombie.addons.module.fishing.RareSeaCreaturesAlert;
@@ -106,6 +107,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         AutoReconnectHelper.init();
         BazaarSellFromSacks.init();
         DungeonModule.init();
+        DungeonJukeboxModule.init();
         RareSeaCreaturesAlert.init();
         PreventInstantReel.init();
         GardenModule.init();

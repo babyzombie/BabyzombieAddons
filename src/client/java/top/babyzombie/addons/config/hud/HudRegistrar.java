@@ -76,6 +76,12 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.gravityStormTimer",
                 () -> get().dungeon.witherCloak.gravityStormTimer);
 
+        // --- Dungeon Jukebox ---
+        HudManager.register("DungeonJukeboxDisc", 10, 100, 1.5f,
+                "§b♫ §bPigstep",
+                "config.babyzombieaddons.option.jukeboxShowHud",
+                () -> get().dungeon.dungeonJukebox.showHud);
+
         // --- Mining ---
         HudManager.register("SuspiciousScrap", 400, 110, 1.0f,
                 "§6Scraps: §e3/5",
