@@ -356,10 +356,6 @@ public final class PartyModule {
     }
 
     private static void showMsg(String key, Object... args) {
-        var player = Minecraft.getInstance().player;
-        if (player != null) {
-            player.sendSystemMessage(
-                    Component.translatable("babyzombieaddons." + key, args));
-        }
+        ChatUtils.showTranslatable("babyzombieaddons." + key, args);
     }
 }

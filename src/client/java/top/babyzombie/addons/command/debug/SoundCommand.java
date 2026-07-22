@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.event.PlaySoundEvents;
+import top.babyzombie.addons.util.ChatUtils;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
@@ -45,8 +46,7 @@ public final class SoundCommand {
                             .withClickEvent(new ClickEvent.RunCommand("/bza debug getsound " + id))
                             .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
                                     Component.translatable("babyzombieaddons.sound.hover", id))));
-            var player = Minecraft.getInstance().player;
-            if (player != null) player.sendSystemMessage(comp);
+            ChatUtils.showMessage(comp);
             return false;
         });
     }

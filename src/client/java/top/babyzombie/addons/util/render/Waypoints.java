@@ -68,8 +68,7 @@ public final class Waypoints {
             list.add(new Waypoint(name, x, y, z, timeMs, ServerTick.getTime()));
         }
         if (showMsg) {
-            ChatUtils.showMessage(Component.translatable(
-                    "babyzombieaddons.waypoint.added", x, y, z, name).getString());
+            ChatUtils.showTranslatable("babyzombieaddons.waypoint.added", x, y, z, name);
         }
     }
 
@@ -90,11 +89,9 @@ public final class Waypoints {
         }
         if (showMsg) {
             if (removed > 0) {
-                ChatUtils.showMessage(Component.translatable(
-                        "babyzombieaddons.waypoint.deleted", removed, name).getString());
+                ChatUtils.showTranslatable("babyzombieaddons.waypoint.deleted", removed, name);
             } else {
-                ChatUtils.showMessage(Component.translatable(
-                        "babyzombieaddons.waypoint.not_found", name).getString());
+                ChatUtils.showTranslatable("babyzombieaddons.waypoint.not_found", name);
             }
         }
     }

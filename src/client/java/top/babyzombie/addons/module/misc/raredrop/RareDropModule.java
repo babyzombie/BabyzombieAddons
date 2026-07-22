@@ -164,7 +164,7 @@ public final class RareDropModule {
 
     private static void copyToClipboard(String text) {
         Minecraft.getInstance().keyboardHandler.setClipboard(text);
-        ChatUtils.showMessage(ChatUtils.translate("babyzombieaddons.raredrop.copied"));
+        ChatUtils.showTranslatable("babyzombieaddons.raredrop.copied");
     }
 
     public record ShareMode(boolean copy, boolean ac, boolean pc, boolean gc, boolean cc) {}

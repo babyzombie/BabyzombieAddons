@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.UpdateCheckUtil;
 import top.babyzombie.addons.config.ModConfigManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
@@ -56,10 +57,7 @@ public final class UpdateChecker {
                     .append(" ")
                     .append(createDownloadLink(
                             "babyzombieaddons.update.download.gitee", RELEASES_GITEE_URL));
-            client.execute(() -> {
-                var player = client.player;
-                if (player != null) player.sendSystemMessage(finalMsg);
-            });
+            client.execute(() -> ChatUtils.showMessage(finalMsg));
         }, "BZA-UpdateCheck");
         thread.setDaemon(true);
         thread.start();

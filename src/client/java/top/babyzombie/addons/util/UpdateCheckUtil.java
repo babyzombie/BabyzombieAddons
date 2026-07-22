@@ -19,8 +19,20 @@ public final class UpdateCheckUtil {
 
     private UpdateCheckUtil() {}
 
-    /** Holds the latest release tag, download URL, and release body (changelog). */
-    public record ReleaseInfo(String tag, String downloadUrl, String body) {}
+    public enum Source {
+        GITHUB("GitHub"),
+        GITEE("Gitee");
+
+        private final String displayName;
+
+        Source(String displayName) { this.displayName = displayName; }
+
+        @Override
+        public String toString() { return displayName; }
+    }
+
+    /** Holds the latest release tag, download URL, release body (changelog), and source. */
+    public record ReleaseInfo(String tag, String downloadUrl, String body, Source source) {}
 
     /**
      * Fetch the latest release that has an asset matching the given MC version.
@@ -60,7 +72,7 @@ public final class UpdateCheckUtil {
                 if (found != null) {
                     String tag = release.get("tag_name").getAsString();
                     String body = getReleaseBody(release);
-                    return new ReleaseInfo(stripV(tag), found, body);
+                    return new ReleaseInfo(stripV(tag), found, body, Source.GITHUB);
                 }
             }
             throw new RuntimeException("No release with asset matching MC " + mcVersion);
@@ -86,7 +98,7 @@ public final class UpdateCheckUtil {
                 if (found != null) {
                     String tag = release.get("tag_name").getAsString();
                     String body = getReleaseBody(release);
-                    return new ReleaseInfo(stripV(tag), found, body);
+                    return new ReleaseInfo(stripV(tag), found, body, Source.GITEE);
                 }
             }
             throw new RuntimeException("No release with asset matching MC " + mcVersion);

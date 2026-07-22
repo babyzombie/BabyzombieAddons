@@ -31,9 +31,13 @@ public final class ChatUtils {
     }
 
     public static void showMessage(String message) {
+        showMessage(Component.literal(message));
+    }
+
+    public static void showMessage(Component message) {
         var player = Minecraft.getInstance().player;
         if (player != null) {
-            player.sendSystemMessage(Component.literal(message));
+            player.sendSystemMessage(message);
         }
     }
 
@@ -80,7 +84,6 @@ public final class ChatUtils {
 
     public static void showTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         var client = Minecraft.getInstance();
-        if (client.gui == null) return;
         client.gui.setTimes(fadeIn, stay, fadeOut);
         client.gui.setTitle(Component.literal(title));
         if (subtitle != null) {
@@ -98,7 +101,6 @@ public final class ChatUtils {
 
     public static void showTranslatableTitle(String titleKey, String subtitleKey, int fadeIn, int stay, int fadeOut) {
         var client = Minecraft.getInstance();
-        if (client.gui == null) return;
         client.gui.setTimes(fadeIn, stay, fadeOut);
         client.gui.setTitle(Component.translatable(titleKey));
         if (subtitleKey != null) {

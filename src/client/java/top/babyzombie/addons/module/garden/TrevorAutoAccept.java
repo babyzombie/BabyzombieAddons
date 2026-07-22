@@ -48,29 +48,21 @@ public final class TrevorAutoAccept {
                 } else if (text.equals("Return to the Trapper soon to get a new animal to hunt!")) {
                     long elapsed = ServerTick.getTime() - taskStartTime;
                     if (taskStartTime == 0 || elapsed >= 31000) {
-                        var player = Minecraft.getInstance().player;
-                        if (player != null) {
-                            var btn = Component.translatable("babyzombieaddons.trevor.auto_call_disable_btn")
-                                    .withStyle(style -> style
-                                            .withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/bza trevorautocall"))
-                                            .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
-                                                    Component.translatable("babyzombieaddons.trevor.auto_call_disable_hover"))));
-                            player.sendSystemMessage(
-                                    Component.translatable("babyzombieaddons.trevor.auto_call").append(" ").append(btn));
-                        }
+                        var btn = Component.translatable("babyzombieaddons.trevor.auto_call_disable_btn")
+                                .withStyle(style -> style
+                                        .withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/bza trevorautocall"))
+                                        .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
+                                                Component.translatable("babyzombieaddons.trevor.auto_call_disable_hover"))));
+                        ChatUtils.showMessage(Component.translatable("babyzombieaddons.trevor.auto_call").append(" ").append(btn));
                         doCall();
                     } else {
                         waitingToCall = true;
-                        var player = Minecraft.getInstance().player;
-                        if (player != null) {
-                            var btn = Component.translatable("babyzombieaddons.trevor.auto_call_disable_btn")
-                                    .withStyle(style -> style
-                                            .withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/bza trevorautocall"))
-                                            .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
-                                                    Component.translatable("babyzombieaddons.trevor.auto_call_disable_hover"))));
-                            player.sendSystemMessage(
-                                    Component.translatable("babyzombieaddons.trevor.auto_call_wait").append(" ").append(btn));
-                        }
+                        var btn = Component.translatable("babyzombieaddons.trevor.auto_call_disable_btn")
+                                .withStyle(style -> style
+                                        .withClickEvent(new net.minecraft.network.chat.ClickEvent.RunCommand("/bza trevorautocall"))
+                                        .withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
+                                                Component.translatable("babyzombieaddons.trevor.auto_call_disable_hover"))));
+                        ChatUtils.showMessage(Component.translatable("babyzombieaddons.trevor.auto_call_wait").append(" ").append(btn));
                     }
                 }
             }
