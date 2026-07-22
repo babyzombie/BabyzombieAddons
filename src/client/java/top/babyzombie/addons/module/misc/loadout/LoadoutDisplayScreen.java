@@ -358,8 +358,15 @@ public class LoadoutDisplayScreen extends Screen {
             else if (em) g.centeredText(this.font, "§7空", cx + cell / 2, cy + 2, 0xFF888888);
 
             String nm = ChatUtils.stripColor(ps.getHoverName().getString());
-            if (this.font.width(nm) > cell) nm = this.font.plainSubstrByWidth(nm, cell - 4) + "..";
-            g.centeredText(this.font, nm, cx + cell / 2, cy + cell + 2, 0xFF55FF55);
+            float nameScale = 1.3f;
+            int maxWidth = (int) ((cell - 4) / nameScale);
+            if (this.font.width(nm) > maxWidth) nm = this.font.plainSubstrByWidth(nm, maxWidth - this.font.width("..")) + "..";
+            var pose = g.pose();
+            pose.pushMatrix();
+            pose.translate(cx + cell / 2f, cy + cell - 2);
+            pose.scale(nameScale, nameScale);
+            g.centeredText(this.font, nm, 0, -this.font.lineHeight, 0xFF55FF55);
+            pose.popMatrix();
 
             if (mx >= cx && mx < cx + cell && my >= cy && my < cy + cell) { hp = i; hoveredItem = ps; }
         }
