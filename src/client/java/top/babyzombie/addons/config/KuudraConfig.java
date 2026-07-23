@@ -33,6 +33,8 @@ public class KuudraConfig {
     public boolean muteCrimsonArmor = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.nopeMagmafish", desc = "config.babyzombieaddons.option.nopeMagmafish.desc") @ConfigEditorBoolean @SearchTag("magmafish")
     public boolean nopeMagmafish = false;
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.etherwarpLavaPrevent", desc = "config.babyzombieaddons.option.etherwarpLavaPrevent.desc") @ConfigEditorBoolean @SearchTag("etherwarp") @SearchTag("lava")
+    public boolean etherwarpLavaPrevent = false;
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.waypoints", desc = "") @Accordion
     public Waypoints waypoints = new Waypoints();

@@ -5,6 +5,8 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
 import top.babyzombie.addons.util.ChatUtils;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
@@ -49,20 +51,16 @@ final class SendCoordsCommand {
         var pos = player.blockPosition();
         if (mode.equals("LookingAt")) {
             var eyePos = player.getEyePosition();
-            var lookVec = player.getViewVector(1.0f);
+            var lookVec = player.getViewVector(1.0F);
             var farPoint = eyePos.add(lookVec.scale(500.0));
-            var hit = player.level().clip(new net.minecraft.world.level.ClipContext(
-                    eyePos, farPoint,
-                    net.minecraft.world.level.ClipContext.Block.OUTLINE,
-                    net.minecraft.world.level.ClipContext.Fluid.NONE,
-                    player));
-            if (hit.getType() != net.minecraft.world.phys.HitResult.Type.MISS)
-                pos = hit.getBlockPos();
-            else {
+            var hit = player.level().clip(new ClipContext(eyePos, farPoint,
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+            if (hit.getType() == HitResult.Type.MISS) {
                 ctx.getSource().sendFeedback(
                         Component.translatable("babyzombieaddons.sendcoords.no_target"));
                 return 1;
             }
+            pos = hit.getBlockPos();
         }
         String msg = String.format("x: %d, y: %d, z: %d", pos.getX(), pos.getY(), pos.getZ());
         if (suffix != null && !suffix.isEmpty()) msg += ", " + suffix;

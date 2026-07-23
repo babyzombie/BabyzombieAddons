@@ -357,6 +357,8 @@
   "config.babyzombieaddons.option.muteCrimsonArmor.desc": "Cancel piston sound when Crimson Isle armor stacks are full (10 stacks).",
   "config.babyzombieaddons.option.nopeMagmafish": "Nope. that's just a Magmafish!",
   "config.babyzombieaddons.option.nopeMagmafish.desc": "Show a title when Elle says \"Nope, that's just a Magmafish!\".",
+  "config.babyzombieaddons.option.etherwarpLavaPrevent": "Etherwarp Lava Prevent",
+  "config.babyzombieaddons.option.etherwarpLavaPrevent.desc": "Cancel etherwarp teleport if the destination block is lava (Kuudra only).",
   "config.babyzombieaddons.option.pigmanSwordTimer": "Pigman Sword CD Timer",
   "config.babyzombieaddons.option.pigmanSwordTimer.desc": "Show cooldown timer on HUD after Pigman Sword triggers.",
   "config.babyzombieaddons.option.holyIceTimer": "Holy Ice Timer",

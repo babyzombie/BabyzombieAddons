@@ -357,6 +357,8 @@
   "config.babyzombieaddons.option.muteCrimsonArmor.desc": "当地狱套装（Crimson/Terror/Aurora/Fervor）层数叠满时自动静音活塞声音。",
   "config.babyzombieaddons.option.nopeMagmafish": "Nope. that's just a Magmafish!",
   "config.babyzombieaddons.option.nopeMagmafish.desc": "当 Elle 说出 \"Nope, that's just a Magmafish!\" 时显示 Title。",
+  "config.babyzombieaddons.option.etherwarpLavaPrevent": "Etherwarp 防岩浆",
+  "config.babyzombieaddons.option.etherwarpLavaPrevent.desc": "在 Kuudra 里用带 Etherwarp 的传送剑时，如果目标位置上方是岩浆就取消传送。",
   "config.babyzombieaddons.option.pigmanSwordTimer": "猪人剑冷却计时",
   "config.babyzombieaddons.option.pigmanSwordTimer.desc": "猪人剑触发后在屏幕上显示冷却计时器。",
   "config.babyzombieaddons.option.holyIceTimer": "Holy Ice 计时",
