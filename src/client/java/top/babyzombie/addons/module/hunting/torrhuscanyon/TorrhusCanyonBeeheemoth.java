@@ -87,7 +87,7 @@ public final class TorrhusCanyonBeeheemoth {
 
             int color = cfg.glowColor.getEffectiveColourRGB();
             BeamRenderer.drawBeam(ctx,
-                    bee.getX(), bee.getY(), bee.getZ(),
+                    bee.getX(), bee.getY() + 2, bee.getZ(),
                     BEAM_HEIGHT, BEAM_HALF_WIDTH, color);
         });
     }
