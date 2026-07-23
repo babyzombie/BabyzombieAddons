@@ -18,6 +18,7 @@ public final class KuudraModule {
         KuudraFollowerHelmetPrice.init();
         CrimsonArmorPistonMute.init();
         KuudraNopeMagmafish.init();
+        KuudraEtherwarpLavaPrevent.init();
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             KuudraLocationTracker.reset();
