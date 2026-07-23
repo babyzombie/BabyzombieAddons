@@ -1051,6 +1051,8 @@
   "config.babyzombieaddons.option.beeheemothHighlightMode.GLOW": "发光（穿墙）",
   "config.babyzombieaddons.option.beeheemothHighlightMode.BEACON": "信标",
   "config.babyzombieaddons.option.beeheemothHighlightMode.BOTH": "同时",
+  "config.babyzombieaddons.option.templePuzzle": "神庙解密辅助",
+  "config.babyzombieaddons.option.templePuzzle.desc": "在 Torrhus Canyon 地下神庙中显示解密辅助。第一关高亮要按的按钮，第二关显示雕像正确朝向。",
   "config.babyzombieaddons.group.loadout": "装备配置显示",
   "config.babyzombieaddons.option.loadoutGui": "启用自定义 Loadout GUI",
   "config.babyzombieaddons.option.loadoutGui.desc": "用自定义界面替换 Hypixel 的原版 Loadout 箱子页面，显示玩家/盔甲架模型。§c需要 Skyblocker。§r",
