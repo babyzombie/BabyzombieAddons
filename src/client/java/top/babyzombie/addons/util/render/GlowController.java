@@ -20,6 +20,9 @@ public final class GlowController {
     /** EntityRenderState 上标记该实体是否需要深度测试发光 */
     public static final RenderStateDataKey<Boolean> NEEDS_DEPTH_TEST =
         RenderStateDataKey.create(() -> "babyzombie_needs_depth_test");
+    /** 深度测试实体的 outline 颜色（不写 outlineColor 以免触发原版 outline） */
+    public static final RenderStateDataKey<Integer> DEPTH_GLOW_COLOR =
+        RenderStateDataKey.create(() -> "babyzombie_depth_glow_color");
 
     // ==================== 实体发光 ====================
     private static final Map<UUID, Integer> GLOW_DATA = new ConcurrentHashMap<>();

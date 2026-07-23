@@ -21,7 +21,14 @@ public class EntityRendererMixin {
     @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void onExtractRenderState(Entity entity, EntityRenderState state, float tickDelta, CallbackInfo ci) {
         if (GlowController.shouldGlow(entity)) {
-            state.outlineColor = ARGB.opaque(GlowController.getGlowColor(entity));
+            int color = ARGB.opaque(GlowController.getGlowColor(entity));
+            if (GlowController.isDepthTestEnabled(entity)) {
+                // 不设 outlineColor：阻止原版 outline（无深度测试），由 SubmitNodeCollectionMixin 代为提交自定义 outline
+                state.setData(GlowController.NEEDS_DEPTH_TEST, true);
+                state.setData(GlowController.DEPTH_GLOW_COLOR, color);
+            } else {
+                state.outlineColor = color;
+            }
         }
     }
 }
