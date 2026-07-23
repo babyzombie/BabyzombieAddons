@@ -2,8 +2,10 @@ package top.babyzombie.addons.module.hunting.safari;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.render.GlowController;
@@ -25,6 +27,11 @@ public final class SafariEntitiesGlow {
     private static final int SCULK_SENSOR_RANGE = 32;
     private static final int SCULK_SENSOR_RANGE_SQ = SCULK_SENSOR_RANGE * SCULK_SENSOR_RANGE;
 
+    // Warden 战斗场地范围
+    private static final int ARENA_X_MIN = -18, ARENA_X_MAX = 24;
+    private static final int ARENA_Y_MIN = 45, ARENA_Y_MAX = 62;
+    private static final int ARENA_Z_MIN = -39, ARENA_Z_MAX = -13;
+
     /** 上一次 tick 高亮的较频幽匿感测体位置 */
     private static final Set<BlockPos> sculkSensorHighlighted = new HashSet<>();
 
@@ -43,9 +50,15 @@ public final class SafariEntitiesGlow {
             // === 实体发光 ===
             if (glowShulker || glowHideyho) {
                 for (var entity : client.level.entitiesForRendering()) {
-                    if (glowShulker && entity instanceof Shulker shulker) {
+                    if (glowShulker) {
                         int argb = cfg.safari.shulkerGlowColor.getEffectiveColourRGB();
-                        GlowController.setGlow(shulker, true, argb, true);
+                        if (entity instanceof Shulker shulker) {
+                            GlowController.setGlow(shulker, true, argb, true);
+                        } else if (entity instanceof Display.ItemDisplay itemDisplay
+                                && BuiltInRegistries.ITEM.getKey(itemDisplay.getItemStack().getItem())
+                                    .getPath().contains("shulker_box")) {
+                            GlowController.setGlow(itemDisplay, true, argb, true);
+                        }
                     }
                     if (glowHideyho && entity instanceof Player player
                             && HIDEYHO_NAME.equals(player.getName().getString())) {
@@ -55,7 +68,7 @@ public final class SafariEntitiesGlow {
             }
 
             // === 较频幽匿感测体方块发光 ===
-            if (glowSculkSensor) {
+            if (glowSculkSensor && isInArena(client.player.blockPosition())) {
                 int sculkColor = cfg.safari.sculkSensorGlowColor.getEffectiveColourRGB();
                 var level = client.level;
                 var playerPos = client.player.blockPosition();
@@ -104,5 +117,11 @@ public final class SafariEntitiesGlow {
                 }
             }
         });
+    }
+
+    private static boolean isInArena(BlockPos pos) {
+        return pos.getX() >= ARENA_X_MIN && pos.getX() <= ARENA_X_MAX
+            && pos.getY() >= ARENA_Y_MIN && pos.getY() <= ARENA_Y_MAX
+            && pos.getZ() >= ARENA_Z_MIN && pos.getZ() <= ARENA_Z_MAX;
     }
 }
