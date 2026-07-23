@@ -60,5 +60,7 @@ public class HuntingConfig {
         public BeeheemothHighlightMode highlightMode = BeeheemothHighlightMode.OFF;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.beeheemothGlowColor", desc = "config.babyzombieaddons.option.beeheemothGlowColor.desc") @ConfigEditorColour @SearchTag("torrhus")
         public ChromaColour glowColor = ChromaColour.fromStaticRGB(170, 0, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.templePuzzle", desc = "config.babyzombieaddons.option.templePuzzle.desc") @ConfigEditorBoolean @SearchTag("torrhus") @SearchTag("temple")
+        public boolean templePuzzle = false;
     }
 }

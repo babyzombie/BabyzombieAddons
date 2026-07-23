@@ -1,11 +1,7 @@
 package top.babyzombie.addons.config;
 import com.google.gson.annotations.Expose;
 
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
-import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
-import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
+import io.github.notenoughupdates.moulconfig.annotations.*;
 import io.github.notenoughupdates.moulconfig.observer.Property;
 import org.lwjgl.glfw.GLFW;
 
@@ -16,6 +12,18 @@ public class MiscConfig {
     @ConfigEditorBoolean
     @SearchTag("wide")
     public Property<Boolean> wideMoulConfig = Property.of(false);
+
+    @Expose
+    @ConfigOption(name = "config.babyzombieaddons.option.showClickEventInHover", desc = "config.babyzombieaddons.option.showClickEventInHover.desc")
+    @ConfigEditorBoolean
+    @SearchTag("hover")
+    public boolean showClickEventInHover = false;
+
+    @Expose
+    @ConfigOption(name = "config.babyzombieaddons.option.renderPhase", desc = "config.babyzombieaddons.option.renderPhase.desc")
+    @ConfigEditorDropdown
+    @SearchTag("render")
+    public ModConfig.WorldRenderPhase renderPhase = ModConfig.WorldRenderPhase.AFTER_ENTITIES;
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.debugMode", desc = "config.babyzombieaddons.option.debugMode.desc")
@@ -46,10 +54,4 @@ public class MiscConfig {
     @ConfigEditorSlider(minValue = 1, maxValue = 60, minStep = 1)
     @SearchTag("visit")
     public int serverVisitExpireMinutes = 10;
-
-    @Expose
-    @ConfigOption(name = "config.babyzombieaddons.option.showClickEventInHover", desc = "config.babyzombieaddons.option.showClickEventInHover.desc")
-    @ConfigEditorBoolean
-    @SearchTag("hover")
-    public boolean showClickEventInHover = false;
 }

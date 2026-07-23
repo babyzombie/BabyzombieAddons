@@ -27,6 +27,9 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.ServerTick;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public final class PopupEventsModule {
@@ -61,6 +64,8 @@ public final class PopupEventsModule {
             this.sound = sound;
         }
     }
+
+    private static final List<Float> lllllava = Arrays.asList(0.9f, 2.45f, 40.7f, 42.2f);
 
     private enum EventType {
         PARTY("party_invite"), GUILD_PARTY("guild_party_invite"),
@@ -213,7 +218,7 @@ public final class PopupEventsModule {
                     SoundInstance.Attenuation.NONE,
                     0, 0, 0, true
             );
-            PlaySoundHelper.playSeeked(instance, 0.9f, 1.5f);
+            PlaySoundHelper.playSeeked(instance, lllllava.get((int) (Math.random() * lllllava.size())), 1.5f);
         } else {
             player.level().playSound(player, player.blockPosition(),
                     popupSound.sound, SoundSource.MASTER, 1f, 1f);

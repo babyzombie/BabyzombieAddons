@@ -11,11 +11,11 @@ public final class RenderPhaseRegister {
 
     public static void register(Consumer<WorldRenderContext> renderer) {
         LevelRenderEvents.AFTER_TRANSLUCENT_FEATURES.register(ctx -> {
-            if (ModConfigManager.get().general.renderPhase != WorldRenderPhase.AFTER_ENTITIES) return;
+            if (ModConfigManager.get().misc.renderPhase != WorldRenderPhase.AFTER_ENTITIES) return;
             renderer.accept(WorldRenderContext.from(ctx));
         });
         LevelRenderEvents.END_MAIN.register(ctx -> {
-            if (ModConfigManager.get().general.renderPhase != WorldRenderPhase.END_MAIN) return;
+            if (ModConfigManager.get().misc.renderPhase != WorldRenderPhase.END_MAIN) return;
             renderer.accept(WorldRenderContext.from(ctx));
         });
     }

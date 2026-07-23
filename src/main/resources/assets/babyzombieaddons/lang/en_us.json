@@ -1051,6 +1051,8 @@
   "config.babyzombieaddons.option.beeheemothHighlightMode.GLOW": "Glow (through walls)",
   "config.babyzombieaddons.option.beeheemothHighlightMode.BEACON": "Beacon",
   "config.babyzombieaddons.option.beeheemothHighlightMode.BOTH": "Both",
+  "config.babyzombieaddons.option.templePuzzle": "Temple Puzzle Helper",
+  "config.babyzombieaddons.option.templePuzzle.desc": "Show puzzle helpers in the Torrhus Canyon underground temple. Puzzle 1 highlights the button to press, Puzzle 2 shows correct statue directions.",
   "config.babyzombieaddons.group.loadout": "Loadout Display",
   "config.babyzombieaddons.option.loadoutGui": "Custom Loadout GUI",
   "config.babyzombieaddons.option.loadoutGui.desc": "Replace Hypixel's vanilla Loadout chest page with a custom screen showing player / armor stand models. §cRequires Skyblocker.§r",

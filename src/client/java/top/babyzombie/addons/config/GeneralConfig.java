@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText;
@@ -12,7 +11,6 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
-import top.babyzombie.addons.config.ModConfig.*;
 import top.babyzombie.addons.config.hud.HudManager;
 
 public class GeneralConfig {
@@ -35,9 +33,6 @@ public class GeneralConfig {
     public int secondPerson = GLFW.GLFW_KEY_UNKNOWN;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.useTpsAdjustedTime", desc = "config.babyzombieaddons.option.useTpsAdjustedTime.desc") @ConfigEditorBoolean @SearchTag("tps")
     public boolean useTpsAdjustedTime = false;
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.renderPhase", desc = "config.babyzombieaddons.option.renderPhase.desc") @ConfigEditorDropdown @SearchTag("render")
-    public WorldRenderPhase renderPhase = WorldRenderPhase.AFTER_ENTITIES;
-
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.autotip", desc = "") @Accordion
     public Autotip autotip = new Autotip();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.chat", desc = "") @Accordion
