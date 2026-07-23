@@ -5,6 +5,7 @@ import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorColour;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import io.github.notenoughupdates.moulconfig.ChromaColour;
@@ -38,6 +39,16 @@ public class HuntingConfig {
         public ChromaColour shulkerGlowColor = ChromaColour.fromStaticRGB(0, 255, 255, 255);
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariHideyhoGlow", desc = "config.babyzombieaddons.option.safariHideyhoGlow.desc") @ConfigEditorBoolean @SearchTag("safari")
         public boolean hideyhoGlow = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariWumpaRecord", desc = "config.babyzombieaddons.option.safariWumpaRecord.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("wumpa")
+        public boolean wumpaRecord = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariWardenGlow", desc = "config.babyzombieaddons.option.safariWardenGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("warden")
+        public boolean wardenGlow = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariWardenCooldownTicks", desc = "config.babyzombieaddons.option.safariWardenCooldownTicks.desc") @ConfigEditorSlider(minValue = 50, maxValue = 300, minStep = 1) @SearchTag("safari") @SearchTag("warden")
+        public int wardenCooldownTicks = 140;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariWardenGlowCooldownColor", desc = "config.babyzombieaddons.option.safariWardenGlowCooldownColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("warden")
+        public ChromaColour wardenGlowCooldownColor = ChromaColour.fromStaticRGB(255, 80, 80, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariWardenGlowReadyColor", desc = "config.babyzombieaddons.option.safariWardenGlowReadyColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("warden")
+        public ChromaColour wardenGlowReadyColor = ChromaColour.fromStaticRGB(80, 255, 80, 255);
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariSculkSensorGlow", desc = "config.babyzombieaddons.option.safariSculkSensorGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("warden")
         public boolean sculkSensorGlow = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariSculkSensorGlowColor", desc = "config.babyzombieaddons.option.safariSculkSensorGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("warden")

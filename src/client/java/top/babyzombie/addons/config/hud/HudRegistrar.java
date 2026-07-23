@@ -114,6 +114,12 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.autois",
                 () -> get().skyblock.autois.enabled);
 
+        // --- Wumpa Record ---
+        HudManager.register("WumpaRecord", 10, 300, 1.0f,
+                "§b§lWumpa Record\n§a✔ §fStrongarm\n§a✔ §fTepid\n§a✔ §fMantis Shrimp\n§a✔ §fNozzlenose\n§a✔ §fPolaris\n§a✔ §fShuddersquid\n§a✔ §fBillygoat\n§6§lWumpa 可以生成!",
+                "config.babyzombieaddons.option.safariWumpaRecord",
+                () -> get().hunting.safari.wumpaRecord);
+
         // --- Cake Buff ---
         HudManager.register("CakeBuffTracker", 10, 50, 1.0f,
                 "§c10\uE010 Health   §a✔\n"
