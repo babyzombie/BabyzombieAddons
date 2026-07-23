@@ -1,59 +1,71 @@
 package top.babyzombie.addons.mixin.render;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.renderer.LevelRenderer;
-import org.jspecify.annotations.Nullable;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
-import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.babyzombie.addons.util.render.GlowController;
-import top.babyzombie.addons.util.render.GlowRenderer;
+import top.babyzombie.addons.util.render.DepthTestGlowRenderer;
+import top.babyzombie.addons.util.render.DepthTestSubmitTracker;
 
 /**
- * 在 entity_outline target 清空后、submitEntities 之前，
- * 将主场景深度拷贝到 entity_outline 的深度纹理中。
- * 配合 {@link RenderPipelineMixin} 启用 OUTLINE 管线的深度测试，
- * 实现不透墙的实体发光。
+ * - 追踪 submitEntities 中当前实体的 EntityRenderState（通过 ThreadLocal）
+ * - 在原版 endOutlineBatch 后拷贝深度 + 刷新深度测试发光缓冲区
  */
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
 
-    @Shadow
-    private @Nullable RenderTarget entityOutlineTarget;
-
+    // ── 深度拷贝（entity_outline 清空后，实体渲染前） ──
     @Inject(
-            method = {"lambda$addMainPass$0"},
-            slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;shouldShowEntityOutlines()Z")
-            ),
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lcom/mojang/blaze3d/systems/CommandEncoder;clearColorAndDepthTextures(Lcom/mojang/blaze3d/textures/GpuTexture;ILcom/mojang/blaze3d/textures/GpuTexture;D)V",
-                    ordinal = 0,
-                    shift = Shift.AFTER
-            )
+        method = "lambda$addMainPass$0",
+        slice = @Slice(from = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;shouldShowEntityOutlines()Z")),
+        at = @At(value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/systems/CommandEncoder;clearColorAndDepthTextures"
+                + "(Lcom/mojang/blaze3d/textures/GpuTexture;ILcom/mojang/blaze3d/textures/GpuTexture;D)V",
+            ordinal = 0, shift = At.Shift.AFTER)
     )
-    private void onOutlineTargetCleared(CallbackInfo ci) {
-        if (!GlowController.isAnyDepthTestRequested()) return;
-        if (entityOutlineTarget == null) return;
+    private void copyDepthForGlow(CallbackInfo ci) {
+        DepthTestGlowRenderer.getInstance().updateDepth();
+    }
 
-        var mainDepth = GlowRenderer.getMainDepthTexture();
-        var outlineDepth = entityOutlineTarget.getDepthTexture();
-        if (mainDepth == null || outlineDepth == null) return;
-        if (mainDepth.getWidth(0) != outlineDepth.getWidth(0)
-                || mainDepth.getHeight(0) != outlineDepth.getHeight(0)) return;
+    // ── 追踪当前实体 → ThreadLocal ──
+    @Inject(method = "submitEntities", at = @At(
+        value = "INVOKE",
+        target = "Lnet/minecraft/client/renderer/entity/EntityRenderDispatcher;submit"
+            + "(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;"
+            + "Lnet/minecraft/client/renderer/state/level/CameraRenderState;"
+            + "DDDLcom/mojang/blaze3d/vertex/PoseStack;"
+            + "Lnet/minecraft/client/renderer/SubmitNodeCollector;)V")
+    )
+    private void markCurrentEntity(CallbackInfo ci,
+            @Local(name = "state") EntityRenderState state) {
+        DepthTestSubmitTracker.CURRENT_ENTITY_STATE.set(state);
+    }
 
-        RenderSystem.getDevice().createCommandEncoder().copyTextureToTexture(
-                mainDepth, outlineDepth,
-                0, 0, 0, 0, 0,
-                mainDepth.getWidth(0), mainDepth.getHeight(0)
-        );
+    @Inject(method = "submitEntities", at = @At(
+        value = "INVOKE",
+        target = "Lnet/minecraft/client/renderer/entity/EntityRenderDispatcher;submit"
+            + "(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;"
+            + "Lnet/minecraft/client/renderer/state/level/CameraRenderState;"
+            + "DDDLcom/mojang/blaze3d/vertex/PoseStack;"
+            + "Lnet/minecraft/client/renderer/SubmitNodeCollector;)V",
+        shift = At.Shift.AFTER)
+    )
+    private void clearCurrentEntity(CallbackInfo ci) {
+        DepthTestSubmitTracker.CURRENT_ENTITY_STATE.remove();
+    }
 
-        GlowRenderer.markDepthTestActive();
+    // ── 自定义发光缓冲区刷新 ──
+    @Inject(method = "lambda$addMainPass$0", at = @At(
+        value = "INVOKE",
+        target = "Lnet/minecraft/client/renderer/OutlineBufferSource;endOutlineBatch()V",
+        shift = At.Shift.AFTER))
+    private void flushDepthTestOutlines(CallbackInfo ci) {
+        DepthTestGlowRenderer.getInstance().endBatch();
+        DepthTestSubmitTracker.clear();
     }
 }

@@ -22,6 +22,9 @@ public class EntityRendererMixin {
     private void onExtractRenderState(Entity entity, EntityRenderState state, float tickDelta, CallbackInfo ci) {
         if (GlowController.shouldGlow(entity)) {
             state.outlineColor = ARGB.opaque(GlowController.getGlowColor(entity));
+            if (GlowController.isDepthTestEnabled(entity)) {
+                state.setData(GlowController.NEEDS_DEPTH_TEST, true);
+            }
         }
     }
 }

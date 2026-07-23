@@ -64,6 +64,9 @@ dependencies {
     // Core API — compile only, provided at runtime by the Fabric wrapper above
     clientImplementation("net.hypixel:mod-api:${project.hm_api_version}")
 
+    // MixinExtras
+    include(clientImplementation("io.github.llamalad7:mixinextras-fabric:${project.mixinextras_version}"))
+
     // MoulConfig (config GUI)
     include(clientImplementation("org.notenoughupdates.moulconfig:${project.moulconfig_version}"))
 
