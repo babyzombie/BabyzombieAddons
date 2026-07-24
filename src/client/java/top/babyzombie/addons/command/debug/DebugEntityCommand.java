@@ -141,6 +141,7 @@ public final class DebugEntityCommand {
         }
         if (entity.isInvisible()) nameLine.append(Tstr("debug.entity.invisible"));
         if (entity.isCurrentlyGlowing()) nameLine.append(Tstr("debug.entity.glowing"));
+        if (entity instanceof LivingEntity le && le.isBaby()) nameLine.append(Tstr("debug.entity.baby"));
 
         nameLine.append(" §7(").append(className).append(")");
 
@@ -153,6 +154,11 @@ public final class DebugEntityCommand {
         var scaleStr = getEntityScale(entity);
         if (scaleStr != null) {
             nameHover += "\n" + Tstr("debug.entity.scale", scaleStr);
+        }
+
+        // Add isBaby to hover for LivingEntity
+        if (entity instanceof LivingEntity le) {
+            nameHover += "\n" + Tstr("debug.entity.is_baby", le.isBaby());
         }
 
         // For player entities, append skin texture URL at the bottom of hover
