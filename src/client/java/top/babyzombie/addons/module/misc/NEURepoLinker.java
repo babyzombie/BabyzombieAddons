@@ -50,7 +50,7 @@ public final class NEURepoLinker {
      * 按钮回调：关闭配置界面后异步执行链接创建。
      */
     public static void startLinking() {
-        Minecraft.getInstance().setScreen(null);
+        Minecraft.getInstance().gui.setScreen(null);
         CompletableFuture.runAsync(() -> {
             try {
                 doLink();
