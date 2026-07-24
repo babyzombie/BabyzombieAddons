@@ -87,7 +87,7 @@ public class HypixelLocationTracker {
             ChatUtils.showMessage("§7[ModAPI] §aLocation §7→ §f" + packet);
         }
 
-        HypixelLocationEvents.LOCATION_UPDATE.invoker().onLocationUpdate(currentLocation);
+        HypixelLocationEvents.LOCATION_UPDATE.invoker().onLocationUpdate(this);
     }
 
     private void onGameMessage(Component message, boolean overlay) {

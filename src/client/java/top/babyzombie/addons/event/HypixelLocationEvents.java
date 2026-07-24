@@ -3,6 +3,7 @@ package top.babyzombie.addons.event;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import top.babyzombie.addons.util.tracker.HypixelLocationData;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 /**
  * Fired when the Hypixel Mod API sends a location update packet.
@@ -19,7 +20,7 @@ public final class HypixelLocationEvents {
 
     @FunctionalInterface
     public interface LocationUpdate {
-        void onLocationUpdate(HypixelLocationData data);
+        void onLocationUpdate(HypixelLocationTracker data);
     }
 
     private HypixelLocationEvents() {}
