@@ -97,10 +97,21 @@ public class ModConfig extends Config {
         @Override public String toString() { return t("config.babyzombieaddons.option.loadoutEntityRenderMode." + name()); }
     }
     public enum MusicDisc {
-        DISC_5, DISC_11, DISC_13, BLOCKS, CAT, CHIRP, FAR,
-        LAVA_CHICKEN, MALL, MELLOHI, PIGSTEP, STAL, STRAD,
-        WAIT, WARD, OTHERSIDE, RELIC, CREATOR,
-        CREATOR_MUSIC_BOX, PRECIPICE, TEARS;
+        DISC_5(178), DISC_11(71), DISC_13(178), BLOCKS(345), CAT(185), CHIRP(185), FAR(174),
+        LAVA_CHICKEN(135), MALL(197), MELLOHI(96), PIGSTEP(148), STAL(150), STRAD(188),
+        WAIT(237), WARD(251), OTHERSIDE(195), RELIC(219), CREATOR(176),
+        CREATOR_MUSIC_BOX(73), PRECIPICE(299), TEARS(175);
+
+        private final int durationSeconds;
+
+        MusicDisc(int durationSeconds) {
+            this.durationSeconds = durationSeconds;
+        }
+
+        /** 唱片时长（秒） */
+        public int getDurationSeconds() {
+            return durationSeconds;
+        }
 
         /** 唱片名为专有名词，直接写死，不需翻译。§b = 淡蓝色 */
         @Override public String toString() {

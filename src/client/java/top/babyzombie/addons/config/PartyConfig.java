@@ -40,16 +40,6 @@ public class PartyConfig {
     public boolean partyWarp = false;
 
     @Expose
-    @ConfigOption(name = "config.babyzombieaddons.option.partyWarpDelay", desc = "config.babyzombieaddons.option.partyWarpDelay.desc")
-    @ConfigEditorBoolean @SearchTag("party") @SearchTag("warp") @SearchTag("delay")
-    public boolean partyWarpDelay = false;
-
-    @Expose
-    @ConfigOption(name = "config.babyzombieaddons.option.partyWarpDelaySeconds", desc = "config.babyzombieaddons.option.partyWarpDelaySeconds.desc")
-    @ConfigEditorSlider(minValue = 1, maxValue = 30, minStep = 1) @SearchTag("party") @SearchTag("warp") @SearchTag("seconds")
-    public int partyWarpDelaySeconds = 3;
-
-    @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.partyJoinInstance", desc = "config.babyzombieaddons.option.partyJoinInstance.desc")
     @ConfigEditorBoolean @SearchTag("party") @SearchTag("join") @SearchTag("instance")
     public boolean partyJoinInstance = false;

@@ -208,18 +208,8 @@ public final class PartyModule {
 
         // !warp → warp
         if (cfg.partyWarp && CMD_WARP.matcher(msg).matches()) {
-            if (cfg.partyWarpDelay) {
-                warpDelayUntil = ServerTick.getTime() + cfg.partyWarpDelaySeconds * 1000L;
-                return;
-            }
             nextCommand = "party warp";
             runWhenLeader(selfSent);
-            return;
-        }
-
-        // !c / !warp cancel → cancel warp
-        if (cfg.partyWarp && CMD_WARP_CANCEL.matcher(msg).matches() && warpDelayUntil > ServerTick.getTime()) {
-            warpDelayUntil = 0;
             return;
         }
 

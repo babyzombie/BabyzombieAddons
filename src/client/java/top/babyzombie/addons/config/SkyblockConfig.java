@@ -302,7 +302,7 @@ public class SkyblockConfig {
         public float pitch = 1.0f;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.customRingtoneStartTime", desc = "config.babyzombieaddons.option.customRingtoneStartTime.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 360.0f, minStep = 0.01f) @SearchTag("abiphone") @SearchTag("ringtone")
-        public float startTime = 60.5f;
+        public float startTime = 40.7f;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.customRingtoneDuration", desc = "config.babyzombieaddons.option.customRingtoneDuration.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 5.0f, minStep = 0.01f) @SearchTag("abiphone") @SearchTag("ringtone")
         public float duration = 1.2f;

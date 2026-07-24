@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
@@ -35,7 +34,8 @@ public final class DungeonJukeboxModule {
     private static boolean active;
     private static int currentIndex;
     private static int lastPlayedIndex = -1;
-    private static SoundInstance currentSound;
+    /** 当前播放的实例，供 HUD 查询进度 */
+    public static DungeonJukeboxSoundInstance currentInstance;
     private static boolean toggledMusic = true;
     private static boolean toggledMusicByThis;
     private static boolean pendingTogglemusic;
@@ -64,6 +64,13 @@ public final class DungeonJukeboxModule {
         }
     };
 
+    /** 秒数 → mm:ss 格式 */
+    private static String formatTime(int totalSeconds) {
+        int min = totalSeconds / 60;
+        int sec = totalSeconds % 60;
+        return min + ":" + (sec < 10 ? "0" : "") + sec;
+    }
+
     private DungeonJukeboxModule() {}
 
     public static void init() {
@@ -72,6 +79,7 @@ public final class DungeonJukeboxModule {
             pendingTogglemusic = false;
             togglemusicCheckRegistered = false;
             currentDiscName = null;
+            currentInstance = null;
         });
 
         ClientReceiveMessageEvents.ALLOW_GAME.register((component, o) -> {
@@ -110,7 +118,35 @@ public final class DungeonJukeboxModule {
             int x = HudManager.x("DungeonJukeboxDisc"),
                 y = HudManager.y("DungeonJukeboxDisc");
             float s = HudManager.scale("DungeonJukeboxDisc");
-            HudManager.drawScaled(context, font, "§b♫ " + currentDiscName, x, y, s);
+
+            // 第一行：歌名
+            var line1 = "§b♫ " + currentDiscName;
+
+            // 第二行：进度条 + 时间
+            var line2 = "";
+            if (currentInstance != null) {
+                float duration = currentInstance.getDuration();
+                float pos = Math.min(currentInstance.getCurrentPosition(), duration);
+                float fraction = duration > 0 ? pos / duration : 0F;
+
+                int barW = 20;
+                int filled = Math.clamp((int) (fraction * barW), 0, barW);
+                int empty = barW - filled;
+
+                StringBuilder bar = new StringBuilder();
+                if (filled > 0) bar.append("§a§m").repeat(" ", filled);
+                if (empty > 0) bar.append("§7§m").repeat(" ", empty);
+                bar.append("§r §7");
+                bar.append(formatTime((int) pos));
+                bar.append(" / ");
+                bar.append(formatTime((int) duration));
+
+                line2 = bar.toString();
+            }
+
+            HudManager.drawScaled(context, font,
+                    line1 + (line2.isEmpty() ? "" : "\n" + line2),
+                    x, y, s);
         });
     }
 
@@ -180,18 +216,18 @@ public final class DungeonJukeboxModule {
         currentDiscName = disc.toString(); // 已含 §b 色码
 
         Identifier soundId = disc.getSoundId();
-        var instance = new DungeonJukeboxSoundInstance(soundId, DungeonJukeboxModule::playNext);
-        currentSound = instance;
+        var instance = new DungeonJukeboxSoundInstance(soundId, disc.getDurationSeconds(), DungeonJukeboxModule::playNext);
+        currentInstance = instance;
         Minecraft.getInstance().getSoundManager().play(instance);
     }
 
     /** 停止当前播放的声音 */
     private static void stopCurrentSound() {
-        if (currentSound != null) {
+        if (currentInstance != null) {
             var manager = Minecraft.getInstance().getSoundManager();
             SoundEngine engine = ((SoundManagerAccessor) manager).getSoundEngine();
             ((SoundEngineAccessor) engine).invokeStop(null, SoundSource.RECORDS);
-            currentSound = null;
+            currentInstance = null;
         }
         currentDiscName = null;
     }
