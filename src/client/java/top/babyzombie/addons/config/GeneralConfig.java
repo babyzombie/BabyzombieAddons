@@ -17,7 +17,7 @@ public class GeneralConfig {
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.updateChecker", desc = "config.babyzombieaddons.option.updateChecker.desc") @ConfigEditorBoolean @SearchTag("update")
     public boolean updateChecker = true;
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.hudEdit", desc = "config.babyzombieaddons.option.hudEdit.desc") @ConfigEditorButton(buttonText = "OPEN") @SearchTag("hud")
+    @ConfigOption(name = "config.babyzombieaddons.option.hudEdit", desc = "config.babyzombieaddons.option.hudEdit.desc") @ConfigEditorButton(buttonText = "OPEN") @SearchTag("hud")
     public transient Runnable hudEdit = () -> HudManager.openEditScreen(Minecraft.getInstance().gui.screen());
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.replaceReportWithServerList", desc = "config.babyzombieaddons.option.replaceReportWithServerList.desc") @ConfigEditorBoolean @SearchTag("report")
     public boolean replaceReportWithServerList = false;

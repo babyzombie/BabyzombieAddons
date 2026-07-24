@@ -43,7 +43,7 @@ public class IncomingCallHandler {
         String text = message.getString();
 
         // Message 1: ✆ <name> ✆  (caller announcement)
-        if (text.contains("✆") && !text.contains("[PICK UP]")) {
+        if (text.startsWith("✆") && !text.contains("[PICK UP]")) {
             String name = extractCaller(text);
             if (name != null) {
                 pendingCaller = name;

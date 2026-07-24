@@ -35,7 +35,7 @@ public final class PlotBorderDisplay {
                 borderRenderer = new WorldBorderRenderer();
             }
 
-            int tint = config.color.getEffectiveColourRGB();
+            var color = config.color.getEffectiveColour();
             Vec3 camera = ctx.worldState().cameraRenderState.pos;
             double renderDist = Minecraft.getInstance().options.getEffectiveRenderDistance() * 16.0;
 
@@ -44,8 +44,8 @@ public final class PlotBorderDisplay {
             borderState.maxX = plot.maxX() + 1;
             borderState.minZ = plot.minZ();
             borderState.maxZ = plot.maxZ() + 1;
-            borderState.alpha = 1.0;
-            borderState.tint = tint;
+            borderState.alpha = color.getAlpha() / 255.0;
+            borderState.tint = color.getRGB();
 
             borderRenderer.render(borderState, camera, renderDist, 256.0);
         });

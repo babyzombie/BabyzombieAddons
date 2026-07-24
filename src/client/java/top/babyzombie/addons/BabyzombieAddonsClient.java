@@ -12,6 +12,7 @@ import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.hud.HudRegistrar;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.misc.abiphone.AbiphoneTracker;
+import top.babyzombie.addons.module.misc.abiphone.CustomRingtoneModule;
 import top.babyzombie.addons.module.misc.abiphone.IncomingCallHandler;
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import top.babyzombie.addons.module.misc.AutoJoinModule;
@@ -99,6 +100,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         ServerTickCounter.init();
         Waypoints.init();
         IncomingCallHandler.register();
+        CustomRingtoneModule.init();
 
         BabyzombieAddonsCommand.init();
 

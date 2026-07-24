@@ -216,7 +216,7 @@ public final class HudEditScreen extends Screen {
             int w = demoWidth(e) + 8;
             int h = demoHeight(e) + 8;
             if (mx >= e.x && mx <= e.x + w && my >= e.y && my <= e.y + h) {
-                e.scale = (float) Math.max(0.3, Math.min(e.scale + scrollY / 10.0, 5.0));
+                e.scale = (float) Math.clamp(e.scale + scrollY / 10.0, 0.3, 5.0);
                 return true;
             }
         }

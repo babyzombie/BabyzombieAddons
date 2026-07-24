@@ -13,6 +13,7 @@ import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfig.*;
+import top.babyzombie.addons.module.misc.abiphone.CustomRingtoneModule;
 import top.babyzombie.addons.module.misc.raredrop.RareDropScreen;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class SkyblockConfig {
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.bzGetFromSacks", desc = "config.babyzombieaddons.option.bzGetFromSacks.desc") @ConfigEditorDropdown @SearchTag("bazaar")
     public BzGetFromSacksMode bzGetFromSacks = BzGetFromSacksMode.OFF;
 
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.raredropManage", desc = "config.babyzombieaddons.option.raredropManage.desc") @ConfigEditorButton(buttonText = "OPEN") @SearchTag("raredrop") @SearchTag("drop")
+    @ConfigOption(name = "config.babyzombieaddons.option.raredropManage", desc = "config.babyzombieaddons.option.raredropManage.desc") @ConfigEditorButton(buttonText = "OPEN") @SearchTag("raredrop") @SearchTag("drop")
     public transient Runnable raredropManage = () -> Minecraft.getInstance().gui.setScreen(new RareDropScreen(Minecraft.getInstance().gui.screen()));
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.cakeBuffTracker", desc = "config.babyzombieaddons.option.cakeBuffTracker.desc") @ConfigEditorBoolean @SearchTag("cake")
@@ -55,6 +56,9 @@ public class SkyblockConfig {
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.loadout", desc = "") @Accordion
     public Loadout loadout = new Loadout();
+
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.customRingtone", desc = "") @Accordion
+    public CustomRingtone customRingtone = new CustomRingtone();
 
     public static class AutoIS {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.autois", desc = "config.babyzombieaddons.option.autois.desc") @ConfigEditorBoolean @SearchTag("autois") @SearchTag("island")
@@ -282,5 +286,25 @@ public class SkyblockConfig {
                 return new int[]{preset1, preset2, preset3, preset4, preset5, preset6, preset7, preset8, preset9, preset10, preset11, preset12};
             }
         }
+    }
+
+    public static class CustomRingtone {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.customRingtoneEnabled", desc = "config.babyzombieaddons.option.customRingtoneEnabled.desc") @ConfigEditorBoolean @SearchTag("abiphone") @SearchTag("ringtone")
+        public boolean enabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.customRingtoneDisc", desc = "config.babyzombieaddons.option.customRingtoneDisc.desc") @ConfigEditorDropdown @SearchTag("abiphone") @SearchTag("ringtone")
+        public MusicDisc disc = MusicDisc.PIGSTEP;
+
+        @ConfigOption(name = "config.babyzombieaddons.option.customRingtonePreview", desc = "config.babyzombieaddons.option.customRingtonePreview.desc") @ConfigEditorButton(buttonText = "PLAY") @SearchTag("abiphone") @SearchTag("ringtone")
+        public transient Runnable preview = CustomRingtoneModule::playPreview;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.customRingtonePitch", desc = "config.babyzombieaddons.option.customRingtonePitch.desc") @ConfigEditorSlider(minValue = 0.5f, maxValue = 2.0f, minStep = 0.01f) @SearchTag("abiphone") @SearchTag("ringtone")
+        public float pitch = 1.0f;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.customRingtoneStartTime", desc = "config.babyzombieaddons.option.customRingtoneStartTime.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 360.0f, minStep = 0.01f) @SearchTag("abiphone") @SearchTag("ringtone")
+        public float startTime = 60.5f;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.customRingtoneDuration", desc = "config.babyzombieaddons.option.customRingtoneDuration.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 5.0f, minStep = 0.01f) @SearchTag("abiphone") @SearchTag("ringtone")
+        public float duration = 1.2f;
     }
 }
