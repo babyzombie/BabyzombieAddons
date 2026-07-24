@@ -842,6 +842,8 @@
   "babyzombieaddons.debug.entity.effects": "  §7Effects: %s",
   "babyzombieaddons.debug.entity.invisible": " §7[Invis]",
   "babyzombieaddons.debug.entity.glowing": " §7[Glow]",
+  "babyzombieaddons.debug.entity.baby": " §7[Baby]",
+  "babyzombieaddons.debug.entity.is_baby": "  §7IsBaby: §e%s",
   "babyzombieaddons.debug.entity.armor": "  §7Armor: §e%s",
   "babyzombieaddons.debug.entity.absorption": " §e+%s abs",
   "babyzombieaddons.debug.entity.scale": "  §7Scale: §e%s",

@@ -842,6 +842,8 @@
   "babyzombieaddons.debug.entity.effects": "  §7效果: %s",
   "babyzombieaddons.debug.entity.invisible": " §7[隐身]",
   "babyzombieaddons.debug.entity.glowing": " §7[发光]",
+  "babyzombieaddons.debug.entity.baby": " §7[幼体]",
+  "babyzombieaddons.debug.entity.is_baby": "  §7幼体: §e%s",
   "babyzombieaddons.debug.entity.armor": "  §7护甲: §e%s",
   "babyzombieaddons.debug.entity.absorption": " §e+%s金血",
   "babyzombieaddons.debug.entity.scale": "  §7缩放: §e%s",
