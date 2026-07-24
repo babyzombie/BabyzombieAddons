@@ -78,7 +78,7 @@ public final class HudRegistrar {
 
         // --- Dungeon Jukebox ---
         HudManager.register("DungeonJukeboxDisc", 10, 100, 1.5f,
-                "§b♫ §bPigstep",
+                "§b♫ §bPigstep\n§a§m           §7§m         §r §71:23 / 2:28",
                 "config.babyzombieaddons.option.jukeboxShowHud",
                 () -> get().dungeon.dungeonJukebox.showHud);
 
