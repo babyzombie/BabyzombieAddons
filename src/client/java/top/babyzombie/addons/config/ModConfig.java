@@ -97,7 +97,7 @@ public class ModConfig extends Config {
         @Override public String toString() { return t("config.babyzombieaddons.option.loadoutEntityRenderMode." + name()); }
     }
     public enum MusicDisc {
-        DISC_5(178), DISC_11(71), DISC_13(178), BLOCKS(345), BOUNCE(0), CAT(185), CHIRP(185), FAR(174),
+        DISC_5(178), DISC_11(71), DISC_13(178), BLOCKS(345), BOUNCE(234), CAT(185), CHIRP(185), FAR(174),
         LAVA_CHICKEN(135), MALL(197), MELLOHI(96), PIGSTEP(148), STAL(150), STRAD(188),
         WAIT(237), WARD(251), OTHERSIDE(195), RELIC(219), CREATOR(176),
         CREATOR_MUSIC_BOX(73), PRECIPICE(299), TEARS(175);
