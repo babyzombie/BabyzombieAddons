@@ -1,6 +1,7 @@
 package top.babyzombie.addons;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
@@ -46,6 +47,7 @@ import top.babyzombie.addons.module.misc.UpdateChecker;
 import top.babyzombie.addons.module.misc.WindowTitleModule;
 import top.babyzombie.addons.module.dungeon.withercloak.WitherCloakModule;
 import top.babyzombie.addons.util.DungeonCooldown;
+import top.babyzombie.addons.util.render.WorldRenderUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.HypixelPlayerInfoTracker;
 import top.babyzombie.addons.util.ClientBossbarManager;
@@ -134,5 +136,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         PetDisplayHud.init();
         HuntingModule.init();
         LoadoutModule.init();
+
+        ClientLifecycleEvents.CLIENT_STOPPING.register(_ -> WorldRenderUtils.close());
     }
 }
