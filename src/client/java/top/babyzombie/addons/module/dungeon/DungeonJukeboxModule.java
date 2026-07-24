@@ -188,6 +188,13 @@ public final class DungeonJukeboxModule {
     private static void playNext() {
         if (!active) return;
 
+        // 先停掉当前正在播的，防止同时播两首
+        if (currentInstance != null) {
+            var manager = Minecraft.getInstance().getSoundManager();
+            manager.stop(currentInstance);
+            currentInstance = null;
+        }
+
         var cfg = ModConfigManager.get().dungeon.dungeonJukebox;
         List<ModConfig.MusicDisc> playlist = cfg.playlist;
         if (playlist == null || playlist.isEmpty()) return;
