@@ -1041,7 +1041,7 @@
   "config.babyzombieaddons.option.safariWardenCooldownTicks": "Warden Cooldown (ticks)",
   "config.babyzombieaddons.option.safariWardenCooldownTicks.desc": "Ticks after spawn before the Warden is considered catchable. Latency compensated automatically. Always shows red during emergence animation. Default 140.",
   "config.babyzombieaddons.option.safariWumpaRecord": "Wumpa Record",
-  "config.babyzombieaddons.option.safariWumpaRecord.desc": "Display creature capture progress on HUD in the snow area. Wumpa only spawns after catching all 7 snow creatures.",
+  "config.babyzombieaddons.option.safariWumpaRecord.desc": "Display creature capture progress on HUD in the snow area. Wumpa only spawns after catching all 8 snow creatures.",
   "config.babyzombieaddons.group.torrhusCanyon": "Torrhus Canyon",
   "config.babyzombieaddons.option.beeheemothHighlight": "Beeheemoth Highlight",
   "config.babyzombieaddons.option.beeheemothHighlight.desc": "How to mark the beeheemoth (scale 9.0 bee) in the Torrhus Canyon area.",

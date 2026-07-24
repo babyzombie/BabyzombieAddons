@@ -83,7 +83,7 @@ public final class FindCommand {
         // Location listener: check server after warp
         HypixelLocationEvents.LOCATION_UPDATE.register(data -> {
             if (state != State.WAITING_LOCATION) return;
-            String newServer = data.serverName();
+            String newServer = data.getServerName();
             if (newServer == null || Objects.equals(newServer, preWarpServer)) return;
 
             cancelTimeout();

@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 /**
  * Wumpa 记录：追踪雪地区域所有生物的捕捉进度。
- * 抓过全部 7 种雪地生物至少各一只后，Wumpa 才会生成。
+ * 抓过全部 8 种雪地生物至少各一只后，Wumpa 才会生成。
  *
  * <p>通过 ALLOW_GAME 消息正则匹配 CAPTURE! / LOOT SHARE! 消息。</p>
  */
@@ -28,16 +28,16 @@ public final class WumpaRecord {
     /** 雪地区域生物列表（按显示顺序） */
     private static final String[] SNOW_CREATURES = {
         "Strongarm", "Tepid", "Mantis Shrimp", "Nozzlenose",
-        "Polaris", "Shuddersquid", "Billygoat"
+        "Polaris", "Shuddersquid", "Billygoat", "Troodon"
     };
 
     // ── 正则：个人捕获 CAPTURE! You caught a {name} and gained a {name} Shard! ──
     private static final Pattern CAPTURE_PATTERN =
-        Pattern.compile("CAPTURE! You caught a (.+?) and gained a .+? Shard!");
+        Pattern.compile("CAPTURE! You caught a (.+?) and gained [an0-9x]{1,2} .+? Shard!");
 
     // ── 正则：队友捕获 LOOT SHARE! You received a {shard} from {player} catching a {name}! ──
     private static final Pattern LOOT_SHARE_PATTERN =
-        Pattern.compile("LOOT SHARE! You received a .+? from .+? catching a (.+?)!");
+        Pattern.compile("LOOT SHARE! You received a .+? from .+? catching [an0-9x]{1,2} (.+?)!");
 
     /** 已捕捉的雪地生物名称集合 */
     private static final Set<String> captured = new LinkedHashSet<>();

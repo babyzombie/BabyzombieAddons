@@ -1,6 +1,7 @@
 package top.babyzombie.addons.module.dungeon;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
@@ -11,6 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.event.HypixelLocationEvents;
 import top.babyzombie.addons.mixin.sound.SoundEngineAccessor;
 import top.babyzombie.addons.mixin.sound.SoundManagerAccessor;
 import top.babyzombie.addons.util.ChatUtils;
@@ -34,7 +36,8 @@ public final class DungeonJukeboxModule {
     private static int currentIndex;
     private static int lastPlayedIndex = -1;
     private static SoundInstance currentSound;
-    private static boolean toggledMusic;
+    private static boolean toggledMusic = true;
+    private static boolean toggledMusicByThis;
     private static boolean pendingTogglemusic;
     private static boolean togglemusicCheckRegistered;
     private static final Random RNG = new Random();
@@ -66,10 +69,35 @@ public final class DungeonJukeboxModule {
     public static void init() {
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             active = false;
-            toggledMusic = false;
             pendingTogglemusic = false;
             togglemusicCheckRegistered = false;
             currentDiscName = null;
+        });
+
+        ClientReceiveMessageEvents.ALLOW_GAME.register((component, o) -> {
+            if (o || !HypixelLocationTracker.getInstance().isInSkyblock()) return true;
+            var message = ChatUtils.stripColor(component.getString());
+            if (message.equals("Play Music is now disabled!")) {
+                toggledMusic = false;
+            } else if (message.equals("Play Music is now enabled!")) {
+                toggledMusic = true;
+            }
+            return true;
+        });
+
+        HypixelLocationEvents.LOCATION_UPDATE.register((hypixelLocationTracker) -> {
+            if (!hypixelLocationTracker.isInSkyblock()) return;
+            var cfg = ModConfigManager.get().dungeon.dungeonJukebox;
+            if (!cfg.enabled || !cfg.autoToggleMusic) return;
+            if (hypixelLocationTracker.isInDungeon()) {
+                if (toggledMusic) {
+                    trySendTogglemusic();
+                    toggledMusicByThis = true;
+                }
+            } else if (!toggledMusic && toggledMusicByThis) {
+                trySendTogglemusic();
+                toggledMusicByThis = false;
+            }
         });
 
         // HUD 渲染
@@ -93,25 +121,12 @@ public final class DungeonJukeboxModule {
         if (HypixelLocationTracker.getInstance().isInKuudra()) return;
 
         active = true;
-
-        if (cfg.autoToggleMusic && !toggledMusic) {
-            toggledMusic = true;
-            trySendTogglemusic();
-        }
-
         playNext();
     }
 
     /** 地牢实例结束时调用 */
     public static void onInstanceEnd() {
         active = false;
-
-        var cfg = ModConfigManager.get().dungeon.dungeonJukebox;
-        if (cfg.autoToggleMusic && toggledMusic) {
-            toggledMusic = false;
-            trySendTogglemusic();
-        }
-
         stopCurrentSound();
     }
 

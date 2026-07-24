@@ -31,7 +31,7 @@ public class HuntingConfig {
     public TorrhusCanyon torrhusCanyon = new TorrhusCanyon();
 
     public static class Safari {
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariBellDisplay", desc = "config.babyzombieaddons.option.safariBellDisplay.desc") @ConfigEditorBoolean @SearchTag("safari")
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariBellDisplay", desc = "config.babyzombieaddons.option.safariBellDisplay.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("rainbowbug")
         public boolean bellDisplay = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariShulkerGlow", desc = "config.babyzombieaddons.option.safariShulkerGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("hideonfloor") @SearchTag("hideonwall")
         public boolean shulkerGlow = false;

@@ -29,8 +29,8 @@ public final class ServerVisitTracker {
         HypixelLocationEvents.LOCATION_UPDATE.register(this::onLocationUpdate);
     }
 
-    private void onLocationUpdate(HypixelLocationData data) {
-        String serverName = data.serverName();
+    private void onLocationUpdate(HypixelLocationTracker data) {
+        String serverName = data.getServerName();
         if (serverName != null && !serverName.equals(lastRecordedServer)) {
             visitedServers.put(serverName, System.currentTimeMillis());
             lastRecordedServer = serverName;
