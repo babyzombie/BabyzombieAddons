@@ -1118,5 +1118,19 @@
   "babyzombieaddons.debug.hitresult.show_on": "§aShowHitResult ON — green semi-transparent box enabled",
   "babyzombieaddons.debug.hitresult.show_off": "§cShowHitResult OFF — green semi-transparent box disabled",
   "babyzombieaddons.debug.unhide.skyblock_only": "§cThis command only works in SkyBlock",
-  "babyzombieaddons.debug.unhide.revealed": "§aRemoved invisibility from §6%d §aentities (range: §6%d §ablocks)"
+  "babyzombieaddons.debug.unhide.revealed": "§aRemoved invisibility from §6%d §aentities (range: §6%d §ablocks)",
+
+  "config.babyzombieaddons.option.neuRepoLink": "NEU Item Repo Link",
+  "config.babyzombieaddons.option.neuRepoLink.desc": "Creates directory symlinks pointing Firmament and SkyHanni item repos to Skyblocker's item-repo. Skyblocker is used as source (jgit sync is most reliable), use /skyblocker updateRepository to update manually. After linking, disable auto-update for Firmament and SkyHanni item repos. On Windows you need to click one UAC prompt. Linked folders cannot be cut or copied.",
+  "babyzombieaddons.neulink.start": "§e[Item Repo Link] Starting...",
+  "babyzombieaddons.neulink.deleting": "§7Deleting old files...",
+  "babyzombieaddons.neulink.creating": "§7Creating links...",
+
+  "babyzombieaddons.neulink.success": "§a✓ Links created!",
+  "babyzombieaddons.neulink.success_disable_sh": "§7Disable SkyHanni auto-update:",
+  "babyzombieaddons.neulink.success_disable_firm": "§7Disable Firmament auto-update:",
+  "babyzombieaddons.neulink.success_hint": "§7Find and disable the \"Auto Update\" option",
+  "babyzombieaddons.neulink.already_linked": "§6Links already exist",
+  "babyzombieaddons.neulink.no_skyblocker_repo": "§6⚠ Skyblocker item-repo not downloaded yet, created empty dir as link target, will work after Skyblocker starts",
+  "babyzombieaddons.neulink.failed": "§c✗ Link creation failed"
 }

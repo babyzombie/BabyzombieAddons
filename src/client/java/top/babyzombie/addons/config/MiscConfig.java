@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.*;
 import io.github.notenoughupdates.moulconfig.observer.Property;
 import org.lwjgl.glfw.GLFW;
+import top.babyzombie.addons.module.misc.NEURepoLinker;
 
 public class MiscConfig {
 
@@ -24,6 +25,11 @@ public class MiscConfig {
     @ConfigEditorDropdown
     @SearchTag("render")
     public ModConfig.WorldRenderPhase renderPhase = ModConfig.WorldRenderPhase.AFTER_ENTITIES;
+
+    @ConfigOption(name = "config.babyzombieaddons.option.neuRepoLink", desc = "config.babyzombieaddons.option.neuRepoLink.desc")
+    @ConfigEditorButton(buttonText = "LINK")
+    @SearchTag("neu") @SearchTag("repo") @SearchTag("item") @SearchTag("mklink")
+    public transient Runnable neuRepoLink = NEURepoLinker::startLinking;
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.debugMode", desc = "config.babyzombieaddons.option.debugMode.desc")

@@ -1118,5 +1118,19 @@
   "babyzombieaddons.debug.hitresult.show_on": "§aShowHitResult ON — 绿色半透明盒子已开启",
   "babyzombieaddons.debug.hitresult.show_off": "§cShowHitResult OFF — 绿色半透明盒子已关闭",
   "babyzombieaddons.debug.unhide.skyblock_only": "§c此指令仅在 SkyBlock 中生效",
-  "babyzombieaddons.debug.unhide.revealed": "§a已移除 §6%d §a个隐身实体的隐身效果（范围: §6%d §a格）"
+  "babyzombieaddons.debug.unhide.revealed": "§a已移除 §6%d §a个隐身实体的隐身效果（范围: §6%d §a格）",
+
+  "config.babyzombieaddons.option.neuRepoLink": "NEU 物品库链接",
+  "config.babyzombieaddons.option.neuRepoLink.desc": "将 Firmament 和 SkyHanni 的物品库以目录链接指向 Skyblocker 的物品库，只需下载一份。Skyblocker 作为数据源（jgit 同步更可靠），可通过 /skyblocker updateRepository 手动更新。链接后请关闭 Firmament 和 SkyHanni 的物品库自动更新避免覆盖。Windows 上需点击一次 UAC 确认。创建的链接文件夹不能剪贴或复制。",
+  "babyzombieaddons.neulink.start": "§e[物品库链接] 开始创建链接...",
+  "babyzombieaddons.neulink.deleting": "§7正在删除旧文件...",
+  "babyzombieaddons.neulink.creating": "§7正在创建链接...",
+
+  "babyzombieaddons.neulink.success": "§a✓ 链接创建成功！",
+  "babyzombieaddons.neulink.success_disable_sh": "§7关闭 SkyHanni 自动更新：",
+  "babyzombieaddons.neulink.success_disable_firm": "§7关闭 Firmament 自动更新：",
+  "babyzombieaddons.neulink.success_hint": "§7找到「自动更新」选项关掉即可",
+  "babyzombieaddons.neulink.already_linked": "§6链接已存在，无需重复创建",
+  "babyzombieaddons.neulink.no_skyblocker_repo": "§6⚠ Skyblocker 物品库尚未下载，已创建空目录作为链接目标，启动 Skyblocker 后生效",
+  "babyzombieaddons.neulink.failed": "§c✗ 链接创建失败"
 }
