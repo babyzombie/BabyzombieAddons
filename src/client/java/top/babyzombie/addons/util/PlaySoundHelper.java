@@ -132,7 +132,7 @@ public final class PlaySoundHelper {
         while (remaining > 0) {
             try {
                 ByteBuffer buf = stream.read(Math.min(bytesPerSecond, remaining));
-                if (buf == null) break;
+                if (buf == null || buf.remaining() == 0) break;
                 remaining -= buf.remaining();
             } catch (IOException e) {
                 break;

@@ -102,7 +102,7 @@ public class WideSliderEditor extends ComponentEditor {
         public void render(@NotNull GuiImmediateContext ctx) {
             int sliderW = ctx.getWidth() - GAP - TEXT_W;
             int h = ctx.getHeight();
-            float frac = Math.min(1, Math.max(0, (getValueF() - minValue) / (maxValue - minValue)));
+            float frac = Math.clamp((getValueF() - minValue) / (maxValue - minValue), 0, 1);
             int pos = (int) (frac * sliderW);
 
             // ── Slider track (original MoulConfig textures) ──
@@ -135,7 +135,7 @@ public class WideSliderEditor extends ComponentEditor {
                 float rawFrac = (float) ctx.getMouseX() / sliderW;
                 float v = rawFrac * (maxValue - minValue) + minValue;
                 v = Math.round(v / minStep) * minStep;
-                v = Math.max(minValue, Math.min(maxValue, v));
+                v = Math.clamp(v, minValue, maxValue);
                 setValueF(v);
             }
         }
@@ -201,7 +201,7 @@ public class WideSliderEditor extends ComponentEditor {
                 return;
             }
             v = Math.round(v / comp.minStep) * comp.minStep;
-            v = Math.max(comp.minValue, Math.min(comp.maxValue, v));
+            v = Math.clamp(v, comp.minValue, comp.maxValue);
             comp.setValueF(v);
             buf = stripDotZero(v);
         }
