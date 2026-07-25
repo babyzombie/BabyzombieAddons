@@ -38,7 +38,8 @@ public final class ReheatedGummyPolarBearTimer {
 
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             if (overlay) return true;
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return true;
+            var tracker = HypixelLocationTracker.getInstance();
+            if (!tracker.isInSkyblock() || tracker.isInAlpha()) return true;
 
             String text = ChatUtils.stripColor(message.getString()).trim();
             if (text.startsWith("You ate a Re-heated Gummy Polar Bear")) {
@@ -55,7 +56,7 @@ public final class ReheatedGummyPolarBearTimer {
         // Tick
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInSkyblock()) return;
+            if (!tracker.isInSkyblock() || tracker.isInAlpha()) return;
             if (tracker.isInDungeon() || tracker.isInRift() || tracker.isInSafari()) return;
 
             String profileId = tracker.getProfileId();

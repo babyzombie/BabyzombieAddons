@@ -95,6 +95,7 @@ public final class PetExperienceTracker {
         if (!overlay) return true;
         var tracker = HypixelLocationTracker.getInstance();
         if (!tracker.isInSkyblock() || tracker.isInRift() || tracker.isInSafari()) return true;
+        if (tracker.isInAlpha()) return true;
         if (petManager == null || state == null) return true;
 
         SkillXPActionBarParser.SkillXPEvent event = actionBarParser.parse(message);

@@ -19,6 +19,7 @@ public final class DailyRunsCounter {
     public static void incrementAndShow() {
         var mode = ModConfigManager.get().dungeon.dailyRunsCounter;
         if (mode == ModConfig.DailyCounterMode.OFF) return;
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         loadDaily();
         dailyRuns++;
         saveDaily();
