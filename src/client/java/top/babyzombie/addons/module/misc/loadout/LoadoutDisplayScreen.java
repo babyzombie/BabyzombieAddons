@@ -23,6 +23,7 @@ import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfig.EntityRenderMode;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.*;
 
@@ -33,6 +34,13 @@ public class LoadoutDisplayScreen extends Screen {
     private static final int PET_SLOT = 21, POWERSTONE_SLOT = 27, TUNINGS_SLOT = 36, HOTM_SLOT = 18, HOTF_SLOT = 9;
     private static final int PREV = 17, NEXT = 44, CLOSE = 49;
     private static final int COLS = 4, ROWS = 3;
+
+    /** 左侧面板需要物品缓存的槽位（仅饰品 + 防具 + 宠物） */
+    private static final int[] LEFT_PANEL_CACHE_SLOTS = {
+        10, 19, 28, 37, // 饰品
+        11, 20, 29, 38, // 防具
+        21                // 宠物
+    };
 
     private final AbstractContainerScreen<?> parentContainer;
     private final Level clientLevel;
@@ -81,6 +89,16 @@ public class LoadoutDisplayScreen extends Screen {
             return;
         }
         LoadoutItemResolver.ensureIndex();
+
+        // 从磁盘加载持久化缓存（在填充前，让新物品覆盖旧条目）
+        LoadoutItemResolver.loadCacheFromDisk();
+
+        // 从左侧当前装备槽位填充物品缓存（带开关，测试服跳过）
+        if (ModConfigManager.get().skyblock.loadout.cacheItemsFromCurrent
+            && !HypixelLocationTracker.getInstance().isInAlpha()) {
+            LoadoutItemResolver.cacheItemsFromSlots(slots, LEFT_PANEL_CACHE_SLOTS);
+        }
+
         for (int i = 0; i < 12; i++) {
             ItemStack ps = slots[PRESET_SLOTS[i]];
             if (isEmpty(ps) || isGlassPane(ps)) continue;
@@ -103,21 +121,29 @@ public class LoadoutDisplayScreen extends Screen {
             for (int e = 0; e < 4; e++) {
                 presetEquipIcons[i][e] = ItemStack.EMPTY;
                 if (eq[e] != null) {
-                    String id = LoadoutItemResolver.getSkyblockId(eq[e]);
-                    if (id != null) presetEquipIcons[i][e] = LoadoutItemResolver.createItemFromRepo(id);
+                    presetEquipIcons[i][e] = LoadoutItemResolver.resolveItem(eq[e]);
                 }
             }
-            // 宠物图标
+            // 宠物图标（用 stripColor(petNameRaw) 保留 [Lvl X] 以匹配缓存 key）
             presetEquipIcons[i][4] = ItemStack.EMPTY;
-            if (data.petName != null) {
-                String id = LoadoutItemResolver.getSkyblockId(data.petName);
-                if (id != null) presetEquipIcons[i][4] = LoadoutItemResolver.createItemFromRepo(id);
+            if (data.petNameRaw != null) {
+                String petLookup = ChatUtils.stripColor(data.petNameRaw).trim();
+                if (!petLookup.equalsIgnoreCase("None")) {
+                    presetEquipIcons[i][4] = LoadoutItemResolver.resolveItem(petLookup);
+                }
+            } else if (data.petName != null) {
+                presetEquipIcons[i][4] = LoadoutItemResolver.resolveItem(data.petName);
             }
         }
         // 索引尚未就绪（异步构建），不标记完成，等下次帧重试
         // 同时不设置 presetData/实体装备，避免裸装闪烁
         if (!LoadoutItemResolver.isReady()) return;
         entitiesBuilt = true;
+        // 页面完全加载后统一持久化一次
+        if (ModConfigManager.get().skyblock.loadout.cacheItemsFromCurrent
+                && !HypixelLocationTracker.getInstance().isInAlpha()) {
+            LoadoutItemResolver.saveCacheToDisk();
+        }
     }
 
     private void recalc() {
@@ -311,7 +337,7 @@ public class LoadoutDisplayScreen extends Screen {
             // 左侧5个图标(饰品+宠物) + 右侧5行文本(统一间距)
             if (!lk && !em && presetData[i] != null) {
                 var pd = presetData[i];
-                int icSz2 = 10, lx = cx + 2, rx = cx + cell - 2;
+                int icSz2 = 16, lx = cx + 2, rx = cx + cell - 2;
                 int GREEN = 0xFF55FF55, lh2 = this.font.lineHeight + 2;
                 // 左侧图标：宠物在最上面，然后 4 饰品
                 int iSp2 = Math.max(0, (reh - icSz2 * 5) / 6);
@@ -368,7 +394,57 @@ public class LoadoutDisplayScreen extends Screen {
             g.centeredText(this.font, nm, 0, -this.font.lineHeight, 0xFF55FF55);
             pose.popMatrix();
 
-            if (mx >= cx && mx < cx + cell && my >= cy && my < cy + cell) { hp = i; hoveredItem = ps; }
+            if (mx >= cx && mx < cx + cell && my >= cy && my < cy + cell) {
+                hp = i;
+                boolean subHovered = false;
+
+                // 优先：hover 预设左侧装备图标 → 显示真品 lore
+                if (!lk && !em && presetData[i] != null) {
+                    int icSz2 = 16, lx2 = cx + 2, pad = 2;
+                    int iSp2 = Math.max(0, (reh - icSz2 * 5) / 6);
+                    int iconY = cy + m + iSp2;
+
+                    // 宠物图标
+                    if (!isEmpty(presetEquipIcons[i][4])) {
+                        if (mx >= lx2 - pad && mx < lx2 + icSz2 + pad
+                            && my >= iconY - pad && my < iconY + icSz2 + pad) {
+                            hoveredItem = presetEquipIcons[i][4];
+                            subHovered = true;
+                        }
+                        iconY += icSz2 + iSp2;
+                    }
+                    // 饰品图标
+                    for (int e = 0; e < 4 && !subHovered; e++) {
+                        if (isEmpty(presetEquipIcons[i][e])) continue;
+                        if (mx >= lx2 - pad && mx < lx2 + icSz2 + pad
+                            && my >= iconY - pad && my < iconY + icSz2 + pad) {
+                            hoveredItem = presetEquipIcons[i][e];
+                            subHovered = true;
+                        }
+                        iconY += icSz2 + iSp2;
+                    }
+                }
+
+                // 其次：hover 实体防具区域 → 显示防具真品 lore
+                if (!subHovered && re != null && !lk) {
+                    int ex2 = cx + cell / 4, ew2 = cell / 2;
+                    int entityTop = cy + m, entityBot = cy + m + reh;
+                    if (mx >= ex2 && mx < ex2 + ew2 && my >= entityTop && my < entityBot) {
+                        int p = (my - entityTop) * 4 / reh;
+                        if (p >= 0 && p < 4) {
+                            EquipmentSlot[] slotOrder = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+                            ItemStack armor = re.getItemBySlot(slotOrder[p]);
+                            if (!armor.isEmpty()) {
+                                hoveredItem = armor;
+                                subHovered = true;
+                            }
+                        }
+                    }
+                }
+
+                // 默认：显示预设物品的 lore
+                if (!subHovered) hoveredItem = ps;
+            }
         }
     }
 
@@ -380,8 +456,7 @@ public class LoadoutDisplayScreen extends Screen {
         for (int i = 0; i < 4; i++) {
             ItemStack armor = ItemStack.EMPTY;
             if (names[i] != null) {
-                String id = LoadoutItemResolver.getSkyblockId(names[i]);
-                if (id != null) armor = LoadoutItemResolver.createItemFromRepo(id);
+                armor = LoadoutItemResolver.resolveItem(names[i]);
             }
             entity.setItemSlot(es[i], armor);
         }

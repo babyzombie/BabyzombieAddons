@@ -243,6 +243,8 @@ public class SkyblockConfig {
         public EntityRenderMode entityRenderMode = EntityRenderMode.ARMOR_STAND;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutAutoClose", desc = "config.babyzombieaddons.option.loadoutAutoClose.desc") @ConfigEditorBoolean @SearchTag("loadout") @SearchTag("autoclose")
         public boolean autoClose = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutItemCache", desc = "config.babyzombieaddons.option.loadoutItemCache.desc") @ConfigEditorBoolean @SearchTag("loadout") @SearchTag("cache")
+        public boolean cacheItemsFromCurrent = false;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.group.loadoutKeyBindings", desc = "config.babyzombieaddons.group.loadoutKeyBindings.desc") @Accordion
         public KeyBindings keyBindings = new KeyBindings();

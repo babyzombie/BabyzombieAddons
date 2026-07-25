@@ -2,7 +2,6 @@ package top.babyzombie.addons.module.misc.loadout;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.ChestMenu;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -26,11 +25,6 @@ public final class LoadoutModule {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (closingGuard > 0) closingGuard--;
         });
-
-        if (!FabricLoader.getInstance().isModLoaded("skyblocker")) {
-            ModConfigManager.get().skyblock.loadout.enabled = false;
-            return;
-        }
 
         // 不等物品加载，直接替换屏幕（避免闪烁）
         ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
