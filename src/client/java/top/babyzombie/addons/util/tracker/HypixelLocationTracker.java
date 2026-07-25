@@ -161,7 +161,7 @@ public class HypixelLocationTracker {
             isAlpha = false;
             return;
         }
-        var tabList = client.gui.getTabList();
+        var tabList = client.gui.hud.getTabList();
         var ta = (PlayerTabOverlayAccessor) tabList;
         var footer = ta.getFooter();
         if (footer == null) return; // keep previous value
