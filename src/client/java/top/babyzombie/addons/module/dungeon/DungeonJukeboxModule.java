@@ -85,6 +85,7 @@ public final class DungeonJukeboxModule {
         ClientReceiveMessageEvents.ALLOW_GAME.register((component, o) -> {
             if (o || !HypixelLocationTracker.getInstance().isInSkyblock()) return true;
             var message = ChatUtils.stripColor(component.getString());
+            if (HypixelLocationTracker.getInstance().isInAlpha()) return true;
             if (message.equals("Play Music is now disabled!")) {
                 toggledMusic = false;
             } else if (message.equals("Play Music is now enabled!")) {

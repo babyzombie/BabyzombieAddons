@@ -50,6 +50,7 @@ public class AbiphoneTracker {
                 String uuid = tracker.getUuid();
                 String profileId = tracker.getProfileId();
                 if (uuid == null || profileId == null) return;
+                if (tracker.isInAlpha()) return;
 
                 var menu = containerScreen.getMenu();
                 var collected = new LinkedHashSet<ItemEntry>();

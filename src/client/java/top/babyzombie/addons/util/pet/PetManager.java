@@ -105,6 +105,7 @@ public final class PetManager {
 
     private void loadProfile(String key) {
         if (key == null) return;
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         if (key.equals(currentProfileKey)) return;
         saveCurrentProfile();
         currentProfileKey = key;
@@ -139,6 +140,7 @@ public final class PetManager {
 
     public void saveCurrentProfile() {
         if (currentProfileKey == null) return;
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         DataPersistence.save(currentProfileKey, "pets.json",
             new ProfilePetData(currentPetUuid, new ArrayList<>(pets), new LinkedHashSet<>(sharedPetUuids)));
         DataPersistence.save(currentProfileKey, "pet_state.json", petState);
@@ -149,12 +151,14 @@ public final class PetManager {
     // ===== CRUD =====
 
     public void addPet(PetData pet) {
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         if (pet.uuid() != null) pets.removeIf(p -> pet.uuid().equals(p.uuid()));
         pets.add(pet);
         saveCurrentProfile();
     }
 
     public void removePet(@Nullable String uuid) {
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         if (uuid == null) return;
         pets.removeIf(p -> uuid.equals(p.uuid()));
         if (uuid.equals(currentPetUuid)) {
@@ -164,6 +168,7 @@ public final class PetManager {
     }
 
     public void setCurrentPet(@Nullable PetData pet) {
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         this.currentPetUuid = pet != null ? pet.uuid() : null;
         saveCurrentProfile();
     }
@@ -663,6 +668,7 @@ public final class PetManager {
 
     /** Scan the Exp Sharing page for pets in share slots (row 4, cols 4/5/6 → slots 30/31/32). */
     private void scanExpSharingPage(AbstractContainerScreen<?> screen) {
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         var slots = screen.getMenu().slots;
         Set<String> foundUuids = new LinkedHashSet<>();
         for (int slot : new int[]{30, 31, 32}) {
@@ -683,6 +689,7 @@ public final class PetManager {
 
     /** Scan the Your Skills page for pet-relevant skill levels. */
     private void scanSkillsPage(AbstractContainerScreen<?> screen) {
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         var slots = screen.getMenu().slots;
         // Row 3 cols 2-8 (slots 19-25): Farming→Alchemy
         // Row 4 cols 2-4 (slots 28-30): Taming, Dungeoneering, Carpentry
@@ -713,6 +720,7 @@ public final class PetManager {
 
     /** Scan the Accessory Bag for Beastmaster Crest and parse its pet XP boost. */
     private void scanAccessoryBag(AbstractContainerScreen<?> screen) {
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         var slots = screen.getMenu().slots;
         // Skip player inventory (bottom 36 slots for 6-row chest)
         for (int i = 0; i < slots.size() - 36; i++) {
@@ -741,6 +749,7 @@ public final class PetManager {
 
     /** Scan the Attribute Menu for Battle Experience and Why Not More. */
     private void scanAttributeMenu(AbstractContainerScreen<?> screen) {
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         var slots = screen.getMenu().slots;
         boolean foundBattle = false, foundWhyNot = false;
         for (int i = 0; i < slots.size() - 36; i++) {

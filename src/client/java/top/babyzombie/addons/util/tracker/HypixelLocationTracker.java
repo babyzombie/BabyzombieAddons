@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.scores.DisplaySlot;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.HypixelLocationEvents;
+import top.babyzombie.addons.mixin.render.PlayerTabOverlayAccessor;
 import top.babyzombie.addons.util.ChatUtils;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
@@ -34,8 +35,12 @@ public class HypixelLocationTracker {
     // ⏣ (U+23E3) and ф (U+0444) are legacy markers kept for backward compatibility.
     private static final Pattern LOCATION_PATTERN = Pattern.compile("[\uE067⏣\uE020ф]");
     private static final int SIDEBAR_SLOT = 1;
+    /** Tab footer text that indicates the player is on the Alpha (test) server. */
+    private static final String ALPHA_SERVER_MARKER = "ALPHA.HYPIXEL.NET";
 
     private volatile HypixelLocationData currentLocation;
+    /** Whether the player is currently on the Hypixel Alpha (test) server. */
+    private volatile boolean isAlpha;
 
     private HypixelLocationTracker() {
         this.currentLocation = new HypixelLocationData(null, null, null, null, null, null, null);
@@ -48,14 +53,17 @@ public class HypixelLocationTracker {
 
         ClientReceiveMessageEvents.GAME.register(this::onGameMessage);
 
-        // Read scoreboard location every 20 ticks (~1 second)
+        // Read scoreboard location & check alpha status every 20 ticks (~1 second)
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player != null && client.player.tickCount % 20 == 0)
+            if (client.player != null && client.player.tickCount % 20 == 0) {
+                checkAlpha(client);
                 readScoreboard(client);
+            }
         });
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             currentLocation = new HypixelLocationData(null, null, null, null, null, getUuid(), getProfileId());
+            isAlpha = false;
         });
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> clearScoreboardLocation());
@@ -142,6 +150,25 @@ public class HypixelLocationTracker {
         }
     }
 
+    /**
+     * Check whether the player is on the Hypixel Alpha (test) server by reading
+     * the tab list footer. The Alpha server displays "ALPHA.HYPIXEL.NET" in the
+     * tab header, footer, and scoreboard; we check the footer as the most reliable
+     * single source.
+     */
+    private void checkAlpha(Minecraft client) {
+        if (!isOnHypixel()) {
+            isAlpha = false;
+            return;
+        }
+        var tabList = client.gui.getTabList();
+        var ta = (PlayerTabOverlayAccessor) tabList;
+        var footer = ta.getFooter();
+        if (footer == null) return; // keep previous value
+        String plain = ChatFormatting.stripFormatting(footer.getString());
+        isAlpha = plain.contains(ALPHA_SERVER_MARKER);
+    }
+
     // ---- getters ----
 
     public static HypixelLocationTracker getInstance() { return INSTANCE; }
@@ -154,6 +181,9 @@ public class HypixelLocationTracker {
     @Nullable public String getMode() { return currentLocation.mode(); }
     @Nullable public String getMap() { return currentLocation.map(); }
     public boolean isOnHypixel() { return currentLocation.serverName() != null; }
+
+    /** @return true if the player is currently on the Hypixel Alpha (test) server. */
+    public boolean isInAlpha() { return isAlpha; }
 
     public boolean isInSkyblock() { return "SkyBlock".equals(currentLocation.serverType()); }
     public boolean isInDungeon() { return isInSkyblock() && "Dungeon".equals(currentLocation.map()); }
