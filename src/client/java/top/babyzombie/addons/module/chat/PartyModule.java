@@ -41,7 +41,6 @@ public final class PartyModule {
     private static final Pattern CMD_ALLINVITE = Pattern.compile("^[!！][ ]?all(?:inv)?(?:ite)?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_PINVITE = Pattern.compile("^[!！][ ]?p ([a-zA-Z0-9_-]+)$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_WARP = Pattern.compile("^[!！][ ]?wa?r?p?$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern CMD_WARP_CANCEL = Pattern.compile("^[!！][ ]?(?:wa?r?p?)?[ ]?c(?:ancel)?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_JOIN = Pattern.compile("^[!！][ ]?(?:join)?[ ]?([fmt])([e0-7])$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_PTME = Pattern.compile("^[!！][ ]?(pt(?:me)?|[叫抢]地主)$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_SENDCOORDS = Pattern.compile("^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$", Pattern.CASE_INSENSITIVE);
@@ -57,7 +56,6 @@ public final class PartyModule {
     private static final Pattern PARTY_DISBAND = Pattern.compile(
             "(.+)( has disbanded the party!|解散了组队！)", Pattern.CASE_INSENSITIVE);
 
-    private static long warpDelayUntil;
     private static String nextCommand;
     private static boolean pendingPlayWarp;
     private static final Map<String, Long> dmInvitePending = new HashMap<>();

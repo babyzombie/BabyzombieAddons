@@ -156,6 +156,11 @@ public final class DungeonJukeboxModule {
         if (!cfg.enabled) return;
         if (HypixelLocationTracker.getInstance().isInKuudra()) return;
 
+        if (toggledMusic && cfg.autoToggleMusic) {
+            trySendTogglemusic();
+            toggledMusicByThis = true;
+        };
+
         active = true;
         playNext();
     }

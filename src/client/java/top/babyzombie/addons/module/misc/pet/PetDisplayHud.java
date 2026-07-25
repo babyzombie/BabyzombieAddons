@@ -257,13 +257,9 @@ public final class PetDisplayHud {
 
                 pose.popMatrix();
 
-                // Calculate how tall this shared pet block is
+                // Calculate how tall this shared pet block is (scaled to 0.75×)
                 int sharedLineCount = shared.lines.size();
-                if (sharedLineCount == 0) {
-                    curY += Math.round(Math.max(12, lh * 0.75f)) + 1;
-                } else {
-                    curY += Math.round(Math.max(12, lh * 1.5f)) + 1;
-                }
+                curY += Math.round(Math.max(12, sharedLineCount * lh * 0.75f)) + 1;
             }
         }
 
