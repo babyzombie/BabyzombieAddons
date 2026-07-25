@@ -39,6 +39,16 @@ public final class PlayerPetState {
     public boolean dianaSharingIsCaring;
     public long mayorLastCheckTime;
 
+    // ---- Parser baseline (SkillXPActionBarParser snap persistence) ----
+    /** Format: skill name → "PCT" / "PROGRESS" / "MAXED" */
+    public Map<String, String> snapFmt = new java.util.HashMap<>();
+    /** Format: skill name → last progress value (pct / currentXP / total) */
+    public Map<String, Double> snapVal = new java.util.HashMap<>();
+    /** Format: skill name → last aux value (xpForLevel / nextLevelXP / 0) */
+    public Map<String, Double> snapAux = new java.util.HashMap<>();
+    /** Format: skill name → skill level at time of snap */
+    public Map<String, Integer> snapLevel = new java.util.HashMap<>();
+
     // ===== Helpers =====
 
     public int getTamingLevel() {
