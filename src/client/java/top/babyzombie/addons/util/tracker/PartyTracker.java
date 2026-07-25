@@ -116,11 +116,26 @@ public final class PartyTracker {
     /** @return true if the local player is the party leader. */
     public boolean isSelfLeader() { return isLeader; }
 
+    /** @return true if the last party info request is still fresh (within 60s). */
+    private boolean isDataFresh() {
+        return lastRequestTime > 0 && lastRequestTime + 60_000 >= ServerTick.getTime();
+    }
+
     /**
      * If we know we're the leader, run immediately.
      * If unsure, queue the action and request party info; action runs when response confirms leadership.
      */
     public void runWhenLeader(Runnable action) {
+        // If cached data is stale, re-request instead of trusting potentially outdated info
+        if (!isDataFresh()) {
+            synchronized (pendingCallbacks) {
+                pendingCallbacks.add(info -> {
+                    if (isLeader) action.run();
+                });
+            }
+            request(null);
+            return;
+        }
         if (isLeader) {
             action.run();
             return;
@@ -142,6 +157,17 @@ public final class PartyTracker {
      * If unknown, queue both and request; runs the correct one when response arrives.
      */
     public void runWhenKnown(Runnable onLeader, Runnable onMember) {
+        // If cached data is stale, re-request instead of trusting potentially outdated info
+        if (!isDataFresh()) {
+            synchronized (pendingCallbacks) {
+                pendingCallbacks.add(info -> {
+                    if (isLeader) onLeader.run();
+                    else onMember.run();
+                });
+            }
+            request(null);
+            return;
+        }
         if (isLeader) {
             onLeader.run();
             return;
@@ -174,9 +200,9 @@ public final class PartyTracker {
     /** @return the timestamp (ms) of the last party info fetch, or 0 if never fetched. */
     public long getLastRequestTime() { return lastRequestTime; }
 
-    /** Request party info from the server, with optional callback on response. */
+    /** Request party info from the server (throttled to once per 60s), with optional callback on response. */
     public void request(Consumer<PartyInfo> callback) {
-        if (lastRequestTime + 30_000 > ServerTick.getTime()) {
+        if (lastRequestTime + 60_000 > ServerTick.getTime()) {
             if (callback != null) callback.accept(lastInfo);
             return;
         }
