@@ -4,19 +4,26 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.DataPersistence;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -32,6 +39,13 @@ public final class LoadoutItemResolver {
 
     /** 反向索引：cleanName → skyblockId */
     private static volatile Map<String, String> reverseIndex;
+
+    /** 物品名 → 真实 ItemStack 缓存（来自左侧当前装备槽位） */
+    private static final Map<String, ItemStack> ITEM_CACHE = new ConcurrentHashMap<>();
+
+    /** 上次从磁盘加载的 profile key，同 profile 不重复读 */
+    @Nullable
+    private static String loadedProfileKey;
 
     /** 重铸前缀集合（小写） */
     private static volatile Set<String> reforgePrefixes;
@@ -187,6 +201,134 @@ public final class LoadoutItemResolver {
         return ItemStack.EMPTY;
     }
 
+    // ==================== 物品名 → 真实 ItemStack 缓存 ====================
+
+    /**
+     * 将容器槽位中的真实物品按去颜色后的展示名缓存。
+     * 不做 heavy clean（不去重铸前缀等），与预设 lore 的轻量提取保持一致的 key 格式。
+     * 调用时机：每次页面刷新（refreshSlots）后，索引就绪时。
+     */
+    public static void cacheItemsFromSlots(ItemStack[] slots, int[] slotIndices) {
+        if (slots == null || slotIndices == null) return;
+        for (int idx : slotIndices) {
+            if (idx < 0 || idx >= slots.length) continue;
+            ItemStack stack = slots[idx];
+            if (stack == null || stack.isEmpty()) continue;
+            // 末尾星段归一化为 Hypixel 格式：✪×N + 编号圈
+            // 必须用 toLegacyString 拿到 § 颜色码，getString() 是纯文本没有 §
+            String key = normalizeStarSuffix(ChatUtils.toLegacyString(stack.getHoverName()));
+            if (!key.isEmpty()) {
+                ITEM_CACHE.put(key, stack.copy());
+            }
+        }
+    }
+
+    /**
+     * 解析物品名对应的 ItemStack：优先查缓存（真实物品），未命中则回退到物品库。
+     *
+     * @param itemName 去颜色后的物品名（仅 {@link ChatUtils#stripColor(String)} + trim，保留重铸前缀）
+     * @return 缓存的真实物品或物品库的通用 ItemStack，未找到返回 EMPTY
+     */
+    public static ItemStack resolveItem(String itemName) {
+        if (itemName == null || itemName.isEmpty()) return ItemStack.EMPTY;
+        // 1) 查缓存（key 为仅去颜色的展示名）
+        ItemStack cached = ITEM_CACHE.get(itemName);
+        if (cached != null && !cached.isEmpty()) return cached.copy();
+        // 2) 回退：heavy clean → 反向索引 → 物品库
+        String heavyCleaned = cleanName(itemName);
+        String id = getSkyblockId(heavyCleaned);
+        if (id != null) return createItemFromRepo(id);
+        return ItemStack.EMPTY;
+    }
+
+    /** 获取缓存条目数（调试用） */
+    public static int getCacheSize() {
+        return ITEM_CACHE.size();
+    }
+
+    /** 清空物品缓存 */
+    public static void clearItemCache() {
+        ITEM_CACHE.clear();
+    }
+
+    // ==================== ItemStack 序列化 / 磁盘持久化 ====================
+
+    /** 磁盘存储结构：物品名 → NBT 字符串 */
+    private record PersistedCache(Map<String, String> items) {}
+
+    private static String profileKey() {
+        var tracker = HypixelLocationTracker.getInstance();
+        String uuid = tracker.getUuid();
+        String profileId = tracker.getProfileId();
+        if (uuid == null || profileId == null) return null;
+        return uuid + "_" + profileId;
+    }
+
+    /** 从磁盘加载缓存（测试服跳过；同 profile 不重复读） */
+    public static void loadCacheFromDisk() {
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
+        String key = profileKey();
+        if (key == null) return;
+        // 同 profile 已在内存中，不重复读盘
+        if (key.equals(loadedProfileKey)) return;
+
+        PersistedCache data = DataPersistence.load(key, "loadout_items.json", PersistedCache.class);
+        if (data != null && data.items != null) {
+            for (var entry : data.items.entrySet()) {
+                ItemStack stack = deserializeItem(entry.getValue());
+                if (!stack.isEmpty()) {
+                    ITEM_CACHE.put(entry.getKey(), stack);
+                }
+            }
+        }
+        loadedProfileKey = key;
+    }
+
+    /** 将当前内存缓存写入磁盘（测试服跳过） */
+    public static void saveCacheToDisk() {
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
+        String key = profileKey();
+        if (key == null) return;
+        Map<String, String> serialized = new HashMap<>();
+        for (var entry : ITEM_CACHE.entrySet()) {
+            String nbt = serializeItem(entry.getValue());
+            if (!nbt.isEmpty()) {
+                serialized.put(entry.getKey(), nbt);
+            }
+        }
+        if (!serialized.isEmpty()) {
+            DataPersistence.save(key, "loadout_items.json", new PersistedCache(serialized));
+        }
+    }
+
+    /** ItemStack → NBT 字符串 */
+    private static String serializeItem(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return "";
+        var level = Minecraft.getInstance().level;
+        if (level == null) return "";
+        try {
+            var ops = level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+            return ItemStack.CODEC.encodeStart(ops, stack)
+                .result()
+                .map(Tag::toString)
+                .orElse("");
+        } catch (Exception e) { return ""; }
+    }
+
+    /** NBT 字符串 → ItemStack */
+    private static ItemStack deserializeItem(String nbtStr) {
+        if (nbtStr == null || nbtStr.isEmpty()) return ItemStack.EMPTY;
+        var level = Minecraft.getInstance().level;
+        if (level == null) return ItemStack.EMPTY;
+        try {
+            var ops = level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+            var tag = TagParser.parseCompoundFully(nbtStr);
+            return ItemStack.CODEC.parse(ops, tag)
+                .result()
+                .orElse(ItemStack.EMPTY);
+        } catch (Exception e) { return ItemStack.EMPTY; }
+    }
+
     private static void buildReverseIndex() {
         if (!FabricLoader.getInstance().isModLoaded("skyblocker")) {
             LOGGER.warn("Skyblocker not loaded, skipping reverse index");
@@ -279,7 +421,7 @@ public final class LoadoutItemResolver {
             } else if (stripped.startsWith("Gloves/Bracelet: ")) {
                 data.glovesName = extractItemName(stripped, "Gloves/Bracelet: ");
             }
-            // 宠物： "Pet: [Lvl X] [stats] PetName" → 提取等级和名字
+            // 宠物： "Pet: [Lvl X] [stats] PetName" → 提取等级和名字（只有名字部分需要归一化）
             else if (stripped.startsWith("Pet: ")) {
                 String petPart = stripped.substring(5).trim();
                 // 提取等级
@@ -312,11 +454,59 @@ public final class LoadoutItemResolver {
         return data;
     }
 
-    /** 从 lore 行提取物品名并清洗 */
-    private static String extractItemName(String line, String prefix) {
-        String raw = line.substring(prefix.length()).trim();
+    /** 从去颜色后的 lore 行提取物品名（简单前缀截取） */
+    @Nullable
+    private static String extractItemName(String strippedLine, String prefix) {
+        String raw = strippedLine.substring(prefix.length()).trim();
         if (raw.isEmpty() || raw.equalsIgnoreCase("None") || raw.equalsIgnoreCase("Empty")) return null;
-        return cleanName(raw);
+        return raw;
+    }
+
+    /** 编号圈字符，索引 0=➊ 表示 1 颗大师星 */
+    private static final String CIRCLED = "➊➋➌➍➎➏➐➑➒➓";
+
+    /**
+     * 末尾加编号圈（Hypixel 格式）。有圈 = 已归一化直接返回；
+     * 无圈且 §c 开头 → 数到 §6 得大师星数 → 末尾加圈。
+     */
+    static String normalizeStarSuffix(String raw) {
+        if (raw == null || raw.isEmpty()) return "";
+        String[] parts = raw.split(" ");
+        if (parts.length == 0) return ChatUtils.stripColor(raw).trim();
+
+        // 找到含 ✪ 的 token
+        int starIdx = -1;
+        for (int i = 0; i < parts.length; i++) {
+            if (parts[i].indexOf('✪') >= 0) { starIdx = i; break; }
+        }
+        if (starIdx < 0) return ChatUtils.stripColor(raw).trim();
+
+        String token = parts[starIdx];
+        // 已有编号圈 → 已归一化，直接去颜色返回
+        for (int ci = 0; ci < CIRCLED.length(); ci++) {
+            if (token.indexOf(CIRCLED.charAt(ci)) >= 0) {
+                return ChatUtils.stripColor(raw).trim();
+            }
+        }
+
+        // 无圈 → §c 开头就数到 §6 之间的 ✪ → 大师星数 → 末尾加圈
+        if (token.startsWith("§c")) {
+            int master = 0;
+            int end = token.indexOf("§6");
+            String redPart = end > 0 ? token.substring(0, end) : token;
+            for (int i = 0; i < redPart.length(); i++) {
+                if (redPart.charAt(i) == '✪') master++;
+            }
+            if (master > 0 && master <= CIRCLED.length()) {
+                parts[starIdx] = token + CIRCLED.charAt(master - 1);
+            }
+        }
+
+        // 去颜色 join
+        for (int i = 0; i < parts.length; i++) {
+            parts[i] = ChatUtils.stripColor(parts[i]);
+        }
+        return String.join(" ", parts).trim();
     }
 
     // ==================== 数据结构 ====================
