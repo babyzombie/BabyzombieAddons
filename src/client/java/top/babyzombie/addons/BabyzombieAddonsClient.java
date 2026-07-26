@@ -2,6 +2,7 @@ package top.babyzombie.addons;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import org.lwjgl.glfw.GLFW;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
@@ -80,10 +81,10 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         HudRegistrar.register();
 
         cancelKeyBindingRelease = KeyBindingUtil.register(
-                "key.babyzombieaddons.cancel_key_release", ModConfigManager.get().general.cancelKeyRelease);
+                "key.babyzombieaddons.cancel_key_release", GLFW.GLFW_KEY_LEFT_ALT);
 
         toggleHandRenderKey = KeyBindingUtil.register(
-                "key.babyzombieaddons.toggle_hand_render", ModConfigManager.get().general.handRender.toggleHandRenderKey);
+                "key.babyzombieaddons.toggle_hand_render", GLFW.GLFW_KEY_UNKNOWN);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;

@@ -12,8 +12,10 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,22 +42,25 @@ public final class PetExperienceTracker {
     private PlayerPetState state;
     private boolean initialized;
 
-    // Last calculation result for debug display
-    @Nullable
-    private LastCalculation lastCalculation;
+    // Last 5 calculations for debug display
+    private static final int MAX_LAST_CALCS = 5;
+    private final Deque<LastCalculation> lastCalculations = new ArrayDeque<>();
 
-    /** Record for debug display of last XP calculation. */
+    /** Record for debug display of XP calculations. */
     public static final class LastCalculation {
         public final String skillName;
         public final double skillXp;
+        public final int skillLevel;
         public final String summonedPetType;
         public final double summonedXp;
         public final List<SharedPetXpResult> sharedResults;
 
-        public LastCalculation(String skillName, double skillXp, String summonedPetType, double summonedXp,
+        public LastCalculation(String skillName, double skillXp, int skillLevel,
+                               String summonedPetType, double summonedXp,
                                List<SharedPetXpResult> sharedResults) {
             this.skillName = skillName;
             this.skillXp = skillXp;
+            this.skillLevel = skillLevel;
             this.summonedPetType = summonedPetType;
             this.summonedXp = summonedXp;
             this.sharedResults = sharedResults;
@@ -79,9 +84,12 @@ public final class PetExperienceTracker {
         ClientReceiveMessageEvents.ALLOW_GAME.register(this::onGameMessage);
     }
 
-    @Nullable
-    public LastCalculation getLastCalculation() {
-        return lastCalculation;
+    /** Returns the last N calculations (newest first). */
+    public List<LastCalculation> getLastCalculations() {
+        List<LastCalculation> list = new ArrayList<>(lastCalculations);
+        // newest first
+        java.util.Collections.reverse(list);
+        return list;
     }
 
     /** Skills that actually generate pet XP. */
@@ -158,10 +166,52 @@ public final class PetExperienceTracker {
             sharedResults.add(new SharedPetXpResult(sharedPet.type(), sharedXP));
         }
 
+        // Kuudra pet passive shared XP on Crimson Isle (only one non-maxed Kuudra)
+        if (HypixelLocationTracker.getInstance().isInCrimson()) {
+            PetData kuudra = findEligibleKuudra(petManager.getPets(), currentPet.uuid());
+            if (kuudra != null) {
+                double kuudraXP = round2(PetXPCalculator.calcSharedPetXP(
+                    summonedXP,
+                    currentPet.type(), petItemMult,
+                    kuudra.type(), 1.0, // Kuudra can't equip Exp Share
+                    skill,
+                    state.getTamingLevel(),
+                    false, // no Exp Share item
+                    state.dianaSharingIsCaring,
+                    state.whyNotMoreLevel
+                ));
+                petManager.addPetExp(kuudra.uuid(), kuudraXP);
+                sharedResults.add(new SharedPetXpResult(kuudra.type() + " (被动)", kuudraXP));
+            }
+        }
+
         // Store for debug display
-        lastCalculation = new LastCalculation(
-            skill.name(), round2(skillXP), currentPet.type(), summonedXP, sharedResults
+        int skillLevel = state.getSkillLevel(skill);
+        LastCalculation calc = new LastCalculation(
+            skill.name(), round2(skillXP), skillLevel,
+            currentPet.type(), summonedXP, sharedResults
         );
+        lastCalculations.addLast(calc);
+        while (lastCalculations.size() > MAX_LAST_CALCS) {
+            lastCalculations.removeFirst();
+        }
+    }
+
+    // ===== Kuudra Passive =====
+
+    /**
+     * Find the first non-maxed Kuudra pet that is not the summoned pet.
+     * Only one Kuudra pet receives the passive shared XP.
+     */
+    @Nullable
+    private static PetData findEligibleKuudra(List<PetData> allPets, @Nullable String summonedUuid) {
+        for (PetData p : allPets) {
+            if (!"KUUDRA".equals(p.type())) continue;
+            if (p.uuid() != null && p.uuid().equals(summonedUuid)) continue;
+            if (p.getLevelInfo().isMaxed()) continue;
+            return p;
+        }
+        return null;
     }
 
     // ===== Pet Item Multiplier Resolution =====
@@ -220,6 +270,6 @@ public final class PetExperienceTracker {
      */
     public void reset() {
         actionBarParser.reset();
-        lastCalculation = null;
+        lastCalculations.clear();
     }
 }
