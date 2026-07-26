@@ -144,10 +144,10 @@ public final class PetXPCalculator {
         if ("BINGO".equals(petType)) return 1.0;
 
         // OWL: primary is TAMING, which means it never matches any normal skill
-        if ("OWL".equals(petType)) return 0.33;
+        if ("OWL".equals(petType)) return 1.0 / 3.0;
 
         // Pet not in constants → default to mismatch
-        if (primary == null) return 0.33;
+        if (primary == null) return 1.0 / 3.0;
 
         // Direct match
         if (skill == primary) return 1.0;

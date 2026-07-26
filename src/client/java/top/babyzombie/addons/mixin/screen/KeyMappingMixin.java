@@ -13,8 +13,8 @@ public abstract class KeyMappingMixin {
     @Shadow public abstract boolean same(KeyMapping that);
 
     @Inject(method = "setDown", at = @At("HEAD"), cancellable = true)
-    public void setDown$BabyzombieAddons(boolean bl, CallbackInfo ci) {
-        if (!bl && BabyzombieAddonsClient.cancelKeyBindingRelease.isDown()
+    public void setDown$BabyzombieAddons(boolean down, CallbackInfo ci) {
+        if (!down && BabyzombieAddonsClient.cancelKeyBindingRelease.isDown()
             && !this.same(BabyzombieAddonsClient.cancelKeyBindingRelease))
             ci.cancel();
     }

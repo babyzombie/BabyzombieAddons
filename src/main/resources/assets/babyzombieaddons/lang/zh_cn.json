@@ -877,7 +877,7 @@
   "babyzombieaddons.debug.pet.state_sharing_is_caring": "§b经验共享：§f%s",
   "babyzombieaddons.debug.pet.yes": "是",
   "babyzombieaddons.debug.pet.no": "否",
-  "babyzombieaddons.debug.pet.last_xp_header": "§6§l=== 上次技能经验 ===",
+  "babyzombieaddons.debug.pet.last_xp_header": "§6§l=== 最近技能经验 (最多5条) ===",
   "babyzombieaddons.debug.pet.last_xp_summoned": "§b%s +%.2f §7→ 召唤宠物 §a+%.2f XP",
   "babyzombieaddons.debug.pet.last_xp_shared": "§7共享[%d] §b%s §7→ §a+%.2f XP",
   "babyzombieaddons.debug.party.header": "§6§l=== 组队信息 ===",

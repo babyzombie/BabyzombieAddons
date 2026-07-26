@@ -877,7 +877,7 @@
   "babyzombieaddons.debug.pet.state_sharing_is_caring": "§bSharing is Caring: §f%s",
   "babyzombieaddons.debug.pet.yes": "Yes",
   "babyzombieaddons.debug.pet.no": "No",
-  "babyzombieaddons.debug.pet.last_xp_header": "§6§l=== Last Skill XP ===",
+  "babyzombieaddons.debug.pet.last_xp_header": "§6§l=== Recent Skill XP (last 5) ===",
   "babyzombieaddons.debug.pet.last_xp_summoned": "§b%s +%.2f §7→ Summoned Pet §a+%.2f XP",
   "babyzombieaddons.debug.pet.last_xp_shared": "§7Shared[%d] §b%s §7→ §a+%.2f XP",
   "babyzombieaddons.debug.party.header": "§6§l=== Party Info ===",

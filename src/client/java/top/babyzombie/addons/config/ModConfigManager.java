@@ -11,6 +11,7 @@ import io.github.notenoughupdates.moulconfig.managed.ManagedConfigBuilder;
 import io.github.notenoughupdates.moulconfig.platform.MoulConfigScreenComponent;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -113,6 +114,7 @@ public final class ModConfigManager {
         KeyBindingUtil.syncToKeyMapping(PopupEventsModule.keyYes, cfg.popup.popupYes);
         KeyBindingUtil.syncToKeyMapping(PopupEventsModule.keyNo, cfg.popup.popupNo);
         KeyBindingUtil.syncToKeyMapping(CopyItemInfoKey.KEY, cfg.misc.copyItemInfo);
+        KeyMapping.resetMapping();
     }
 
     public static Screen createGUI(@Nullable Screen parent) {
@@ -134,7 +136,7 @@ public final class ModConfigManager {
         private final @Nullable Screen parent;
 
         MoulConfigScreen(MoulConfigEditor<?> editor, @Nullable Screen parent) {
-            super(Component.empty(), new GuiContext(new GuiElementComponent(editor)), null);
+            super(Component.empty(), new GuiContext(new GuiElementComponent(editor)), parent);
             this.parent = parent;
         }
 

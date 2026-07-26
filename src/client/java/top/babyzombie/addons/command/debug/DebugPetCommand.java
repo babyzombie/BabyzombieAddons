@@ -3,6 +3,10 @@ package top.babyzombie.addons.command.debug;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import top.babyzombie.addons.util.pet.*;
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
 
@@ -101,17 +105,31 @@ public final class DebugPetCommand {
         src.sendFeedback(Component.translatable(PFX + "state_sharing_is_caring",
             (state.dianaSharingIsCaring ? "§a" : "§c") + t(state.dianaSharingIsCaring ? PFX + "yes" : PFX + "no")));
 
-        // ---- Last XP ----
-        PetExperienceTracker.LastCalculation last = PetExperienceTracker.getInstance().getLastCalculation();
-        if (last != null) {
+        // ---- Last XP (up to 5) ----
+        List<PetExperienceTracker.LastCalculation> calcs = PetExperienceTracker.getInstance().getLastCalculations();
+        if (!calcs.isEmpty()) {
             src.sendFeedback(Component.empty());
             src.sendFeedback(Component.translatable(PFX + "last_xp_header"));
-            src.sendFeedback(Component.translatable(PFX + "last_xp_summoned",
-                last.skillName, last.skillXp, last.summonedXp));
-            for (int i = 0; i < last.sharedResults.size(); i++) {
-                var r = last.sharedResults.get(i);
-                src.sendFeedback(Component.translatable(PFX + "last_xp_shared",
-                    i + 1, r.petType(), r.xpGained()));
+            for (PetExperienceTracker.LastCalculation c : calcs) {
+                MutableComponent line = Component.literal("")
+                    .append(Component.literal(c.skillName).withStyle(s -> s.withColor(TextColor.fromRgb(0x55FFFF))))
+                    .append(Component.literal(" §7Lv." + c.skillLevel))
+                    .append(Component.literal(" §8| §a+" + fmtNum(c.skillXp) + " XP"));
+
+                // Build hover with detailed info
+                MutableComponent hover = Component.literal("")
+                    .append(Component.translatable(PFX + "last_xp_summoned",
+                        c.skillName, c.skillXp, c.summonedXp));
+                for (int i = 0; i < c.sharedResults.size(); i++) {
+                    var r = c.sharedResults.get(i);
+                    hover.append(Component.literal("\n"))
+                        .append(Component.translatable(PFX + "last_xp_shared",
+                            i + 1, r.petType(), r.xpGained()));
+                }
+                line.setStyle(Style.EMPTY.withHoverEvent(
+                    new HoverEvent.ShowText(hover)));
+
+                src.sendFeedback(line);
             }
         }
     }

@@ -190,6 +190,7 @@ public class HypixelLocationTracker {
     public boolean isInKuudra() { return isInSkyblock() && "Kuudra".equals(currentLocation.map()); }
     public boolean isInRift() { return isInSkyblock() && "The Rift".equals(currentLocation.map()); }
     public boolean isInSafari() { return isInSkyblock() && "Safari".equals(currentLocation.map()); }
+    public boolean isInCrimson() { return isInSkyblock() && "Crimson Isle".equals(currentLocation.map()); }
     /**
      * Detect limbo by checking the tablist and sidebar scoreboard.
      * In limbo: the tablist contains only the player themselves, and there is no
