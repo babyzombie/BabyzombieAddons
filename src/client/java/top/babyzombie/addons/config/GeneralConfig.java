@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText;
@@ -13,14 +14,15 @@ import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.hud.HudManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GeneralConfig {
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.updateChecker", desc = "config.babyzombieaddons.option.updateChecker.desc") @ConfigEditorBoolean @SearchTag("update")
     public boolean updateChecker = true;
     @ConfigOption(name = "config.babyzombieaddons.option.hudEdit", desc = "config.babyzombieaddons.option.hudEdit.desc") @ConfigEditorButton(buttonText = "OPEN") @SearchTag("hud")
     public transient Runnable hudEdit = () -> HudManager.openEditScreen(Minecraft.getInstance().gui.screen());
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.replaceReportWithServerList", desc = "config.babyzombieaddons.option.replaceReportWithServerList.desc") @ConfigEditorBoolean @SearchTag("report")
-    public boolean replaceReportWithServerList = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.serverResourcePackAutoAccept", desc = "config.babyzombieaddons.option.serverResourcePackAutoAccept.desc") @ConfigEditorBoolean @SearchTag("resourcepack")
     public boolean serverResourcePackAutoAccept = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.cancelKeyRelease", desc = "config.babyzombieaddons.option.cancelKeyRelease.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_LEFT_ALT) @SearchTag("key")
@@ -33,6 +35,8 @@ public class GeneralConfig {
     public int secondPerson = GLFW.GLFW_KEY_UNKNOWN;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.useTpsAdjustedTime", desc = "config.babyzombieaddons.option.useTpsAdjustedTime.desc") @ConfigEditorBoolean @SearchTag("tps")
     public boolean useTpsAdjustedTime = false;
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.pauseScreen", desc = "") @Accordion
+    public PauseScreen pauseScreen = new PauseScreen();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.autotip", desc = "") @Accordion
     public Autotip autotip = new Autotip();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.chat", desc = "") @Accordion
@@ -127,5 +131,59 @@ public class GeneralConfig {
         public boolean showSystemMemory = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowPing", desc = "config.babyzombieaddons.option.windowTitleShowPing.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("ping")
         public boolean showPing = false;
+    }
+
+    public static class PauseScreen {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideReturnToGame", desc = "config.babyzombieaddons.option.hideReturnToGame.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hideReturnToGame = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideIconButtonRow", desc = "config.babyzombieaddons.option.hideIconButtonRow.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hideIconButtonRow = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.group.hideButtons", desc = "") @Accordion
+        public HideButtons hideButtons = new HideButtons();
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.enableQuickButtons", desc = "config.babyzombieaddons.option.enableQuickButtons.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean enableQuickButtons = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.quickButtonOrder", desc = "config.babyzombieaddons.option.quickButtonOrder.desc") @ConfigEditorDraggableList @SearchTag("pause")
+        public List<QuickButtonType> quickButtonOrder = new ArrayList<>();
+    }
+
+    public static class HideButtons {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideAdvancements", desc = "config.babyzombieaddons.option.hideAdvancements.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hideAdvancements = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideStats", desc = "config.babyzombieaddons.option.hideStats.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hideStats = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideReportBugs", desc = "config.babyzombieaddons.option.hideReportBugs.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hideReportBugs = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideFeedback", desc = "config.babyzombieaddons.option.hideFeedback.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hideFeedback = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideFriends", desc = "config.babyzombieaddons.option.hideFriends.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hideFriends = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hidePlayerReporting", desc = "config.babyzombieaddons.option.hidePlayerReporting.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hidePlayerReporting = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideCustomAdditions", desc = "config.babyzombieaddons.option.hideCustomAdditions.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hideCustomAdditions = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideOptions", desc = "config.babyzombieaddons.option.hideOptions.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hideOptions = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideMultiplayerOptions", desc = "config.babyzombieaddons.option.hideMultiplayerOptions.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hideMultiplayerOptions = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideDisconnect", desc = "config.babyzombieaddons.option.hideDisconnect.desc") @ConfigEditorBoolean @SearchTag("pause")
+        public boolean hideDisconnect = false;
+    }
+
+    public enum QuickButtonType {
+        SINGLEPLAYER,
+        SERVER_LIST,
+        VIDEO_SETTINGS,
+        KEY_BINDS,
+        SOUND_OPTIONS;
+
+        @Override
+        public String toString() {
+            return net.minecraft.network.chat.Component.translatable(
+                    "config.babyzombieaddons.quickbutton." + name()).getString();
+        }
     }
 }
