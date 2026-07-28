@@ -32,6 +32,12 @@ public class MiscConfig {
     public transient Runnable neuRepoLink = NEURepoLinker::startLinking;
 
     @Expose
+    @ConfigOption(name = "config.babyzombieaddons.option.showExternalHudSource", desc = "config.babyzombieaddons.option.showExternalHudSource.desc")
+    @ConfigEditorBoolean
+    @SearchTag("hud") @SearchTag("debug") @SearchTag("source")
+    public boolean showExternalHudSource = false;
+
+    @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.debugMode", desc = "config.babyzombieaddons.option.debugMode.desc")
     @ConfigEditorBoolean
     @SearchTag("debug")

@@ -11,6 +11,8 @@
     "render.BlockDisplayRendererMixin",
     "render.BossHealthOverlayAccessor",
     "render.GuiAccessor",
+    "render.GuiExtractRenderStateMixin",
+    "render.GuiGraphicsExtractorTrackingMixin",
     "render.PlayerTabOverlayAccessor",
     "render.BossHealthOverlayMixin",
     "render.EntityRenderDispatcherScaleMixin",
