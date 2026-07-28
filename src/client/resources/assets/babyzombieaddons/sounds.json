@@ -1,0 +1,42 @@
+{
+  "custom_disc_1": {
+    "sounds": [
+      {
+        "name": "babyzombieaddons:custom_disc_1",
+        "stream": true
+      }
+    ]
+  },
+  "custom_disc_2": {
+    "sounds": [
+      {
+        "name": "babyzombieaddons:custom_disc_2",
+        "stream": true
+      }
+    ]
+  },
+  "custom_disc_3": {
+    "sounds": [
+      {
+        "name": "babyzombieaddons:custom_disc_3",
+        "stream": true
+      }
+    ]
+  },
+  "custom_disc_4": {
+    "sounds": [
+      {
+        "name": "babyzombieaddons:custom_disc_4",
+        "stream": true
+      }
+    ]
+  },
+  "custom_disc_5": {
+    "sounds": [
+      {
+        "name": "babyzombieaddons:custom_disc_5",
+        "stream": true
+      }
+    ]
+  }
+}

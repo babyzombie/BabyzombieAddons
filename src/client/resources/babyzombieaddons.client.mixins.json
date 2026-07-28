@@ -63,6 +63,8 @@
     "sound.SoundEngineAccessor",
     "sound.SoundManagerAccessor",
     "window.WindowTitleMixin"
+
+    "resource.PackRepositoryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

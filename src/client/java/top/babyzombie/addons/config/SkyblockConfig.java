@@ -295,7 +295,7 @@ public class SkyblockConfig {
         public boolean enabled = false;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.customRingtoneDisc", desc = "config.babyzombieaddons.option.customRingtoneDisc.desc") @ConfigEditorDropdown @SearchTag("abiphone") @SearchTag("ringtone")
-        public MusicDisc disc = MusicDisc.PIGSTEP;
+        public MusicDisc disc = MusicDisc.TEARS;
 
         @ConfigOption(name = "config.babyzombieaddons.option.customRingtonePreview", desc = "config.babyzombieaddons.option.customRingtonePreview.desc") @ConfigEditorButton(buttonText = "PLAY") @SearchTag("abiphone") @SearchTag("ringtone")
         public transient Runnable preview = CustomRingtoneModule::playPreview;
@@ -304,9 +304,9 @@ public class SkyblockConfig {
         public float pitch = 1.0f;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.customRingtoneStartTime", desc = "config.babyzombieaddons.option.customRingtoneStartTime.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 360.0f, minStep = 0.01f) @SearchTag("abiphone") @SearchTag("ringtone")
-        public float startTime = 40.7f;
+        public float startTime = 19.4f;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.customRingtoneDuration", desc = "config.babyzombieaddons.option.customRingtoneDuration.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 5.0f, minStep = 0.01f) @SearchTag("abiphone") @SearchTag("ringtone")
-        public float duration = 1.2f;
+        public float duration = 2.5f;
     }
 }
