@@ -1,6 +1,6 @@
 {
   "modmenu.gitee": "Gitee 仓库",
-  "modmenu.description.babyzombieaddons": "Hypixel Skykblock 辅助模组.",
+  "modmenu.descriptionTranslation.babyzombieaddons": "Hypixel SkyBlock 辅助模组。",
   "resourcepack.babyzombieaddons.chroma_modernui.name": "§bChroma × Modern UI 兼容",
   "resourcepack.babyzombieaddons.chroma_modernui.description": "让 Aaron Mod 的动态彩色字体在 Modern UI 文字引擎下生效",
   "config.babyzombieaddons.title": "BabyzombieAddons 设置",
@@ -736,7 +736,7 @@
   "rareropscreen.done": "完成",
   "babyzombieaddons.hud.externalSource": "来自 %s (%s)",
   "config.babyzombieaddons.option.showExternalHudSource": "显示外部 HUD 来源",
-  "config.babyzombieaddons.option.showExternalHudSource.desc": "鼠标悬停到其他模组的 HUD 元素上时显示来源模组和类名。",
+  "config.babyzombieaddons.option.showExternalHudSource.desc": "打开 HUD 编辑界面后，将鼠标悬停在其他模组的 HUD 元素上时显示来源模组和类名，方便识别画面上的各种 overlay 分别来自哪个模组。",
   "config.babyzombieaddons.option.debugMode": "HUD 布局调试",
   "config.babyzombieaddons.option.debugMode.desc": "启用后 HUD 编辑界面会显示全部元素（包括未开启的），方便调整布局。",
   "config.babyzombieaddons.option.hypixelModApiDebugLog": "Hypixel Mod API 调试输出",
