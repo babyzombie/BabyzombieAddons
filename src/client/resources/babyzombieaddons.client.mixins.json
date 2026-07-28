@@ -76,7 +76,9 @@
 
     "screen.PauseScreenMixin",
 
-    "compat.ModernUITextRenderTypeMixin"
+    "compat.ModernUITextRenderTypeMixin",
+
+    "resource.PackRepositoryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

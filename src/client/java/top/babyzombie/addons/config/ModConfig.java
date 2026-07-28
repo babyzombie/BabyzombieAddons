@@ -100,7 +100,10 @@ public class ModConfig extends Config {
         DISC_5(178), DISC_11(71), DISC_13(178), BLOCKS(345), CAT(185), CHIRP(185), FAR(174),
         LAVA_CHICKEN(135), MALL(197), MELLOHI(96), PIGSTEP(148), STAL(150), STRAD(188),
         WAIT(237), WARD(251), OTHERSIDE(195), RELIC(219), CREATOR(176),
-        CREATOR_MUSIC_BOX(73), PRECIPICE(299), TEARS(175);
+        CREATOR_MUSIC_BOX(73), PRECIPICE(299), TEARS(175),
+
+        // ── 自定义唱片槽位（取决于 config 目录下的 .ogg 文件）──
+        CUSTOM_1(0), CUSTOM_2(0), CUSTOM_3(0), CUSTOM_4(0), CUSTOM_5(0);
 
         private final int durationSeconds;
 
@@ -110,6 +113,10 @@ public class ModConfig extends Config {
 
         /** 唱片时长（秒） */
         public int getDurationSeconds() {
+            if (isCustom() && isCustomActive()) {
+                var info = top.babyzombie.addons.module.dungeon.CustomDiscScanner.getInfo(this);
+                if (info != null) return info.durationSeconds();
+            }
             return durationSeconds;
         }
 
@@ -137,12 +144,29 @@ public class ModConfig extends Config {
                 case CREATOR_MUSIC_BOX -> "§bCreator (Music Box)";
                 case PRECIPICE -> "§bPrecipice";
                 case TEARS -> "§bTears";
+                case CUSTOM_1, CUSTOM_2, CUSTOM_3, CUSTOM_4, CUSTOM_5 -> {
+                    var info = top.babyzombie.addons.module.dungeon.CustomDiscScanner.getInfo(this);
+                    if (info != null) yield "§b" + info.displayName();
+                    yield "§7[未安装]";
+                }
             };
         }
 
         public Identifier getSoundId() {
+            if (isCustom()) {
+                int n = ordinal() - CUSTOM_1.ordinal() + 1;
+                return Identifier.fromNamespaceAndPath("babyzombieaddons", "custom_disc_" + n);
+            }
             String n = name().toLowerCase().replace("disc_", "");
             return Identifier.fromNamespaceAndPath("minecraft", "music_disc." + n);
+        }
+
+        private boolean isCustom() {
+            return ordinal() >= CUSTOM_1.ordinal();
+        }
+
+        public boolean isCustomActive() {
+            return isCustom() && top.babyzombie.addons.module.dungeon.CustomDiscScanner.getInfo(this) != null;
         }
     }
     public enum PlayMode {
