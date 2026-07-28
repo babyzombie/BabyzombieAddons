@@ -56,37 +56,43 @@ public final class HudSourceTracker {
     }
 
     public static void endFrame() {
-        if (!isEnabled()) {
-            TRACKING.set(false);
-            return;
-        }
-
-        List<RegionEntry> list = REGIONS.get();
-        GuiGraphicsExtractor gui = CURRENT_GUI.get();
-
-        if (gui != null && !list.isEmpty()) {
-            var mc = Minecraft.getInstance();
-            var window = mc.getWindow();
-            double scale = window.getGuiScale();
-            int mx = (int) (mc.mouseHandler.xpos() / scale);
-            int my = (int) (mc.mouseHandler.ypos() / scale);
-
-            RegionEntry hit = null;
-            for (int i = list.size() - 1; i >= 0; i--) {
-                if (list.get(i).contains(mx, my)) {
-                    hit = list.get(i);
-                    break;
-                }
-            }
-
-            if (hit != null) {
-                drawTooltip(gui, mc.font, hit, mx, my);
-            }
-        }
-
+        // Tracking stops; regions persist for HudEditScreen.renderTooltipFromScreen()
         TRACKING.set(false);
         CURRENT_GUI.remove();
         LAST_CALLER.remove();
+    }
+
+    /**
+     * Renders the hover tooltip if the mouse is over an external HUD region.
+     * Called from HudEditScreen.extractRenderState so it appears above the edit overlay.
+     */
+    /**
+     * Renders the hover tooltip if the mouse is over an external HUD region.
+     * Called from HudEditScreen.extractRenderState so it appears above the edit overlay.
+     *
+     * @param skipIfOwnElement if true, skips rendering when the mouse is over one of
+     *                         our own HUD elements (to avoid overlapping tooltips)
+     * @return true if an external region was hit
+     */
+    public static boolean renderTooltipFromScreen(GuiGraphicsExtractor gui, Font font, int mx, int my, boolean skipIfOwnElement) {
+        if (!isEnabled()) return false;
+        if (skipIfOwnElement) return false;
+        List<RegionEntry> list = REGIONS.get();
+        if (list.isEmpty()) return false;
+
+        RegionEntry hit = null;
+        for (int i = list.size() - 1; i >= 0; i--) {
+            if (list.get(i).contains(mx, my)) {
+                hit = list.get(i);
+                break;
+            }
+        }
+        if (hit != null) {
+            drawHighlight(gui, hit);
+            drawTooltip(gui, font, hit, mx, my);
+            return true;
+        }
+        return false;
     }
 
     public static boolean isTracking() {
@@ -146,7 +152,10 @@ public final class HudSourceTracker {
     }
 
     public static boolean isEnabled() {
-        return ModConfigManager.get().misc.showExternalHudSource;
+        if (!ModConfigManager.get().misc.showExternalHudSource) return false;
+        // Only active when the HUD edit screen is open
+        var screen = Minecraft.getInstance().screen;
+        return screen instanceof top.babyzombie.addons.config.hud.HudEditScreen;
     }
 
     // ================================================================
@@ -238,6 +247,18 @@ public final class HudSourceTracker {
     private static boolean isNear(RegionEntry last, int x1, int y1, int x2, int y2) {
         return !(last.x2 + MERGE_GAP < x1 || x2 + MERGE_GAP < last.x1
                 || last.y2 + MERGE_GAP < y1 || y2 + MERGE_GAP < last.y1);
+    }
+
+    private static void drawHighlight(GuiGraphicsExtractor gui, RegionEntry entry) {
+        int c = 0xCC00FF00; // bright green, semi-transparent
+        // top
+        gui.fill(entry.x1, entry.y1, entry.x2, entry.y1 + 1, c);
+        // bottom
+        gui.fill(entry.x1, entry.y2 - 1, entry.x2, entry.y2, c);
+        // left
+        gui.fill(entry.x1, entry.y1, entry.x1 + 1, entry.y2, c);
+        // right
+        gui.fill(entry.x2 - 1, entry.y1, entry.x2, entry.y2, c);
     }
 
     private static void drawTooltip(GuiGraphicsExtractor gui, Font font, RegionEntry entry, int mx, int my) {
