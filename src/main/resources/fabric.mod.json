@@ -4,9 +4,7 @@
   "version": "${version}",
 
   "name": "BabyzombieAddons",
-  "description": {
-    "translate": "babyzombieaddons.description"
-  },
+  "description": "A Hypixel SkyBlock QoL mod",
   "authors": ["baby__zombie","TryToFeel"],
   "contact": {
     "homepage": "https://github.com/babyzombie/BabyzombieAddons",
