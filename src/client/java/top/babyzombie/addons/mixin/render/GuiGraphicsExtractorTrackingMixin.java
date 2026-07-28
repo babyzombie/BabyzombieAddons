@@ -77,13 +77,13 @@ public class GuiGraphicsExtractorTrackingMixin {
     // ── item ──
 
     @Inject(method = "item(Lnet/minecraft/world/item/ItemStack;II)V", at = @At("HEAD"))
-    private void onItem(ItemStack stack, int x, int y, CallbackInfo ci) {
+    private void onItem(ItemStack itemStack, int x, int y, CallbackInfo ci) {
         if (!HudSourceTracker.isTracking()) return;
         HudSourceTracker.record(x, y, x + 16, y + 16);
     }
 
     @Inject(method = "item(Lnet/minecraft/world/item/ItemStack;III)V", at = @At("HEAD"))
-    private void onItemSeeded(ItemStack stack, int x, int y, int seed, CallbackInfo ci) {
+    private void onItemSeeded(ItemStack itemStack, int x, int y, int seed, CallbackInfo ci) {
         if (!HudSourceTracker.isTracking()) return;
         HudSourceTracker.record(x, y, x + 16, y + 16);
     }

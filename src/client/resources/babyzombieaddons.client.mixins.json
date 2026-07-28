@@ -15,6 +15,7 @@
     "entity.DisplayAccessor",
     "entity.SwingDurationMixin",
     "item.ItemStackMaxSizeMixin",
+    "item.BlockItemMixin",
     "network.ClientboundCommandsPacketMixin",
     "network.ClientCommonPacketListenerImplMixin",
     "network.ConnectionMixin",
@@ -22,12 +23,13 @@
     "network.DisconnectedScreenMixin",
     "render.BlockDisplayRendererMixin",
     "render.BossHealthOverlayAccessor",
-    "render.PlayerTabOverlayAccessor",
     "render.BossHealthOverlayMixin",
     "render.ClientLevelAccessor",
     "render.EntityRenderDispatcherScaleMixin",
     "render.EntityRendererMixin",
     "render.EntityRenderMixin",
+    "render.GuiExtractRenderStateMixin",
+    "render.GuiGraphicsExtractorTrackingMixin",
     "render.HudAccessor",
     "render.ItemFeatureRendererMixin",
     "render.LevelRendererMixin",
@@ -64,8 +66,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "item.BlockItemMixin"
-  ]
+  }
 }
