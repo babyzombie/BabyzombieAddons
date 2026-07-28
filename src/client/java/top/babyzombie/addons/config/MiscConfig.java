@@ -35,7 +35,7 @@ public class MiscConfig {
     @ConfigOption(name = "config.babyzombieaddons.option.showExternalHudSource", desc = "config.babyzombieaddons.option.showExternalHudSource.desc")
     @ConfigEditorBoolean
     @SearchTag("hud") @SearchTag("debug") @SearchTag("source")
-    public boolean showExternalHudSource = false;
+    public boolean showExternalHudSource = true;
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.debugMode", desc = "config.babyzombieaddons.option.debugMode.desc")

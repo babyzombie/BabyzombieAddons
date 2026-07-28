@@ -82,6 +82,9 @@ public final class HudEditScreen extends Screen {
                 gui.fill(0, snapLineY, width, snapLineY + 1, lineColor);
             }
         }
+
+        // External HUD source tooltip — skip when hovering over our own element to avoid overlap
+        top.babyzombie.addons.util.HudSourceTracker.renderTooltipFromScreen(gui, font, mouseX, mouseY, hovered != null);
     }
 
     @Override
