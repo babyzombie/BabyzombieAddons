@@ -1,6 +1,6 @@
 {
   "modmenu.gitee": "Gitee Page",
-  "modmenu.description.babyzombieaddons": "A Hypixel SkyBlock QoL mod",
+  "modmenu.descriptionTranslation.babyzombieaddons": "A Hypixel SkyBlock QoL mod.",
   "resourcepack.babyzombieaddons.chroma_modernui.name": "§bChroma × Modern UI Compat",
   "resourcepack.babyzombieaddons.chroma_modernui.description": "Makes Aaron Mod's animated chroma fonts work under Modern UI's text engine",
   "config.babyzombieaddons.title": "BabyzombieAddons Settings",
@@ -769,7 +769,7 @@
   "rareropscreen.done": "Done",
   "babyzombieaddons.hud.externalSource": "From %s (%s)",
   "config.babyzombieaddons.option.showExternalHudSource": "Show External HUD Source",
-  "config.babyzombieaddons.option.showExternalHudSource.desc": "When hovering over another mod's HUD element, shows a tooltip with the mod name and class that rendered it.",
+  "config.babyzombieaddons.option.showExternalHudSource.desc": "When the HUD editor is open, hovering over another mod's HUD element shows which mod and class rendered it — useful for identifying which overlay belongs to which mod.",
   "config.babyzombieaddons.option.debugMode": "HUD Layout Debug",
   "config.babyzombieaddons.option.debugMode.desc": "Show all HUD elements in edit screen (including disabled ones) to help with layout.",
   "config.babyzombieaddons.option.hypixelModApiDebugLog": "Hypixel Mod API Debug Output",
