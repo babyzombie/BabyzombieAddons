@@ -154,7 +154,7 @@ public final class HudSourceTracker {
     public static boolean isEnabled() {
         if (!ModConfigManager.get().misc.showExternalHudSource) return false;
         // Only active when the HUD edit screen is open
-        var screen = Minecraft.getInstance().screen;
+        var screen = Minecraft.getInstance().gui.screen();
         return screen instanceof top.babyzombie.addons.config.hud.HudEditScreen;
     }
 
