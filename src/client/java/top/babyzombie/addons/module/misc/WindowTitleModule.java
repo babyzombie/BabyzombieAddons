@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ServerTick;
+import top.babyzombie.addons.util.ServerTickCounter;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.lang.management.ManagementFactory;
@@ -82,7 +83,17 @@ public final class WindowTitleModule {
         if (wt.windowTitle.showPing) {
             int ping = ServerTick.getPing();
             if (ping >= 0) {
-                parts.add("Ping " + ping + "ms");
+                int windowSec = wt.windowTitle.pingRangeSeconds;
+                if (windowSec > 0) {
+                    int[] range = ServerTickCounter.getPingRange(windowSec);
+                    if (range != null) {
+                        parts.add("Ping " + ping + "ms (" + range[0] + "~" + range[1] + ")");
+                    } else {
+                        parts.add("Ping " + ping + "ms");
+                    }
+                } else {
+                    parts.add("Ping " + ping + "ms");
+                }
             }
         }
 

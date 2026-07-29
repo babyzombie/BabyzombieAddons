@@ -974,6 +974,8 @@
   "config.babyzombieaddons.option.windowTitleShowSystemMemory.desc": "显示系统总内存（如 \"Sys 15.5G\"）。",
   "config.babyzombieaddons.option.windowTitleShowPing": "显示延迟",
   "config.babyzombieaddons.option.windowTitleShowPing.desc": "以毫秒为单位显示网络延迟。",
+  "config.babyzombieaddons.option.windowTitlePingRangeSeconds": "延迟范围（秒）",
+  "config.babyzombieaddons.option.windowTitlePingRangeSeconds.desc": "在延迟值后显示指定秒数内的最小/最大 ping 范围（如 \"Ping 45ms (30~60)\"）。设为 0 关闭。",
   "config.babyzombieaddons.option.windowTitleShowLocation": "显示 Hypixel 位置",
   "config.babyzombieaddons.option.windowTitleShowLocation.desc": "在标题栏显示当前位置（Limbo / 大厅 / 服务器类型 - 地图）。启用后可配合下方「覆盖为 Hypixel」使用。",
   "config.babyzombieaddons.option.showClickEventInHover": "在悬停提示中显示点击操作",

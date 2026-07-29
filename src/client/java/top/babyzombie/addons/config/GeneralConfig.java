@@ -131,6 +131,8 @@ public class GeneralConfig {
         public boolean showSystemMemory = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowPing", desc = "config.babyzombieaddons.option.windowTitleShowPing.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("ping")
         public boolean showPing = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitlePingRangeSeconds", desc = "config.babyzombieaddons.option.windowTitlePingRangeSeconds.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("title") @SearchTag("ping")
+        public int pingRangeSeconds = 5;
     }
 
     public static class PauseScreen {
