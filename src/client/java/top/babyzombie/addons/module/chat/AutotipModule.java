@@ -45,11 +45,8 @@ public final class AutotipModule {
             }
 
             // 匹配 "You already tipped everyone..."
-            if (text.equals("You already tipped everyone that has boosters active, so there isn't anybody to be tipped right now!")) {
-                return false;
-            }
-
-            return true;
+            return !text.equals("You already tipped everyone that has boosters active, so there isn't anybody to be tipped right now!")
+                    && !text.equals("No one has a network booster active right now! Try again later.");
         });
     }
 }

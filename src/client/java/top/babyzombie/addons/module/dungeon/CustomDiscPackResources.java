@@ -139,7 +139,7 @@ public final class CustomDiscPackResources extends AbstractPackResources {
         } catch (NumberFormatException e) {
             return null;
         }
-        if (slot < 1 || slot > 5) return null;
+        if (slot < 1 || slot > 9) return null;
 
         Path file = CustomDiscScanner.findFileForSlot(slot);
         if (file != null && Files.exists(file)) {
@@ -155,7 +155,7 @@ public final class CustomDiscPackResources extends AbstractPackResources {
         if (!NAMESPACE.equals(namespace)) return;
         if (!"sounds".equals(directory)) return;
 
-        for (int slot = 1; slot <= 5; slot++) {
+        for (int slot = 1; slot <= 9; slot++) {
             Path file = CustomDiscScanner.findFileForSlot(slot);
             if (file != null && Files.exists(file)) {
                 Identifier id = Identifier.tryBuild(NAMESPACE,
