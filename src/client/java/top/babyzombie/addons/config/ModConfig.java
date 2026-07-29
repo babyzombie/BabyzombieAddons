@@ -103,7 +103,8 @@ public class ModConfig extends Config {
         CREATOR_MUSIC_BOX(73), PRECIPICE(299), TEARS(175),
 
         // ── 自定义唱片槽位（取决于 config 目录下的 .ogg 文件）──
-        CUSTOM_1(0), CUSTOM_2(0), CUSTOM_3(0), CUSTOM_4(0), CUSTOM_5(0);
+        CUSTOM_1(0), CUSTOM_2(0), CUSTOM_3(0), CUSTOM_4(0), CUSTOM_5(0),
+        CUSTOM_6(0), CUSTOM_7(0), CUSTOM_8(0), CUSTOM_9(0);
 
         private final int durationSeconds;
 
@@ -144,10 +145,11 @@ public class ModConfig extends Config {
                 case CREATOR_MUSIC_BOX -> "§bCreator (Music Box)";
                 case PRECIPICE -> "§bPrecipice";
                 case TEARS -> "§bTears";
-                case CUSTOM_1, CUSTOM_2, CUSTOM_3, CUSTOM_4, CUSTOM_5 -> {
+                case CUSTOM_1, CUSTOM_2, CUSTOM_3, CUSTOM_4, CUSTOM_5,
+                     CUSTOM_6, CUSTOM_7, CUSTOM_8, CUSTOM_9 -> {
                     var info = top.babyzombie.addons.module.dungeon.CustomDiscScanner.getInfo(this);
                     if (info != null) yield "§b" + info.displayName();
-                    yield "§7[未安装]";
+                    yield "§7" + t("config.babyzombieaddons.option.musicDisc.notInstalled");
                 }
             };
         }

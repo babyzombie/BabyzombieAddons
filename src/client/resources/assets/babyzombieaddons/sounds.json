@@ -38,5 +38,37 @@
         "stream": true
       }
     ]
+  },
+  "custom_disc_6": {
+    "sounds": [
+      {
+        "name": "babyzombieaddons:custom_disc_6",
+        "stream": true
+      }
+    ]
+  },
+  "custom_disc_7": {
+    "sounds": [
+      {
+        "name": "babyzombieaddons:custom_disc_7",
+        "stream": true
+      }
+    ]
+  },
+  "custom_disc_8": {
+    "sounds": [
+      {
+        "name": "babyzombieaddons:custom_disc_8",
+        "stream": true
+      }
+    ]
+  },
+  "custom_disc_9": {
+    "sounds": [
+      {
+        "name": "babyzombieaddons:custom_disc_9",
+        "stream": true
+      }
+    ]
   }
 }

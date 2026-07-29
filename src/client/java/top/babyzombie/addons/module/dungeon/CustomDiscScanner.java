@@ -21,7 +21,7 @@ public final class CustomDiscScanner {
 
     private static final Path CUSTOM_DISCS_DIR = FabricLoader.getInstance().getConfigDir()
             .resolve("babyzombieaddons").resolve("custom_discs");
-    private static final int SLOT_COUNT = 5;
+    private static final int SLOT_COUNT = 9;
     private static final CustomDiscInfo[] SLOT_INFO = new CustomDiscInfo[SLOT_COUNT];
 
     private CustomDiscScanner() {}
