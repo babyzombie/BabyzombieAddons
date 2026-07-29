@@ -6,6 +6,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.common.ClientboundPingPacket;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -33,6 +35,12 @@ public final class ServerTickCounter {
 
     // --- real ping via PingDebugMonitor (cross-thread) ---
     private static volatile long lastPingResult = -1;
+
+    // --- ping history for range display (cross-thread: written by net thread, read by render thread) ---
+    private static final List<PingSample> pingSamples = new ArrayList<>();
+    private static final int MAX_PING_SAMPLES = 300;
+
+    private record PingSample(long time, long ping) {}
 
     // --- packet-rate TPS estimation (render thread only) ---
     private static final Queue<Integer> tpsSamples = EvictingQueue.create(WINDOW_SECONDS);
@@ -91,6 +99,12 @@ public final class ServerTickCounter {
     /** Called from PingDebugMonitor mixin (network thread). */
     public static void onPingResult(long ping) {
         lastPingResult = ping;
+        synchronized (pingSamples) {
+            pingSamples.add(new PingSample(System.currentTimeMillis(), ping));
+            while (pingSamples.size() > MAX_PING_SAMPLES) {
+                pingSamples.removeFirst();
+            }
+        }
     }
 
     // --- internal ---
@@ -127,6 +141,9 @@ public final class ServerTickCounter {
         ticksWithPacketsThisSecond = 0;
         estimatedTps = 0.0;
         lastPingResult = -1;
+        synchronized (pingSamples) {
+            pingSamples.clear();
+        }
         lastWorldChange = System.currentTimeMillis();
     }
 
@@ -162,5 +179,28 @@ public final class ServerTickCounter {
     /** @return the real network round-trip time in ms, or -1 if no measurement yet. */
     public static long getPing() {
         return lastPingResult;
+    }
+
+    /**
+     * @param windowSeconds time window in seconds
+     * @return [min, max] ping in ms within the window, or null if not enough data (&lt; 2 samples)
+     */
+    public static int[] getPingRange(int windowSeconds) {
+        long now = System.currentTimeMillis();
+        long windowStart = now - (long) windowSeconds * 1000;
+        synchronized (pingSamples) {
+            long min = Long.MAX_VALUE;
+            long max = Long.MIN_VALUE;
+            int count = 0;
+            for (PingSample s : pingSamples) {
+                if (s.time() >= windowStart) {
+                    if (s.ping() < min) min = s.ping();
+                    if (s.ping() > max) max = s.ping();
+                    count++;
+                }
+            }
+            if (count < 2) return null;
+            return new int[]{(int) min, (int) max};
+        }
     }
 }

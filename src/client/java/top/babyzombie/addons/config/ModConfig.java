@@ -175,7 +175,6 @@ public class ModConfig extends Config {
         SINGLE, SEQUENTIAL, RANDOM;
         @Override public String toString() { return t("config.babyzombieaddons.option.playMode." + name()); }
     }
-
     /** Translates a key via Minecraft's I18n system. */
     private static String t(String key) {
         return Component.translatable(key).getString();

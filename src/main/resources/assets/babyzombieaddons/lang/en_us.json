@@ -941,6 +941,8 @@
   "config.babyzombieaddons.option.windowTitleShowSystemMemory.desc": "Display total system RAM (e.g. \"Sys 15.5G\").",
   "config.babyzombieaddons.option.windowTitleShowPing": "Show Ping",
   "config.babyzombieaddons.option.windowTitleShowPing.desc": "Display network latency in milliseconds.",
+  "config.babyzombieaddons.option.windowTitlePingRangeSeconds": "Ping Range (seconds)",
+  "config.babyzombieaddons.option.windowTitlePingRangeSeconds.desc": "Show min/max ping range within the specified number of seconds after the ping value (e.g. \"Ping 45ms (30~60)\"). Set to 0 to disable.",
   "config.babyzombieaddons.option.windowTitleShowLocation": "Show Hypixel Location",
   "config.babyzombieaddons.option.windowTitleShowLocation.desc": "Display current location in the title (Limbo / Lobby / Server Type - Map). Enable the \"Replace with Hypixel\" sub-option below for a cleaner look.",
   "config.babyzombieaddons.option.showClickEventInHover": "Show Click Action in Tooltip",
