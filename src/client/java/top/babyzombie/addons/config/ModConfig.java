@@ -96,6 +96,29 @@ public class ModConfig extends Config {
         ARMOR_STAND, FAKE_PLAYER, FAKE_PLAYER_EYES;
         @Override public String toString() { return t("config.babyzombieaddons.option.loadoutEntityRenderMode." + name()); }
     }
+    public enum PerkShopItem {
+        CANNONEER_ROUTE("Cannoneer Route"), CROWD_CONTROL_ROUTE("Crowd Control Route"),
+        SPECIALIST_ROUTE("Specialist Route"), SUPPORT_ROUTE("Support Route"),
+        ACCELERATED_SHOP("Accelerated Shop"), BLAST_RADIUS("Blast Radius"),
+        CANNON_PROFICIENCY("Cannon Proficiency"), MULTI_SHOP("Multi-Shop"),
+        RAPID_FIRE("Rapid Fire"), STEADY_AIM("Steady Aim"),
+        SWEEPING_EDGE("Sweeping Edge"), FREEZING_TOUCH("Freezing Touch"),
+        PROTECTIVE_AURA("Protective Aura"), MINIATURE_NUKE("Miniature Nuke"),
+        BONUS_DAMAGE("Bonus Damage"), BLIGHT_SLAYER("Blight Slayer"),
+        STEADY_HANDS("Steady Hands"), BALLISTA_MECHANIC("Ballista Mechanic"),
+        KUUDRA_SLAYER("Kuudra Slayer"), MINING_FRENZY("Mining Frenzy"),
+        HEALING_AURA("Healing Aura"), MANA_AURA("Mana Aura"),
+        FASTER_RESPAWN("Faster Respawn"), REVIVE_FINAL_KILLED("Revive Final Killed"),
+        REVIVE_DEAD("Revive Dead"),
+        AUTO_REVIVE("Auto Revive"), HUMAN_CANNONBALL("Human Cannonball"),
+        REMOTE_PERK_SHOP("Remote Perk Shop"), ELLES_LAVA_ROD("Elle's Lava Rod"),
+        ELLES_PICKAXE("Elle's Pickaxe"), FILL_YOUR_QUIVER("Fill your Quiver");
+
+        private final String displayName;
+        PerkShopItem(String displayName) { this.displayName = displayName; }
+        public String getDisplayName() { return displayName; }
+        @Override public String toString() { return displayName; }
+    }
     public enum MusicDisc {
         DISC_5(178), DISC_11(71), DISC_13(178), BLOCKS(345), CAT(185), CHIRP(185), FAR(174),
         LAVA_CHICKEN(135), MALL(197), MELLOHI(96), PIGSTEP(148), STAL(150), STRAD(188),

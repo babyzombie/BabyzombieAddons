@@ -27,7 +27,7 @@ public final class KuudraEnergyDisplay {
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> fuel = -1);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!ModConfigManager.get().kuudra.energyDisplay) return;
+            if (!ModConfigManager.get().kuudra.phase3.energyDisplay) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (fuel == 0 || client.player == null) return;
             if (!client.player.level().getEntitiesOfClass(ArmorStand.class,
@@ -38,7 +38,7 @@ public final class KuudraEnergyDisplay {
         });
 
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!ModConfigManager.get().kuudra.energyDisplay) return;
+            if (!ModConfigManager.get().kuudra.phase3.energyDisplay) return;
             if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
             String text = message.getString();
             if (text.contains("recovered a Fuel Cell and charged the Ballista")) {
@@ -50,7 +50,7 @@ public final class KuudraEnergyDisplay {
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
                 Identifier.fromNamespaceAndPath("babyzombieaddons", "kuudra_energy"),
                 (context, tickCounter) -> {
-            if (!ModConfigManager.get().kuudra.energyDisplay) return;
+            if (!ModConfigManager.get().kuudra.phase3.energyDisplay) return;
             if (!KuudraLocationTracker.inKuudra || fuel < 0 || "p4".equals(KuudraLocationTracker.area)) return;
             var font = Minecraft.getInstance().font;
             int x = HudManager.x("EnergyCharge"), y = HudManager.y("EnergyCharge");

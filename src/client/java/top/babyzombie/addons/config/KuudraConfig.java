@@ -4,7 +4,8 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorColour;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText;
@@ -12,17 +13,38 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import io.github.notenoughupdates.moulconfig.ChromaColour;
 import top.babyzombie.addons.config.ModConfig.*;
+import top.babyzombie.addons.module.kuudra.ChestCounter;
+
+import java.util.List;
 
 public class KuudraConfig {
+
+    // ── Phase Accordions ──
+
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.kuudra_phase1", desc = "") @Accordion
+    public Phase1 phase1 = new Phase1();
+
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.kuudra_phase2", desc = "") @Accordion
+    public Phase2 phase2 = new Phase2();
+
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.kuudra_phase3", desc = "") @Accordion
+    public Phase3 phase3 = new Phase3();
+
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.kuudra_phase4", desc = "") @Accordion
+    public Phase4 phase4 = new Phase4();
+
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.requeue", desc = "") @Accordion
+    public Requeue requeue = new Requeue();
+
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.chestCounter", desc = "") @Accordion
+    public ChestCounterCfg chestCounterCfg = new ChestCounterCfg();
+
+    // ── General Kuudra ──
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.hpDisplay", desc = "config.babyzombieaddons.option.hpDisplay.desc") @ConfigEditorDropdown @SearchTag("hp") @SearchTag("health") @SearchTag("display")
     public HpDisplayMode hpDisplay = HpDisplayMode.OFF;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.phaseTimer", desc = "config.babyzombieaddons.option.phaseTimer.desc") @ConfigEditorBoolean @SearchTag("phase")
     public boolean phaseTimer = false;
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.stunTimer", desc = "config.babyzombieaddons.option.stunTimer.desc") @ConfigEditorBoolean @SearchTag("stun")
-    public boolean stunTimer = false;
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.energyDisplay", desc = "config.babyzombieaddons.option.energyDisplay.desc") @ConfigEditorBoolean @SearchTag("energy")
-    public boolean energyDisplay = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.boxKuudra", desc = "config.babyzombieaddons.option.boxKuudra.desc") @ConfigEditorBoolean @SearchTag("box")
     public boolean boxKuudra = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.enderPearlRefill", desc = "config.babyzombieaddons.option.enderPearlRefill.desc") @ConfigEditorBoolean @SearchTag("pearl")
@@ -35,20 +57,15 @@ public class KuudraConfig {
     public boolean nopeMagmafish = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.etherwarpLavaPrevent", desc = "config.babyzombieaddons.option.etherwarpLavaPrevent.desc") @ConfigEditorBoolean @SearchTag("etherwarp") @SearchTag("lava")
     public boolean etherwarpLavaPrevent = false;
-
-    @Expose @ConfigOption(name = "config.babyzombieaddons.group.waypoints", desc = "") @Accordion
-    public Waypoints waypoints = new Waypoints();
-
-    @Expose @ConfigOption(name = "config.babyzombieaddons.group.arrowPoison", desc = "") @Accordion
-    public ArrowPoison arrowPoison = new ArrowPoison();
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingHookFix", desc = "config.babyzombieaddons.option.fishingHookFix.desc") @ConfigEditorBoolean @SearchTag("fishing") @SearchTag("bobber")
+    public boolean fishingHookFix = false;
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.perkShop", desc = "") @Accordion
     public PerkShop perkShop = new PerkShop();
 
-    @Expose @ConfigOption(name = "config.babyzombieaddons.group.requeue", desc = "") @Accordion
-    public Requeue requeue = new Requeue();
+    // ── Phase 1: Supplies ──
 
-    public static class Waypoints {
+    public static class Phase1 {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyBeacons", desc = "config.babyzombieaddons.option.supplyBeacons.desc") @ConfigEditorBoolean @SearchTag("supply")
         public boolean supplyBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.supplyBeaconColor", desc = "config.babyzombieaddons.option.supplyBeaconColor.desc") @SearchTag("supply") @SearchTag("beacon") @SearchTag("color")
@@ -57,6 +74,41 @@ public class KuudraConfig {
         public boolean supplyDropoffBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.supplyDropoffBeaconColor", desc = "config.babyzombieaddons.option.supplyDropoffBeaconColor.desc") @SearchTag("supply") @SearchTag("beacon") @SearchTag("color")
         public ChromaColour supplyDropoffBeaconColor = ChromaColour.fromStaticRGB(255, 255, 0, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyInteractionZone", desc = "config.babyzombieaddons.option.supplyInteractionZone.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("interaction")
+        public boolean supplyInteractionZone = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyPullCircle", desc = "config.babyzombieaddons.option.supplyPullCircle.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("circle")
+        public boolean supplyPullCircle = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyPlaceTimerChat", desc = "config.babyzombieaddons.option.supplyPlaceTimerChat.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("timer")
+        public boolean supplyPlaceTimerChat = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyPlaceTimerHud", desc = "config.babyzombieaddons.option.supplyPlaceTimerHud.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("timer") @SearchTag("hud")
+        public boolean supplyPlaceTimerHud = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyProgressHud", desc = "config.babyzombieaddons.option.supplyProgressHud.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("progress") @SearchTag("hud")
+        public boolean supplyProgressHud = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlWaypoints", desc = "config.babyzombieaddons.option.pearlWaypoints.desc") @ConfigEditorBoolean @SearchTag("pearl") @SearchTag("waypoint")
+        public boolean pearlWaypoints = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyGiantHitbox", desc = "config.babyzombieaddons.option.supplyGiantHitbox.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("giant")
+        public boolean supplyGiantHitbox = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.noPreAlert", desc = "config.babyzombieaddons.option.noPreAlert.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("pre") @SearchTag("alert")
+        public boolean noPreAlert = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.alreadyPickingAlert", desc = "config.babyzombieaddons.option.alreadyPickingAlert.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("alert")
+        public boolean alreadyPickingAlert = false;
+    }
+
+    // ── Phase 2: Build ──
+
+    public static class Phase2 {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.freshMessage", desc = "config.babyzombieaddons.option.freshMessage.desc") @ConfigEditorBoolean @SearchTag("fresh")
+        public boolean freshMessage = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.freshHighlight", desc = "config.babyzombieaddons.option.freshHighlight.desc") @ConfigEditorBoolean @SearchTag("fresh") @SearchTag("glow")
+        public boolean freshHighlight = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.freshHistory", desc = "config.babyzombieaddons.option.freshHistory.desc") @ConfigEditorBoolean @SearchTag("fresh") @SearchTag("history")
+        public boolean freshHistory = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.elleHighlight", desc = "config.babyzombieaddons.option.elleHighlight.desc") @ConfigEditorBoolean @SearchTag("elle") @SearchTag("highlight")
+        public boolean elleHighlight = false;
+        @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.elleHighlightColor", desc = "config.babyzombieaddons.option.elleHighlightColor.desc") @SearchTag("elle") @SearchTag("color")
+        public ChromaColour elleHighlightColor = ChromaColour.fromStaticRGB(255, 128, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.buildProgressHud", desc = "config.babyzombieaddons.option.buildProgressHud.desc") @ConfigEditorBoolean @SearchTag("build") @SearchTag("progress")
+        public boolean buildProgressHud = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.ballistaProximityCircles", desc = "config.babyzombieaddons.option.ballistaProximityCircles.desc") @ConfigEditorBoolean @SearchTag("ballista") @SearchTag("circle")
         public boolean ballistaProximityCircles = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.ballistaProgressText", desc = "config.babyzombieaddons.option.ballistaProgressText.desc") @ConfigEditorBoolean @SearchTag("ballista")
@@ -67,15 +119,48 @@ public class KuudraConfig {
         public boolean ballistaBuildBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.ballistaBeaconColor", desc = "config.babyzombieaddons.option.ballistaBeaconColor.desc") @SearchTag("ballista") @SearchTag("beacon") @SearchTag("color")
         public ChromaColour ballistaBeaconColor = ChromaColour.fromStaticRGB(76, 127, 255, 255);
+    }
+
+    // ── Phase 3: Stun ──
+
+    public static class Phase3 {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.stunTimer", desc = "config.babyzombieaddons.option.stunTimer.desc") @ConfigEditorBoolean @SearchTag("stun")
+        public boolean stunTimer = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.energyDisplay", desc = "config.babyzombieaddons.option.energyDisplay.desc") @ConfigEditorBoolean @SearchTag("energy")
+        public boolean energyDisplay = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fuelProgressHud", desc = "config.babyzombieaddons.option.fuelProgressHud.desc") @ConfigEditorBoolean @SearchTag("fuel") @SearchTag("progress") @SearchTag("hud")
+        public boolean fuelProgressHud = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fuelOrbBeacons", desc = "config.babyzombieaddons.option.fuelOrbBeacons.desc") @ConfigEditorBoolean @SearchTag("fuel")
         public boolean fuelOrbBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.fuelOrbBeaconColor", desc = "config.babyzombieaddons.option.fuelOrbBeaconColor.desc") @SearchTag("fuel") @SearchTag("beacon") @SearchTag("color")
         public ChromaColour fuelOrbBeaconColor = ChromaColour.fromStaticRGB(255, 0, 0, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fuelOrbPullCircle", desc = "config.babyzombieaddons.option.fuelOrbPullCircle.desc") @ConfigEditorBoolean @SearchTag("fuel") @SearchTag("circle")
+        public boolean fuelOrbPullCircle = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.chuckBeacons", desc = "config.babyzombieaddons.option.chuckBeacons.desc") @ConfigEditorBoolean @SearchTag("chuck")
         public boolean chuckBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.chuckBeaconColor", desc = "config.babyzombieaddons.option.chuckBeaconColor.desc") @SearchTag("chuck") @SearchTag("beacon") @SearchTag("color")
         public ChromaColour chuckBeaconColor = ChromaColour.fromStaticRGB(255, 170, 0, 255);
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.group.arrowPoison", desc = "") @Accordion
+        public ArrowPoison arrowPoison = new ArrowPoison();
     }
+
+    // ── Phase 4: Boss ──
+
+    public static class Phase4 {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.directionHud", desc = "config.babyzombieaddons.option.directionHud.desc") @ConfigEditorBoolean @SearchTag("direction") @SearchTag("hud")
+        public boolean directionHud = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraDistance", desc = "config.babyzombieaddons.option.kuudraDistance.desc") @ConfigEditorBoolean @SearchTag("distance") @SearchTag("hud")
+        public boolean kuudraDistance = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.rendTracker", desc = "config.babyzombieaddons.option.rendTracker.desc") @ConfigEditorBoolean @SearchTag("rend") @SearchTag("damage")
+        public boolean rendTracker = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.ichorPoolWaypoints", desc = "config.babyzombieaddons.option.ichorPoolWaypoints.desc") @ConfigEditorBoolean @SearchTag("ichor") @SearchTag("pool")
+        public boolean ichorPoolWaypoints = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideKuudraDamageTitle", desc = "config.babyzombieaddons.option.hideKuudraDamageTitle.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("damage") @SearchTag("title")
+        public boolean hideKuudraDamageTitle = false;
+    }
+
+    // ── Shared inner classes (kept at top level for backward-compat reference via KuudraConfig.ArrowPoison) ──
 
     public static class ArrowPoison {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.toxicArrowMinTier", desc = "config.babyzombieaddons.option.toxicArrowMinTier.desc") @ConfigEditorDropdown @SearchTag("toxic") @SearchTag("arrow")
@@ -93,18 +178,33 @@ public class KuudraConfig {
     }
 
     public static class PerkShop {
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.perkShopBlacklist", desc = "config.babyzombieaddons.option.perkShopBlacklist.desc") @ConfigEditorBoolean @SearchTag("perk")
-        public boolean perkShopBlacklist = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.perkShopBlacklistItems", desc = "config.babyzombieaddons.option.perkShopBlacklistItems.desc") @ConfigEditorText @SearchTag("perk") @SearchTag("blacklist")
-        public String perkShopBlacklistItems = "Elle's Pickaxe,Elle's Lava Rod,Auto Revive,Support Route,Mining Frenzy I";
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.perkShopWhitelist", desc = "config.babyzombieaddons.option.perkShopWhitelist.desc") @ConfigEditorBoolean @SearchTag("perk")
+        public boolean perkShopWhitelist = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.perkShopWhitelistItems", desc = "config.babyzombieaddons.option.perkShopWhitelistItems.desc") @ConfigEditorDraggableList @SearchTag("perk") @SearchTag("whitelist")
+        public List<PerkShopItem> perkShopWhitelistItems = List.of(
+                PerkShopItem.SPECIALIST_ROUTE,
+                PerkShopItem.BALLISTA_MECHANIC,
+                PerkShopItem.HUMAN_CANNONBALL,
+                PerkShopItem.REMOTE_PERK_SHOP,
+                PerkShopItem.FILL_YOUR_QUIVER
+        );
     }
 
     public static class Requeue {
-        @Expose @ConfigEditorInfoText @ConfigOption(name = "", desc = "config.babyzombieaddons.option.requeueKuudraNote") @SearchTag("requeue") @SearchTag("note") @SearchTag("info")
-        public String requeueNote = "";
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraRequeue", desc = "config.babyzombieaddons.option.kuudraRequeue.desc") @ConfigEditorDropdown @SearchTag("requeue")
         public RequeueMode kuudraRequeue = RequeueMode.OFF;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraRequeueDelay", desc = "config.babyzombieaddons.option.kuudraRequeueDelay.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("requeue") @SearchTag("delay")
         public int kuudraRequeueDelay = 0;
+    }
+
+    public static class ChestCounterCfg {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.chestCounter", desc = "config.babyzombieaddons.option.chestCounter.desc") @ConfigEditorBoolean @SearchTag("chest")
+        public boolean enabled = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.chestCounterParty", desc = "config.babyzombieaddons.option.chestCounterParty.desc") @ConfigEditorBoolean @SearchTag("chest")
+        public boolean partyAnnounce = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.chestCounterSound", desc = "config.babyzombieaddons.option.chestCounterSound.desc") @ConfigEditorBoolean @SearchTag("chest")
+        public boolean sound = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.chestCounterReset", desc = "") @ConfigEditorButton(buttonText = "Reset")
+        public Runnable reset = ChestCounter::resetCounter;
     }
 }

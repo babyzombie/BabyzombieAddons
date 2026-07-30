@@ -40,13 +40,13 @@ public final class ArrowPoisonRefill {
             String loc = tracker.getLocation();
             boolean inT5 = loc != null && loc.contains("T5");
 
-            boolean toxicMatches = cfg.arrowPoison.toxicArrowThreshold > 0
-                    && atLeastTier(loc, cfg.arrowPoison.toxicArrowMinTier)
-                    && matchesToxicTiming(text, cfg.arrowPoison.toxicArrowTiming);
+            boolean toxicMatches = cfg.phase3.arrowPoison.toxicArrowThreshold > 0
+                    && atLeastTier(loc, cfg.phase3.arrowPoison.toxicArrowMinTier)
+                    && matchesToxicTiming(text, cfg.phase3.arrowPoison.toxicArrowTiming);
 
-            boolean twilightMatches = cfg.arrowPoison.twilightArrowThreshold > 0
+            boolean twilightMatches = cfg.phase3.arrowPoison.twilightArrowThreshold > 0
                     && inT5
-                    && matchesTwilightTiming(text, cfg.arrowPoison.twilightArrowTiming);
+                    && matchesTwilightTiming(text, cfg.phase3.arrowPoison.twilightArrowTiming);
 
             if (!toxicMatches && !twilightMatches) return;
 
@@ -54,17 +54,17 @@ public final class ArrowPoisonRefill {
 
             if (toxicMatches && toxicCooldown <= now && !"p3".equals(KuudraLocationTracker.area)) {
                 int current = countArrow("TOXIC_ARROW_POISON");
-                int target = cfg.arrowPoison.toxicArrowThreshold;
-                if (cfg.arrowPoison.toxicArrowPerMissing > 0) {
+                int target = cfg.phase3.arrowPoison.toxicArrowThreshold;
+                if (cfg.phase3.arrowPoison.toxicArrowPerMissing > 0) {
                     int nearbyShooters = countNearbyTerminatorShooters();
                     int missing = Math.max(0, 2 - nearbyShooters);
-                    target += missing * cfg.arrowPoison.toxicArrowPerMissing;
+                    target += missing * cfg.phase3.arrowPoison.toxicArrowPerMissing;
                 }
                 if (current < target) {
                     ChatUtils.sendCommand("gfs Toxic Arrow Poison " + (target - current));
                     toxicCooldown = now + 2000;
                     if (twilightMatches) {
-                        int threshold = cfg.arrowPoison.twilightArrowThreshold;
+                        int threshold = cfg.phase3.arrowPoison.twilightArrowThreshold;
                         Scheduler.schedule(40, () -> {
                             int cur = countArrow("TWILIGHT_ARROW_POISON");
                             if (cur < threshold) {
@@ -79,8 +79,8 @@ public final class ArrowPoisonRefill {
 
             if (twilightMatches && twilightCooldown <= now) {
                 int current = countArrow("TWILIGHT_ARROW_POISON");
-                if (current < cfg.arrowPoison.twilightArrowThreshold) {
-                    ChatUtils.sendCommand("gfs Twilight Arrow Poison " + (cfg.arrowPoison.twilightArrowThreshold - current));
+                if (current < cfg.phase3.arrowPoison.twilightArrowThreshold) {
+                    ChatUtils.sendCommand("gfs Twilight Arrow Poison " + (cfg.phase3.arrowPoison.twilightArrowThreshold - current));
                     twilightCooldown = now + 2000;
                 }
             }

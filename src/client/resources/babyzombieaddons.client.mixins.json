@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_25",
   "client": [
     "entity.DisplayAccessor",
+    "entity.FishingHookFixMixin",
     "entity.SwingDurationMixin",
 
     "render.ClientLevelAccessor",
@@ -13,6 +14,7 @@
     "render.GuiAccessor",
     "render.GuiExtractRenderStateMixin",
     "render.GuiGraphicsExtractorTrackingMixin",
+    "render.GuiTitleMixin",
     "render.PlayerTabOverlayAccessor",
     "render.BossHealthOverlayMixin",
     "render.EntityRenderDispatcherScaleMixin",
