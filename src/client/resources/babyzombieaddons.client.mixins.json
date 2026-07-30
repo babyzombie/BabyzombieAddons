@@ -24,7 +24,6 @@
     "network.DisconnectedScreenMixin",
     "render.BlockDisplayRendererMixin",
     "render.BossHealthOverlayAccessor",
-    "render.GuiAccessor",
     "render.GuiExtractRenderStateMixin",
     "render.GuiGraphicsExtractorTrackingMixin",
     "render.GuiTitleMixin",

@@ -22,7 +22,7 @@ public final class KuudraPerkShopBlacklist {
             var cfg = ModConfigManager.get().kuudra.perkShop;
             if (!cfg.perkShopWhitelist) return false;
 
-            var screen = Minecraft.getInstance().screen;
+            var screen = Minecraft.getInstance().gui.screen();
             if (!(screen instanceof AbstractContainerScreen<?> cs)) return false;
             String title = ChatUtils.stripColor(cs.getTitle().getString());
             if (!title.equals("Perk Menu")) return false;
