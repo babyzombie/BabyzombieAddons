@@ -66,6 +66,11 @@ public final class ChestCounter {
         save();
     }
 
+    private static ItemStack getChestIcon() {
+        if (chestIcon == null) chestIcon = createChestIcon();
+        return chestIcon;
+    }
+
     private static ItemStack createChestIcon() {
         var stack = new ItemStack(Items.PLAYER_HEAD);
         var uuid = UUID.fromString("cde08b6e-4bc9-4b36-b24d-75e23e0bb4ed");
@@ -79,7 +84,6 @@ public final class ChestCounter {
     }
 
     public static void init() {
-        chestIcon = createChestIcon();
         load();
 
         // Persist on game close
@@ -180,7 +184,7 @@ public final class ChestCounter {
                     String color = count >= 60 ? "§c" : count >= 50 ? "§e" : "§a";
 
                     // Draw chest icon
-                    context.item(chestIcon, Math.round(x / s), Math.round(y / s));
+                    context.item(getChestIcon(), Math.round(x / s), Math.round(y / s));
 
                     // Draw count text (offset right of icon)
                     HudManager.drawScaled(context, Minecraft.getInstance().font,

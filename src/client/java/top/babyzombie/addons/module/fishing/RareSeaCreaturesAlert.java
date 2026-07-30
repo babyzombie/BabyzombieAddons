@@ -61,6 +61,7 @@ public final class RareSeaCreaturesAlert {
 
             int count = 0;
             String firstCleanedName = null;
+            String firstTitleKey = null;
             Integer titleEntityId = null;
             for (var stand : stands) {
                 String rawName = stand.getName().getString();
@@ -80,13 +81,20 @@ public final class RareSeaCreaturesAlert {
                         String titleColor = def != null ? def.rarity.titleColorCode : RareSeaCreatureDefinitions.UNKNOWN_TITLE_COLOR_CODE;
                         firstCleanedName = titleColor + cleaned;
                         titleEntityId = stand.getId();
+                        if (def != null) {
+                            firstTitleKey = def.rarity == RareSeaCreatureDefinitions.Rarity.MYTHIC
+                                    ? "fishing.rareSeaCreaturesAlert.title.mythic"
+                                    : "fishing.rareSeaCreaturesAlert.title.legendary";
+                        } else {
+                            firstTitleKey = "fishing.rareSeaCreaturesAlert.title";
+                        }
                     }
                 }
                 count++;
             }
 
-            // Title 提示：可选“每个实体只弹一次”或“带冷却重复提示”
-            if (rareCfg.alertTitle && count > 0 && firstCleanedName != null && titleEntityId != null) {
+            // Title 提示：可选”每个实体只弹一次”或”带冷却重复提示”
+            if (rareCfg.alertTitle && count > 0 && firstCleanedName != null && titleEntityId != null && firstTitleKey != null) {
                 if (rareCfg.alertTitleRepeat) {
                     long tick = level.getGameTime();
                     if (tick < lastRepeatedTitleTick) {
@@ -95,14 +103,14 @@ public final class RareSeaCreaturesAlert {
                     if (tick - lastRepeatedTitleTick >= TITLE_REPEAT_COOLDOWN_TICKS) {
                         lastRepeatedTitleTick = tick;
                         ChatUtils.showTitle(
-                                Component.translatable("fishing.rareSeaCreaturesAlert.title").getString(),
+                                Component.translatable(firstTitleKey).getString(),
                                 firstCleanedName,
                                 0, 50, 10);
                     }
                 } else {
                     alertedEntityIds.add(titleEntityId);
                     ChatUtils.showTitle(
-                            Component.translatable("fishing.rareSeaCreaturesAlert.title").getString(),
+                            Component.translatable(firstTitleKey).getString(),
                             firstCleanedName,
                             0, 50, 10);
                 }

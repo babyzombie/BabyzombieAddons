@@ -14,6 +14,7 @@ import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import io.github.notenoughupdates.moulconfig.ChromaColour;
 import top.babyzombie.addons.config.ModConfig.*;
 import top.babyzombie.addons.module.kuudra.ChestCounter;
+import top.babyzombie.addons.module.kuudra.PearlWaypoints;
 
 import java.util.List;
 
@@ -84,8 +85,8 @@ public class KuudraConfig {
         public boolean supplyPlaceTimerHud = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyProgressHud", desc = "config.babyzombieaddons.option.supplyProgressHud.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("progress") @SearchTag("hud")
         public boolean supplyProgressHud = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlWaypoints", desc = "config.babyzombieaddons.option.pearlWaypoints.desc") @ConfigEditorBoolean @SearchTag("pearl") @SearchTag("waypoint")
-        public boolean pearlWaypoints = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.group.pearlWaypoints", desc = "") @Accordion
+        public PearlWaypointsCfg pearlWaypoints = new PearlWaypointsCfg();
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyGiantHitbox", desc = "config.babyzombieaddons.option.supplyGiantHitbox.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("giant")
         public boolean supplyGiantHitbox = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.noPreAlert", desc = "config.babyzombieaddons.option.noPreAlert.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("pre") @SearchTag("alert")
@@ -195,6 +196,21 @@ public class KuudraConfig {
         public RequeueMode kuudraRequeue = RequeueMode.OFF;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraRequeueDelay", desc = "config.babyzombieaddons.option.kuudraRequeueDelay.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("requeue") @SearchTag("delay")
         public int kuudraRequeueDelay = 0;
+    }
+
+    public static class PearlWaypointsCfg {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlWaypoints", desc = "config.babyzombieaddons.option.pearlWaypoints.desc") @ConfigEditorBoolean @SearchTag("pearl")
+        public boolean enabled = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlShowBox", desc = "config.babyzombieaddons.option.pearlShowBox.desc") @ConfigEditorBoolean @SearchTag("pearl")
+        public boolean showBox = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlShowTimer", desc = "config.babyzombieaddons.option.pearlShowTimer.desc") @ConfigEditorBoolean @SearchTag("pearl")
+        public boolean showTimer = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlShowOutline", desc = "config.babyzombieaddons.option.pearlShowOutline.desc") @ConfigEditorBoolean @SearchTag("pearl")
+        public boolean showOutline = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlEditConfig", desc = "config.babyzombieaddons.option.pearlEditConfig.desc") @ConfigEditorButton(buttonText = "Edit")
+        public Runnable editConfig = PearlWaypoints::openConfigFile;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlOpenIqModrinth", desc = "config.babyzombieaddons.option.pearlOpenIqModrinth.desc") @ConfigEditorButton(buttonText = "IQ Modrinth")
+        public Runnable openIqModrinth = PearlWaypoints::openIqModrinth;
     }
 
     public static class ChestCounterCfg {

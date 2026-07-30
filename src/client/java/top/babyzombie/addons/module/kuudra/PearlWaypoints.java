@@ -61,6 +61,28 @@ public final class PearlWaypoints {
     private static final List<BlockOutline> outlines = new ArrayList<>();
     private static final List<WaypointText> texts = new ArrayList<>();
 
+    public static void openConfigFile() {
+        Path configDir = FabricLoader.getInstance().getConfigDir().resolve("babyzombieaddons");
+        Path configFile = configDir.resolve("pearl_waypoints.json");
+        try {
+            if (java.awt.Desktop.isDesktopSupported() && java.awt.Desktop.getDesktop().isSupported(java.awt.Desktop.Action.EDIT)) {
+                java.awt.Desktop.getDesktop().edit(configFile.toFile());
+            } else {
+                Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start", "", configFile.toString()});
+            }
+        } catch (IOException ignored) {}
+    }
+
+    public static void openIqModrinth() {
+        try {
+            if (java.awt.Desktop.isDesktopSupported()) {
+                java.awt.Desktop.getDesktop().browse(java.net.URI.create("https://modrinth.com/mod/iq-addons"));
+            } else {
+                Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start", "", "https://modrinth.com/mod/iq-addons"});
+            }
+        } catch (IOException ignored) {}
+    }
+
     private record BlockOutline(double x, double y, double z, float r, float g, float b, float a) {}
     private record WaypointText(String text, double x, double y, double z, int color) {}
 
@@ -68,7 +90,7 @@ public final class PearlWaypoints {
         loadConfig();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!ModConfigManager.get().kuudra.phase1.pearlWaypoints) return;
+            if (!ModConfigManager.get().kuudra.phase1.pearlWaypoints.enabled) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (!KuudraSupplyProgressHUD.isInSuppliesPhase()) return;
             if (areas.isEmpty()) return;
@@ -79,24 +101,28 @@ public final class PearlWaypoints {
 
         RenderPhaseRegister.register(ctx -> {
             if (currentArea == null) return;
+            var cfg = ModConfigManager.get().kuudra.phase1.pearlWaypoints;
 
-            double pct = KuudraSupplyProgressHUD.getCurrentProgress();
-
-            for (var b : boxes) {
-                // Filled box at waypoint coords
-                WorldRenderUtils.drawFilledBox(ctx,
-                        b.x - 0.3, b.y - 0.3, b.z - 0.3,
-                        b.x + 0.3, b.y + 0.3, b.z + 0.3,
-                        0, 1, 1, 0.4f, true);
+            if (cfg.showBox) {
+                for (var b : boxes) {
+                    WorldRenderUtils.drawFilledBox(ctx,
+                            b.x - 0.3, b.y - 0.3, b.z - 0.3,
+                            b.x + 0.3, b.y + 0.3, b.z + 0.3,
+                            0, 1, 1, 0.4f, true);
+                }
             }
-            for (var o : outlines) {
-                WorldRenderUtils.drawWireframeBox(ctx,
-                        o.x - 0.3, o.y, o.z - 0.3,
-                        o.x + 0.3, o.y + 1.8, o.z + 0.3,
-                        o.r, o.g, o.b, o.a, true, 2f);
+            if (cfg.showOutline) {
+                for (var o : outlines) {
+                    WorldRenderUtils.drawWireframeBox(ctx,
+                            o.x - 0.3, o.y, o.z - 0.3,
+                            o.x + 0.3, o.y + 1.8, o.z + 0.3,
+                            o.r, o.g, o.b, o.a, true, 2f);
+                }
             }
-            for (var t : texts) {
-                WorldTextRenderer.renderString(ctx, t.text, t.x, t.y, t.z, t.color, 0.04f, true);
+            if (cfg.showTimer) {
+                for (var t : texts) {
+                    WorldTextRenderer.renderString(ctx, t.text, t.x, t.y, t.z, t.color, 0.04f, true);
+                }
             }
         });
     }
