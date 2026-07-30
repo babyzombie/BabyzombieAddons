@@ -73,6 +73,18 @@ public final class RareSeaCreatureDefinitions {
                 return cfg.excludeList.waterSeaCreatures.lotus.frogPrince;
             }
         },
+        FLIPFLOPPER(MajorCategory.WATER, "Lotus", "Flipflopper", Rarity.LEGENDARY) {
+            @Override
+            public boolean isExcluded(FishingConfig.RareSeaCreatures cfg) {
+                return cfg.excludeList.waterSeaCreatures.lotus.flipflopper;
+            }
+        },
+        SEASHINE(MajorCategory.WATER, "Lotus", "Seashine", Rarity.LEGENDARY) {
+            @Override
+            public boolean isExcluded(FishingConfig.RareSeaCreatures cfg) {
+                return cfg.excludeList.waterSeaCreatures.lotus.seashine;
+            }
+        },
         SILKBREEZE(MajorCategory.WATER, "Torrhus", "Silkbreeze", Rarity.LEGENDARY) {
             @Override
             public boolean isExcluded(FishingConfig.RareSeaCreatures cfg) {

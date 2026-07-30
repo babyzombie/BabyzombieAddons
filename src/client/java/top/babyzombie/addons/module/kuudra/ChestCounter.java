@@ -12,8 +12,19 @@ import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
+import com.google.common.collect.LinkedHashMultimap;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ResolvableProfile;
 import top.babyzombie.addons.util.ChatUtils;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.UUID;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.io.IOException;
@@ -31,6 +42,8 @@ public final class ChestCounter {
 
     private static final int MAX_CHESTS = 60;
     private static final long PENDING_TIMEOUT_MS = 30_000;
+    private static final String PAID_CHEST_TEXTURE_URL = "http://textures.minecraft.net/texture/d90a7dec36b1421c95b699a39fdb500b3e74648fee5821e3fd05668ee01ce10c";
+    private static ItemStack chestIcon;
     private static boolean pendingChestOpen;
     private static long pendingSinceMs;
     private static final Path SAVE_FILE = FabricLoader.getInstance().getConfigDir()
@@ -53,7 +66,20 @@ public final class ChestCounter {
         save();
     }
 
+    private static ItemStack createChestIcon() {
+        var stack = new ItemStack(Items.PLAYER_HEAD);
+        var uuid = UUID.fromString("cde08b6e-4bc9-4b36-b24d-75e23e0bb4ed");
+        var textureData = "{\"textures\":{\"SKIN\":{\"url\":\"" + PAID_CHEST_TEXTURE_URL + "\"}}}";
+        var encoded = Base64.getEncoder().encodeToString(textureData.getBytes(StandardCharsets.UTF_8));
+        var multimap = LinkedHashMultimap.<String, Property>create();
+        multimap.put("textures", new Property("textures", encoded, null));
+        var gp = new GameProfile(uuid, "", new PropertyMap(multimap));
+        stack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(gp));
+        return stack;
+    }
+
     public static void init() {
+        chestIcon = createChestIcon();
         load();
 
         // Persist on game close
@@ -149,12 +175,16 @@ public final class ChestCounter {
                     if (count <= 0) return;
                     if (dirty) { save(); dirty = false; }
 
-                    var font = Minecraft.getInstance().font;
                     int x = HudManager.x("ChestCounter"), y = HudManager.y("ChestCounter");
                     float s = HudManager.scale("ChestCounter");
                     String color = count >= 60 ? "§c" : count >= 50 ? "§e" : "§a";
-                    HudManager.drawScaled(context, font,
-                            color + count + "§7/" + MAX_CHESTS, x, y, s);
+
+                    // Draw chest icon
+                    context.item(chestIcon, Math.round(x / s), Math.round(y / s));
+
+                    // Draw count text (offset right of icon)
+                    HudManager.drawScaled(context, Minecraft.getInstance().font,
+                            color + "  " + count + "§7/" + MAX_CHESTS, x + 16, y, s);
                 });
     }
 
