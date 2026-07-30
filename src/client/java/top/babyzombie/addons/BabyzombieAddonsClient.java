@@ -27,6 +27,7 @@ import top.babyzombie.addons.module.dungeon.DungeonJukeboxModule;
 import top.babyzombie.addons.module.dungeon.DungeonModule;
 import top.babyzombie.addons.module.fishing.PreventInstantReel;
 import top.babyzombie.addons.module.fishing.RareSeaCreaturesAlert;
+import top.babyzombie.addons.module.fishing.RareSeaCreaturesSelfAlert;
 import top.babyzombie.addons.module.garden.GardenModule;
 import top.babyzombie.addons.module.events.FruitDiggingModule;
 import top.babyzombie.addons.module.events.GreatSpookModule;
@@ -117,6 +118,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         CustomDiscScanner.init();
         DungeonJukeboxModule.init();
         RareSeaCreaturesAlert.init();
+        RareSeaCreaturesSelfAlert.init();
         PreventInstantReel.init();
         GardenModule.init();
         GreatSpookModule.init();

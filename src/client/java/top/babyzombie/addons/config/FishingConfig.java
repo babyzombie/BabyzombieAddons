@@ -23,6 +23,37 @@ public class FishingConfig {
     public int popupBaitLow = 0;
 
     public static class RareSeaCreatures {
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.group.rareSeaCreaturesSelfCaught", desc = "")
+        @Accordion
+        public RareSeaCreaturesSelfCaught selfCaught = new RareSeaCreaturesSelfCaught();
+
+        public static class RareSeaCreaturesSelfCaught {
+            @Expose
+            @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesSelfCaught", desc = "config.babyzombieaddons.option.rareSeaCreaturesSelfCaught.desc")
+            @ConfigEditorBoolean
+            @SearchTag("rare")
+            public boolean enabled = false;
+
+            @Expose
+            @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtParty", desc = "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtParty.desc")
+            @ConfigEditorBoolean
+            @SearchTag("rare")
+            public boolean partyChat = false;
+
+            @Expose
+            @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtSound", desc = "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtSound.desc")
+            @ConfigEditorBoolean
+            @SearchTag("rare")
+            public boolean playSound = false;
+
+            @Expose
+            @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtTitle", desc = "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtTitle.desc")
+            @ConfigEditorBoolean
+            @SearchTag("rare")
+            public boolean showTitle = false;
+        }
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesAlert", desc = "config.babyzombieaddons.option.rareSeaCreaturesAlert.desc") @ConfigEditorBoolean @SearchTag("rare")
         public boolean alert = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle", desc = "config.babyzombieaddons.option.rareSeaCreaturesAlertTitle.desc") @ConfigEditorBoolean @SearchTag("rare")
@@ -97,6 +128,10 @@ public class FishingConfig {
             public boolean puddleJumper = false;
             @Expose @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesExclude.frogPrince", desc = "config.babyzombieaddons.option.rareSeaCreaturesExclude.frogPrince.desc") @ConfigEditorBoolean @SearchTag("frog") @SearchTag("prince") @SearchTag("exclude")
             public boolean frogPrince = false;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesExclude.flipflopper", desc = "config.babyzombieaddons.option.rareSeaCreaturesExclude.flipflopper.desc") @ConfigEditorBoolean @SearchTag("flipflopper") @SearchTag("exclude")
+            public boolean flipflopper = true;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.rareSeaCreaturesExclude.seashine", desc = "config.babyzombieaddons.option.rareSeaCreaturesExclude.seashine.desc") @ConfigEditorBoolean @SearchTag("seashine") @SearchTag("exclude")
+            public boolean seashine = true;
         }
 
         public static class Torrhus {
