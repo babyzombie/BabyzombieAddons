@@ -53,11 +53,43 @@ public final class HudRegistrar {
         HudManager.register("EnergyCharge", 400, 120, 1.0f,
                 "§fEnergy Charge: §a100%",
                 "config.babyzombieaddons.option.energyDisplay",
-                () -> get().kuudra.energyDisplay);
+                () -> get().kuudra.phase3.energyDisplay);
+        HudManager.register("SupplyProgress", 10, 120, 1.0f,
+                "§8[§a||||||||§8      ] §b4/6 §8(67%)",
+                "config.babyzombieaddons.option.supplyProgressHud",
+                () -> get().kuudra.phase1.supplyProgressHud || get().kuudra.phase3.fuelProgressHud);
+        HudManager.register("SupplyTimes", 10, 140, 1.0f,
+                "§b§lSupply Times §8[§a4§8/§a6§8]\n§bPlayer1 §8(1/6) §f§l14.85s\n§aPlayer2 §8(2/6) §f§l15.23s\n§aPlayer3 §8(3/6) §f§l22.10s\n§aPlayer4 §8(4/6) §f§l24.50s",
+                "config.babyzombieaddons.option.supplyPlaceTimerHud",
+                () -> get().kuudra.phase1.supplyPlaceTimerHud);
+        HudManager.register("FreshHistory", 10, 250, 1.0f,
+                "§b§lFresh Records\nPlayer1 §8@ §e14.5s\nPlayer2 §8@ §e18.2s",
+                "config.babyzombieaddons.option.freshHistory",
+                () -> get().kuudra.phase2.freshHistory);
+        HudManager.register("ChestCounter", 10, 320, 1.5f,
+                "§a30§7/60",
+                "config.babyzombieaddons.option.chestCounter",
+                () -> get().kuudra.chestCounterCfg.enabled);
+        HudManager.register("BuildProgress", 10, 300, 1.0f,
+                "§8[§e||||||||§8      ] §e69%",
+                "config.babyzombieaddons.option.buildProgressHud",
+                () -> get().kuudra.phase2.buildProgressHud);
+        HudManager.register("KuudraDist", 200, 80, 1.5f,
+                "§a12.5§fm",
+                "config.babyzombieaddons.option.kuudraDistance",
+                () -> get().kuudra.phase4.kuudraDistance);
+        HudManager.register("KuudraDir", 200, 40, 2.0f,
+                "§a§lFRONT",
+                "config.babyzombieaddons.option.directionHud",
+                () -> get().kuudra.phase4.directionHud);
+        HudManager.register("KuudraSplits", 10, 20, 1.0f,
+                "§b§lKuudra Splits\n§3Supplies §f22.45s\n§3Build §914.32s\n§3Eaten §a5.21s\n§3Stun §f0.53s\n§3DPS §63.89s\n§3Skip §f0.00s\n§3Boss §c5.12s\n§3Overall §a51.00s",
+                "config.babyzombieaddons.option.phaseTimer",
+                () -> get().kuudra.phaseTimer);
         HudManager.register("KuudraStun", 400, 130, 1.0f,
                 "§aKuudra is stunned, §4§l0:10 §aleft\n§4§lPHASE 4 - TRUE LAIR",
                 "config.babyzombieaddons.option.stunTimer",
-                () -> get().kuudra.stunTimer);
+                () -> get().kuudra.phase3.stunTimer);
         // --- Wither Cloak ---
         HudManager.register("WitherCloakTimer", 120, 100, 1.0f,
                 "§a§lWither Cloak\n§aactivated 5.00s",
@@ -122,26 +154,27 @@ public final class HudRegistrar {
 
         // --- Cake Buff ---
         HudManager.register("CakeBuffTracker", 10, 50, 1.0f,
-                "§c10\uE010 Health   §a✔\n"
-                + "§a3\uE008 Defense   §a✔\n"
-                + "§c2\uE00D Strength   §a✔\n"
-                + "§f10\uE022 Speed   §c✘\n"
-                + "§b5\uE003 Intelligence   §c✘\n"
-                + "§c2\uE00B Ferocity   §c✘\n"
-                + "§41\uE028 Vitality   §a✔\n"
-                + "§f1\uE027 True Defense   §c✘\n"
-                + "§31\uE021 Sea Creature Chance   §c✘\n"
-                + "§b1\uE01A Magic Find   §a✔\n"
-                + "§d1\uE013 Pet Luck   §c✘\n"
-                + "§b1\uE006 Cold Resistance   §c✘\n"
-                + "§a10\uE020 Rift Time   §a✔\n"
-                + "§65\uE053 Mining Fortune   §c✘\n"
-                + "§65\uE051 Farming Fortune   §a✔\n"
-                + "§65\uE054 Foraging Fortune   §c✘\n"
-                + "§61\uE025 Treasure Chance   §c✘\n"
-                + "§d1\uE077 Tracking   §a✔\n"
-                + "§25\uE023 Sweep   §c✘\n"
-                + "§d1\uE05B Hunter Fortune   §c✘",
+                """
+                        §c10\uE010 Health   §a✔
+                        §a3\uE008 Defense   §a✔
+                        §c2\uE00D Strength   §a✔
+                        §f10\uE022 Speed   §c✘
+                        §b5\uE003 Intelligence   §c✘
+                        §c2\uE00B Ferocity   §c✘
+                        §41\uE028 Vitality   §a✔
+                        §f1\uE027 True Defense   §c✘
+                        §31\uE021 Sea Creature Chance   §c✘
+                        §b1\uE01A Magic Find   §a✔
+                        §d1\uE013 Pet Luck   §c✘
+                        §b1\uE006 Cold Resistance   §c✘
+                        §a10\uE020 Rift Time   §a✔
+                        §65\uE053 Mining Fortune   §c✘
+                        §65\uE051 Farming Fortune   §a✔
+                        §65\uE054 Foraging Fortune   §c✘
+                        §61\uE025 Treasure Chance   §c✘
+                        §d1\uE077 Tracking   §a✔
+                        §25\uE023 Sweep   §c✘
+                        §d1\uE05B Hunter Fortune   §c✘""",
                 "config.babyzombieaddons.option.cakeBuffTracker",
                 () -> get().skyblock.cakeBuffTracker);
 

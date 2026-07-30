@@ -25,7 +25,7 @@ public final class KuudraStunTimer {
 
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!ModConfigManager.get().kuudra.stunTimer) return;
+            if (!ModConfigManager.get().kuudra.phase3.stunTimer) return;
             if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
 
             if (DESTROYED_POD.matcher(message.getString()).find()) {
@@ -51,7 +51,7 @@ public final class KuudraStunTimer {
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
                 Identifier.fromNamespaceAndPath("babyzombieaddons", "kuudra_stun_timer"),
                 (context, tickCounter) -> {
-            if (!ModConfigManager.get().kuudra.stunTimer) return;
+            if (!ModConfigManager.get().kuudra.phase3.stunTimer) return;
             long now = ServerTick.getTime();
             var font = Minecraft.getInstance().font;
 

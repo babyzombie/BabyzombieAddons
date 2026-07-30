@@ -18,6 +18,16 @@ public final class KuudraModule {
         KuudraFollowerHelmetPrice.init();
         CrimsonArmorPistonMute.init();
         KuudraNopeMagmafish.init();
+        KuudraSupplyTimer.init();
+        KuudraSupplyProgressHUD.init();
+        PearlWaypoints.init();
+        FreshSystem.init();
+        NoPreAlert.init();
+        AlreadyPickingAlert.init();
+        ElleHighlight.init();
+        KuudraDirectionHUD.init();
+        KuudraP4Features.init();
+        ChestCounter.init();
         KuudraEtherwarpLavaPrevent.init();
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {

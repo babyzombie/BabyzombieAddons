@@ -1,0 +1,110 @@
+package top.babyzombie.addons.module.kuudra;
+
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.LivingEntity;
+import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+
+/**
+ * Kuudra 方向提示 — P4 开始前用绝对方向，下去后用玩家朝向的相对方向。
+ */
+public final class KuudraDirectionHUD {
+    private KuudraDirectionHUD() {}
+
+    // Absolute direction by Kuudra position (IQ thresholds)
+    private record Dir(String name, String color) {}
+    private static final Dir UNKNOWN = new Dir("?", "§7");
+
+    private static Dir lastDir = UNKNOWN;
+
+    public static void init() {
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!ModConfigManager.get().kuudra.phase4.directionHud) return;
+            if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
+            if (!KuudraLocationTracker.p4 && !"p4".equals(KuudraLocationTracker.area)) {
+                lastDir = UNKNOWN;
+                return;
+            }
+            if (client.player == null) return;
+
+            // Find Kuudra entity (reuse location tracker or scan ourselves)
+            var e = KuudraLocationTracker.kuudraEntity;
+            if (e == null || e.isDeadOrDying()) {
+                // Fallback: scan withers
+                var withers = client.player.level().getEntitiesOfClass(
+                        net.minecraft.world.entity.boss.wither.WitherBoss.class,
+                        new net.minecraft.world.phys.AABB(client.player.blockPosition()).inflate(128),
+                        w -> top.babyzombie.addons.util.ChatUtils.stripColor(
+                                w.getName().getString()).contains("Kuudra"));
+                if (!withers.isEmpty()) e = withers.getFirst();
+            }
+            if (e == null) return;
+
+            Dir abs = getAbsoluteDir(e);
+            lastDir = abs;
+        });
+
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "kuudra_direction"),
+                (context, tickCounter) -> {
+                    if (!ModConfigManager.get().kuudra.phase4.directionHud) return;
+                    if (lastDir == UNKNOWN) return;
+                    if (!KuudraLocationTracker.p4 && !"p4".equals(KuudraLocationTracker.area)) return;
+
+                    var font = Minecraft.getInstance().font;
+                    int x = HudManager.x("KuudraDir"), y = HudManager.y("KuudraDir");
+                    float s = HudManager.scale("KuudraDir");
+
+                    // Below Y=10: use player-relative direction
+                    boolean belowGround = Minecraft.getInstance().player != null
+                            && Minecraft.getInstance().player.getY() < 10;
+                    String text;
+                    if (belowGround) {
+                        text = getRelativeDir(lastDir) + " §f" + lastDir.name;
+                    } else {
+                        text = lastDir.color + "§l" + lastDir.name;
+                    }
+                    HudManager.drawScaled(context, font, text, x, y, s);
+                });
+    }
+
+    private static Dir getAbsoluteDir(LivingEntity e) {
+        double x = e.getX(), z = e.getZ();
+        if (x < -128) return new Dir("RIGHT", "§a");
+        if (z > -84)  return new Dir("FRONT", "§c");
+        if (x > -72)  return new Dir("LEFT", "§e");
+        if (z < -132) return new Dir("BACK", "§9");
+        return UNKNOWN;
+    }
+
+    /** Convert absolute direction to player-relative based on current yaw. */
+    private static String getRelativeDir(Dir abs) {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return abs.color + abs.name;
+
+        float yaw = player.getYRot() % 360;
+        if (yaw < 0) yaw += 360;
+
+        // Absolute direction → world-space angle
+        double kuudraAngle = switch (abs.name) {
+            case "FRONT" -> 0;    // north / -Z
+            case "BACK"  -> 180;  // south / +Z
+            case "LEFT"  -> 270;  // west / -X
+            case "RIGHT" -> 90;   // east / +X
+            default -> 0;
+        };
+
+        double diff = ((kuudraAngle - yaw) % 360 + 360) % 360;
+        if (diff > 180) diff -= 360;
+
+        if (diff > -45 && diff <= 45)   return "§a▲ FRONT";
+        if (diff > 45 && diff <= 135)   return "§e◄ LEFT";
+        if (diff > 135 || diff <= -135) return "§c▼ BACK";
+        return "§9► RIGHT";
+    }
+}
