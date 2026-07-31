@@ -1,9 +1,6 @@
 package top.babyzombie.addons.module.misc.abiphone;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
@@ -11,14 +8,11 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.Nullable;
+import top.babyzombie.addons.util.DataPersistence;
 import top.babyzombie.addons.util.ScreenLoadWaiter;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 import java.util.regex.Pattern;
@@ -28,14 +22,9 @@ public class AbiphoneTracker {
     private static final AbiphoneTracker INSTANCE = new AbiphoneTracker();
 
     private static final Pattern TITLE_PATTERN = Pattern.compile("^\\(\\d+/\\d+\\).* Abiphone.*");
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Type ITEM_LIST_TYPE = new TypeToken<List<ItemEntry>>() {}.getType();
 
-    private final Path configDir;
-
-    private AbiphoneTracker() {
-        this.configDir = FabricLoader.getInstance().getConfigDir().resolve("babyzombieaddons");
-    }
+    private AbiphoneTracker() {}
 
     public static AbiphoneTracker getInstance() {
         return INSTANCE;
@@ -87,51 +76,28 @@ public class AbiphoneTracker {
             });
     }
 
-    private Path getFile(String uuid, String profileId) {
-        return configDir.resolve("abiphone").resolve(uuid + "_" + profileId + ".json");
+    /** Per-profile data lives at data/&lt;uuid&gt;/&lt;profileId&gt;/abiphone.json. */
+    private static String subDir(String uuid, String profileId) {
+        return uuid + "/" + profileId;
     }
 
     public void saveOrderedItems(String uuid, String profileId, List<ItemEntry> items) {
-        try {
-            Files.createDirectories(configDir);
-            Files.writeString(getFile(uuid, profileId), GSON.toJson(items),
-                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException _) {}
+        DataPersistence.save(subDir(uuid, profileId), "abiphone.json", items);
     }
 
     public List<ItemEntry> loadItems(String uuid, String profileId) {
-        Path file = getFile(uuid, profileId);
-        if (!Files.exists(file)) return Collections.emptyList();
-
-        try {
-            String raw = Files.readString(file);
-            List<ItemEntry> list = GSON.fromJson(raw, ITEM_LIST_TYPE);
-            return list != null ? list : Collections.emptyList();
-        } catch (IOException e) {
-            return Collections.emptyList();
-        }
+        List<ItemEntry> list = DataPersistence.load(subDir(uuid, profileId), "abiphone.json", ITEM_LIST_TYPE);
+        return list != null ? list : Collections.emptyList();
     }
 
     private void saveItems(String uuid, String profileId, List<ItemEntry> newItems) {
-        try {
-            Files.createDirectories(configDir);
-            Path file = getFile(uuid, profileId);
-
-            List<ItemEntry> items = new ArrayList<>();
-            if (Files.exists(file)) {
-                String raw = Files.readString(file);
-                List<ItemEntry> list = GSON.fromJson(raw, ITEM_LIST_TYPE);
-                if (list != null) items.addAll(list);
+        List<ItemEntry> items = new ArrayList<>(loadItems(uuid, profileId));
+        for (ItemEntry e : newItems) {
+            if (!items.contains(e)) {
+                items.add(e);
             }
-
-            for (ItemEntry e : newItems) {
-                if (!items.contains(e)) {
-                    items.add(e);
-                }
-            }
-
-            Files.writeString(file, GSON.toJson(items), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException _) {}
+        }
+        DataPersistence.save(subDir(uuid, profileId), "abiphone.json", items);
     }
 
     public record ItemEntry(String name, String material, String nbt, @Nullable String description) {

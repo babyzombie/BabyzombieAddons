@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.babyzombie.addons.module.kuudra.ChestCounter;
 import top.babyzombie.addons.module.misc.AutoReconnectHelper;
 
 @Mixin(net.minecraft.client.gui.screens.Screen.class)
@@ -25,7 +26,10 @@ public class ScreenMixin {
     }
 
     @Inject(method = "extractRenderState*", at = @At("RETURN"))
-    private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+        // 容器/背包页面上的箱子计数 HUD（hover 提示）
+        ChestCounter.renderOnScreen(graphics, mouseX, mouseY);
+
         if (!isDisconnectedScreen(this)) return;
         int remaining = AutoReconnectHelper.getCountdownRemaining();
         if (remaining <= 0) return;

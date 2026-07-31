@@ -1,6 +1,7 @@
 package top.babyzombie.addons.module.dungeon;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -15,7 +16,6 @@ import top.babyzombie.addons.event.HypixelLocationEvents;
 import top.babyzombie.addons.mixin.sound.SoundEngineAccessor;
 import top.babyzombie.addons.mixin.sound.SoundManagerAccessor;
 import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.List;
@@ -39,30 +39,10 @@ public final class DungeonJukeboxModule {
     private static boolean toggledMusic = true;
     private static boolean toggledMusicByThis;
     private static boolean pendingTogglemusic;
-    private static boolean togglemusicCheckRegistered;
     private static final Random RNG = new Random();
 
     /** 当前播放的唱片显示名（含 §b 色码），供 HUD 读取。null 表示未播放 */
     public static String currentDiscName;
-
-    /** 轮询复活：死人发不了 /togglemusic，等玩家可见（复活）后再发 */
-    private static final Runnable TOGGLEMUSIC_CHECK = new Runnable() {
-        @Override
-        public void run() {
-            var player = Minecraft.getInstance().player;
-            if (player == null || !pendingTogglemusic) {
-                togglemusicCheckRegistered = false;
-                Scheduler.cancel(this);
-                return;
-            }
-            if (!player.isInvisible()) {
-                pendingTogglemusic = false;
-                togglemusicCheckRegistered = false;
-                Scheduler.cancel(this);
-                ChatUtils.sendCommand("togglemusic");
-            }
-        }
-    };
 
     /** 秒数 → mm:ss 格式 */
     private static String formatTime(int totalSeconds) {
@@ -74,10 +54,11 @@ public final class DungeonJukeboxModule {
     private DungeonJukeboxModule() {}
 
     public static void init() {
+        ClientTickEvents.END_CLIENT_TICK.register(DungeonJukeboxModule::tick);
+
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             active = false;
             pendingTogglemusic = false;
-            togglemusicCheckRegistered = false;
             currentDiscName = null;
             currentInstance = null;
         });
@@ -172,19 +153,25 @@ public final class DungeonJukeboxModule {
         stopCurrentSound();
     }
 
+    /** 每 tick 检查玩家是否复活。绝大多数时候 pendingTogglemusic 为 false,直接 return。 */
+    private static void tick(Minecraft client) {
+        if (!pendingTogglemusic) return;
+        var player = client.player;
+        if (player == null) return;
+        if (!player.isInvisible()) {
+            pendingTogglemusic = false;
+            ChatUtils.sendCommand("togglemusic");
+        }
+    }
+
     /**
-     * 尝试发送 /togglemusic。如果玩家处于死亡（隐身）状态，启动轮询等待复活后再发。
-     * 参考 AutoRequeue 的 REVIVE_CHECK 模式。
+     * 尝试发送 /togglemusic。如果玩家处于死亡（隐身）状态，等复活后再发（由 tick 轮询）。
      */
     private static void trySendTogglemusic() {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
         if (player.isInvisible()) {
             pendingTogglemusic = true;
-            if (!togglemusicCheckRegistered) {
-                togglemusicCheckRegistered = true;
-                Scheduler.scheduleRepeating(1, TOGGLEMUSIC_CHECK);
-            }
         } else {
             ChatUtils.sendCommand("togglemusic");
         }

@@ -20,6 +20,7 @@ public final class KuudraModule {
         KuudraNopeMagmafish.init();
         KuudraSupplyTimer.init();
         KuudraSupplyProgressHUD.init();
+        KuudraPileWaypoints.init();
         PearlWaypoints.init();
         FreshSystem.init();
         NoPreAlert.init();

@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 /**
  * Manages per-profile pet data parsed from Hypixel SkyBlock pet items.
- * Persists to config/babyzombieaddons/data/&lt;uuid&gt;_&lt;profileId&gt;/pets.json.
+ * Persists to config/babyzombieaddons/data/&lt;uuid&gt;/&lt;profileId&gt;/pets.json.
  */
 public final class PetManager {
 
@@ -100,7 +100,7 @@ public final class PetManager {
         String uuid = tracker.getUuid();
         String profileId = tracker.getProfileId();
         if (uuid == null || profileId == null) return null;
-        return uuid + "_" + profileId;
+        return uuid + "/" + profileId;
     }
 
     private void loadProfile(String key) {
@@ -353,7 +353,7 @@ public final class PetManager {
             if (m.find()) {
                 String uuid = HypixelLocationTracker.getInstance().getUuid();
                 if (uuid == null) return true;
-                loadProfile(uuid + "_" + m.group(1));
+                loadProfile(uuid + "/" + m.group(1));
             }
             return true;
         });

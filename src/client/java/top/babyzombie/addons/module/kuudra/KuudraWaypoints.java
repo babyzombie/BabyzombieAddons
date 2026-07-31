@@ -38,6 +38,8 @@ public final class KuudraWaypoints {
     private static final List<Vec3> fuels = new ArrayList<>();
     private static final List<Vec3> chucks = new ArrayList<>();
     private static final List<Zombie> supplyZombies = new ArrayList<>();
+    private static final List<Giant> supplyGiants = new ArrayList<>();
+    private static final List<Zombie> fuelZombies = new ArrayList<>();
 
     private static final double SUPPLY_PULL_RADIUS = 5.0;
     private static final double SUPPLY_CRATE_OFFSET = 3.7;
@@ -64,45 +66,43 @@ public final class KuudraWaypoints {
 
     public static void init() {
         RenderPhaseRegister.register(ctx -> {
-            for (var t : textEntries.values())
-                WorldTextRenderer.renderString(ctx, t.text, t.x, t.y, t.z, t.color, 0.05f, true);
-
             var cfg = ModConfigManager.get().kuudra;
 
-            // Supply beams
+            // Supply beams (crate 渲染中心与 IQ 一致：x+0.5, z+1.5)
             float[] sc = argbToFloats(cfg.phase1.supplyBeaconColor.getEffectiveColourRGB());
             int supplyColor = new Color(sc[0], sc[1], sc[2], sc[3]).getRGB();
             for (var v : supplies)
-                BeamRenderer.drawBeam(ctx, v.x, v.y, v.z, 20f, 0.15f, supplyColor);
+                BeamRenderer.drawBeam(ctx, v.x + 0.5, v.y, v.z + 1.5, 20f, 0.15f, supplyColor);
 
-            // Supply interaction zone (invisible zombies)
+            // Supply interaction zone (invisible zombies) — 精确碰撞箱，独立颜色，范围内全透明、范围外减半
             if (cfg.phase1.supplyInteractionZone) {
+                float[] zc = argbToFloats(cfg.phase1.supplyZombieBoxColor.getEffectiveColourRGB());
                 for (var z : supplyZombies) {
                     if (z.isRemoved()) continue;
                     var cp = Minecraft.getInstance().player;
                     double dist = cp != null ? cp.distanceTo(z) : 99;
-                    int zColor = dist <= 3 ? new Color(0, 1, 0, 0.7f).getRGB() : supplyColor;
-                    float[] zc = argbToFloats(zColor);
+                    boolean inRange = dist <= 3;
+                    AABB bb = z.getBoundingBox();
+                    float zAlpha = inRange ? zc[3] : zc[3] * 0.5f;
                     WorldRenderUtils.drawFilledBox(ctx,
-                            z.getX() - 0.3, z.getY(), z.getZ() - 0.3,
-                            z.getX() + 0.3, z.getY() + 1.8, z.getZ() + 0.3,
-                            zc[0], zc[1], zc[2], zc[3], true);
+                            bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ,
+                            zc[0], zc[1], zc[2], zAlpha, true);
                 }
             }
-            // Supply giant hitbox — color changes when player is inside
+            // Supply giant hitbox — 只在玩家处于巨人碰撞箱（向外扩 1 格）内时显示，默认黄色
             if (cfg.phase1.supplyGiantHitbox) {
+                float[] gc = argbToFloats(cfg.phase1.supplyGiantHitboxColor.getEffectiveColourRGB());
                 var cp = Minecraft.getInstance().player;
-                for (var v : supplies) {
-                    boolean inside = cp != null && cp.getX() >= v.x - 1.5 && cp.getX() <= v.x + 1.5
-                            && cp.getY() >= 67 && cp.getY() <= 75
-                            && cp.getZ() >= v.z - 1.5 && cp.getZ() <= v.z + 1.5;
-                    float gr = inside ? 0f : sc[0];
-                    float gg = inside ? 1f : sc[1];
-                    float gb = inside ? 0f : sc[2];
-                    WorldRenderUtils.drawFilledBox(ctx,
-                            v.x - 0.8, 67, v.z - 0.8,
-                            v.x + 0.8, 75, v.z + 0.8,
-                            gr, gg, gb, 0.35f, true);
+                if (cp != null) {
+                    for (var g : supplyGiants) {
+                        if (g.isRemoved()) continue;
+                        AABB bb = g.getBoundingBox();
+                        if (!bb.inflate(1.0).contains(cp.getX(), cp.getY(), cp.getZ())) continue;
+                        boolean inRange = Math.hypot(cp.getX() - g.getX(), cp.getZ() - g.getZ()) <= 3;
+                        WorldRenderUtils.drawFilledBox(ctx,
+                                bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ,
+                                inRange ? 0f : gc[0], 1f, inRange ? 0f : gc[2], gc[3], true);
+                    }
                 }
             }
 
@@ -113,8 +113,8 @@ public final class KuudraWaypoints {
                     float cr = inRange ? 0f : sc[0];
                     float cg = 1f;
                     float cb = inRange ? 0f : sc[2];
-                    WorldRenderUtils.drawCircle(ctx, v.x, v.y, v.z, (float)SUPPLY_PULL_RADIUS,
-                            cr, cg, cb, 0.6f, true, 2f);
+                    WorldRenderUtils.drawCircle(ctx, v.x + 0.5, v.y, v.z + 1.5, (float)SUPPLY_PULL_RADIUS,
+                            cr, cg, cb, 0.6f, true, 3f);
                 }
             }
 
@@ -140,7 +140,7 @@ public final class KuudraWaypoints {
             float[] fc = argbToFloats(cfg.phase3.fuelOrbBeaconColor.getEffectiveColourRGB());
             int fuelColor = new Color(fc[0], fc[1], fc[2], fc[3]).getRGB();
             for (var v : fuels)
-                BeamRenderer.drawBeam(ctx, v.x, v.y, v.z, 20f, 0.15f, fuelColor);
+                BeamRenderer.drawBeam(ctx, v.x + 0.5, v.y, v.z + 1.5, 20f, 0.15f, fuelColor);
 
             // Fuel orb pull circle
             if (cfg.phase3.fuelOrbPullCircle) {
@@ -149,8 +149,24 @@ public final class KuudraWaypoints {
                     float cr = inRange ? 0f : fc[0];
                     float cg = 1f;
                     float cb = inRange ? 0f : fc[2];
-                    WorldRenderUtils.drawCircle(ctx, v.x, v.y, v.z, (float)SUPPLY_PULL_RADIUS,
-                            cr, cg, cb, 0.6f, true, 2f);
+                    WorldRenderUtils.drawCircle(ctx, v.x + 0.5, v.y, v.z + 1.5, (float)SUPPLY_PULL_RADIUS,
+                            cr, cg, cb, 0.6f, true, 3f);
+                }
+            }
+
+            // Fuel interaction zone (invisible zombies) — 独立颜色，范围内全透明、范围外减半
+            if (cfg.phase3.fuelInteractionZone) {
+                float[] fzc = argbToFloats(cfg.phase3.fuelZombieBoxColor.getEffectiveColourRGB());
+                for (var z : fuelZombies) {
+                    if (z.isRemoved()) continue;
+                    var cp = Minecraft.getInstance().player;
+                    double dist = cp != null ? cp.distanceTo(z) : 99;
+                    boolean inRange = dist <= 3;
+                    AABB bb = z.getBoundingBox();
+                    float zAlpha = inRange ? fzc[3] : fzc[3] * 0.5f;
+                    WorldRenderUtils.drawFilledBox(ctx,
+                            bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ,
+                            fzc[0], fzc[1], fzc[2], zAlpha, true);
                 }
             }
 
@@ -165,19 +181,24 @@ public final class KuudraWaypoints {
             // Unclassified beams (dropoff markers, ballista, etc.)
             for (var b : beams)
                 BeamRenderer.drawBeam(ctx, b.x, b.y, b.z, b.h, 0.15f, new Color(b.r, b.g, b.b, b.a).getRGB());
+
+            // 文字最后渲染，避免被信标光柱遮挡
+            for (var t : textEntries.values())
+                WorldTextRenderer.renderString(ctx, t.text, t.x, t.y, t.z, t.color, 0.08f, true);
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var cfg = ModConfigManager.get().kuudra;
-            boolean anyOn = cfg.phase1.supplyBeacons || cfg.phase1.supplyDropoffBeacons
+            boolean anyOn = cfg.phase1.supplyBeacons
                     || cfg.phase1.supplyInteractionZone || cfg.phase1.supplyPullCircle
                     || cfg.phase2.ballistaProgressText || cfg.phase2.ballistaBuildBeacons
                     || cfg.phase2.ballistaProximityCircles
                     || cfg.phase3.fuelOrbBeacons || cfg.phase3.fuelOrbPullCircle
-                    || cfg.phase3.chuckBeacons || cfg.phase1.supplyGiantHitbox;
+                    || cfg.phase3.chuckBeacons || cfg.phase3.fuelInteractionZone
+                    || cfg.phase1.supplyGiantHitbox;
             if (!anyOn) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
-            if (client.player == null || client.player.tickCount % 20 != 0) return;
+            if (client.player == null || client.player.tickCount % 5 != 0) return;
 
             String newPhase = getScoreboardPhase(client);
 
@@ -187,11 +208,13 @@ public final class KuudraWaypoints {
             fuels.clear();
             chucks.clear();
             supplyZombies.clear();
+            supplyGiants.clear();
+            fuelZombies.clear();
             seenKeys.clear();
 
             if ("Rescue supplies".equals(newPhase)) {
                 boolean needZombies = cfg.phase1.supplyInteractionZone;
-                if (cfg.phase1.supplyBeacons || needZombies) {
+                if (cfg.phase1.supplyBeacons || needZombies || cfg.phase1.supplyGiantHitbox) {
                     for (var g : client.player.level().getEntitiesOfClass(Giant.class,
                             new AABB(client.player.blockPosition()).inflate(64), SkullTextures.SUPPLIES::isHoldingThis)) {
                         // IQ formula: crate offset 3.7 at angle (yaw + 130°), Y=75
@@ -199,22 +222,13 @@ public final class KuudraWaypoints {
                         double cx = g.getX() + (SUPPLY_CRATE_OFFSET * Math.cos(angleRad));
                         double cz = g.getZ() + (SUPPLY_CRATE_OFFSET * Math.sin(angleRad));
                         supplies.add(new Vec3(cx, 75.0, cz));
+                        if (cfg.phase1.supplyGiantHitbox) supplyGiants.add(g);
                     }
                 }
                 if (needZombies) {
                     supplyZombies.addAll(client.player.level().getEntitiesOfClass(Zombie.class,
                             new AABB(client.player.blockPosition()).inflate(64),
                             z -> supplies.stream().anyMatch(s -> z.distanceToSqr(s) < 9)));
-                }
-                if (cfg.phase1.supplyDropoffBeacons) {
-                    float[] c = argbToFloats(cfg.phase1.supplyDropoffBeaconColor.getEffectiveColourRGB());
-                    for (var s : client.player.level().getEntitiesOfClass(
-                            net.minecraft.world.entity.decoration.ArmorStand.class,
-                            new AABB(client.player.blockPosition()).inflate(64),
-                            e -> ChatUtils.stripColor(e.getName().getString()).contains("BRING SUPPLY CHEST HERE"))) {
-                        double x = s.getX(), z = s.getZ();
-                        beams.add(new Beam(x, s.getY(), z, c[0], c[1], c[2], c[3], 20f));
-                    }
                 }
             } else if ("Protect Elle".equals(newPhase)) {
                 if (cfg.phase2.ballistaBuildBeacons || cfg.phase2.ballistaProgressText || cfg.phase2.ballistaProximityCircles) {
@@ -234,7 +248,7 @@ public final class KuudraWaypoints {
                             String[] parts = ChatUtils.stripColor(s.getName().getString()).split(" ");
                             String key = "p2_" + s.getId(); seenKeys.add(key);
                             textEntries.put(key, new TextData(parts.length > 1 ? parts[parts.length - 1] : "",
-                                    x, y + 1.2, z, cfg.phase2.ballistaTextColor.getEffectiveColourRGB()));
+                                    x, y + 2.2, z, cfg.phase2.ballistaTextColor.getEffectiveColourRGB()));
                         }
                     }
                 }
@@ -257,21 +271,26 @@ public final class KuudraWaypoints {
                         }
                     }
                 }
+                if (cfg.phase3.fuelInteractionZone) {
+                    fuelZombies.addAll(client.player.level().getEntitiesOfClass(Zombie.class,
+                            new AABB(client.player.blockPosition()).inflate(64),
+                            z -> fuels.stream().anyMatch(s -> z.distanceToSqr(s) < 9)));
+                }
             }
 
             textEntries.keySet().removeIf(k -> !seenKeys.contains(k));
         });
     }
 
-    /** Check if the player's fishing bobber is within pull range of a position. */
+    /** Check if the player's fishing bobber is within pull range of a position (crate center x+0.5, z+1.5). */
     private static boolean isBobberInsideRange(Vec3 pos) {
         var player = Minecraft.getInstance().player;
         if (player == null) return false;
         FishingHook bobber = player.fishing;
         if (bobber == null) return false;
         Vec3 bp = bobber.position();
-        double dx = bp.x - pos.x;
-        double dz = bp.z - pos.z;
+        double dx = bp.x - (pos.x + 0.5);
+        double dz = bp.z - (pos.z + 1.5);
         if ((dx * dx) + (dz * dz) > SUPPLY_PULL_RADIUS * SUPPLY_PULL_RADIUS) return false;
         return bp.y >= pos.y - SUPPLY_VERTICAL_MARGIN && bp.y <= pos.y + SUPPLY_VERTICAL_MARGIN;
     }

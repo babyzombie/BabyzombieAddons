@@ -44,6 +44,13 @@ import java.io.File;
  * │ @SearchTag("keyword")              │ 搜索关键词                         │
  * │ @Category(name="key", desc="")     │ 顶级分类 (需配合 @Expose)          │
  * │ @Accordion                         │ 折叠组 (需嵌套 POJO 类)            │
+ * │ @ConfigLink(owner, field)          │ 渲染 "Link" 按钮，跳转到目标选项   │
+ * │ @ConfigOrder(value)                │ 字段显示排序权重 (默认 0，升序)    │
+ * │ @ConfigOverride(overrideOrder)     │ 子类覆盖父类字段时抑制警告         │
+ * ├──────────────────────────────────────┼──────────────────────────────────┤
+ * │ @Expose (Gson, 非 MoulConfig)      │ 标记字段参与 JSON 序列化；        │
+ * │                                     │ @ConfigOption/@Category 字段若未 │
+ * │                                     │ 标注会触发 checkExpose 警告      │
  * ├──────────────────────────────────────┼──────────────────────────────────┤
  * │ @ConfigEditorAccordion (已弃用)     │ → 改用 @Accordion                 │
  * │ @ConfigAccordionId      (已弃用)     │ → 改用 @Accordion                 │

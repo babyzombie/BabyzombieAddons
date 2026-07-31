@@ -1,5 +1,7 @@
 package top.babyzombie.addons.module.dungeon;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -13,30 +15,37 @@ public final class AutoRequeue {
     static boolean ended;
     static boolean canRequeue;
     static boolean waitingForRevive;
-    static boolean reviveCheckRegistered;
+
+    private static final String SPECTATOR_ERROR = "You are not allowed to use that command as a spectator!";
 
     private AutoRequeue() {}
 
-    private static final Runnable REVIVE_CHECK = new Runnable() {
-        @Override
-        public void run() {
-            var player = Minecraft.getInstance().player;
-            if (player == null) return;
-            if (cancelAutoJoin || !waitingForRevive) {
-                reviveCheckRegistered = false;
-                Scheduler.cancel(this);
-                return;
-            }
-            if (!player.isInvisible()) {
-                waitingForRevive = false;
-                reviveCheckRegistered = false;
-                Scheduler.cancel(this);
-                tryRequeue();
-            }
-        }
-    };
+    static void init() {
+        ClientTickEvents.END_CLIENT_TICK.register(AutoRequeue::tick);
 
-    static void init() {}
+        // 死亡瞬间发 instancerequeue 可能被服务器以 spectator 为由拒绝,此时启动复活检测,等复活后重发
+        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+            if (overlay || cancelAutoJoin || !canRequeue) return;
+            if (ChatUtils.stripColor(message.getString()).equals(SPECTATOR_ERROR)) {
+                waitingForRevive = true;
+            }
+        });
+    }
+
+    /** 每 tick 检查玩家是否复活。绝大多数时候 waitingForRevive 为 false,直接 return。 */
+    private static void tick(Minecraft client) {
+        if (!waitingForRevive) return;
+        var player = client.player;
+        if (player == null) return;
+        if (cancelAutoJoin) {
+            waitingForRevive = false;
+            return;
+        }
+        if (!player.isInvisible()) {
+            waitingForRevive = false;
+            tryRequeue();
+        }
+    }
 
     static void onInstanceStart() {
         cancelAutoJoin = false;
@@ -56,13 +65,10 @@ public final class AutoRequeue {
         if (PartyTracker.getInstance().getLeaderName() != null && !PartyTracker.getInstance().isSelfLeader()) return;
         var loc = HypixelLocationTracker.getInstance();
         if (!loc.isInSkyblock() || !(loc.isInDungeon() || loc.isInKuudra())) return;
+        if (requeueMode(loc.isInKuudra()) == ModConfig.RequeueMode.OFF) return;
 
         if (player.isInvisible()) {
-            if (!reviveCheckRegistered) {
-                waitingForRevive = true;
-                reviveCheckRegistered = true;
-                Scheduler.scheduleRepeating(1, REVIVE_CHECK);
-            }
+            waitingForRevive = true;
             return;
         }
 
@@ -71,11 +77,17 @@ public final class AutoRequeue {
         ChatUtils.sendCommand("instancerequeue");
     }
 
+    private static ModConfig.RequeueMode requeueMode(boolean isKuudra) {
+        return isKuudra
+                ? ModConfigManager.get().kuudra.requeue.kuudraRequeue
+                : ModConfigManager.get().dungeon.requeue.dungeonRequeue;
+    }
+
     static void schedule(boolean win) {
         var cfg = ModConfigManager.get().dungeon;
         var t = HypixelLocationTracker.getInstance();
         boolean isKuudra = t.isInKuudra();
-        ModConfig.RequeueMode mode = isKuudra ? ModConfigManager.get().kuudra.requeue.kuudraRequeue : cfg.requeue.dungeonRequeue;
+        ModConfig.RequeueMode mode = requeueMode(isKuudra);
         if (mode == ModConfig.RequeueMode.OFF) return;
         if (ended) return;
         if (mode == ModConfig.RequeueMode.ON_FAIL && win) return;

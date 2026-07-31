@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -25,7 +26,8 @@ public final class KuudraSupplyTimer {
     private KuudraSupplyTimer() {}
 
     // Matches: "DarkJota recovered a supply! (1/6)"
-    private static final Pattern PLACE_PATTERN = Pattern.compile("(.+?) recovered.*?\\((\\d)/6\\)");
+    // toLegacyString 会在颜色切换处插入格式码（如 §r），pattern 需允许 recovered 前的格式码
+    private static final Pattern PLACE_PATTERN = Pattern.compile("(.+?)(?:§.)*?recovered.*?\\((\\d)/6\\)");
 
     private record Entry(String playerName, int supplyNumber, long placedAtMs) {}
 
@@ -48,12 +50,14 @@ public final class KuudraSupplyTimer {
             if (!cfg.supplyPlaceTimerChat && !cfg.supplyPlaceTimerHud) return message;
             if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return message;
 
-            Matcher m = PLACE_PATTERN.matcher(message.getString());
+            // getString() 不含颜色代码，用 toLegacyString 保留玩家名原色
+            Matcher m = PLACE_PATTERN.matcher(ChatUtils.toLegacyString(message));
             if (!m.find()) return message;
 
-            String playerName = m.group(1).replaceAll("§.", "").trim();
+            // 去掉 rank 文本（[MVP] 等）但保留其格式码——名字颜色常继承自 rank
+            String playerName = m.group(1).replaceAll("^((?:§.)*)\\[[^]]*]\\s*", "$1").trim();
             int supplyNum = Integer.parseInt(m.group(2));
-            long now = System.currentTimeMillis();
+            long now = ServerTick.getTime(); // 服务器 tick 时间，不受本地时钟/延迟影响
 
             // Record entry
             if (suppliesStartMs == 0) suppliesStartMs = now;
@@ -62,7 +66,7 @@ public final class KuudraSupplyTimer {
             if (cfg.supplyPlaceTimerChat) {
                 double elapsed = (now - suppliesStartMs) / 1000.0;
                 return Component.literal(
-                        String.format("%s recovered a supply! (%d/6) §e%.2fs",
+                        String.format("%s §arecovered a supply! §a(%d/6) §e%.2fs",
                                 playerName, supplyNum, elapsed));
             }
             return message;
@@ -75,7 +79,7 @@ public final class KuudraSupplyTimer {
             String text = message.getString();
             if (text.contains("Okay adventurers, I will go and fish up Kuudra")) {
                 entries.clear();
-                suppliesStartMs = System.currentTimeMillis();
+                suppliesStartMs = ServerTick.getTime();
             }
         });
 

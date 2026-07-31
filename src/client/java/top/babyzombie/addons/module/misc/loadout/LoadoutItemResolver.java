@@ -261,7 +261,7 @@ public final class LoadoutItemResolver {
         String uuid = tracker.getUuid();
         String profileId = tracker.getProfileId();
         if (uuid == null || profileId == null) return null;
-        return uuid + "_" + profileId;
+        return uuid + "/" + profileId;
     }
 
     /** 从磁盘加载缓存（测试服跳过；同 profile 不重复读） */
