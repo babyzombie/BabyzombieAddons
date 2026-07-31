@@ -61,6 +61,15 @@ public final class ModConfigManager {
             mapper.getGsonBuilder().setPrettyPrinting();
             return kotlin.Unit.INSTANCE;
         });
+        // Log config load/save errors instead of silently swallowing them
+        builder.setLoadFailed((file, ex) -> {
+            System.err.println("[BabyzombieAddons] Failed to load config: " + file.getFile().getAbsolutePath());
+            ex.printStackTrace(System.err);
+        });
+        builder.setSaveFailed((file, ex) -> {
+            System.err.println("[BabyzombieAddons] Failed to save config: " + file.getFile().getAbsolutePath());
+            ex.printStackTrace(System.err);
+        });
         // Replace default slider with our wider version (only affects our config)
         builder.<ConfigEditorSlider>customProcessor(ConfigEditorSlider.class,
                 (option, ann) -> new WideSliderEditor(option, ann.minValue(), ann.maxValue(), ann.minStep()));
