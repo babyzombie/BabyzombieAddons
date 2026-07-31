@@ -224,7 +224,7 @@ public final class ChestCounter {
         var cfg = ModConfigManager.get().kuudra.chestCounterCfg;
         if (!cfg.enabled || !cfg.interact) return;
         if (count <= 0) return;
-        if (!(Minecraft.getInstance().screen instanceof AbstractContainerScreen)) return;
+        if (!(Minecraft.getInstance().gui.screen() instanceof AbstractContainerScreen)) return;
         if (!shouldDisplay()) return;
         if (dirty) { save(); dirty = false; }
 
@@ -257,7 +257,7 @@ public final class ChestCounter {
         var cfg = ModConfigManager.get().kuudra.chestCounterCfg;
         if (!cfg.enabled || !cfg.interact) return false;
         if (count <= 0) return false;
-        if (!(Minecraft.getInstance().screen instanceof AbstractContainerScreen)) return false;
+        if (!(Minecraft.getInstance().gui.screen() instanceof AbstractContainerScreen)) return false;
         if (!shouldDisplay()) return false;
 
         int x = HudManager.x("ChestCounter"), y = HudManager.y("ChestCounter");

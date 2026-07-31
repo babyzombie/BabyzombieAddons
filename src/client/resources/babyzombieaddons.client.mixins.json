@@ -67,7 +67,7 @@
     "sound.PlaySoundMixin",
     "sound.SoundEngineAccessor",
     "sound.SoundManagerAccessor",
-    "window.WindowTitleMixin"
+    "window.WindowTitleMixin",
 
     "resource.PackRepositoryMixin"
   ],

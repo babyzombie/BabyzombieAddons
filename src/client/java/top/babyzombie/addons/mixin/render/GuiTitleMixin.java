@@ -13,7 +13,6 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.kuudra.KuudraSupplyProgressHUD;
 import top.babyzombie.addons.util.ChatUtils;
 
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -26,8 +25,8 @@ public class GuiTitleMixin {
     private static final Pattern DAMAGE_TITLE = Pattern.compile("^[^\\d]*[\\d.,]+[KMBT]?/[\\d.,]+[KMBT]?.?$");
 
     @Inject(method = "extractTitle", at = @At("HEAD"), cancellable = true)
-    private void onExtractTitle(GuiGraphicsExtractor context, DeltaTracker tickCounter, CallbackInfo ci) {
-        GuiAccessor acc = (GuiAccessor) this;
+    private void onExtractTitle(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        HudAccessor acc = (HudAccessor) this;
 
         // 伤害/触手血量都在 subtitle（"☠ 240M/240M❤" / "৫ 838.8k/30M❤"），
         // 独立检查：主 title 为 null 时也必须能隐藏
@@ -51,8 +50,6 @@ public class GuiTitleMixin {
         }
 
         // 主 title：Supply/fuel progress HUD（补给进度条在主 title）
-    private void onExtractTitle(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        HudAccessor acc = (HudAccessor) this;
         Component title = acc.getTitle();
         if (title == null) return;
         String text = title.getString();
