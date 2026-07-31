@@ -1,33 +1,26 @@
 package top.babyzombie.addons.module.slayer.itemtimer;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvents;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.DataPersistence;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Tracks Re-heated Gummy Polar Bear duration with per-profile persistence.
  * Alerts at 5min, 2min, 1min remaining and at expiration.
+ * Persisted as data/reheated_gummy_polar_bear.json, keyed by profileId (globally unique).
  */
 public final class ReheatedGummyPolarBearTimer {
-    private static final Gson GSON = new Gson();
-    private static final Path SAVE_FILE = FabricLoader.getInstance().getConfigDir()
-            .resolve("babyzombieaddons").resolve("ReheatedGummyPolarBear.json");
-
     static final Map<String, Integer> profileTimers = new HashMap<>();
     private static boolean alerted5min, alerted2min, alerted1min;
 
@@ -128,18 +121,12 @@ public final class ReheatedGummyPolarBearTimer {
     }
 
     private static void load() {
-        if (!Files.exists(SAVE_FILE)) return;
-        try {
-            String json = Files.readString(SAVE_FILE);
-            Map<String, Integer> saved = GSON.fromJson(json, new TypeToken<Map<String, Integer>>(){}.getType());
-            if (saved != null) profileTimers.putAll(saved);
-        } catch (IOException ignored) {}
+        Map<String, Integer> saved = DataPersistence.load("reheated_gummy_polar_bear.json",
+                new TypeToken<Map<String, Integer>>(){}.getType());
+        if (saved != null) profileTimers.putAll(saved);
     }
 
     private static void save() {
-        try {
-            Files.createDirectories(SAVE_FILE.getParent());
-            Files.writeString(SAVE_FILE, GSON.toJson(profileTimers));
-        } catch (IOException ignored) {}
+        DataPersistence.save("reheated_gummy_polar_bear.json", profileTimers);
     }
 }

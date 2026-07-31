@@ -50,6 +50,7 @@ import top.babyzombie.addons.module.misc.UpdateChecker;
 import top.babyzombie.addons.module.misc.WindowTitleModule;
 import top.babyzombie.addons.module.dungeon.withercloak.WitherCloakModule;
 import top.babyzombie.addons.util.DungeonCooldown;
+import top.babyzombie.addons.util.PersistenceMigration;
 import top.babyzombie.addons.util.render.WorldRenderUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.HypixelPlayerInfoTracker;
@@ -68,6 +69,9 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // 先迁移旧持久化文件布局,再让各模块读取
+        PersistenceMigration.run();
+
         // 内置 Chroma x Modern UI 兼容材质包
         ResourceLoader.registerBuiltinPack(
                 Identifier.fromNamespaceAndPath("babyzombieaddons", "chroma_modernui"),

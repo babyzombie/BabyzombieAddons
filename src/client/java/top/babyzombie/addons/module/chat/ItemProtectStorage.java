@@ -1,50 +1,38 @@
 package top.babyzombie.addons.module.chat;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
+import top.babyzombie.addons.util.DataPersistence;
 import top.babyzombie.addons.util.ItemUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * 自维护的物品保护存储。仅在 Skyblocker 未安装时使用。
- * 文件位置：config/babyzombieaddons/protected_items.json
+ * 文件位置：config/babyzombieaddons/data/protected_items.json
  */
 public final class ItemProtectStorage {
 
     private static final boolean DISABLED = FabricLoader.getInstance().isModLoaded("skyblocker");
 
-    private static final Path FILE = FabricLoader.getInstance().getConfigDir()
-            .resolve("babyzombieaddons").resolve("protected_items.json");
-    private static final Gson GSON = new Gson();
     private static final Set<String> uuids = new HashSet<>();
 
     private ItemProtectStorage() {}
 
     public static void load() {
         if (DISABLED) return;
-        if (!Files.exists(FILE)) return;
-        try {
-            String json = Files.readString(FILE);
-            Set<String> loaded = GSON.fromJson(json, new TypeToken<Set<String>>(){}.getType());
-            if (loaded != null) uuids.addAll(loaded);
-        } catch (IOException ignored) {}
+        Set<String> loaded = DataPersistence.load("protected_items.json",
+                new TypeToken<Set<String>>(){}.getType());
+        if (loaded != null) uuids.addAll(loaded);
     }
 
     public static void save() {
         if (DISABLED) return;
-        try {
-            Files.createDirectories(FILE.getParent());
-            Files.writeString(FILE, GSON.toJson(uuids));
-        } catch (IOException ignored) {}
+        DataPersistence.save("protected_items.json", uuids);
     }
 
     public static boolean contains(ItemStack stack) {

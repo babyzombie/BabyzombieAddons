@@ -1,8 +1,5 @@
 package top.babyzombie.addons.module.misc.abiphone;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -25,18 +22,15 @@ import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.lwjgl.glfw.GLFW;
+import top.babyzombie.addons.util.DataPersistence;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 public class AbiphoneContactScreen extends Screen {
 
-    private static final Gson GSON = new GsonBuilder().create();
-    private static final Path SETTINGS_FILE = FabricLoader.getInstance().getConfigDir()
-        .resolve("babyzombieaddons").resolve("abiphone").resolve("ui_settings.json");
+    /** UI 设置,全局存储于 data/abiphone_ui.json。 */
+    private static final String SETTINGS_FILE = "abiphone_ui.json";
 
     // persisted
     private int textColor = 0xFFFFFFFF;
@@ -94,38 +88,24 @@ public class AbiphoneContactScreen extends Screen {
     }
 
     private void loadSettings() {
-        try {
-            if (Files.exists(SETTINGS_FILE)) {
-                var json = GSON.fromJson(Files.readString(SETTINGS_FILE), UiSettings.class);
-                if (json != null) {
-                    if (json.textColor != 0) textColor = json.textColor;
-                    colorBarVisible = json.colorBarVisible;
-                    if (json.favorites != null) favorites.addAll(json.favorites);
-                    if (json.autoAnswer != null) autoAnswer.addAll(json.autoAnswer);
-                }
-            }
-        } catch (IOException ignored) {
+        var json = DataPersistence.load(SETTINGS_FILE, UiSettings.class);
+        if (json != null) {
+            if (json.textColor != 0) textColor = json.textColor;
+            colorBarVisible = json.colorBarVisible;
+            if (json.favorites != null) favorites.addAll(json.favorites);
+            if (json.autoAnswer != null) autoAnswer.addAll(json.autoAnswer);
         }
     }
 
     private void saveSettings() {
-        try {
-            Files.createDirectories(SETTINGS_FILE.getParent());
-            Files.writeString(SETTINGS_FILE, GSON.toJson(new UiSettings(textColor, colorBarVisible,
-                new ArrayList<>(favorites), new ArrayList<>(autoAnswer))));
-        } catch (IOException ignored) {
-        }
+        DataPersistence.save(SETTINGS_FILE, new UiSettings(textColor, colorBarVisible,
+                new ArrayList<>(favorites), new ArrayList<>(autoAnswer)));
     }
 
     public static Set<String> getAutoAnswerNames() {
         Set<String> result = new HashSet<>();
-        try {
-            if (Files.exists(SETTINGS_FILE)) {
-                var json = GSON.fromJson(Files.readString(SETTINGS_FILE), UiSettings.class);
-                if (json != null && json.autoAnswer != null) result.addAll(json.autoAnswer);
-            }
-        } catch (IOException ignored) {
-        }
+        var json = DataPersistence.load(SETTINGS_FILE, UiSettings.class);
+        if (json != null && json.autoAnswer != null) result.addAll(json.autoAnswer);
         return result;
     }
 

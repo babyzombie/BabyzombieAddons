@@ -1,12 +1,10 @@
 package top.babyzombie.addons.module.kuudra;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -21,15 +19,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.DataPersistence;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.UUID;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,9 +42,6 @@ public final class ChestCounter {
     private static ItemStack chestIcon;
     private static boolean pendingChestOpen;
     private static long pendingSinceMs;
-    private static final Path SAVE_FILE = FabricLoader.getInstance().getConfigDir()
-            .resolve("babyzombieaddons").resolve("chest_counter.json");
-    private static final Gson GSON = new Gson();
 
     // Keyed by "uuid_profileId"
     private static Map<String, Integer> allCounts = new HashMap<>();
@@ -207,13 +200,9 @@ public final class ChestCounter {
     }
 
     private static void load() {
-        try {
-            if (Files.exists(SAVE_FILE)) {
-                var type = new TypeToken<Map<String, Integer>>(){}.getType();
-                allCounts = GSON.fromJson(Files.readString(SAVE_FILE), type);
-                if (allCounts == null) allCounts = new HashMap<>();
-            }
-        } catch (Exception ignored) {}
+        var type = new TypeToken<Map<String, Integer>>(){}.getType();
+        Map<String, Integer> loaded = DataPersistence.load("chest_counter.json", type);
+        allCounts = loaded != null ? loaded : new HashMap<>();
     }
 
     private static boolean isChestRewardGUI(String title) {
@@ -244,9 +233,6 @@ public final class ChestCounter {
 
     private static void save() {
         if (currentKey != null) allCounts.put(currentKey, count);
-        try {
-            Files.createDirectories(SAVE_FILE.getParent());
-            Files.writeString(SAVE_FILE, GSON.toJson(allCounts));
-        } catch (IOException ignored) {}
+        DataPersistence.save("chest_counter.json", allCounts);
     }
 }
