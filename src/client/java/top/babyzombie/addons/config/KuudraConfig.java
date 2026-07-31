@@ -16,6 +16,7 @@ import top.babyzombie.addons.config.ModConfig.*;
 import top.babyzombie.addons.module.kuudra.ChestCounter;
 import top.babyzombie.addons.module.kuudra.PearlWaypoints;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class KuudraConfig {
@@ -182,13 +183,13 @@ public class KuudraConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.perkShopWhitelist", desc = "config.babyzombieaddons.option.perkShopWhitelist.desc") @ConfigEditorBoolean @SearchTag("perk")
         public boolean perkShopWhitelist = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.perkShopWhitelistItems", desc = "config.babyzombieaddons.option.perkShopWhitelistItems.desc") @ConfigEditorDraggableList @SearchTag("perk") @SearchTag("whitelist")
-        public List<PerkShopItem> perkShopWhitelistItems = List.of(
+        public List<PerkShopItem> perkShopWhitelistItems = new ArrayList<>(List.of(
                 PerkShopItem.SPECIALIST_ROUTE,
                 PerkShopItem.BALLISTA_MECHANIC,
                 PerkShopItem.HUMAN_CANNONBALL,
                 PerkShopItem.REMOTE_PERK_SHOP,
                 PerkShopItem.FILL_YOUR_QUIVER
-        );
+        ));
     }
 
     public static class Requeue {
@@ -207,10 +208,10 @@ public class KuudraConfig {
         public boolean showTimer = true;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlShowOutline", desc = "config.babyzombieaddons.option.pearlShowOutline.desc") @ConfigEditorBoolean @SearchTag("pearl")
         public boolean showOutline = true;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlEditConfig", desc = "config.babyzombieaddons.option.pearlEditConfig.desc") @ConfigEditorButton(buttonText = "Edit")
-        public Runnable editConfig = PearlWaypoints::openConfigFile;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlOpenIqModrinth", desc = "config.babyzombieaddons.option.pearlOpenIqModrinth.desc") @ConfigEditorButton(buttonText = "IQ Modrinth")
-        public Runnable openIqModrinth = PearlWaypoints::openIqModrinth;
+        @ConfigOption(name = "config.babyzombieaddons.option.pearlEditConfig", desc = "config.babyzombieaddons.option.pearlEditConfig.desc") @ConfigEditorButton(buttonText = "Edit")
+        public transient Runnable editConfig = PearlWaypoints::openConfigFile;
+        @ConfigOption(name = "config.babyzombieaddons.option.pearlOpenIqModrinth", desc = "config.babyzombieaddons.option.pearlOpenIqModrinth.desc") @ConfigEditorButton(buttonText = "IQ Modrinth")
+        public transient Runnable openIqModrinth = PearlWaypoints::openIqModrinth;
     }
 
     public static class ChestCounterCfg {
@@ -220,7 +221,7 @@ public class KuudraConfig {
         public boolean partyAnnounce = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.chestCounterSound", desc = "config.babyzombieaddons.option.chestCounterSound.desc") @ConfigEditorBoolean @SearchTag("chest")
         public boolean sound = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.chestCounterReset", desc = "") @ConfigEditorButton(buttonText = "Reset")
-        public Runnable reset = ChestCounter::resetCounter;
+        @ConfigOption(name = "config.babyzombieaddons.option.chestCounterReset", desc = "config.babyzombieaddons.option.chestCounterReset.desc") @ConfigEditorButton(buttonText = "Reset")
+        public transient Runnable reset = ChestCounter::resetCounter;
     }
 }
