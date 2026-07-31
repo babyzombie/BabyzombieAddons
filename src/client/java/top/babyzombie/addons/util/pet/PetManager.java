@@ -353,7 +353,7 @@ public final class PetManager {
             if (m.find()) {
                 String uuid = HypixelLocationTracker.getInstance().getUuid();
                 if (uuid == null) return true;
-                loadProfile(uuid + "_" + m.group(1));
+                loadProfile(uuid + "/" + m.group(1));
             }
             return true;
         });

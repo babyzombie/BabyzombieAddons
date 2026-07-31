@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Tracks Re-heated Gummy Polar Bear duration with per-profile persistence.
  * Alerts at 5min, 2min, 1min remaining and at expiration.
- * Persisted as data/reheated_gummy_polar_bear.json, keyed by profileId (globally unique).
+ * Persisted as data/reheated_gummy_polar_bear.json, keyed by "uuid_profileId".
  */
 public final class ReheatedGummyPolarBearTimer {
     static final Map<String, Integer> profileTimers = new HashMap<>();
@@ -36,9 +36,9 @@ public final class ReheatedGummyPolarBearTimer {
 
             String text = ChatUtils.stripColor(message.getString()).trim();
             if (text.startsWith("You ate a Re-heated Gummy Polar Bear")) {
-                String profileId = HypixelLocationTracker.getInstance().getProfileId();
-                if (profileId != null) {
-                    profileTimers.put(profileId, profileTimers.getOrDefault(profileId, 0) + 3600 * 20); // Add 60 minutes
+                String key = profileKey();
+                if (key != null) {
+                    profileTimers.put(key, profileTimers.getOrDefault(key, 0) + 3600 * 20); // Add 60 minutes
                     alerted5min = false; alerted2min = false; alerted1min = false;
                     save();
                 }
@@ -52,13 +52,13 @@ public final class ReheatedGummyPolarBearTimer {
             if (!tracker.isInSkyblock() || tracker.isInAlpha()) return;
             if (tracker.isInDungeon() || tracker.isInRift() || tracker.isInSafari()) return;
 
-            String profileId = tracker.getProfileId();
-            if (profileId == null) return;
-            Integer remaining = profileTimers.get(profileId);
+            String key = profileKey();
+            if (key == null) return;
+            Integer remaining = profileTimers.get(key);
             if (remaining == null || remaining <= 0) return;
 
             remaining--;
-            profileTimers.put(profileId, remaining);
+            profileTimers.put(key, remaining);
 
             var cfg = ModConfigManager.get().slayer;
 
@@ -89,13 +89,22 @@ public final class ReheatedGummyPolarBearTimer {
                 case 0 -> {
                     ChatUtils.showTranslatableTitle("", "slayer.gummybear.expired", 0, 50, 10);
                     playAnvilSound();
-                    profileTimers.remove(profileId);
+                    profileTimers.remove(key);
                     alerted5min = false; alerted2min = false; alerted1min = false;
                 }
             }
-            if (remaining <= 0) profileTimers.remove(profileId);
+            if (remaining <= 0) profileTimers.remove(key);
             save();
         });
+    }
+
+    /** 文件内细分 key:uuid + "_" + profileId。 */
+    private static String profileKey() {
+        var tracker = HypixelLocationTracker.getInstance();
+        String uuid = tracker.getUuid();
+        String profileId = tracker.getProfileId();
+        if (uuid == null || profileId == null) return null;
+        return uuid + "_" + profileId;
     }
 
     private static void playSound() {
@@ -112,8 +121,8 @@ public final class ReheatedGummyPolarBearTimer {
         }
     }
 
-    public static String getTimeString(String profileId) {
-        Integer remaining = profileTimers.get(profileId);
+    public static String getTimeString(String key) {
+        Integer remaining = profileTimers.get(key);
         if (remaining == null || remaining <= 0) return "";
         int m = remaining / 20 / 60;
         int s = remaining / 20 % 60;

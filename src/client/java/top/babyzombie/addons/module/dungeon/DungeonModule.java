@@ -117,6 +117,7 @@ public final class DungeonModule {
             AutoRequeue.canRequeue = false;
             AutoRequeue.cancelAutoJoin = false;
             instanceStarted = false;
+            AutoRequeue.waitingForRevive = false;
         }));
 
         DungeonAutoPB.init();

@@ -1,0 +1,35 @@
+{
+  "_comment": "Pile Waypoints config - edit this file to customize supply pile positions.",
+  "_howToUse": [
+    "This file is valid JSON. Do not use // or /* */ comments. Use keys like _comment or _guide if you want to leave notes.",
+    "Each object inside 'piles' is one pile waypoint shown during Kuudra supplies.",
+    "position uses [x, y, z] coordinates.",
+    "The name is shown above the pile and also used to highlight the pile whose pre spot is missing."
+  ],
+  "piles": [
+    {
+      "name": "Shop",
+      "pos": [-98.5, 78.4, -113.5]
+    },
+    {
+      "name": "Triangle",
+      "pos": [-94.5, 78.4, -106.5]
+    },
+    {
+      "name": "Equals",
+      "pos": [-106.5, 78.4, -99.5]
+    },
+    {
+      "name": "Slash",
+      "pos": [-98.5, 78.4, -99.5]
+    },
+    {
+      "name": "X Cannon",
+      "pos": [-110.5, 78.4, -106.5]
+    },
+    {
+      "name": "X",
+      "pos": [-106.5, 78.4, -113.5]
+    }
+  ]
+}

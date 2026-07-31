@@ -169,8 +169,9 @@ public final class SlayerHUD {
                     if (cfg == ModConfig.GummyPolarBearMode.EVERYWHERE_EXCEPT_DUNGEON
                             || "Smoldering Tomb".equals(tracker2.getLocation())) {
                         String profileId = tracker2.getProfileId();
-                        if (profileId != null) {
-                            String timeStr = ReheatedGummyPolarBearTimer.getTimeString(profileId);
+                        String uuid = tracker2.getUuid();
+                        if (profileId != null && uuid != null) {
+                            String timeStr = ReheatedGummyPolarBearTimer.getTimeString(uuid + "_" + profileId);
                             if (!timeStr.isEmpty()) {
                                 int x = HudManager.x("ReheatedGummyPolarBear");
                                 int y = HudManager.y("ReheatedGummyPolarBear");

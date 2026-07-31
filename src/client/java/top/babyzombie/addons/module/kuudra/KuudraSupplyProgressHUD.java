@@ -31,8 +31,14 @@ public final class KuudraSupplyProgressHUD {
     private static int currentProgress; // 0-100 from title
     private static boolean inSuppliesPhase;
     private static boolean cancelledThisTitle;
+    private static long lastTitleMs;    // 最近一次收到进度 title 的时间，超时隐藏 HUD
 
-    public static int getCurrentProgress() { return currentProgress; }
+    public static int getCurrentProgress() {
+        // title 超过 900ms 未更新（拾取结束/阶段切换）时视为无进度，
+        // 避免珍珠点位用残留进度误判全部 READY
+        if (lastTitleMs == 0 || System.currentTimeMillis() - lastTitleMs > 900) return 0;
+        return currentProgress;
+    }
     public static int getSupplyCount() { return supplyCount; }
     public static boolean isInSuppliesPhase() { return inSuppliesPhase; }
     public static long getSuppliesStartMs() { return KuudraSupplyTimer.getStartMs(); }
@@ -46,6 +52,7 @@ public final class KuudraSupplyProgressHUD {
         if (m.matches()) {
             int pct = Integer.parseInt(m.group(1));
             currentProgress = pct;
+            lastTitleMs = System.currentTimeMillis();
 
             // Cancel vanilla title if either HUD is active
             if (inSuppliesPhase && cfg.phase1.supplyProgressHud) {
@@ -66,6 +73,7 @@ public final class KuudraSupplyProgressHUD {
         currentProgress = 0;
         inSuppliesPhase = true;
         cancelledThisTitle = false;
+        lastTitleMs = 0;
     }
 
     public static void init() {
@@ -92,6 +100,8 @@ public final class KuudraSupplyProgressHUD {
             Matcher sm = SUPPLY_PLACE_PATTERN.matcher(text);
             if (sm.find() && inSuppliesPhase) {
                 supplyCount = Integer.parseInt(sm.group(1));
+                // 放置完成 = 上一个 crate 拾取结束、title 消失 → 立即隐藏 HUD
+                lastTitleMs = 0;
                 return;
             }
 
@@ -110,6 +120,8 @@ public final class KuudraSupplyProgressHUD {
                     boolean showFuel = cfg.phase3.fuelProgressHud && !inSuppliesPhase && fuelCount > 0;
                     if (!showSupply && !showFuel) return;
                     if (currentProgress <= 0) return;
+                    // title 消失（补给/燃料拿完）后 900ms 内隐藏 HUD（与 IQ 的超时一致）
+                    if (System.currentTimeMillis() - lastTitleMs > 900) return;
 
                     var font = Minecraft.getInstance().font;
                     int x = HudManager.x("SupplyProgress"), y = HudManager.y("SupplyProgress");
@@ -127,8 +139,8 @@ public final class KuudraSupplyProgressHUD {
         StringBuilder bar = new StringBuilder("§8[");
         if (filled > 0) bar.append("§a");
         for (int i = 0; i < barLen; i++) {
-            if (i == filled) bar.append("§8");
-            bar.append(i < filled ? '|' : ' ');
+            if (i == filled) bar.append("§7");
+            bar.append('|');
         }
         bar.append("§8]");
         return String.format("§3%s §b%d/%d §8(%d%%)", bar, count, max, pct);

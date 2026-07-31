@@ -43,6 +43,10 @@ public class ModConfig extends Config {
         OFF, HUD, BOSSBAR;
         @Override public String toString() { return t("config.babyzombieaddons.option.hpDisplay." + name()); }
     }
+    public enum ChestCounterMode {
+        KUUDRA_ONLY, INCLUDE_CRIMSON_DUNGEON, EVERYWHERE;
+        @Override public String toString() { return t("config.babyzombieaddons.option.chestCounterMode." + name()); }
+    }
     public enum MineshaftWarpMode {
         OFF, TITLE_ONLY, TITLE_AND_SOUND, SEND_PTME, PTME_AND_WARP;
         @Override public String toString() { return t("config.babyzombieaddons.option.glaciteMineshaftWarp." + name()); }
@@ -106,10 +110,10 @@ public class ModConfig extends Config {
         PROTECTIVE_AURA("Protective Aura"), MINIATURE_NUKE("Miniature Nuke"),
         BONUS_DAMAGE("Bonus Damage"), BLIGHT_SLAYER("Blight Slayer"),
         STEADY_HANDS("Steady Hands"), BALLISTA_MECHANIC("Ballista Mechanic"),
-        KUUDRA_SLAYER("Kuudra Slayer"), MINING_FRENZY("Mining Frenzy"),
-        HEALING_AURA("Healing Aura"), MANA_AURA("Mana Aura"),
-        FASTER_RESPAWN("Faster Respawn"), REVIVE_FINAL_KILLED("Revive Final Killed"),
-        REVIVE_DEAD("Revive Dead"),
+        BOMBERMAN("Bomberman"), KUUDRA_SLAYER("Kuudra Slayer"),
+        MINING_FRENZY("Mining Frenzy"), HEALING_AURA("Healing Aura"),
+        MANA_AURA("Mana Aura"), FASTER_RESPAWN("Faster Respawn"),
+        REVIVE_FINAL_KILLED("Revive Final Killed"), REVIVE_DEAD("Revive Dead"),
         AUTO_REVIVE("Auto Revive"), HUMAN_CANNONBALL("Human Cannonball"),
         REMOTE_PERK_SHOP("Remote Perk Shop"), ELLES_LAVA_ROD("Elle's Lava Rod"),
         ELLES_PICKAXE("Elle's Pickaxe"), FILL_YOUR_QUIVER("Fill your Quiver");

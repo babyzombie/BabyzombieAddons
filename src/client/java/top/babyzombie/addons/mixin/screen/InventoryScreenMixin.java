@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.module.chat.ContainerChatHelper;
+import top.babyzombie.addons.module.kuudra.ChestCounter;
 import top.babyzombie.addons.util.StarIndicator;
 
 @Mixin(InventoryScreen.class)
@@ -17,6 +18,9 @@ public class InventoryScreenMixin {
 
     @Inject(method = "extractRenderState*", at = @At("TAIL"))
     private void onRender(GuiGraphicsExtractor g, int mouseX, int mouseY, float a, CallbackInfo ci) {
+        // 背包页面上的箱子计数 HUD（hover 提示）；点击走 AbstractContainerScreen 的注入
+        ChestCounter.renderOnScreen(g, mouseX, mouseY);
+
         if (ContainerChatHelper.isActive()) {
             ContainerChatHelper.getOverlay().extractRenderState(g, mouseX, mouseY, a);
         }

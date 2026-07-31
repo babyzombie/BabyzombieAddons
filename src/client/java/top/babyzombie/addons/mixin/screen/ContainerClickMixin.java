@@ -1,6 +1,7 @@
 package top.babyzombie.addons.mixin.screen;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -15,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.module.chat.ItemProtectBridge;
+import top.babyzombie.addons.module.kuudra.ChestCounter;
 import top.babyzombie.addons.module.misc.CopyItemInfoKey;
 import top.babyzombie.addons.module.misc.pet.PetPageKeyHandler;
 import top.babyzombie.addons.util.ItemUtils;
@@ -25,9 +27,19 @@ public abstract class ContainerClickMixin {
     @Shadow
     protected Slot hoveredSlot;
 
-    // ALT+左键 物品分享/收藏
+    // 容器页面渲染箱子计数 HUD（hover 提示）
+    @Inject(method = "extractRenderState*", at = @At("TAIL"))
+    private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+        ChestCounter.renderOnScreen(graphics, mouseX, mouseY);
+    }
+
+    // 点击箱子计数 HUD（容器/背包页面）→ 触发指令；ALT+左键 物品分享/收藏
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void beforeMouseClicked(MouseButtonEvent event, boolean bl, CallbackInfoReturnable<Boolean> cir) {
+    private void beforeMouseClicked(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
+        if (ChestCounter.onScreenClick(event)) {
+            cir.setReturnValue(false);
+            return;
+        }
         if (ContainerClickEvents.BEFORE_MOUSE_CLICK.invoker()
                 .beforeMouseClick((AbstractContainerScreen<?>) (Object) this, hoveredSlot, event)) {
             cir.setReturnValue(false);
@@ -38,9 +50,9 @@ public abstract class ContainerClickMixin {
     @Inject(method = "slotClicked", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;handleContainerInput(IIILnet/minecraft/world/inventory/ContainerInput;Lnet/minecraft/world/entity/player/Player;)V"),
             cancellable = true)
-    private void protectCollectedItem(Slot slot, int slotId, int button, ContainerInput input, CallbackInfo ci) {
+    private void protectCollectedItem(Slot slot, int slotId, int buttonNum, ContainerInput containerInput, CallbackInfo ci) {
         if (slot == null || !slot.hasItem()) return;
-        if (input != ContainerInput.THROW) return;
+        if (containerInput != ContainerInput.THROW) return;
         if (!ItemProtectBridge.needsOwnProtection()) return;
         if (!ItemProtectBridge.isProtected(slot.getItem())) return;
 
