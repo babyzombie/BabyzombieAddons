@@ -395,6 +395,8 @@
   "config.babyzombieaddons.option.hideKuudraDamageTitle.desc": "隐藏原版 Kuudra 伤害标题（如 240M/240M）。",
   "config.babyzombieaddons.option.hideTentacleTitle": "隐藏触手血量 Title",
   "config.babyzombieaddons.option.hideTentacleTitle.desc": "隐藏阶段一显示的触手血量标题。",
+  "config.babyzombieaddons.option.protectLocalScreenOnStart": "阻止开局时关闭非容器页面",
+  "config.babyzombieaddons.option.protectLocalScreenOnStart.desc": "开局倒计时（Starting in 1 second.）到 Elle 提示登台（Head over to the main platform）期间，阻止服务器关闭模组设置等非容器页面，避免开局时正在查看的界面被关闭。仅在此窗口内生效，真实容器界面不受影响。风险：窗口内服务器发送的其他关屏请求也会被忽略，相关本地界面可能保持打开。",
   "config.babyzombieaddons.option.directionHud": "Kuudra 方向 HUD",
   "config.babyzombieaddons.option.directionHud.desc": "显示 Kuudra 生成方向。进入下方后使用玩家相对方向。",
   "config.babyzombieaddons.option.kuudraDistance": "Kuudra 距离",

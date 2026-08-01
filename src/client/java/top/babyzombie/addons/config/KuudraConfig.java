@@ -106,6 +106,8 @@ public class KuudraConfig {
         public boolean alreadyPickingAlert = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideTentacleTitle", desc = "config.babyzombieaddons.option.hideTentacleTitle.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("tentacle") @SearchTag("title")
         public boolean hideTentacleTitle = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.protectLocalScreenOnStart", desc = "config.babyzombieaddons.option.protectLocalScreenOnStart.desc") @ConfigEditorBoolean @SearchTag("screen") @SearchTag("close") @SearchTag("protect")
+        public boolean protectLocalScreenOnStart = false;
     }
 
     // ── Phase 2: Build ──

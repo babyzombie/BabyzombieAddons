@@ -56,6 +56,7 @@
     "item.BlockItemMixin",
 
     "network.ClientCommonPacketListenerImplMixin",
+    "network.ClientPacketListenerMixin",
     "network.ClientboundCommandsPacketMixin",
     "network.ConnectScreenMixin",
     "network.ConnectionMixin",

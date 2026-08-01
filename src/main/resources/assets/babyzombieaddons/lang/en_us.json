@@ -345,6 +345,8 @@
   "config.babyzombieaddons.option.hideKuudraDamageTitle": "Hide Kuudra Damage Title",
   "config.babyzombieaddons.option.hideTentacleTitle": "Hide Tentacle HP Title",
   "config.babyzombieaddons.option.hideTentacleTitle.desc": "Hide the tentacle HP title shown during Phase 1.",
+  "config.babyzombieaddons.option.protectLocalScreenOnStart": "Prevent Closing Non-Container Screens on Start",
+  "config.babyzombieaddons.option.protectLocalScreenOnStart.desc": "Between the start countdown (Starting in 1 second.) and Elle's platform prompt (Head over to the main platform), ignore server screen-close requests for non-container screens (e.g. mod settings) so the interface you are viewing is not closed. Only active during this window; real container screens are unaffected. Risk: other screen-close requests within the window are also ignored, so local interfaces may stay open.",
   "config.babyzombieaddons.option.directionHud": "Kuudra Direction HUD",
   "config.babyzombieaddons.option.directionHud.desc": "Show which direction Kuudra is spawning from. Below ground uses player-relative direction.",
   "config.babyzombieaddons.option.kuudraDistance": "Kuudra Distance",

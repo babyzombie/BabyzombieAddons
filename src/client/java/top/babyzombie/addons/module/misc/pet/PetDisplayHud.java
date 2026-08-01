@@ -243,7 +243,7 @@ public final class PetDisplayHud {
                 int count = Math.max(10, maxWidth / spaceW + 1);
                 gui.text(font, "§8§m" + " ".repeat(count), 0, curY, 0xFFFFFFFF, true);
             }
-            curY += lh / 2 + 1;
+            curY += lh;
 
             for (CachedSharedPet shared : cachedSharedPets) {
                 pose.pushMatrix();
