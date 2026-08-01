@@ -40,7 +40,7 @@ public class LivingEntityRendererMixin {
     /** 隐藏 Kuudra 小怪的等级名称标签（与 IQ 一致：名字含 [Lv 的盔甲架）。 */
     @Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;D)Z",
             at = @At("HEAD"), cancellable = true)
-    private void hideKuudraMobNametags(LivingEntity entity, double distance, CallbackInfoReturnable<Boolean> cir) {
+    private void hideKuudraMobNametags(LivingEntity entity, double distanceToCameraSq, CallbackInfoReturnable<Boolean> cir) {
         if (!(entity instanceof ArmorStand)) return;
         if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
         if (!ModConfigManager.get().kuudra.hideMobNametags) return;
