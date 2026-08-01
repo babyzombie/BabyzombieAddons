@@ -72,9 +72,10 @@ public final class FreshSystem {
                 buildStartMs = ServerTick.getTime();
                 return;
             }
-            // P2 end
+            // P2 end（清除建造开始倒计时，避免结束后仍显示 0.00s）
             if (text.contains("Phew! The Ballista is finally ready")) {
                 inBuildPhase = false;
+                buildCountdownEndMs = -1;
                 return;
             }
 

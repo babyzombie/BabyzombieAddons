@@ -76,6 +76,7 @@ public final class KuudraPileWaypoints {
         });
 
         RenderPhaseRegister.register(ctx -> {
+            if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             var cfg = ModConfigManager.get().kuudra.phase1;
             if (!cfg.supplyPileWaypoints) return;
             if (!inSuppliesPhase) return;

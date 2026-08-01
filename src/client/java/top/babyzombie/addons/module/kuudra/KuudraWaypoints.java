@@ -66,6 +66,7 @@ public final class KuudraWaypoints {
 
     public static void init() {
         RenderPhaseRegister.register(ctx -> {
+            if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             var cfg = ModConfigManager.get().kuudra;
 
             // Supply beams (crate 渲染中心与 IQ 一致：x+0.5, z+1.5)

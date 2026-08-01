@@ -43,7 +43,10 @@ public final class KuudraDirectionHUD {
                                 w.getName().getString()).contains("Kuudra"));
                 if (!withers.isEmpty()) e = withers.getFirst();
             }
-            if (e == null) return;
+            if (e == null) {
+                lastDir = UNKNOWN; // 实体丢失时清空，不显示上一次的方向
+                return;
+            }
 
             Dir abs = getAbsoluteDir(e);
             lastDir = abs;
@@ -60,9 +63,9 @@ public final class KuudraDirectionHUD {
                     int x = HudManager.x("KuudraDir"), y = HudManager.y("KuudraDir");
                     float s = HudManager.scale("KuudraDir");
 
-                    // Below Y=10: use player-relative direction
+                    // Below ground (P4 下去后 Y 稳定 <20): use player-relative direction
                     boolean belowGround = Minecraft.getInstance().player != null
-                            && Minecraft.getInstance().player.getY() < 10;
+                            && Minecraft.getInstance().player.getY() < 20;
                     String text;
                     if (belowGround) {
                         text = getRelativeDir(lastDir) + " §f" + lastDir.name;

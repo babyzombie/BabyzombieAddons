@@ -168,7 +168,6 @@ public final class ChestCounter {
                 if (count > 0) {
                     count--;
                     dirty = true;
-                    ChatUtils.sendCommand("pc Chests: " + count + "/" + MAX_CHESTS);
                 }
             }
         });
