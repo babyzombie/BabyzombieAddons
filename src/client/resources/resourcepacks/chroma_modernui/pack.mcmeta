@@ -2,8 +2,8 @@
   "pack": {
     "pack_format": 46,
     "min_format": 15,
-    "max_format": 88,
-    "supported_formats": [15, 88],
+    "max_format": 999,
+    "supported_formats": [15, 999],
     "description": {
       "translate": "resourcepack.babyzombieaddons.chroma_modernui.description",
       "fallback": "Chroma × Modern UI Compat — Makes Aaron Mod's animated chroma fonts work under Modern UI's text engine"

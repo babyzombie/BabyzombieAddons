@@ -45,7 +45,7 @@ public final class CustomDiscPackResources extends AbstractPackResources {
             String json = "{\"pack\":{"
                     + "\"description\":{\"translate\":\"resourcepack.babyzombieaddons.custom_discs.description\"},"
                     + "\"min_format\":[84],"
-                    + "\"max_format\":[84]}}";
+                    + "\"max_format\":[999]}}";
             return () -> new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
         }
         if ("pack.png".equals(joined)) {
