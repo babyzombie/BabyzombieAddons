@@ -37,6 +37,7 @@ import top.babyzombie.addons.module.misc.loadout.LoadoutModule;
 import top.babyzombie.addons.module.misc.pet.PetDisplayHud;
 import top.babyzombie.addons.module.kuudra.ArrowPoisonRefill;
 import top.babyzombie.addons.module.mining.MiningModule;
+import top.babyzombie.addons.module.minigames.ravengard.RavengardModule;
 import top.babyzombie.addons.module.misc.MiscModule;
 import top.babyzombie.addons.module.chat.PartyModule;
 import top.babyzombie.addons.module.chat.playcmd.PlayCmdModule;
@@ -145,6 +146,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         PetDisplayHud.init();
         HuntingModule.init();
         LoadoutModule.init();
+        RavengardModule.init();
 
         ClientLifecycleEvents.CLIENT_STOPPING.register(_ -> WorldRenderUtils.close());
     }

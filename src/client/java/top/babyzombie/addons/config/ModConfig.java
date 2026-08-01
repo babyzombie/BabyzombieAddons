@@ -281,6 +281,10 @@ public class ModConfig extends Config {
     public EventsConfig events = new EventsConfig();
 
     @Expose
+    @Category(name = "config.babyzombieaddons.category.minigames", desc = "")
+    public MinigamesConfig minigames = new MinigamesConfig();
+
+    @Expose
     @Category(name = "config.babyzombieaddons.category.misc", desc = "")
     public MiscConfig misc = new MiscConfig();
 
