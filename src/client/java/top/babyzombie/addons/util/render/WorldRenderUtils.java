@@ -13,7 +13,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.client.renderer.MappableRingBuffer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.joml.Matrix4f;
@@ -84,12 +83,56 @@ public final class WorldRenderUtils {
 
     // ── Buffer management ──────────────────────────────────────
     private static final ByteBufferBuilder ALLOCATOR = new ByteBufferBuilder(1536);
-    private static MappableRingBuffer filledVertexBuffer;
-    private static MappableRingBuffer linesVertexBuffer;
-    private static MappableRingBuffer trianglesVertexBuffer;
+    private static VertexRing filledVertexRing;
+    private static VertexRing linesVertexRing;
+    private static VertexRing trianglesVertexRing;
     private static BufferBuilder filledBuf;
     private static BufferBuilder linesBuf;
     private static BufferBuilder trianglesBuf;
+
+    /**
+     * 自管理环形顶点缓冲。
+     * <p>替代 {@code MappableRingBuffer}:后者在渲染帧内调用 {@code currentBuffer()} 时会等待上一帧的
+     * fence,而 26.x 下该 fence 可能挂在当前 submit 上,抛
+     * "Cannot wait on a fence for the current submit" 导致崩溃。
+     * {@code writeToBuffer} 走 GPU 命令流,同一队列按提交顺序先写后读,槽位轮换即可安全复用,无需 fence。</p>
+     */
+    static final class VertexRing {
+        private static final int RING_SLOTS = 3;
+        private static final int USAGE = GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_MAP_WRITE | GpuBuffer.USAGE_COPY_DST;
+
+        private final String label;
+        private final GpuBuffer[] buffers = new GpuBuffer[RING_SLOTS];
+        private int slot;
+
+        VertexRing(String label) {
+            this.label = label;
+        }
+
+        /** 取当前槽位 buffer,大小不足时重建。 */
+        GpuBuffer current(int size) {
+            GpuBuffer buffer = buffers[slot];
+            if (buffer == null || buffer.size() < size) {
+                // 不 close 旧缓冲：最近帧可能仍被 GPU 命令引用，Vulkan 下销毁在用缓冲是 UB（可能设备丢失）
+                // 直接换新槽，旧缓冲的 GPU 资源随对象 GC 释放（仅几何变大时触发一次，泄漏可忽略）
+                buffer = RenderSystem.getDevice().createBuffer(() -> label, USAGE, size);
+                buffers[slot] = buffer;
+            }
+            return buffer;
+        }
+
+        void rotate() {
+            slot = (slot + 1) % RING_SLOTS;
+        }
+
+        void close() {
+            for (GpuBuffer buffer : buffers) {
+                if (buffer != null) {
+                    buffer.close();
+                }
+            }
+        }
+    }
 
     private static final Vector4f COLOR_MODULATOR = new Vector4f(1f, 1f, 1f, 1f);
     private static final Vector3f MODEL_OFFSET = new Vector3f();
@@ -670,7 +713,7 @@ public final class WorldRenderUtils {
 
         GpuBuffer vertices = uploadVertices(format, builtBuffer, 0);
         draw(pipeline, builtBuffer, drawParameters, vertices);
-        filledVertexBuffer.rotate();
+        filledVertexRing.rotate();
         builtBuffer.close();
     }
 
@@ -681,7 +724,7 @@ public final class WorldRenderUtils {
 
         GpuBuffer vertices = uploadVertices(format, builtBuffer, 1);
         draw(pipeline, builtBuffer, drawParameters, vertices);
-        linesVertexBuffer.rotate();
+        linesVertexRing.rotate();
         builtBuffer.close();
     }
 
@@ -692,42 +735,40 @@ public final class WorldRenderUtils {
 
         GpuBuffer vertices = uploadVertices(format, builtBuffer, 2);
         draw(pipeline, builtBuffer, drawParameters, vertices);
-        trianglesVertexBuffer.rotate();
+        trianglesVertexRing.rotate();
         builtBuffer.close();
     }
 
     /** MC 26.2: writeToBuffer. @param kind 0=filled, 1=lines, 2=triangles */
     private static GpuBuffer uploadVertices(VertexFormat format, MeshData builtBuffer, int kind) {
         int vertexBufferSize = builtBuffer.drawState().vertexCount() * format.getVertexSize();
-        MappableRingBuffer ringBuffer = switch (kind) {
-            case 0 -> filledVertexBuffer;
-            case 1 -> linesVertexBuffer;
-            default -> trianglesVertexBuffer;
+        VertexRing ring = switch (kind) {
+            case 0 -> filledVertexRing;
+            case 1 -> linesVertexRing;
+            default -> trianglesVertexRing;
         };
 
-        if (ringBuffer == null || ringBuffer.size() < vertexBufferSize) {
-            // 不 close 旧缓冲：最近帧可能仍被 GPU 命令引用，Vulkan 下销毁在用缓冲是 UB（可能设备丢失）
-            // 直接换新槽，旧缓冲的 GPU 资源随对象 GC 释放（仅几何变大时触发一次，泄漏可忽略）
+        if (ring == null) {
             String label = MOD_ID + switch (kind) {
                 case 0 -> " filled";
                 case 1 -> " lines";
                 default -> " triangles";
             } + " render";
-            ringBuffer = new MappableRingBuffer(() -> label,
-                GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_MAP_WRITE | GpuBuffer.USAGE_COPY_DST, vertexBufferSize);
+            ring = new VertexRing(label);
             switch (kind) {
-                case 0 -> filledVertexBuffer = ringBuffer;
-                case 1 -> linesVertexBuffer = ringBuffer;
-                default -> trianglesVertexBuffer = ringBuffer;
+                case 0 -> filledVertexRing = ring;
+                case 1 -> linesVertexRing = ring;
+                default -> trianglesVertexRing = ring;
             }
         }
 
-        CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
-        commandEncoder.writeToBuffer(
-                ringBuffer.currentBuffer().slice(0, builtBuffer.vertexBuffer().remaining()),
-                builtBuffer.vertexBuffer());
+        GpuBuffer vertices = ring.current(vertexBufferSize);
 
-        return ringBuffer.currentBuffer();
+        RenderSystem.getDevice().createCommandEncoder()
+                .writeToBuffer(vertices.slice(0, builtBuffer.vertexBuffer().remaining()),
+                        builtBuffer.vertexBuffer());
+
+        return vertices;
     }
 
     private static void draw(RenderPipeline pipeline, MeshData builtBuffer,
@@ -776,17 +817,17 @@ public final class WorldRenderUtils {
     /** 释放所有 GPU 缓冲区。应在客户端关闭时调用。 */
     public static void close() {
         ALLOCATOR.close();
-        if (filledVertexBuffer != null) {
-            filledVertexBuffer.close();
-            filledVertexBuffer = null;
+        if (filledVertexRing != null) {
+            filledVertexRing.close();
+            filledVertexRing = null;
         }
-        if (linesVertexBuffer != null) {
-            linesVertexBuffer.close();
-            linesVertexBuffer = null;
+        if (linesVertexRing != null) {
+            linesVertexRing.close();
+            linesVertexRing = null;
         }
-        if (trianglesVertexBuffer != null) {
-            trianglesVertexBuffer.close();
-            trianglesVertexBuffer = null;
+        if (trianglesVertexRing != null) {
+            trianglesVertexRing.close();
+            trianglesVertexRing = null;
         }
     }
 }

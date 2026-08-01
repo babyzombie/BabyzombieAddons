@@ -12,7 +12,6 @@ import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MappableRingBuffer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.Identifier;
@@ -39,7 +38,7 @@ public final class BeamRenderer {
 
     // ── Buffer management ─────────────────────────────────────────
     private static final ByteBufferBuilder ALLOCATOR = new ByteBufferBuilder(1536);
-    private static MappableRingBuffer beamVertexBuffer;
+    private static WorldRenderUtils.VertexRing beamVertexRing;
     private static BufferBuilder beamBuf;
 
     private static final Vector4f COLOR_MODULATOR = new Vector4f(1f, 1f, 1f, 1f);
@@ -127,20 +126,15 @@ public final class BeamRenderer {
         VertexFormat format = drawParams.format();
 
         int vertexBufferSize = drawParams.vertexCount() * format.getVertexSize();
-        if (beamVertexBuffer == null || beamVertexBuffer.size() < vertexBufferSize) {
-            // 不 close 旧缓冲：最近帧可能仍被 GPU 命令引用，Vulkan 下销毁在用缓冲是 UB（可能设备丢失）
-            // 直接换新槽，旧缓冲的 GPU 资源随对象 GC 释放（仅几何变大时触发一次，泄漏可忽略）
-            beamVertexBuffer = new MappableRingBuffer(
-                () -> MOD_ID + " beam render",
-                GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_MAP_WRITE | GpuBuffer.USAGE_COPY_DST, vertexBufferSize);
+        if (beamVertexRing == null) {
+            beamVertexRing = new WorldRenderUtils.VertexRing(MOD_ID + " beam render");
         }
 
-        var commandEncoder = RenderSystem.getDevice().createCommandEncoder();
-        commandEncoder.writeToBuffer(
-                beamVertexBuffer.currentBuffer().slice(0, builtBuffer.vertexBuffer().remaining()),
-                builtBuffer.vertexBuffer());
+        GpuBuffer vertices = beamVertexRing.current(vertexBufferSize);
 
-        GpuBuffer vertices = beamVertexBuffer.currentBuffer();
+        RenderSystem.getDevice().createCommandEncoder()
+                .writeToBuffer(vertices.slice(0, builtBuffer.vertexBuffer().remaining()),
+                        builtBuffer.vertexBuffer());
 
         RenderSystem.AutoStorageIndexBuffer shapeIndexBuffer =
             RenderSystem.getSequentialBuffer(pipeline.getPrimitiveTopology());
@@ -175,7 +169,7 @@ public final class BeamRenderer {
             }
         }
 
-        beamVertexBuffer.rotate();
+        beamVertexRing.rotate();
         builtBuffer.close();
     }
 }
