@@ -59,7 +59,7 @@ public class GeneralConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerKey", desc = "config.babyzombieaddons.option.markerKey.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("marker") @SearchTag("key")
         public int markerKey = GLFW.GLFW_KEY_UNKNOWN;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerChannel", desc = "config.babyzombieaddons.option.markerChannel.desc") @ConfigEditorDropdown @SearchTag("marker") @SearchTag("channel")
-        public MarkerChannel markerChannel = MarkerChannel.DEFAULT;
+        public ModConfig.MarkerChannel markerChannel = ModConfig.MarkerChannel.DEFAULT;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerSuffix", desc = "config.babyzombieaddons.option.markerSuffix.desc") @ConfigEditorText @SearchTag("marker") @SearchTag("suffix")
         public String markerSuffix = "";
     }
