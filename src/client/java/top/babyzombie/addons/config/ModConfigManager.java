@@ -20,6 +20,7 @@ import top.babyzombie.addons.BabyzombieAddonsClient;
 import top.babyzombie.addons.config.gui.WideSliderEditor;
 import top.babyzombie.addons.module.misc.CopyItemInfoKey;
 import top.babyzombie.addons.module.misc.SecondPersonKey;
+import top.babyzombie.addons.module.chat.WaypointMarkerModule;
 import top.babyzombie.addons.module.chat.popup.PopupEventsModule;
 import top.babyzombie.addons.util.KeyBindingUtil;
 
@@ -116,6 +117,7 @@ public final class ModConfigManager {
         cfg.general.cancelKeyRelease = KeyBindingUtil.keyCodeFrom(BabyzombieAddonsClient.cancelKeyBindingRelease);
         cfg.general.secondPerson = KeyBindingUtil.keyCodeFrom(SecondPersonKey.KEY);
         cfg.general.handRender.toggleHandRenderKey = KeyBindingUtil.keyCodeFrom(BabyzombieAddonsClient.toggleHandRenderKey);
+        cfg.general.waypointMarker.markerKey = KeyBindingUtil.keyCodeFrom(WaypointMarkerModule.key);
         cfg.popup.popupYes = KeyBindingUtil.keyCodeFrom(PopupEventsModule.keyYes);
         cfg.popup.popupNo = KeyBindingUtil.keyCodeFrom(PopupEventsModule.keyNo);
         cfg.misc.copyItemInfo = KeyBindingUtil.keyCodeFrom(CopyItemInfoKey.KEY);
@@ -127,6 +129,7 @@ public final class ModConfigManager {
         KeyBindingUtil.syncToKeyMapping(BabyzombieAddonsClient.cancelKeyBindingRelease, cfg.general.cancelKeyRelease);
         KeyBindingUtil.syncToKeyMapping(SecondPersonKey.KEY, cfg.general.secondPerson);
         KeyBindingUtil.syncToKeyMapping(BabyzombieAddonsClient.toggleHandRenderKey, cfg.general.handRender.toggleHandRenderKey);
+        KeyBindingUtil.syncToKeyMapping(WaypointMarkerModule.key, cfg.general.waypointMarker.markerKey);
         KeyBindingUtil.syncToKeyMapping(PopupEventsModule.keyYes, cfg.popup.popupYes);
         KeyBindingUtil.syncToKeyMapping(PopupEventsModule.keyNo, cfg.popup.popupNo);
         KeyBindingUtil.syncToKeyMapping(CopyItemInfoKey.KEY, cfg.misc.copyItemInfo);

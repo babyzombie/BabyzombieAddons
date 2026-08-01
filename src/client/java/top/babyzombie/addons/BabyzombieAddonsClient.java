@@ -44,6 +44,7 @@ import top.babyzombie.addons.module.chat.playcmd.PlayCmdModule;
 import top.babyzombie.addons.module.chat.AutotipModule;
 import top.babyzombie.addons.module.chat.ChatChannelModule;
 import top.babyzombie.addons.module.chat.ContainerChatModule;
+import top.babyzombie.addons.module.chat.WaypointMarkerModule;
 import top.babyzombie.addons.module.chat.popup.PopupEventsModule;
 import top.babyzombie.addons.module.misc.raredrop.RareDropModule;
 import top.babyzombie.addons.module.slayer.SlayerModule;
@@ -136,6 +137,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         PlayCmdModule.init();
         AutotipModule.init();
         ChatChannelModule.init();
+        WaypointMarkerModule.init();
         ContainerChatModule.init();
         PopupEventsModule.init();
         RareDropModule.init();
