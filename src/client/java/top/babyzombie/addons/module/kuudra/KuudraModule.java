@@ -7,6 +7,7 @@ public final class KuudraModule {
 
     public static void init() {
         KuudraLocationTracker.init();
+        KuudraScreenProtector.init();
         KuudraHPDisplay.init();
         KuudraPhaseTimer.init();
         KuudraBoxRenderer.init();
