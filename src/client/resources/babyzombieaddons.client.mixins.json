@@ -15,18 +15,14 @@
     "entity.DisplayAccessor",
     "entity.FishingHookFixMixin",
     "entity.SwingDurationMixin",
-    "item.ItemStackMaxSizeMixin",
     "item.BlockItemMixin",
+    "item.ItemStackMaxSizeMixin",
     "network.ClientboundCommandsPacketMixin",
     "network.ClientCommonPacketListenerImplMixin",
     "network.ConnectionMixin",
     "network.ConnectScreenMixin",
     "network.DisconnectedScreenMixin",
     "render.BossHealthOverlayAccessor",
-    "render.GuiExtractRenderStateMixin",
-    "render.GuiGraphicsExtractorTrackingMixin",
-    "render.GuiTitleMixin",
-    "render.PlayerTabOverlayAccessor",
     "render.BossHealthOverlayMixin",
     "render.ClientLevelAccessor",
     "render.EntityRenderDispatcherScaleMixin",
@@ -34,6 +30,7 @@
     "render.EntityRenderMixin",
     "render.GuiExtractRenderStateMixin",
     "render.GuiGraphicsExtractorTrackingMixin",
+    "render.GuiTitleMixin",
     "render.HudAccessor",
     "render.ItemFeatureRendererMixin",
     "render.LevelRendererMixin",
@@ -50,6 +47,7 @@
     "render.RenderTypeMixin",
     "render.SubmitNodeCollectionMixin",
     "render.ThirdPersonCrosshairMixin",
+    "resource.PackRepositoryMixin",
     "screen.CommandSuggestionsMixin",
     "screen.ContainerClickMixin",
     "screen.GuiOptionEditorDropdownMixin",
@@ -67,11 +65,12 @@
     "sound.PlaySoundMixin",
     "sound.SoundEngineAccessor",
     "sound.SoundManagerAccessor",
-    "window.WindowTitleMixin",
-
-    "resource.PackRepositoryMixin"
+    "window.WindowTitleMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "network.ClientPacketListenerMixin"
+  ]
 }

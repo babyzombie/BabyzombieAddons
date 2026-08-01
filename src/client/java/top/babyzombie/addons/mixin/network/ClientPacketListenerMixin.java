@@ -26,7 +26,7 @@ public class ClientPacketListenerMixin {
         // 仅在 Kuudra 开局保护窗口内生效（含配置开关判断），窗口外保持原版行为
         if (!KuudraScreenProtector.isActive()) return;
         Minecraft mc = Minecraft.getInstance();
-        Screen screen = mc.screen;
+        Screen screen = mc.gui.screen();
         if (screen == null || screen instanceof AbstractContainerScreen<?>) return;
         // 屏幕背后还挂着活跃容器 handler（自定义容器屏）：交给原版关屏，保证 handler 被重置
         if (mc.player != null && mc.player.containerMenu != mc.player.inventoryMenu) return;
