@@ -134,7 +134,9 @@ public class KuudraConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.ballistaBuildBeacons", desc = "config.babyzombieaddons.option.ballistaBuildBeacons.desc") @ConfigEditorBoolean @SearchTag("ballista")
         public boolean ballistaBuildBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.ballistaBeaconColor", desc = "config.babyzombieaddons.option.ballistaBeaconColor.desc") @SearchTag("ballista") @SearchTag("beacon") @SearchTag("color")
-        public ChromaColour ballistaBeaconColor = ChromaColour.fromStaticRGB(76, 127, 255, 255);
+        public ChromaColour ballistaBeaconColor = ChromaColour.fromStaticRGB(255, 255, 0, 255);
+        @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.ballistaInCircleColor", desc = "config.babyzombieaddons.option.ballistaInCircleColor.desc") @SearchTag("ballista") @SearchTag("beacon") @SearchTag("color")
+        public ChromaColour ballistaInCircleColor = ChromaColour.fromStaticRGB(0, 255, 0, 255);
     }
 
     // ── Phase 3: Stun ──

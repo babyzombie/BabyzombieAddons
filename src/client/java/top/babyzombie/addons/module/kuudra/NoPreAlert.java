@@ -75,6 +75,7 @@ public final class NoPreAlert {
     private static int emptyScans;
     private static boolean fallbackPending;
     private static long fallbackStartMs;
+    private static boolean carrierCheckAttempted; // 检测到箱子后的 No Pre 检查只做一次
 
     public static void init() {
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
@@ -84,6 +85,7 @@ public final class NoPreAlert {
             supplyStartMs = -1;
             emptyScans = 0;
             fallbackPending = false;
+            carrierCheckAttempted = false;
         });
 
         ClientReceiveMessageEvents.GAME.register((msg, overlay) -> {
@@ -97,6 +99,7 @@ public final class NoPreAlert {
                 missingPreName = null;
                 supplyStartMs = System.currentTimeMillis();
                 emptyScans = 0;
+                carrierCheckAttempted = false;
                 return;
             }
             if (text.contains("OMG! Great work collecting my supplies")) {
@@ -140,8 +143,9 @@ public final class NoPreAlert {
                 fallbackPending = false;
                 // Try to detect pre spot once we see supplies
                 if (detectedPre == null) detectPreSpot();
-                // Still check after delay even if supplies are seen
-                if (elapsed >= adaptiveDelay && detectedPre != null) {
+                // 检测到箱子后只检查一次（对齐 IQ 的 carrier check），避免反复误报
+                if (elapsed >= adaptiveDelay && detectedPre != null && !carrierCheckAttempted) {
+                    carrierCheckAttempted = true;
                     checkAndAlert();
                 }
             } else {
@@ -190,12 +194,18 @@ public final class NoPreAlert {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        // Check if there's a supply giant near the pre spot
-        List<Giant> nearby = player.level().getEntitiesOfClass(Giant.class,
-                new AABB(detectedPre.pos.add(-18, -5, -18), detectedPre.pos.add(18, 10, 18)),
-                g -> g.getY() < 67);
+        // 对齐 IQ：用 crate 位置判断 pre spot 18 格内有没有补给
+        // （之前用巨人实体 AABB 检测，y 范围写错导致永远误报）
+        List<Giant> carriers = player.level().getEntitiesOfClass(Giant.class,
+                new AABB(player.blockPosition()).inflate(64), g -> g.getY() < 67);
+        boolean hasPre = carriers.stream().anyMatch(g -> {
+            double angleRad = Math.toRadians(g.getYRot() + 130.0f);
+            double cx = g.getX() + (3.7 * Math.cos(angleRad));
+            double cz = g.getZ() + (3.7 * Math.sin(angleRad));
+            return Math.hypot(cx - detectedPre.pos.x, cz - detectedPre.pos.z) < 18;
+        });
 
-        if (nearby.isEmpty()) {
+        if (!hasPre) {
             missingPreName = detectedPre.name;
             ChatUtils.sendCommand("pc No " + detectedPre.name + "!");
             sendSecondSupplyHint();

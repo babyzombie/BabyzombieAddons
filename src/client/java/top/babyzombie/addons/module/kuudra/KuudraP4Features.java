@@ -13,6 +13,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import top.babyzombie.addons.util.render.WorldRenderUtils;
+import top.babyzombie.addons.util.render.WorldTextRenderer;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.ArrayList;
@@ -141,6 +142,7 @@ public final class KuudraP4Features {
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
                 Identifier.fromNamespaceAndPath("babyzombieaddons", "kuudra_distance"),
                 (context, tickCounter) -> {
+                    if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
                     if (!ModConfigManager.get().kuudra.phase4.kuudraDistance) return;
                     if (kuudraDist < 0) return;
                     var font = Minecraft.getInstance().font;
@@ -151,11 +153,19 @@ public final class KuudraP4Features {
                             color + String.format("%.1f", kuudraDist) + "m", x, y, s);
                 });
 
-        // Ichor pool rendering
+        // Ichor pool rendering（离开 Kuudra 不再渲染）
         RenderPhaseRegister.register(ctx -> {
+            if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             for (var pool : ichorPools) {
                 WorldRenderUtils.drawCircle(ctx, pool.center.x, pool.center.y, pool.center.z,
-                        ICHOR_RADIUS, 0, 1, 1, 0.5f, true, 3f);
+                        ICHOR_RADIUS, 0, 1, 1, 0.5f, true, 5f);
+                // 中心悬浮字：名称 + 剩余时间倒计时
+                long remaining = pool.expiresAt - System.currentTimeMillis();
+                if (remaining <= 0) continue;
+                WorldTextRenderer.renderString(ctx, "§bIchor Pool",
+                        pool.center.x, pool.center.y + 1.2, pool.center.z, 0xFF55FFFF, 0.08f, true);
+                WorldTextRenderer.renderString(ctx, String.format("§f%.1fs", remaining / 1000.0),
+                        pool.center.x, pool.center.y + 0.2, pool.center.z, 0xFFFFFFFF, 0.06f, true);
             }
         });
     }

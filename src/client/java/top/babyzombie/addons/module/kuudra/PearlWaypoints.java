@@ -133,6 +133,7 @@ public final class PearlWaypoints {
         });
 
         RenderPhaseRegister.register(ctx -> {
+            if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (currentArea == null) return;
             var cfg = ModConfigManager.get().kuudra.phase1.pearlWaypoints;
 
