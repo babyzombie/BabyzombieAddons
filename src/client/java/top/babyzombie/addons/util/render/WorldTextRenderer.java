@@ -25,6 +25,7 @@ public final class WorldTextRenderer {
             () -> "BabyzombieAddons Text", 131072
     );
 
+
     private WorldTextRenderer() {}
 
     public static void renderString(WorldRenderContext context, String text, double x, double y, double z,
@@ -37,8 +38,8 @@ public final class WorldTextRenderer {
         var client = Minecraft.getInstance();
         var font = client.font;
         var cameraState = context.worldState().cameraRenderState;
-        // 26.2: TEXT 管道在自定义 render pass 中深度测试不兼容，统一用 TEXT_SEE_THROUGH
-var pipeline = RenderPipelines.TEXT_SEE_THROUGH;
+        // 26.2 深度方向 GREATER（reversed-Z）：TEXT 深度测试（被遮挡），SEE_THROUGH 穿墙
+	var pipeline = throughWalls ? RenderPipelines.TEXT_SEE_THROUGH : RenderPipelines.TEXT;
 
         // 世界空间位置矩阵（同 Skyblocker）
         var positionMatrix = new Matrix4f()
@@ -110,11 +111,15 @@ var pipeline = RenderPipelines.TEXT_SEE_THROUGH;
                         RenderSystem.getDynamicUniforms().writeTransform(
                                 RenderSystem.getModelViewMatrixCopy(),
                                 new org.joml.Vector4f(1, 1, 1, 1)));
-                // 纹理绑定：同 Skyblocker
+                // 纹理绑定：Sampler0 = 字体纹理；Sampler2 = lightmap（26.2 TEXT 管线 vertex shader 用
+                // sample_lightmap(Sampler2, UV2)）。注意不能用 lightmap()：GUI 阶段 useUiLightmap 时
+                // uiLightmap 纹理未初始化返回 null，必须用 levelLightmap()（场景 lightmap，恒可用）
                 if (textureSetup.texure0() != null)
                     renderPass.bindTexture("Sampler0", textureSetup.texure0(), textureSetup.sampler0());
-                if (textureSetup.texure1() != null)
-                    renderPass.bindTexture("Sampler1", textureSetup.texure1(), textureSetup.sampler1());
+                var lightmapView = client.gameRenderer.levelLightmap();
+                if (lightmapView != null)
+                    renderPass.bindTexture("Sampler2", lightmapView,
+                        RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR));
                 renderPass.setVertexBuffer(0, execInfo.vertexBuffer().slice());
                 renderPass.setIndexBuffer(execInfo.indexBuffer(), execInfo.indexType());
                 renderPass.drawIndexed(execInfo.indexCount(), 1, execInfo.firstIndex(), execInfo.baseVertex(), 0);

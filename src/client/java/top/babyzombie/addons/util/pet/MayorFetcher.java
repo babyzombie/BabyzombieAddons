@@ -2,6 +2,7 @@ package top.babyzombie.addons.util.pet;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -11,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -121,63 +123,75 @@ public final class MayorFetcher {
     }
 
     private void fetch() {
-        try {
-            HttpURLConnection conn = (HttpURLConnection) URI.create(ELECTION_URL).toURL().openConnection();
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
-            conn.setRequestProperty("Accept", "application/json");
+        // 异步 HTTP：避免阻塞渲染线程（connect+read 最坏各 5s，会整机冻结）
+        CompletableFuture.runAsync(() -> {
+            boolean dianaMayor = false;
+            boolean petXpBuff = false;
+            boolean sharingIsCaring = false;
+            try {
+                HttpURLConnection conn = (HttpURLConnection) URI.create(ELECTION_URL).toURL().openConnection();
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
+                conn.setRequestProperty("Accept", "application/json");
+                try {
+                    int code = conn.getResponseCode();
+                    if (code != 200) return;
 
-            int code = conn.getResponseCode();
-            if (code != 200) return;
+                    JsonObject obj;
+                    try (var reader = new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8)) {
+                        obj = JsonParser.parseReader(reader).getAsJsonObject();
+                    }
 
-            JsonObject obj;
-            try (var reader = new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8)) {
-                obj = JsonParser.parseReader(reader).getAsJsonObject();
-            }
+                    if (!"true".equals(obj.get("success").getAsString())) return;
 
-            if (!"true".equals(obj.get("success").getAsString())) return;
+                    // Current mayor
+                    JsonElement mayorElem = obj.get("mayor");
+                    if (mayorElem != null && mayorElem.isJsonObject()) {
+                        JsonObject mayor = mayorElem.getAsJsonObject();
+                        dianaMayor = "Diana".equals(mayor.get("name").getAsString());
 
-            // Current mayor
-            JsonElement mayorElem = obj.get("mayor");
-            String mayorName = null;
-            if (mayorElem != null && mayorElem.isJsonObject()) {
-                JsonObject mayor = mayorElem.getAsJsonObject();
-                mayorName = mayor.get("name").getAsString();
-                state.dianaMayor = "Diana".equals(mayorName);
+                        // Mayor's perks
+                        if (dianaMayor) {
+                            JsonElement perks = mayor.get("perks");
+                            if (perks != null && perks.isJsonArray()) {
+                                for (JsonElement p : perks.getAsJsonArray()) {
+                                    if (!p.isJsonObject()) continue;
+                                    String perkName = p.getAsJsonObject().get("name").getAsString();
+                                    if ("Pet XP Buff".equals(perkName)) petXpBuff = true;
+                                    if ("Sharing is Caring".equals(perkName)) sharingIsCaring = true;
+                                }
+                            }
+                        }
 
-                // Mayor's perks
-                state.dianaPetXpBuff = false;
-                state.dianaSharingIsCaring = false;
-                if (state.dianaMayor) {
-                    JsonElement perks = mayor.get("perks");
-                    if (perks != null && perks.isJsonArray()) {
-                        for (JsonElement p : perks.getAsJsonArray()) {
-                            if (!p.isJsonObject()) continue;
-                            String perkName = p.getAsJsonObject().get("name").getAsString();
-                            if ("Pet XP Buff".equals(perkName)) state.dianaPetXpBuff = true;
-                            if ("Sharing is Caring".equals(perkName)) state.dianaSharingIsCaring = true;
+                        // Check minister (deputy mayor) — nested inside mayor.minister
+                        JsonElement ministerElem = mayor.get("minister");
+                        if (ministerElem != null && ministerElem.isJsonObject()) {
+                            JsonObject minister = ministerElem.getAsJsonObject();
+                            if ("Diana".equals(minister.get("name").getAsString())) {
+                                JsonElement perkElem = minister.get("perk");
+                                if (perkElem != null && perkElem.isJsonObject()) {
+                                    String perkName = perkElem.getAsJsonObject().get("name").getAsString();
+                                    if ("Pet XP Buff".equals(perkName)) petXpBuff = true;
+                                    if ("Sharing is Caring".equals(perkName)) sharingIsCaring = true;
+                                }
+                            }
                         }
                     }
+                } finally {
+                    conn.disconnect();
                 }
 
-                // Check minister (deputy mayor) — nested inside mayor.minister
-                JsonElement ministerElem = mayor.get("minister");
-                if (ministerElem != null && ministerElem.isJsonObject()) {
-                    JsonObject minister = ministerElem.getAsJsonObject();
-                    String ministerName = minister.get("name").getAsString();
-                    if ("Diana".equals(ministerName)) {
-                        JsonElement perkElem = minister.get("perk");
-                        if (perkElem != null && perkElem.isJsonObject()) {
-                            String perkName = perkElem.getAsJsonObject().get("name").getAsString();
-                            if ("Pet XP Buff".equals(perkName)) state.dianaPetXpBuff = true;
-                            if ("Sharing is Caring".equals(perkName)) state.dianaSharingIsCaring = true;
-                        }
-                    }
-                }
+                // 回主线程写状态（PlayerPetState 在 tick 中被读，避免跨线程竞争）
+                boolean fMayor = dianaMayor, fPet = petXpBuff, fSharing = sharingIsCaring;
+                Minecraft.getInstance().execute(() -> {
+                    state.dianaMayor = fMayor;
+                    state.dianaPetXpBuff = fPet;
+                    state.dianaSharingIsCaring = fSharing;
+                    state.mayorLastCheckTime = System.currentTimeMillis();
+                    PetManager.getInstance().saveCurrentProfile();
+                });
+            } catch (IOException e) {
             }
-            state.mayorLastCheckTime = System.currentTimeMillis();
-            PetManager.getInstance().saveCurrentProfile();
-        } catch (IOException e) {
-        }
+        });
     }
 }

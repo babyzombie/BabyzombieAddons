@@ -62,7 +62,8 @@ public final class BeamRenderer {
 
         // Animation: scroll UV based on game time
         var client = Minecraft.getInstance();
-        long gameTime = Objects.requireNonNull(client.level).getGameTime();
+        if (client.level == null) return; // 世界切换过渡帧：渲染管线仍在跑但 level 已置空，跳过本帧
+        long gameTime = client.level.getGameTime();
         float partialTick = client.getDeltaTracker().getGameTimeDeltaPartialTick(true);
         float animTime = Math.floorMod(gameTime, 40) + partialTick;
 
@@ -127,7 +128,8 @@ public final class BeamRenderer {
 
         int vertexBufferSize = drawParams.vertexCount() * format.getVertexSize();
         if (beamVertexBuffer == null || beamVertexBuffer.size() < vertexBufferSize) {
-            if (beamVertexBuffer != null) beamVertexBuffer.close();
+            // 不 close 旧缓冲：最近帧可能仍被 GPU 命令引用，Vulkan 下销毁在用缓冲是 UB（可能设备丢失）
+            // 直接换新槽，旧缓冲的 GPU 资源随对象 GC 释放（仅几何变大时触发一次，泄漏可忽略）
             beamVertexBuffer = new MappableRingBuffer(
                 () -> MOD_ID + " beam render",
                 GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_MAP_WRITE | GpuBuffer.USAGE_COPY_DST, vertexBufferSize);

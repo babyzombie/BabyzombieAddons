@@ -113,6 +113,7 @@ public class LoadoutDisplayScreen extends Screen {
                     case ARMOR_STAND -> { var a = new ArmorStand(clientLevel, 0, 0, 0); a.setNoBasePlate(true); yield a; }
                     default -> createSkinnedMannequin();
                 };
+                if (presetEntities[i] != null) presetEntities[i].setId(-1); // 临时实体无世界 ID，26.2 getId() 对 0 抛异常
             }
             if (!empty) equipEntity(presetEntities[i], i);
 
@@ -199,7 +200,10 @@ public class LoadoutDisplayScreen extends Screen {
         int entitySize = ew * 4 / 5;
 
         if (clientLevel != null) {
-            if (leftEntity == null) leftEntity = createSkinnedMannequin();
+            if (leftEntity == null) {
+                leftEntity = createSkinnedMannequin();
+                if (leftEntity != null) leftEntity.setId(-1); // 同上：临时渲染实体占位 ID
+            }
             equipLeft();
             InventoryScreen.extractEntityInInventoryFollowsMouse(
                 g, ex, ey, ex + ew, ey + eh, entitySize, 0.0625f, (float) mx, (float) my, leftEntity);

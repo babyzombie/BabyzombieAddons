@@ -12,6 +12,7 @@ import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.client.renderer.MappableRingBuffer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
@@ -596,6 +597,33 @@ public final class WorldRenderUtils {
         buf.addVertex(pose, minX, minY, maxZ).setColor(r, g, b, a);
     }
 
+    /**
+     * 批量绘制半透明填充盒子（同 hitresult 风格，不穿墙时开深度测试）。
+     * 一次调用一次提交（避免 ring buffer 每帧多次 rotate 的 fence 冲突）。
+     *
+     * @param boxes  每个元素为 {x1,y1,z1,x2,y2,z2}
+     * @param depthTest 深度测试（true = 被墙挡）
+     */
+    public static void drawFilledBoxes(WorldRenderContext context, java.util.List<double[]> boxes,
+                                        float r, float g, float b, float a, boolean depthTest) {
+        var pipeline = depthTest ? FILLED_DEPTH : FILLED_NO_DEPTH;
+        var format = pipeline.getVertexFormatBinding(0);
+        if (format == null || boxes.isEmpty()) return;
+        if (filledBuf == null) {
+            filledBuf = new BufferBuilder(ALLOCATOR, PrimitiveTopology.QUADS, format);
+        }
+        var pose = applyCameraTransform(context);
+        for (var box : boxes) {
+            renderFilledBox(pose, filledBuf,
+                (float) box[0], (float) box[1], (float) box[2],
+                (float) box[3], (float) box[4], (float) box[5],
+                r, g, b, a);
+        }
+        context.matrices().popPose();
+        uploadAndDrawFilled(pipeline, filledBuf);
+        filledBuf = null;
+    }
+
     private static void renderWireframeBox(Matrix4fc pose, BufferBuilder buf,
                                             float minX, float minY, float minZ,
                                             float maxX, float maxY, float maxZ,
@@ -678,7 +706,8 @@ public final class WorldRenderUtils {
         };
 
         if (ringBuffer == null || ringBuffer.size() < vertexBufferSize) {
-            if (ringBuffer != null) ringBuffer.close();
+            // 不 close 旧缓冲：最近帧可能仍被 GPU 命令引用，Vulkan 下销毁在用缓冲是 UB（可能设备丢失）
+            // 直接换新槽，旧缓冲的 GPU 资源随对象 GC 释放（仅几何变大时触发一次，泄漏可忽略）
             String label = MOD_ID + switch (kind) {
                 case 0 -> " filled";
                 case 1 -> " lines";

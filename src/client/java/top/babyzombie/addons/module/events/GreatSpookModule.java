@@ -15,7 +15,12 @@ import top.babyzombie.addons.util.ServerTick;
 
 public final class GreatSpookModule {
 
-    private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor();
+    /** daemon 线程：不吊住 JVM 退出（参考 Gamma Utils 非 daemon Timer 教训） */
+    private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "babyzombie-great-spook");
+        t.setDaemon(true);
+        return t;
+    });
     private static final String RANDOM_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^&*()_+-{}|:<>?";
     private static long publicSpeakingDemonCooldown = 0;
 

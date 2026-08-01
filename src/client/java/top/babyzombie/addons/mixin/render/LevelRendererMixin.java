@@ -7,16 +7,17 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import org.jspecify.annotations.Nullable;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.sugar.Local;
 import top.babyzombie.addons.util.render.CurrentEntityTracker;
 import top.babyzombie.addons.util.render.GlowController;
+import top.babyzombie.addons.util.render.GlowDepthRenderer;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
@@ -24,21 +25,21 @@ public class LevelRendererMixin {
     @Shadow @Final private LevelTargetBundle targets;
 
     // ── 深度拷贝 ──
-    @Inject(method = "lambda$addMainPass$0", at = @At(
-        value = "INVOKE",
-        target = "Lcom/mojang/blaze3d/systems/CommandEncoder;clearColorAndDepthTextures"
-            + "(Lcom/mojang/blaze3d/textures/GpuTexture;Lorg/joml/Vector4fc;"
-            + "Lcom/mojang/blaze3d/textures/GpuTexture;D)V", shift = At.Shift.AFTER))
+    // 时机与 Skyblocker 一致：第一个 clearColorAndDepthTextures 之后（main 深度为上一帧完整深度）。
+    // 26.2 帧图延迟执行下，executeSolid 后 main 深度可能尚未写入，拷贝会拿到无效内容。
+    @Inject(method = "lambda$addMainPass$0",
+        slice = @Slice(from = @At(value = "FIELD",
+            target = "Lnet/minecraft/client/renderer/state/level/LevelRenderState;shouldShowEntityOutlines:Z",
+            opcode = Opcodes.GETFIELD)),
+        at = @At(value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/systems/CommandEncoder;clearColorAndDepthTextures"
+                + "(Lcom/mojang/blaze3d/textures/GpuTexture;Lorg/joml/Vector4fc;"
+                + "Lcom/mojang/blaze3d/textures/GpuTexture;D)V",
+            ordinal = 0, shift = At.Shift.AFTER))
     private void copyDepth(CallbackInfo ci) {
-        // 全局方案：复制主场景深度到 entity_outline
+        // 照搬 Skyblocker 方案：主场景深度拷到独立深度纹理（PreparedRenderTypeMixin 用它替换 outline 深度附件）
         if (!GlowController.isAnyDepthTestRequested()) return;
-        if (entityOutlineTarget == null) return;
-        var main = targets.main.get();
-        var md = main.getDepthTexture();
-        var od = entityOutlineTarget.getDepthTexture();
-        if (md == null || od == null) return;
-        if (md.getWidth(0) != od.getWidth(0) || md.getHeight(0) != od.getHeight(0)) return;
-        RenderSystem.getDevice().createCommandEncoder().copyTextureToTexture(md, od, 0,0,0,0,0, md.getWidth(0), md.getHeight(0));
+        GlowDepthRenderer.INSTANCE.updateGlowDepthTexDepth();
     }
 
     // ── 实体追踪 ──

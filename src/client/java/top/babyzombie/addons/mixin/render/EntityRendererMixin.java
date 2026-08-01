@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.util.render.GlowController;
 
 /**
- * 在 extractRenderState 中设置 EntityRenderState.outlineColor，
- * 使 GlowController 追踪的实体进入原版发光渲染管线。
- * 深度测试开关由 RenderPipelineMixin 全局控制。
+ * 在 extractRenderState 中设置 EntityRenderState.outlineColor / 深度测试标记，
+ * 使 GlowController 追踪的实体进入发光渲染管线。
+ * 深度测试发光由 SubmitNodeCollectionMixin 代为提交自定义 outline（被墙挡）。
  */
 @Mixin(EntityRenderer.class)
 public class EntityRendererMixin {

@@ -10,7 +10,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ServerTick;
+import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.util.render.GlowController;
+import top.babyzombie.addons.util.render.RenderPhaseRegister;
+import top.babyzombie.addons.util.render.WorldRenderUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.HashSet;
@@ -95,9 +98,8 @@ public final class SafariEntitiesGlow {
                 }
             }
 
-            // === 较频幽匿感测体方块发光 ===
+            // === 较频幽匿感测体方块高亮（维护位置集合，渲染由下面的回调每帧批量绘制） ===
             if (glowSculkSensor && isInArena(client.player.blockPosition())) {
-                int sculkColor = cfg.safari.sculkSensorGlowColor.getEffectiveColourRGB();
                 var level = client.level;
                 var playerPos = client.player.blockPosition();
                 int chunkX = playerPos.getX() >> 4;
@@ -126,31 +128,43 @@ public final class SafariEntitiesGlow {
                     }
                 }
 
-                // Diff：移除
-                var iter = sculkSensorHighlighted.iterator();
-                while (iter.hasNext()) {
-                    var pos = iter.next();
-                    if (!found.contains(pos)) {
-                        GlowController.setBlockGlow(level, pos, false);
-                        iter.remove();
-                    }
-                }
-
-                // Diff：新增
-                for (var pos : found) {
-                    if (!sculkSensorHighlighted.contains(pos)) {
-                        GlowController.setBlockGlow(level, pos, true, sculkColor, true);
-                        sculkSensorHighlighted.add(pos);
-                    }
-                }
+                // Diff：更新集合
+                sculkSensorHighlighted.retainAll(found);
+                sculkSensorHighlighted.addAll(found);
             } else if (!sculkSensorHighlighted.isEmpty()) {
-                // 玩家离开战斗场地 / 功能关闭：清除所有发光
-                var level = client.level;
-                for (var pos : sculkSensorHighlighted) {
-                    GlowController.setBlockGlow(level, pos, false);
-                }
                 sculkSensorHighlighted.clear();
             }
+        });
+
+        // 每帧批量绘制感测体高亮（半透明填充盒子，同 hitresult 风格，深度测试不穿墙）
+        RenderPhaseRegister.register(ctx -> {
+            if (sculkSensorHighlighted.isEmpty()) return;
+            if (!ModConfigManager.get().hunting.safari.sculkSensorGlow) return;
+            if (Minecraft.getInstance().player == null) return;
+            if (!HypixelLocationTracker.getInstance().isInSafari()) return;
+
+            int color = ModConfigManager.get().hunting.safari.sculkSensorGlowColor.getEffectiveColourRGB();
+            float r = ((color >> 16) & 0xFF) / 255f;
+            float g = ((color >> 8) & 0xFF) / 255f;
+            float b = (color & 0xFF) / 255f;
+
+            // 取方块实际 shape 的 hitboxes（同 hitresult），微外扩避免 Z-fighting
+            var level = Minecraft.getInstance().level;
+            if (level == null) return;
+            var boxes = new java.util.ArrayList<double[]>();
+            for (var pos : sculkSensorHighlighted) {
+                var state = level.getBlockState(pos);
+                if (state.isAir()) continue;
+                var shape = state.getShape(level, pos);
+                if (shape.isEmpty()) continue;
+                for (var box : shape.toAabbs()) {
+                    boxes.add(new double[]{
+                        box.minX + pos.getX() - 0.01, box.minY + pos.getY() - 0.01, box.minZ + pos.getZ() - 0.01,
+                        box.maxX + pos.getX() + 0.01, box.maxY + pos.getY() + 0.01, box.maxZ + pos.getZ() + 0.01});
+                }
+            }
+            if (boxes.isEmpty()) return;
+            WorldRenderUtils.drawFilledBoxes(ctx, boxes, r, g, b, 0.3f, true);
         });
     }
 

@@ -26,6 +26,9 @@ import top.babyzombie.addons.util.render.DepthTestMarker;
 import top.babyzombie.addons.util.render.GlowController;
 import top.babyzombie.addons.util.render.GlowRenderTypeHolder;
 
+/**
+ * 深度测试发光：实体模型提交时额外提交深度 outline 节点（被墙挡的发光描边）。
+ */
 @Mixin(SubmitNodeCollection.class)
 public class SubmitNodeCollectionMixin {
     @Shadow @Final public SimpleFeatureRenderPhase outline;
