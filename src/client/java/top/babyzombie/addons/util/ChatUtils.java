@@ -12,7 +12,10 @@ public final class ChatUtils {
 
     public static String stripColor(String text) {
         if (text == null) return "";
-        return text.replaceAll("§[0-9a-fk-orlnm]", "").replaceAll("&[0-9a-fk-orlnm]", "");
+        // §x/&x 六位 hex 染色（如 §x§F§F§C§E§4§7）需整段剥离，优先级高于单字符染色码
+        return text
+                .replaceAll("§x(?:§[0-9a-fA-F]){6}|§[0-9a-fk-orlnm]", "")
+                .replaceAll("&x(?:&[0-9a-fA-F]){6}|&[0-9a-fk-orlnm]", "");
     }
 
     public static void sendCommand(String command) {
