@@ -82,8 +82,7 @@ public final class KuudraPileWaypoints {
             if (!inSuppliesPhase) return;
 
             String noPre = NoPreAlert.getMissingPreName();
-            float[] pc = argbToFloats(cfg.supplyPileColor.getEffectiveColourRGB());
-            int normalColor = new Color(pc[0], pc[1], pc[2], pc[3]).getRGB();
+            int normalColor = cfg.supplyPileColor.getEffectiveColour().getRGB();
             for (int i = 0; i < piles.size(); i++) {
                 if (completedPiles.contains(i)) continue; // 该位置已有补给，隐藏
                 var pile = piles.get(i);

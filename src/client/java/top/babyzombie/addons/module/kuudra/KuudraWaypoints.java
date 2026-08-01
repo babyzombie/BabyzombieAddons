@@ -70,8 +70,8 @@ public final class KuudraWaypoints {
             var cfg = ModConfigManager.get().kuudra;
 
             // Supply beams (crate 渲染中心与 IQ 一致：x+0.5, z+1.5)
-            float[] sc = argbToFloats(cfg.phase1.supplyBeaconColor.getEffectiveColourRGB());
-            int supplyColor = new Color(sc[0], sc[1], sc[2], sc[3]).getRGB();
+            var supplyCol = cfg.phase1.supplyBeaconColor.getEffectiveColour();
+            int supplyColor = supplyCol.getRGB();
             for (var v : supplies)
                 BeamRenderer.drawBeam(ctx, v.x + 0.5, v.y, v.z + 1.5, 20f, 0.15f, supplyColor);
 
@@ -111,9 +111,9 @@ public final class KuudraWaypoints {
             if (cfg.phase1.supplyPullCircle) {
                 for (var v : supplies) {
                     boolean inRange = isBobberInsideRange(v);
-                    float cr = inRange ? 0f : sc[0];
+                    float cr = inRange ? 0f : supplyCol.getRed() / 255f;
                     float cg = 1f;
-                    float cb = inRange ? 0f : sc[2];
+                    float cb = inRange ? 0f : supplyCol.getBlue() / 255f;
                     WorldRenderUtils.drawCircle(ctx, v.x + 0.5, v.y, v.z + 1.5, (float)SUPPLY_PULL_RADIUS,
                             cr, cg, cb, 0.6f, true, 3f);
                 }
@@ -137,9 +137,27 @@ public final class KuudraWaypoints {
                 }
             }
 
+            // Ballista build beacons — 与脚下的圈联动：圈内用 inCircleColor（默认绿），圈外黄色
+            if (cfg.phase2.ballistaBuildBeacons) {
+                var incCol = cfg.phase2.ballistaInCircleColor.getEffectiveColour();
+                var bcCol = cfg.phase2.ballistaBeaconColor.getEffectiveColour();
+                var player = Minecraft.getInstance().player;
+                for (var v : ballistaPiles) {
+                    // 与上方圈的判断一致：水平距离平方 <= 6.25（半径 2.5）
+                    boolean inside = false;
+                    if (player != null) {
+                        double dx = player.getX() - v.x;
+                        double dz = player.getZ() - v.z;
+                        inside = (dx * dx + dz * dz) <= 6.25;
+                    }
+                    BeamRenderer.drawBeam(ctx, v.x, v.y, v.z, 10f, 0.15f,
+                            inside ? incCol.getRGB() : bcCol.getRGB());
+                }
+            }
+
             // Fuel beams
-            float[] fc = argbToFloats(cfg.phase3.fuelOrbBeaconColor.getEffectiveColourRGB());
-            int fuelColor = new Color(fc[0], fc[1], fc[2], fc[3]).getRGB();
+            var fuelCol = cfg.phase3.fuelOrbBeaconColor.getEffectiveColour();
+            int fuelColor = fuelCol.getRGB();
             for (var v : fuels)
                 BeamRenderer.drawBeam(ctx, v.x + 0.5, v.y, v.z + 1.5, 20f, 0.15f, fuelColor);
 
@@ -147,9 +165,9 @@ public final class KuudraWaypoints {
             if (cfg.phase3.fuelOrbPullCircle) {
                 for (var v : fuels) {
                     boolean inRange = isBobberInsideRange(v);
-                    float cr = inRange ? 0f : fc[0];
+                    float cr = inRange ? 0f : fuelCol.getRed() / 255f;
                     float cg = 1f;
-                    float cb = inRange ? 0f : fc[2];
+                    float cb = inRange ? 0f : fuelCol.getBlue() / 255f;
                     WorldRenderUtils.drawCircle(ctx, v.x + 0.5, v.y, v.z + 1.5, (float)SUPPLY_PULL_RADIUS,
                             cr, cg, cb, 0.6f, true, 3f);
                 }
@@ -172,8 +190,7 @@ public final class KuudraWaypoints {
             }
 
             // Chuck beams + ground circles
-            float[] cc = argbToFloats(cfg.phase3.chuckBeaconColor.getEffectiveColourRGB());
-            int chuckColor = new Color(cc[0], cc[1], cc[2], cc[3]).getRGB();
+            int chuckColor = cfg.phase3.chuckBeaconColor.getEffectiveColour().getRGB();
             for (var v : chucks) {
                 BeamRenderer.drawBeam(ctx, v.x, v.y, v.z, 20f, 0.15f, chuckColor);
                 WorldRenderUtils.drawCircle(ctx, v.x, v.y, v.z, 20, 1, 0, 0, 1, true, 3);
@@ -233,7 +250,6 @@ public final class KuudraWaypoints {
                 }
             } else if ("Protect Elle".equals(newPhase)) {
                 if (cfg.phase2.ballistaBuildBeacons || cfg.phase2.ballistaProgressText || cfg.phase2.ballistaProximityCircles) {
-                    float[] bc = argbToFloats(cfg.phase2.ballistaBeaconColor.getEffectiveColourRGB());
                     for (var s : client.player.level().getEntitiesOfClass(
                             net.minecraft.world.entity.decoration.ArmorStand.class,
                             new AABB(client.player.blockPosition()).inflate(64),
@@ -242,9 +258,7 @@ public final class KuudraWaypoints {
                                 return name.startsWith("PROGRESS: ") && !name.endsWith("COMPLETE");
                             })) {
                         double x = s.getX(), y = s.getY(), z = s.getZ();
-                        ballistaPiles.add(new Vec3(x, y, z));
-                        if (cfg.phase2.ballistaBuildBeacons)
-                            beams.add(new Beam(x, y, z, bc[0], bc[1], bc[2], bc[3], 10f));
+                        ballistaPiles.add(new Vec3(x, y, z)); // 光柱颜色在渲染时按圈内/圈外动态决定
                         if (cfg.phase2.ballistaProgressText) {
                             String[] parts = ChatUtils.stripColor(s.getName().getString()).split(" ");
                             String key = "p2_" + s.getId(); seenKeys.add(key);
