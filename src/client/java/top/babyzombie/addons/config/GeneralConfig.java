@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
@@ -51,6 +52,17 @@ public class GeneralConfig {
     public HandRender handRender = new HandRender();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.windowTitle", desc = "") @Accordion
     public WindowTitle windowTitle = new WindowTitle();
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.waypointMarker", desc = "") @Accordion
+    public WaypointMarker waypointMarker = new WaypointMarker();
+
+    public static class WaypointMarker {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerKey", desc = "config.babyzombieaddons.option.markerKey.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("marker") @SearchTag("key")
+        public int markerKey = GLFW.GLFW_KEY_UNKNOWN;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerChannel", desc = "config.babyzombieaddons.option.markerChannel.desc") @ConfigEditorDropdown @SearchTag("marker") @SearchTag("channel")
+        public MarkerChannel markerChannel = MarkerChannel.DEFAULT;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerSuffix", desc = "config.babyzombieaddons.option.markerSuffix.desc") @ConfigEditorText @SearchTag("marker") @SearchTag("suffix")
+        public String markerSuffix = "";
+    }
 
     public static class Autotip {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.autotipEnabled", desc = "config.babyzombieaddons.option.autotipEnabled.desc") @ConfigEditorBoolean @SearchTag("autotip")

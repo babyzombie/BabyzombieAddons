@@ -55,6 +55,10 @@ public class ModConfig extends Config {
         OFF, SMOLDERING_TOMB_ONLY, EVERYWHERE_EXCEPT_DUNGEON;
         @Override public String toString() { return t("config.babyzombieaddons.option.reheatedGummyPolarBear." + name()); }
     }
+    public enum MarkerChannel {
+        DEFAULT, AC, PC, GC;
+        @Override public String toString() { return t("config.babyzombieaddons.option.markerChannel." + name()); }
+    }
     public enum RagnarockAxeMode {
         OFF, NUMERIC, PROGRESS_BAR;
         @Override public String toString() { return t("config.babyzombieaddons.option.ragnarockAxeTimer." + name()); }
