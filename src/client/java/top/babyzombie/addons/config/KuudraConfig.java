@@ -182,6 +182,8 @@ public class KuudraConfig {
         public boolean ichorPoolWaypoints = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideKuudraDamageTitle", desc = "config.babyzombieaddons.option.hideKuudraDamageTitle.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("damage") @SearchTag("title")
         public boolean hideKuudraDamageTitle = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.p4ChuckBeacons", desc = "config.babyzombieaddons.option.p4ChuckBeacons.desc") @ConfigEditorBoolean @SearchTag("ball") @SearchTag("chuck") @SearchTag("beacon")
+        public boolean p4ChuckBeacons = false;
     }
 
     // ── Shared inner classes (kept at top level for backward-compat reference via KuudraConfig.ArrowPoison) ──

@@ -54,8 +54,9 @@ public final class KuudraSupplyTimer {
             Matcher m = PLACE_PATTERN.matcher(ChatUtils.toLegacyString(message));
             if (!m.find()) return message;
 
-            // 去掉 rank 文本（[MVP] 等）但保留其格式码——名字颜色常继承自 rank
-            String playerName = m.group(1).replaceAll("^((?:§.)*)\\[[^]]*]\\s*", "$1").trim();
+            // 去掉 rank 文本（[MVP] 等）但保留其格式码——名字颜色常继承自 rank；去掉 emoji
+            String playerName = ChatUtils.removeEmoji(m.group(1))
+                    .replaceAll("^((?:§.)*)\\[[^]]*]\\s*", "$1").trim();
             int supplyNum = Integer.parseInt(m.group(2));
             long now = ServerTick.getTime(); // 服务器 tick 时间，不受本地时钟/延迟影响
 

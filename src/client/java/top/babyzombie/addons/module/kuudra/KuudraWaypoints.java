@@ -269,7 +269,9 @@ public final class KuudraWaypoints {
                 }
             } else {
                 boolean wantFuel = cfg.phase3.fuelOrbBeacons;
-                boolean wantChuck = cfg.phase3.chuckBeacons;
+                // P4（Boss）的球单独控制；其他阶段（Eaten/Stun/DPS/Fuel）用 P3 的开关
+                boolean inP4 = KuudraLocationTracker.p4 || "p4".equals(KuudraLocationTracker.area);
+                boolean wantChuck = inP4 ? cfg.phase4.p4ChuckBeacons : cfg.phase3.chuckBeacons;
                 if (wantFuel || wantChuck) {
                     for (var g : client.player.level().getEntitiesOfClass(Giant.class,
                             new AABB(client.player.blockPosition()).inflate(64))) {
