@@ -58,8 +58,8 @@ public final class PetXPCalculator {
 
         double dianaMult = dianaPetXpBuff ? 1.35 : 1.0;
 
-        // Mining/Fishing skills give ×1.5 bonus for all pets
-        double skillBonus = (skill == SkillType.MINING || skill == SkillType.FISHING) ? 1.5 : 1.0;
+        // Fishing skills give ×1.5 bonus for all pets
+        double skillBonus = (skill == SkillType.FISHING) ? 1.5 : 1.0;
 
         return skillXP
             * match
