@@ -94,14 +94,15 @@ public final class FreshSystem {
             // Party fresh: detect both our own and IQ's "FRESH!" messages
             // IQ pattern: Party > [rank] PlayerName: [IQ] FRESH!
             // Our pattern: Party > PlayerName: FRESH!
-            // 用 legacy 文本匹配，保留玩家名颜色；去掉 rank 前缀（[MVP] 等）
+            // 用去色后的纯文本匹配（更可靠），拿到名字后从 tab 取带颜色的名字；
+            // [^:]+? 兼容带 emoji 的玩家名
             Matcher fm = Pattern.compile(
                     "Party > (?:\\[[^]]+] )?([^:]+?): (?:\\[IQ] )?FRESH\\b",
-                    Pattern.CASE_INSENSITIVE).matcher(ChatUtils.toLegacyString(message));
+                    Pattern.CASE_INSENSITIVE).matcher(text);
             if (fm.find() && inBuildPhase) {
-                // 去掉 rank 文本（[MVP] 等）但保留其格式码——名字颜色常继承自 rank
-                String name = fm.group(1).replaceAll("^((?:§.)*)\\[[^]]*]\\s*", "$1").trim();
-                trackFresh(0, name);
+                String plainName = fm.group(1).trim();
+                String coloredName = findColoredName(plainName);
+                trackFresh(0, coloredName != null ? coloredName : plainName);
             }
         });
 
@@ -215,8 +216,8 @@ public final class FreshSystem {
         var cfg = ModConfigManager.get().kuudra.phase2;
         if (!cfg.freshMessage && !cfg.freshHighlight) return;
 
-        // 自己的名字也带 tab 里的颜色（去掉 rank 文本但保留其格式）
-        String name = ChatUtils.toLegacyString(player.getDisplayName())
+        // 自己的名字也带 tab 里的颜色（去掉 rank 文本但保留其格式；去掉 emoji）
+        String name = ChatUtils.removeEmoji(ChatUtils.toLegacyString(player.getDisplayName()))
                 .replaceAll("^((?:§.)*)\\[[^]]*]\\s*", "$1").trim();
         FreshEntry entry = new FreshEntry(ServerTick.getTime(), name);
         freshPlayers.put(player.getId(), entry);
@@ -299,6 +300,19 @@ public final class FreshSystem {
         String plain = ChatUtils.stripColor(name);
         for (var p : world.players()) {
             if (ChatUtils.stripColor(p.getName().getString()).equalsIgnoreCase(plain)) return p;
+        }
+        return null;
+    }
+
+    /** 按纯名字从 tab 找玩家，返回带颜色的名字（去 rank、去 emoji），找不到返回 null。 */
+    private static String findColoredName(String plainName) {
+        var world = Minecraft.getInstance().level;
+        if (world == null) return null;
+        for (var p : world.players()) {
+            if (!ChatUtils.stripColor(p.getName().getString()).equalsIgnoreCase(plainName)) continue;
+            String colored = ChatUtils.removeEmoji(ChatUtils.toLegacyString(p.getDisplayName()))
+                    .replaceAll("^((?:§.)*)\\[[^]]*]\\s*", "$1").trim();
+            return colored.isEmpty() ? null : colored;
         }
         return null;
     }

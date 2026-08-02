@@ -219,8 +219,8 @@ public final class NoPreAlert {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        // 目标区域判断（IQ 的区域阈值）
-        boolean wantShop = "Triangle".equals(detectedPre.name);
+        // 目标区域判断（IQ 的区域阈值）；Equals 也引导到 Shop
+        boolean wantShop = "Triangle".equals(detectedPre.name) || "Equals".equals(detectedPre.name);
         boolean wantXCannon = "X".equals(detectedPre.name);
         boolean wantSquare = "Slash".equals(detectedPre.name);
         String targetName = wantShop ? "Shop" : wantXCannon ? "X Cannon" : wantSquare ? "Square" : null;
