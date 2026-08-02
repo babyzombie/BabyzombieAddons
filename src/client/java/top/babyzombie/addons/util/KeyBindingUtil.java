@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
+import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.mixin.screen.KeyMappingAccessor;
 
 import java.util.ArrayList;
@@ -30,7 +31,22 @@ public final class KeyBindingUtil {
      * 将配置中的 int 键码同步到 KeyMapping 对象。
      */
     public static void syncToKeyMapping(KeyMapping km, int configKeyCode) {
-        km.setKey(InputConstants.Type.KEYSYM.getOrCreate(configKeyCode));
+        km.setKey(toKey(configKeyCode));
+    }
+
+    /**
+     * 按 MC 惯例将配置中的裸键码转换为 Key：
+     * 0-7 为鼠标按键(GLFW_MOUSE_BUTTON)，其余为键盘键。
+     * MoulConfig 的 Keybind 编辑器存的就是这种裸键码，鼠标键必须用 Type.MOUSE 创建，
+     * 否则 KeyMapping.matchesMouse 永远匹配不上。
+     * 注意：不能引用 InputConstants.MOUSE_BUTTON_8，MC 里它错写成 0，应使用 GLFW 的
+     * GLFW_MOUSE_BUTTON_LAST(=7)。
+     */
+    public static InputConstants.Key toKey(int configKeyCode) {
+        if (configKeyCode >= 0 && configKeyCode <= GLFW.GLFW_MOUSE_BUTTON_LAST) {
+            return InputConstants.Type.MOUSE.getOrCreate(configKeyCode);
+        }
+        return InputConstants.Type.KEYSYM.getOrCreate(configKeyCode);
     }
 
     /**
