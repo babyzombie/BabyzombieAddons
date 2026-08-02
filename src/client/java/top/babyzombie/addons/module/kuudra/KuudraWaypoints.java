@@ -216,7 +216,7 @@ public final class KuudraWaypoints {
                     || cfg.phase1.supplyGiantHitbox;
             if (!anyOn) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
-            if (client.player == null || client.player.tickCount % 5 != 0) return;
+            if (client.player == null || client.player.tickCount % 2 != 0) return; // 与 IQ 一致：2 tick 扫描，补给一出水就显示
 
             String newPhase = getScoreboardPhase(client);
 
