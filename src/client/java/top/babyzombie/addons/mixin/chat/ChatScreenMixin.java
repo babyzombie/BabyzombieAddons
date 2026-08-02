@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.input.MouseButtonEvent;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -59,7 +59,7 @@ public class ChatScreenMixin {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"))
     private void onMouseClicked(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
-        if (event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return;
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return;
         if (!ModConfigManager.get().general.chat.channelSwitcher) return;;
         if (!HypixelLocationTracker.getInstance().isOnHypixel()) return;
         if (!HudManager.shouldShow("ChatChannelSwitcher")) return;

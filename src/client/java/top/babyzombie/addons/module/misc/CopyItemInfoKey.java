@@ -1,7 +1,6 @@
 package top.babyzombie.addons.module.misc;
 
 import net.minecraft.client.KeyMapping;
-import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.util.KeyBindingUtil;
 
 /**
@@ -18,7 +17,7 @@ public final class CopyItemInfoKey {
         if (KEY == null) {
             KEY = KeyBindingUtil.register(
                 "key.babyzombieaddons.copy_item_info",
-                GLFW.GLFW_KEY_UNKNOWN);
+                -1);
         }
     }
 }

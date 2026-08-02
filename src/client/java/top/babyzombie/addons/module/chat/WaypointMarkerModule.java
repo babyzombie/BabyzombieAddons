@@ -2,7 +2,6 @@ package top.babyzombie.addons.module.chat;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.KeyMapping;
-import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.command.SendCoordsCommand;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -18,7 +17,7 @@ public final class WaypointMarkerModule {
     private WaypointMarkerModule() {}
 
     public static void init() {
-        key = KeyBindingUtil.register("key.babyzombieaddons.marker", GLFW.GLFW_KEY_UNKNOWN);
+        key = KeyBindingUtil.register("key.babyzombieaddons.marker", -1);
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
             while (key.consumeClick()) {

@@ -4,7 +4,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.MouseButtonEvent;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import top.babyzombie.addons.config.ModConfigManager;
 
 import java.util.ArrayList;
@@ -89,7 +89,7 @@ public final class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return super.mouseClicked(event, doubleClick);
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return super.mouseClicked(event, doubleClick);
 
         selected = null;
         int mx = (int) event.x(), my = (int) event.y();
@@ -109,7 +109,7 @@ public final class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
-        if (selected == null || event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT)
+        if (selected == null || event.button() != InputConstants.MOUSE_BUTTON_LEFT)
             return super.mouseDragged(event, deltaX, deltaY);
 
         int mx = (int) event.x(), my = (int) event.y();
@@ -204,7 +204,7 @@ public final class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             selected = null;
             snapLineX = -1;
             snapLineY = -1;

@@ -11,7 +11,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import top.babyzombie.addons.config.ModConfig.*;
 import top.babyzombie.addons.module.misc.abiphone.CustomRingtoneModule;
 import top.babyzombie.addons.module.misc.raredrop.RareDropScreen;
@@ -128,74 +128,74 @@ public class SkyblockConfig {
 
         public static class PetPageKeyBindings {
             // ── Row 2 (7 slots, columns 2-8) ──
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_2", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot2_2 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_3", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot2_3 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_4", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot2_4 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_5", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot2_5 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_6", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot2_6 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_7", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot2_7 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_8", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot2_8 = GLFW.GLFW_KEY_UNKNOWN;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_2", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot2_2 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_3", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot2_3 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_4", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot2_4 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_5", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot2_5 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_6", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot2_6 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_7", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot2_7 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot2_8", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot2_8 = -1;
 
             // ── Row 3 (7 slots, columns 2-8) ──
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_2", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot3_2 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_3", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot3_3 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_4", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot3_4 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_5", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot3_5 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_6", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot3_6 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_7", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot3_7 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_8", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot3_8 = GLFW.GLFW_KEY_UNKNOWN;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_2", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot3_2 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_3", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot3_3 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_4", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot3_4 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_5", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot3_5 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_6", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot3_6 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_7", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot3_7 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot3_8", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot3_8 = -1;
 
             // ── Row 4 (7 slots, columns 2-8) ──
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_2", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot4_2 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_3", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot4_3 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_4", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot4_4 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_5", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot4_5 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_6", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot4_6 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_7", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot4_7 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_8", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot4_8 = GLFW.GLFW_KEY_UNKNOWN;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_2", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot4_2 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_3", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot4_3 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_4", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot4_4 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_5", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot4_5 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_6", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot4_6 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_7", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot4_7 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot4_8", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot4_8 = -1;
 
             // ── Row 5 (7 slots, columns 2-8) ──
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_2", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot5_2 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_3", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot5_3 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_4", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot5_4 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_5", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot5_5 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_6", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot5_6 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_7", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot5_7 = GLFW.GLFW_KEY_UNKNOWN;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_8", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("pet") @SearchTag("key")
-            public int slot5_8 = GLFW.GLFW_KEY_UNKNOWN;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_2", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot5_2 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_3", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot5_3 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_4", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot5_4 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_5", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot5_5 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_6", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot5_6 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_7", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot5_7 = -1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeySlot5_8", desc = "config.babyzombieaddons.option.petPageKeySlot.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("pet") @SearchTag("key")
+            public int slot5_8 = -1;
 
             // ── Page flip (row 6, columns 1 & 9) ──
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeyPrevPage", desc = "config.babyzombieaddons.option.petPageKeyPrevPage.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_A) @SearchTag("pet") @SearchTag("key")
-            public int prevPage = GLFW.GLFW_KEY_A;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeyNextPage", desc = "config.babyzombieaddons.option.petPageKeyNextPage.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_D) @SearchTag("pet") @SearchTag("key")
-            public int nextPage = GLFW.GLFW_KEY_D;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeyPrevPage", desc = "config.babyzombieaddons.option.petPageKeyPrevPage.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_A) @SearchTag("pet") @SearchTag("key")
+            public int prevPage = InputConstants.KEY_A;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.petPageKeyNextPage", desc = "config.babyzombieaddons.option.petPageKeyNextPage.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_D) @SearchTag("pet") @SearchTag("key")
+            public int nextPage = InputConstants.KEY_D;
 
             /** 获取所有 28 个宠物槽位的键码数组，按行优先排列。 */
             public int[] slotKeys() {
@@ -250,38 +250,38 @@ public class SkyblockConfig {
         public KeyBindings keyBindings = new KeyBindings();
 
         public static class KeyBindings {
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset1", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_1) @SearchTag("loadout") @SearchTag("key")
-            public int preset1 = GLFW.GLFW_KEY_1;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset2", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_2) @SearchTag("loadout") @SearchTag("key")
-            public int preset2 = GLFW.GLFW_KEY_2;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset3", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_3) @SearchTag("loadout") @SearchTag("key")
-            public int preset3 = GLFW.GLFW_KEY_3;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset4", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_4) @SearchTag("loadout") @SearchTag("key")
-            public int preset4 = GLFW.GLFW_KEY_4;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset5", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_5) @SearchTag("loadout") @SearchTag("key")
-            public int preset5 = GLFW.GLFW_KEY_5;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset6", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_6) @SearchTag("loadout") @SearchTag("key")
-            public int preset6 = GLFW.GLFW_KEY_6;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset7", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_7) @SearchTag("loadout") @SearchTag("key")
-            public int preset7 = GLFW.GLFW_KEY_7;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset8", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_8) @SearchTag("loadout") @SearchTag("key")
-            public int preset8 = GLFW.GLFW_KEY_8;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset9", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_9) @SearchTag("loadout") @SearchTag("key")
-            public int preset9 = GLFW.GLFW_KEY_9;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset10", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_0) @SearchTag("loadout") @SearchTag("key")
-            public int preset10 = GLFW.GLFW_KEY_0;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset11", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_MINUS) @SearchTag("loadout") @SearchTag("key")
-            public int preset11 = GLFW.GLFW_KEY_MINUS;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset12", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_EQUAL) @SearchTag("loadout") @SearchTag("key")
-            public int preset12 = GLFW.GLFW_KEY_EQUAL;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset1", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_1) @SearchTag("loadout") @SearchTag("key")
+            public int preset1 = InputConstants.KEY_1;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset2", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_2) @SearchTag("loadout") @SearchTag("key")
+            public int preset2 = InputConstants.KEY_2;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset3", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_3) @SearchTag("loadout") @SearchTag("key")
+            public int preset3 = InputConstants.KEY_3;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset4", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_4) @SearchTag("loadout") @SearchTag("key")
+            public int preset4 = InputConstants.KEY_4;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset5", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_5) @SearchTag("loadout") @SearchTag("key")
+            public int preset5 = InputConstants.KEY_5;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset6", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_6) @SearchTag("loadout") @SearchTag("key")
+            public int preset6 = InputConstants.KEY_6;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset7", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_7) @SearchTag("loadout") @SearchTag("key")
+            public int preset7 = InputConstants.KEY_7;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset8", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_8) @SearchTag("loadout") @SearchTag("key")
+            public int preset8 = InputConstants.KEY_8;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset9", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_9) @SearchTag("loadout") @SearchTag("key")
+            public int preset9 = InputConstants.KEY_9;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset10", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_0) @SearchTag("loadout") @SearchTag("key")
+            public int preset10 = InputConstants.KEY_0;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset11", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_MINUS) @SearchTag("loadout") @SearchTag("key")
+            public int preset11 = InputConstants.KEY_MINUS;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPreset12", desc = "config.babyzombieaddons.option.loadoutKeyPreset.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_EQUALS) @SearchTag("loadout") @SearchTag("key")
+            public int preset12 = InputConstants.KEY_EQUALS;
 
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPrevPage", desc = "config.babyzombieaddons.option.loadoutKeyPrevPage.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_A) @SearchTag("loadout") @SearchTag("key")
-            public int prevPage = GLFW.GLFW_KEY_A;
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyNextPage", desc = "config.babyzombieaddons.option.loadoutKeyNextPage.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_D) @SearchTag("loadout") @SearchTag("key")
-            public int nextPage = GLFW.GLFW_KEY_D;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyPrevPage", desc = "config.babyzombieaddons.option.loadoutKeyPrevPage.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_A) @SearchTag("loadout") @SearchTag("key")
+            public int prevPage = InputConstants.KEY_A;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyNextPage", desc = "config.babyzombieaddons.option.loadoutKeyNextPage.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_D) @SearchTag("loadout") @SearchTag("key")
+            public int nextPage = InputConstants.KEY_D;
 
-            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyClose", desc = "config.babyzombieaddons.option.loadoutKeyClose.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_E) @SearchTag("loadout") @SearchTag("key")
-            public int closeKey = GLFW.GLFW_KEY_E;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKeyClose", desc = "config.babyzombieaddons.option.loadoutKeyClose.desc") @ConfigEditorKeybind(defaultKey = InputConstants.KEY_E) @SearchTag("loadout") @SearchTag("key")
+            public int closeKey = InputConstants.KEY_E;
 
             /** 获取预设 1-12 的键码数组，方便 keyPressed 中遍历匹配 */
             public int[] presetKeys() {

@@ -3,6 +3,7 @@ package top.babyzombie.addons.mixin.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfigManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +25,7 @@ public class InventoryScreenMixin {
         if (ContainerChatHelper.isActive()) {
             ContainerChatHelper.getOverlay().extractRenderState(g, mouseX, mouseY, a);
         }
-        if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS) {
+        if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), InputConstants.KEY_LALT) == InputConstants.PRESS) {
             boolean sharing = ContainerChatHelper.isActive() && ModConfigManager.get().general.chat.chatInContainer;
             StarIndicator.draw(g, mouseX, mouseY, sharing);
         }

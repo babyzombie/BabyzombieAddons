@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.util.KeyBindingUtil;
 
 /**
@@ -23,7 +22,7 @@ public final class SecondPersonKey {
         if (KEY == null) {
             KEY = KeyBindingUtil.register(
                 "key.babyzombieaddons.second_person",
-                GLFW.GLFW_KEY_UNKNOWN);
+                -1);
         }
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var player = Minecraft.getInstance().player;

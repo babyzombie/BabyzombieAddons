@@ -6,22 +6,22 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import top.babyzombie.addons.module.chat.popup.PopupEventsModule.PopupSound;
 
 public class PopupConfig {
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.popupYes", desc = "config.babyzombieaddons.option.popupYes.desc")
-    @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_Y)
+    @ConfigEditorKeybind(defaultKey = InputConstants.KEY_Y)
     @SearchTag("popup") @SearchTag("key")
-    public int popupYes = GLFW.GLFW_KEY_Y;
+    public int popupYes = InputConstants.KEY_Y;
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.popupNo", desc = "config.babyzombieaddons.option.popupNo.desc")
-    @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_N)
+    @ConfigEditorKeybind(defaultKey = InputConstants.KEY_N)
     @SearchTag("popup") @SearchTag("key")
-    public int popupNo = GLFW.GLFW_KEY_N;
+    public int popupNo = InputConstants.KEY_N;
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.popupSound", desc = "config.babyzombieaddons.option.popupSound.desc")

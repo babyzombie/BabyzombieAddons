@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.Level;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import top.babyzombie.addons.config.ModConfig.EntityRenderMode;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
@@ -531,7 +531,7 @@ public class LoadoutDisplayScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent e) {
-        if (e.key() == GLFW.GLFW_KEY_ESCAPE) { doClose(); return true; }
+        if (e.key() == InputConstants.KEY_ESCAPE) { doClose(); return true; }
         if (e.key() == ModConfigManager.get().skyblock.loadout.keyBindings.closeKey) { doClose(); return true; }
 
         var kb = ModConfigManager.get().skyblock.loadout.keyBindings;
