@@ -12,7 +12,6 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -69,7 +68,7 @@ public abstract class ContainerChatMixin extends Screen {
             ContainerChatHelper.getOverlay().extractRenderState(g, mouseX, mouseY, a);
         }
         // ALT 按住时：保护→⭐ 常显；分享→箭头 仅开关打开时
-        if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), InputConstants.KEY_LALT) == InputConstants.PRESS) {
+        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_LALT)) {
             boolean sharing = ContainerChatHelper.isActive() && ModConfigManager.get().general.chat.chatInContainer;
             StarIndicator.draw(g, mouseX, mouseY, sharing);
         }
