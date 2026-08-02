@@ -63,15 +63,12 @@ public final class KuudraDirectionHUD {
                     int x = HudManager.x("KuudraDir"), y = HudManager.y("KuudraDir");
                     float s = HudManager.scale("KuudraDir");
 
-                    // Below ground (P4 下去后 Y 稳定 <20): use player-relative direction
+                    // Below ground (P4 下去后 Y 稳定 <20): use player-relative direction only
                     boolean belowGround = Minecraft.getInstance().player != null
                             && Minecraft.getInstance().player.getY() < 20;
-                    String text;
-                    if (belowGround) {
-                        text = getRelativeDir(lastDir) + " §f" + lastDir.name;
-                    } else {
-                        text = lastDir.color + "§l" + lastDir.name;
-                    }
+                    String text = belowGround
+                            ? getRelativeDir(lastDir)          // 相对方向（不再拼接绝对方向）
+                            : lastDir.color + "§l" + lastDir.name; // 地面时只显示绝对方向
                     HudManager.drawScaled(context, font, text, x, y, s);
                 });
     }
@@ -105,9 +102,10 @@ public final class KuudraDirectionHUD {
         double diff = ((kuudraAngle - yaw) % 360 + 360) % 360;
         if (diff > 180) diff -= 360;
 
+        // 左右交换：MC yaw 顺时针，diff 为正时目标在右侧
         if (diff > -45 && diff <= 45)   return "§a▲ FRONT";
-        if (diff > 45 && diff <= 135)   return "§e◄ LEFT";
+        if (diff > 45 && diff <= 135)   return "§9► RIGHT";
         if (diff > 135 || diff <= -135) return "§c▼ BACK";
-        return "§9► RIGHT";
+        return "§e◄ LEFT";
     }
 }

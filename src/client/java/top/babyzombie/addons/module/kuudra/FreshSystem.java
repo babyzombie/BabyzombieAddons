@@ -123,8 +123,10 @@ public final class FreshSystem {
                 buildProgress = readBuildProgress(client);
             }
 
-            // 倒计时兜底：6/6 放置完成但消息未匹配到时，用补给计数轮询触发
+            // 倒计时兜底：6/6 放置完成但消息未匹配到时，用补给计数轮询触发；
+            // 只在 P1 阶段（inSuppliesPhase）触发，避免 P2 结束后用残留计数重新计时
             if (!inBuildPhase && buildCountdownEndMs < 0
+                    && KuudraSupplyProgressHUD.isInSuppliesPhase()
                     && KuudraSupplyProgressHUD.getSupplyCount() >= 6) {
                 buildCountdownEndMs = ServerTick.getTime() + BUILD_START_COUNTDOWN_MS;
             }

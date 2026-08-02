@@ -212,39 +212,41 @@ public final class NoPreAlert {
         }
     }
 
-    /** 自己点位没箱子时，提示最近的另一个补给点位（类似 IQ 的 Second Supply Alert）。 */
+    /** 自己点位没箱子时，按 pre spot 引导到固定目标（对齐 IQ：Triangle→Shop、X→X Cannon、Slash→Square），
+     *  不引导到最近的补给——最近的点位大概率有人在拿。 */
     private static void sendSecondSupplyHint() {
+        if (detectedPre == null) return;
         var player = Minecraft.getInstance().player;
         if (player == null) return;
 
+        // 目标区域判断（IQ 的区域阈值）
+        boolean wantShop = "Triangle".equals(detectedPre.name);
+        boolean wantXCannon = "X".equals(detectedPre.name);
+        boolean wantSquare = "Slash".equals(detectedPre.name);
+        String targetName = wantShop ? "Shop" : wantXCannon ? "X Cannon" : wantSquare ? "Square" : null;
+        if (targetName == null) return; // Equals 等无固定引导目标
+
         List<Giant> giants = player.level().getEntitiesOfClass(Giant.class,
                 new AABB(player.blockPosition()).inflate(64), g -> g.getY() < 67);
-        if (giants.isEmpty()) return;
 
-        // 最近的补给巨人 → crate 位置 → 匹配最近 pile 名
-        Giant nearest = null;
-        double bestDist = Double.MAX_VALUE;
+        // 找目标区域的补给（crate 位置）
         for (var g : giants) {
-            double d = g.distanceToSqr(player);
-            if (d < bestDist) {
-                bestDist = d;
-                nearest = g;
-            }
-        }
-        if (nearest == null) return;
+            double angleRad = Math.toRadians(g.getYRot() + 130.0f);
+            double cx = g.getX() + (3.7 * Math.cos(angleRad));
+            double cz = g.getZ() + (3.7 * Math.sin(angleRad));
 
-        double angleRad = Math.toRadians(nearest.getYRot() + 130.0f);
-        double cx = nearest.getX() + (3.7 * Math.cos(angleRad));
-        double cz = nearest.getZ() + (3.7 * Math.sin(angleRad));
+            boolean match = wantShop ? (cx > -90 && cz < -128)
+                    : wantXCannon ? (cx < -127 && cz > -134.5 && cz < -108.5)
+                    : (cx < -128 && cz > -95);
+            if (!match) continue;
 
-        String name = KuudraPileWaypoints.findNearestPileName(cx, cz);
-        if (name != null) {
-            // 声音 + title 提示去最近的补给点位（不发 party 消息）
+            // 声音 + title 提示（不发 party 消息）
             var p = Minecraft.getInstance().player;
             if (p != null) {
                 p.playSound(net.minecraft.sounds.SoundEvents.NOTE_BLOCK_PLING.value(), 1.3f, 1.6f);
             }
-            ChatUtils.showTitle(String.format("§aGo %s! §7(x: %.0f, z: %.0f)", name, cx, cz));
+            ChatUtils.showTitle(String.format("§aGo %s! §7(x: %.0f, z: %.0f)", targetName, cx, cz));
+            return;
         }
     }
 }
