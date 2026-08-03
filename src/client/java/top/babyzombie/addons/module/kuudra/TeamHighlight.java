@@ -39,7 +39,7 @@ public final class TeamHighlight {
             if (world == null) return;
 
             // tab 列表中的名字（真人玩家；Kuudra 是私有实例，tab 里即队友）
-            var tabAccessor = (PlayerTabOverlayAccessor) client.gui.getTabList();
+            var tabAccessor = (PlayerTabOverlayAccessor) client.gui.hud.getTabList();
             Set<String> tabNames = new HashSet<>();
             for (var info : tabAccessor.invokeGetPlayerInfos()) {
                 tabNames.add(info.getProfile().name());
