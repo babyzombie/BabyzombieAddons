@@ -1,4 +1,5 @@
 {
+  "modmenu.modrinth": "Modrinth 页面",
   "modmenu.gitee": "Gitee 仓库",
   "modmenu.descriptionTranslation.babyzombieaddons": "Hypixel SkyBlock 辅助模组。",
   "resourcepack.babyzombieaddons.chroma_modernui.name": "§bChroma × Modern UI 兼容",
@@ -6,6 +7,7 @@
   "resourcepack.babyzombieaddons.custom_discs.name": "§bBabyZombieAddons §r- 自定义唱片",
   "resourcepack.babyzombieaddons.custom_discs.description": "允许使用自定义 .ogg 唱片。\n将音频文件命名为 1_歌名.ogg ~ 9_歌名.ogg 放入 config/babyzombieaddons/custom_discs/ 目录，重启游戏后即可在唱片列表中选取。",
   "config.babyzombieaddons.title": "BabyzombieAddons 设置",
+  "config.babyzombieaddons.social.modrinth": "Modrinth 页面",
   "config.babyzombieaddons.social.github": "GitHub 仓库",
   "config.babyzombieaddons.social.gitee": "Gitee 仓库",
   "key.category.babyzombieaddons.main": "BabyzombieAddons",
@@ -941,8 +943,7 @@
   "babyzombieaddons.fruitdigging.bombs_nearby": "§c附近有%s个炸弹",
   "babyzombieaddons.sendcoords.no_target": "§c视线内没有目标方块",
   "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §a发现新版本 §e%s §a(当前: §7%s§a)",
-  "babyzombieaddons.update.download.github": "§b§n[GitHub 下载]",
-  "babyzombieaddons.update.download.gitee": "§d§n[Gitee 下载]",
+  "babyzombieaddons.update.download.modrinth": "§b§n[Modrinth 下载]",
   "babyzombieaddons.update.open_url": "§7点击打开 §f%s",
   "babyzombieaddons.reconnect.countdown": "将在 %d 秒后自动重连...",
   "babyzombieaddons.reconnect.attempt": "（第 %d 次）",

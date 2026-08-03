@@ -7,13 +7,14 @@
   "description": "A Hypixel SkyBlock QoL mod",
   "authors": ["baby__zombie","TryToFeel"],
   "contact": {
-    "homepage": "https://github.com/babyzombie/BabyzombieAddons",
+    "homepage": "https://modrinth.com/mod/babyzombieaddons",
     "sources": "https://github.com/babyzombie/BabyzombieAddons",
     "issues": "https://github.com/babyzombie/BabyzombieAddons/issues"
   },
   "custom": {
     "modmenu": {
       "links": {
+        "modmenu.modrinth": "https://modrinth.com/mod/babyzombieaddons",
         "modmenu.gitee": "https://gitee.com/Bluesky-kk/BabyzombieAddons"
       }
     }

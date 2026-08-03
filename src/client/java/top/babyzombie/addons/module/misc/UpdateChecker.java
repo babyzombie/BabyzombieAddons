@@ -14,10 +14,8 @@ import java.net.URI;
 
 public final class UpdateChecker {
     private static boolean checked;
-    private static final String RELEASES_GITHUB_URL =
-            "https://github.com/babyzombie/BabyzombieAddons/releases/latest";
-    private static final String RELEASES_GITEE_URL =
-            "https://gitee.com/Bluesky-kk/BabyzombieAddons/releases/latest";
+    private static final String MODRINTH_URL =
+            "https://modrinth.com/mod/" + UpdateCheckUtil.MODRINTH_SLUG;
 
     private UpdateChecker() {}
 
@@ -42,10 +40,11 @@ public final class UpdateChecker {
         var thread = new Thread(() -> {
             var release = UpdateCheckUtil.fetchLatest(mcVersion);
             if (release == null) return;
-            if (!UpdateCheckUtil.isNewer(release.tag(), currentVersion)) return;
+            if (!UpdateCheckUtil.isNewer(release.baseVersion(), currentVersion)) return;
 
             var msg = Component.translatable(
-                            "babyzombieaddons.update.new_version", release.tag(), currentVersion);
+                            "babyzombieaddons.update.new_version",
+                            release.versionNumber(), currentVersion);
             if (release.body() != null && !release.body().isBlank()) {
                 msg = msg.withStyle(style -> style
                         .withHoverEvent(new HoverEvent.ShowText(
@@ -53,10 +52,7 @@ public final class UpdateChecker {
             }
             var finalMsg = msg.append(" ")
                     .append(createDownloadLink(
-                            "babyzombieaddons.update.download.github", RELEASES_GITHUB_URL))
-                    .append(" ")
-                    .append(createDownloadLink(
-                            "babyzombieaddons.update.download.gitee", RELEASES_GITEE_URL));
+                            "babyzombieaddons.update.download.modrinth", MODRINTH_URL));
             client.execute(() -> ChatUtils.showMessage(finalMsg));
         }, "BZA-UpdateCheck");
         thread.setDaemon(true);

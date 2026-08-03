@@ -1,135 +1,105 @@
 package top.babyzombie.addons.util;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
-/** Shared fetch + version comparison logic used by both the in-game and ModMenu update checkers. */
+/**
+ * 更新检查：查询 Modrinth API 获取当前 MC 版本下的最新正式版。
+ * ModMenu 内置的 Modrinth 检查与游戏内聊天提示共用同一数据源。
+ */
 public final class UpdateCheckUtil {
 
-    // Match the MC version in an asset filename, e.g. babyzombieaddons-2.7.0+1.21.4.jar
-    private static final String GITHUB_API = "https://api.github.com/repos/babyzombie/BabyzombieAddons/releases?per_page=5";
-    private static final String GITEE_API = "https://gitee.com/api/v5/repos/Bluesky-kk/BabyzombieAddons/releases?per_page=5&page=1&direction=desc";
+    /** Modrinth 项目 slug，必须与 Modrinth 项目 URL 一致（ModMenu 内置检查也依赖它）。 */
+    public static final String MODRINTH_SLUG = "babyzombieaddons";
+    private static final String MODRINTH_API =
+            "https://api.modrinth.com/v2/project/" + MODRINTH_SLUG + "/version";
+    private static final String MODRINTH_PAGE = "https://modrinth.com/mod/" + MODRINTH_SLUG;
 
     private UpdateCheckUtil() {}
 
-    public enum Source {
-        GITHUB("GitHub"),
-        GITEE("Gitee");
-
-        private final String displayName;
-
-        Source(String displayName) { this.displayName = displayName; }
-
-        @Override
-        public String toString() { return displayName; }
+    /** 最新版本信息：完整版本号（如 3.4.1-mc26.1.2）、下载页面、changelog。 */
+    public record ReleaseInfo(String versionNumber, String downloadUrl, String body) {
+        /** "3.4.1-mc26.1.2" -> "3.4.1"；没有 mc 后缀时原样返回。 */
+        public String baseVersion() {
+            return versionNumber.replaceFirst("-mc\\d[\\d.]*(-rc\\.\\d+)?$", "");
+        }
     }
 
-    /** Holds the latest release tag, download URL, release body (changelog), and source. */
-    public record ReleaseInfo(String tag, String downloadUrl, String body, Source source) {}
-
     /**
-     * Fetch the latest release that has an asset matching the given MC version.
-     * An asset matches if its filename contains the MC version (e.g. {@code mc26.1.2}).
-     * Tries GitHub first, falls back to Gitee.
+     * 查询 Modrinth 上当前 MC 版本下最新的 listed release 版本。
      *
-     * @param mcVersion the current MC version string from FabricLoader, e.g. "26.1.2"
-     * @return tag (without leading 'v') and the matching asset's download URL, or null
+     * @param mcVersion 当前 MC 版本，如 "26.1.2"
+     * @return 最新版本信息，查询失败或没有匹配版本时返回 null
      */
     @Nullable
     public static ReleaseInfo fetchLatest(String mcVersion) {
         try {
-            return fetchFromGitHub(mcVersion);
+            String query = "?game_versions="
+                    + URLEncoder.encode("[\"" + mcVersion + "\"]", StandardCharsets.UTF_8);
+            try (var http = HttpClient.newHttpClient()) {
+                var req = HttpRequest.newBuilder()
+                        .uri(URI.create(MODRINTH_API + query))
+                        .header("User-Agent", "BabyzombieAddons-UpdateChecker")
+                        .header("Accept", "application/json")
+                        .timeout(Duration.ofSeconds(15))
+                        .build();
+                var res = http.send(req, HttpResponse.BodyHandlers.ofString());
+                if (res.statusCode() != 200) return null;
+
+                JsonElement best = null;
+                String bestDate = "";
+                for (JsonElement el : JsonParser.parseString(res.body()).getAsJsonArray()) {
+                    var version = el.getAsJsonObject();
+                    if (!"listed".equals(getString(version, "status"))) continue;
+                    if (!"release".equals(getString(version, "version_type"))) continue;
+                    String date = getString(version, "date_published");
+                    if (date == null) continue;
+                    if (best == null || date.compareTo(bestDate) > 0) {
+                        best = el;
+                        bestDate = date;
+                    }
+                }
+                if (best == null) return null;
+
+                var obj = best.getAsJsonObject();
+                String versionNumber = getString(obj, "version_number");
+                if (versionNumber == null) return null;
+                return new ReleaseInfo(
+                        versionNumber,
+                        MODRINTH_PAGE + "/version/" + versionNumber,
+                        getChangelog(obj));
+            }
         } catch (Exception e) {
-            try {
-                return fetchFromGitee(mcVersion);
-            } catch (Exception ex) {
-                return null;
-            }
+            return null;
         }
-    }
-
-    private static ReleaseInfo fetchFromGitHub(String mcVersion) throws Exception {
-        try (var http = HttpClient.newHttpClient()) {
-            var req = HttpRequest.newBuilder()
-                    .uri(URI.create(GITHUB_API))
-                    .header("User-Agent", "BabyzombieAddons-UpdateChecker")
-                    .header("Accept", "application/vnd.github+json")
-                    .timeout(Duration.ofSeconds(15))
-                    .build();
-            var res = http.send(req, HttpResponse.BodyHandlers.ofString());
-            if (res.statusCode() != 200) throw new RuntimeException("HTTP " + res.statusCode());
-
-            for (JsonElement el : JsonParser.parseString(res.body()).getAsJsonArray()) {
-                var release = el.getAsJsonObject();
-                var found = findMatchingAsset(release.getAsJsonArray("assets"), mcVersion);
-                if (found != null) {
-                    String tag = release.get("tag_name").getAsString();
-                    String body = getReleaseBody(release);
-                    return new ReleaseInfo(stripV(tag), found, body, Source.GITHUB);
-                }
-            }
-            throw new RuntimeException("No release with asset matching MC " + mcVersion);
-        }
-    }
-
-    private static ReleaseInfo fetchFromGitee(String mcVersion) throws Exception {
-        try (var http = HttpClient.newHttpClient()) {
-            var req = HttpRequest.newBuilder()
-                    .uri(URI.create(GITEE_API))
-                    .header("User-Agent", "BabyzombieAddons-UpdateChecker")
-                    .timeout(Duration.ofSeconds(15))
-                    .build();
-            var res = http.send(req, HttpResponse.BodyHandlers.ofString());
-            if (res.statusCode() != 200) throw new RuntimeException("HTTP " + res.statusCode());
-
-            var arr = JsonParser.parseString(res.body()).getAsJsonArray();
-            if (arr.isEmpty()) throw new RuntimeException("Empty release list");
-
-            for (JsonElement el : arr) {
-                var release = el.getAsJsonObject();
-                var found = findMatchingAsset(release.getAsJsonArray("assets"), mcVersion);
-                if (found != null) {
-                    String tag = release.get("tag_name").getAsString();
-                    String body = getReleaseBody(release);
-                    return new ReleaseInfo(stripV(tag), found, body, Source.GITEE);
-                }
-            }
-            throw new RuntimeException("No release with asset matching MC " + mcVersion);
-        }
-    }
-
-    /** Find a non-sources asset whose filename contains the MC version. Returns its download URL or null. */
-    @Nullable
-    private static String findMatchingAsset(JsonElement assetsEl, String mcVersion) {
-        if (assetsEl == null) return null;
-        for (JsonElement a : assetsEl.getAsJsonArray()) {
-            var asset = a.getAsJsonObject();
-            String name = asset.get("name").getAsString();
-            if (!name.endsWith(".jar") || name.endsWith("-sources.jar")) continue;
-            if (name.contains(mcVersion)) {
-                return asset.get("browser_download_url").getAsString();
-            }
-        }
-        return null;
     }
 
     @Nullable
-    private static String getReleaseBody(com.google.gson.JsonObject release) {
-        var bodyEl = release.get("body");
-        if (bodyEl == null || bodyEl.isJsonNull()) return null;
-        String raw = bodyEl.getAsString();
+    private static String getString(JsonObject obj, String key) {
+        var el = obj.get(key);
+        return (el == null || el.isJsonNull()) ? null : el.getAsString();
+    }
+
+    @Nullable
+    private static String getChangelog(JsonObject version) {
+        var el = version.get("changelog");
+        if (el == null || el.isJsonNull()) return null;
+        String raw = el.getAsString();
         if (raw.isBlank()) return null;
         return stripMarkdown(raw);
     }
 
-    /** Convert GitHub-flavored markdown into plain text suitable for in-game hover display. */
+    /** Convert markdown into plain text suitable for in-game hover display. */
     private static String stripMarkdown(String md) {
         var sb = new StringBuilder();
         for (String line : md.split("\n", -1)) {
@@ -150,10 +120,6 @@ public final class UpdateCheckUtil {
         return sb.toString()
                 .replaceAll("\n{4,}", "\n\n\n")
                 .trim();
-    }
-
-    private static String stripV(String tag) {
-        return tag.startsWith("v") ? tag.substring(1) : tag;
     }
 
     /** Compare two versions, e.g. "2.0.0" &gt; "2.0.0-alpha.4". */

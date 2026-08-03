@@ -2,20 +2,16 @@ package top.babyzombie.addons.compatibility.modmenu;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import com.terraformersmc.modmenu.api.UpdateChecker;
-import top.babyzombie.addons.compatibility.modmenu.updatechecker.GitHubUpdateChecker;
 import top.babyzombie.addons.config.ModConfigManager;
 
+/**
+ * ModMenu 集成。
+ * 更新检查交给 ModMenu 内置的 Modrinth 检查（按 mod id 查项目 slug），不再提供自定义 checker。
+ */
 public class ModMenuEntry implements ModMenuApi {
-    private static final String MOD_ID = "babyzombieaddons";
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return ModConfigManager::createGUI;
-    }
-
-    @Override
-    public UpdateChecker getUpdateChecker() {
-        return new GitHubUpdateChecker(MOD_ID);
     }
 }

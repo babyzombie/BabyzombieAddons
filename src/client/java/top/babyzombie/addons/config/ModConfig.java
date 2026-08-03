@@ -11,7 +11,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 
+import java.net.URI;
 import java.util.List;
+import net.minecraft.util.Util;
 
 public class ModConfig extends Config {
 
@@ -245,17 +247,47 @@ public class ModConfig extends Config {
     @Override
     public List<Social> getSocials() {
         return List.of(
-                Social.forLink(
+                linkSocial(
+                        StructuredText.translatable("config.babyzombieaddons.social.modrinth"),
+                        new MyResourceLocation("babyzombieaddons", "textures/modrinth.png"),
+                        "https://modrinth.com/mod/babyzombieaddons"
+                ),
+                linkSocial(
                         StructuredText.translatable("config.babyzombieaddons.social.github"),
                         new MyResourceLocation("babyzombieaddons", "textures/github.png"),
                         "https://github.com/babyzombie/BabyzombieAddons"
                 ),
-                Social.forLink(
+                linkSocial(
                         StructuredText.translatable("config.babyzombieaddons.social.gitee"),
                         new MyResourceLocation("babyzombieaddons", "textures/gitee.png"),
-                        "https://gitee.com/babyzombie/BabyzombieAddons"
+                        "https://gitee.com/Bluesky-kk/BabyzombieAddons"
                 )
         );
+    }
+
+    /**
+     * 点击直接打开链接：走 MC 官方 {@link Util#getPlatform()} 的 openUri
+     * （Windows 上为 ShellExecute 进程调用），比 MoulConfig 默认的
+     * AWT {@link java.awt.Desktop#browse} 更可靠——后者在部分 Windows 环境下
+     * 会抛异常而退化成"聊天栏点击链接"。
+     */
+    private static Social linkSocial(StructuredText name, MyResourceLocation icon, String url) {
+        return new Social() {
+            @Override
+            public void onClick() {
+                Util.getPlatform().openUri(URI.create(url));
+            }
+
+            @Override
+            public List<StructuredText> getTooltip() {
+                return List.of(name);
+            }
+
+            @Override
+            public MyResourceLocation getIcon() {
+                return icon;
+            }
+        };
     }
 
     // ── Categories ──
