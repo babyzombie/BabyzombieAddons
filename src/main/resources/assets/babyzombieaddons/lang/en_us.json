@@ -1,4 +1,5 @@
 {
+  "modmenu.modrinth": "Modrinth Page",
   "modmenu.gitee": "Gitee Page",
   "modmenu.descriptionTranslation.babyzombieaddons": "A Hypixel SkyBlock QoL mod.",
   "resourcepack.babyzombieaddons.chroma_modernui.name": "§bChroma × Modern UI Compat",
@@ -6,6 +7,7 @@
   "resourcepack.babyzombieaddons.custom_discs.name": "§bBabyZombieAddons §r- Custom Music Discs",
   "resourcepack.babyzombieaddons.custom_discs.description": "Enables custom .ogg music discs.\nPlace .ogg files named like 1_Name.ogg ~ 9_Name.ogg into config/babyzombieaddons/custom_discs/, restart the game, then select them in the disc list.",
   "config.babyzombieaddons.title": "BabyzombieAddons Settings",
+  "config.babyzombieaddons.social.modrinth": "Modrinth Page",
   "config.babyzombieaddons.social.github": "GitHub Repository",
   "config.babyzombieaddons.social.gitee": "Gitee Repository",
   "key.category.babyzombieaddons.main": "BabyzombieAddons",
@@ -974,8 +976,7 @@
   "babyzombieaddons.fruitdigging.bombs_nearby": "§c%s bombs nearby",
   "babyzombieaddons.sendcoords.no_target": "§cNo block in sight",
   "babyzombieaddons.update.new_version": "§6[BabyzombieAddons] §aNew version available: §e%s §a(current: §7%s§a)",
-  "babyzombieaddons.update.download.github": "§b§n[GitHub]",
-  "babyzombieaddons.update.download.gitee": "§d§n[Gitee]",
+  "babyzombieaddons.update.download.modrinth": "§b§n[Modrinth]",
   "babyzombieaddons.update.open_url": "§7Click to open §f%s",
   "babyzombieaddons.reconnect.countdown": "Auto-reconnecting in %d s...",
   "babyzombieaddons.reconnect.attempt": "(attempt %d)",

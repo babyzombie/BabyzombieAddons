@@ -49,7 +49,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: main-jars
-          path: build/libs/*.jar
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
 
   build-sub:
     runs-on: ubuntu-latest
@@ -92,7 +94,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sub-jars
-          path: build/libs/*.jar
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
 
   release:
     needs: [build-main, build-sub]
@@ -115,13 +119,63 @@ jobs:
           args: --latest --sort newest --strip header --output changelog.md
           config: cliff.toml
 
+      - name: Translate Changelog to English / Bilingual
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: python3 scripts/translate_changelog.py changelog.md
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: Release ${{ github.ref_name }}
-          body_path: changelog.md
+          body_path: changelog-bilingual.md
           files: artifacts/**/*
           generate_release_notes: false
+
+      - name: Extract MC versions from jars
+        id: mc-versions
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="${TAG#v}"
+          MC_MAIN=$(ls artifacts/main-jars/*.jar | sed -E 's/.*-mc([0-9.]+(-rc\.[0-9]+)?)\.jar$/\1/' | head -1)
+          MC_SUB=$(ls artifacts/sub-jars/*.jar | sed -E 's/.*-mc([0-9.]+(-rc\.[0-9]+)?)\.jar$/\1/' | head -1)
+          echo "mc_main=${MC_MAIN}" >> "$GITHUB_OUTPUT"
+          echo "mc_sub=${MC_SUB}" >> "$GITHUB_OUTPUT"
+          echo "version_main=${VERSION}-mc${MC_MAIN}" >> "$GITHUB_ENV"
+          echo "version_sub=${VERSION}-mc${MC_SUB}" >> "$GITHUB_ENV"
+
+      - name: Publish main to Modrinth
+        if: ${{ secrets.MODRINTH_TOKEN != '' }}
+        uses: Kir-Antipov/mc-publish@v3.8
+        with:
+          modrinth-id: babyzombieaddons
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: artifacts/main-jars/*.jar
+          game-versions: ${{ steps.mc-versions.outputs.mc_main }}
+          loaders: fabric
+          version: ${{ env.version_main }}
+          version-type: release
+          changelog-file: changelog-en.md
+          dependencies: |
+            fabric-api | depends | *
+            fabric-language-kotlin | depends | *
+
+      - name: Publish 26.2 to Modrinth
+        if: ${{ secrets.MODRINTH_TOKEN != '' }}
+        uses: Kir-Antipov/mc-publish@v3.8
+        with:
+          modrinth-id: babyzombieaddons
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: artifacts/sub-jars/*.jar
+          game-versions: ${{ steps.mc-versions.outputs.mc_sub }}
+          loaders: fabric
+          version: ${{ env.version_sub }}
+          version-type: release
+          changelog-file: changelog-en.md
+          dependencies: |
+            fabric-api | depends | *
+            fabric-language-kotlin | depends | *
 
       - name: Sync to Gitee
         env:
