@@ -11,5 +11,6 @@ public final class MiscModule {
         SkipSecondPerson.init();
         CopyItemInfoKey.init();
         FallLandingSoundMute.init();
+        EntityHider.init();
     }
 }
