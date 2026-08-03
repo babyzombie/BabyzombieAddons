@@ -7,7 +7,9 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
-import top.babyzombie.addons.config.ModConfig.MineshaftWarpMode;
+import top.babyzombie.addons.config.ModConfig.GlaciteMineshaftPortalAction;
+import top.babyzombie.addons.config.ModConfig.GlaciteMineshaftPortalSound;
+import top.babyzombie.addons.config.ModConfig.MineshaftCorpseRenderMode;
 
 public class MiningConfig {
 
@@ -53,16 +55,31 @@ public class MiningConfig {
     }
 
     public static class GlaciteTunnels {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.group.glaciteMineshaft", desc = "") @Accordion
+        public GlaciteMineshaft glaciteMineshaft = new GlaciteMineshaft();
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.mineshaftWaypoints", desc = "config.babyzombieaddons.option.mineshaftWaypoints.desc") @ConfigEditorBoolean @SearchTag("mineshaft")
         public boolean mineshaftWaypoints = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.glaciteMineshaftWarp", desc = "config.babyzombieaddons.option.glaciteMineshaftWarp.desc") @ConfigEditorDropdown @SearchTag("mineshaft")
-        public MineshaftWarpMode glaciteMineshaftWarp = MineshaftWarpMode.OFF;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.mineshaftCorpseRenderMode", desc = "config.babyzombieaddons.option.mineshaftCorpseRenderMode.desc") @ConfigEditorDropdown @SearchTag("mineshaft") @SearchTag("corpse") @SearchTag("render") @SearchTag("box")
+        public MineshaftCorpseRenderMode mineshaftCorpseRenderMode = MineshaftCorpseRenderMode.WIREFRAME;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.suspiciousScrapCounter", desc = "config.babyzombieaddons.option.suspiciousScrapCounter.desc") @ConfigEditorBoolean @SearchTag("scrap")
         public boolean suspiciousScrapCounter = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.greatGlaciteWaypoints", desc = "config.babyzombieaddons.option.greatGlaciteWaypoints.desc") @ConfigEditorBoolean @SearchTag("glacite")
         public boolean greatGlaciteWaypoints = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.lanternReminder", desc = "config.babyzombieaddons.option.lanternReminder.desc") @ConfigEditorBoolean @SearchTag("mineshaft") @SearchTag("lantern")
         public boolean lanternReminder = false;
+
+        public static class GlaciteMineshaft {
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.glaciteMineshaftPortalTitle", desc = "config.babyzombieaddons.option.glaciteMineshaftPortalTitle.desc") @ConfigEditorBoolean @SearchTag("mineshaft") @SearchTag("title")
+            public boolean portalTitleAlert = false;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.glaciteMineshaftPortalSound", desc = "config.babyzombieaddons.option.glaciteMineshaftPortalSound.desc") @ConfigEditorBoolean @SearchTag("mineshaft") @SearchTag("sound")
+            public boolean portalSoundAlert = false;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.glaciteMineshaftPortalSoundSelect", desc = "config.babyzombieaddons.option.glaciteMineshaftPortalSoundSelect.desc") @ConfigEditorDropdown @SearchTag("mineshaft") @SearchTag("sound")
+            public GlaciteMineshaftPortalSound portalSound = GlaciteMineshaftPortalSound.BELL;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.glaciteMineshaftPortalAction", desc = "config.babyzombieaddons.option.glaciteMineshaftPortalAction.desc") @ConfigEditorDropdown @SearchTag("mineshaft") @SearchTag("warp")
+            public GlaciteMineshaftPortalAction portalAction = GlaciteMineshaftPortalAction.NONE;
+            @Expose @ConfigOption(name = "config.babyzombieaddons.option.glaciteMineshaftRequireTwoLapisForPtmeWarp", desc = "config.babyzombieaddons.option.glaciteMineshaftRequireTwoLapisForPtmeWarp.desc") @ConfigEditorBoolean @SearchTag("mineshaft") @SearchTag("lapis") @SearchTag("warp")
+            public boolean requireTwoLapisForPtmeWarp = false;
+        }
     }
 
     public static class MithrilGourmand {

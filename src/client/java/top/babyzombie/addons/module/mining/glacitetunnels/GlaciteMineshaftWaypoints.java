@@ -1,7 +1,10 @@
 package top.babyzombie.addons.module.mining.glacitetunnels;
 
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -15,6 +18,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.AABB;
+import top.babyzombie.addons.event.HypixelLocationEvents;
+import top.babyzombie.addons.mixin.render.PlayerTabOverlayAccessor;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.Scheduler;
@@ -24,7 +29,8 @@ import top.babyzombie.addons.util.render.WorldRenderUtils;
 import top.babyzombie.addons.util.render.WorldTextRenderer;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.PartyTracker;
-import top.babyzombie.addons.config.ModConfig.MineshaftWarpMode;
+import top.babyzombie.addons.config.ModConfig.GlaciteMineshaftPortalAction;
+import top.babyzombie.addons.config.ModConfig.MineshaftCorpseRenderMode;
 import top.babyzombie.addons.config.ModConfigManager;
 
 
@@ -41,38 +47,170 @@ public final class GlaciteMineshaftWaypoints {
     private static boolean waitingPartyTransfer;
     private static String ownServerName;
     private static final Set<BlockPos> visitedCorpses = new HashSet<>();
+    private static Runnable lapisGateTask;
+    private static int lapisGateRemainingChecks;
+    private static long lastOwnerDetectTime;
+    private static long lastEnterActionTime;
 
     private static final Set<String> LANTERN_IDS = Set.of(
             "LANTERN", "MITHRIL_LANTERN", "TITANIUM_LANTERN", "GLACITE_LANTERN", "WILL_O_WASP");
 
     private GlaciteMineshaftWaypoints() {}
 
-    public static void init() {
-        // Track entering/exiting mineshaft
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            var t = HypixelLocationTracker.getInstance();
-            if (!t.isInSkyblock()) { inMineshaft = false; return; }
-            boolean nowIn = t.isIn("Mineshaft");
-            if (nowIn && !inMineshaft) {
-                enterMineshaftTime = ServerTick.getTime();
-                checkLanternReminder();
-                // Auto warp if owner
-                var warpMode = ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaftWarp;
-                if (mineshaftOwner && (warpMode == MineshaftWarpMode.SEND_PTME
-                        || warpMode == MineshaftWarpMode.PTME_AND_WARP)) {
-                    enterMineshaftTime = ServerTick.getTime();
-                    PartyTracker.getInstance().runWhenKnown(
-                        () -> {
-                            if (warpMode == MineshaftWarpMode.PTME_AND_WARP)
-                                Scheduler.schedule(10, () -> ChatUtils.sendCommand("p warp"));
-                        },
-                        () -> {
-                            Scheduler.schedule(6, () -> ChatUtils.sendCommand("pc !ptme"));
-                            if (warpMode == MineshaftWarpMode.PTME_AND_WARP)
-                                waitingPartyTransfer = true;
-                        }
-                    );
+    private enum CorpseType {
+        LAPIS("LAPIS_ARMOR_LEGGINGS", "§9Lapis"),
+        UMBER("ARMOR_OF_YOG_LEGGINGS", "§6Umber"),
+        TUNGSTEN("MINERAL_LEGGINGS", "§fTungsten"),
+        VANGUARD("VANGUARD_LEGGINGS", "§bVanguard");
+
+        final String skyblockId;
+        final String displayName;
+
+        CorpseType(String skyblockId, String displayName) {
+            this.skyblockId = skyblockId;
+            this.displayName = displayName;
+        }
+    }
+
+    private static final Map<String, CorpseType> CORPSE_ID_MAP = Map.of(
+            CorpseType.LAPIS.skyblockId, CorpseType.LAPIS,
+            CorpseType.UMBER.skyblockId, CorpseType.UMBER,
+            CorpseType.TUNGSTEN.skyblockId, CorpseType.TUNGSTEN,
+            CorpseType.VANGUARD.skyblockId, CorpseType.VANGUARD
+    );
+
+    private record Corpse(ArmorStand stand, BlockPos pos, double x, double y, double z, CorpseType type) {}
+
+    private static List<Corpse> scanCorpses(BlockPos center, double range) {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return List.of();
+        var level = player.level();
+        var stands = level.getEntitiesOfClass(ArmorStand.class,
+                new AABB(center).inflate(range),
+                e -> !e.isDeadOrDying());
+        if (stands.isEmpty()) return List.of();
+        List<Corpse> corpses = new ArrayList<>();
+        for (var stand : stands) {
+            var legs = stand.getItemBySlot(EquipmentSlot.LEGS);
+            if (legs.isEmpty()) continue;
+            String id = ItemUtils.getSkyblockId(legs);
+            if (id == null) continue;
+            CorpseType type = CORPSE_ID_MAP.get(id);
+            if (type == null) continue;
+            corpses.add(new Corpse(stand, stand.blockPosition(), stand.getX(), stand.getY(), stand.getZ(), type));
+        }
+        return corpses;
+    }
+
+    private static boolean isSelfEnteredRecently() {
+        return lastOwnerDetectTime > 0 && ServerTick.getTime() - lastOwnerDetectTime <= 30_000;
+    }
+
+    private static int countLapisFromTabList() {
+        var client = Minecraft.getInstance();
+        if (client.getConnection() == null) return -1;
+        var tabList = client.gui.getTabList();
+        var ta = (PlayerTabOverlayAccessor) tabList;
+        var players = ta.invokeGetPlayerInfos();
+        if (players == null || players.isEmpty()) return -1;
+        boolean inFrozenCorpses = false;
+        int lapis = 0;
+        for (var info : players) {
+            var dn = info.getTabListDisplayName();
+            if (dn == null) continue;
+            String line = ChatUtils.toLegacyString(dn).trim();
+            if (line.isEmpty()) {
+                if (inFrozenCorpses) break;
+                continue;
+            }
+            String plain = ChatUtils.stripColor(line).trim();
+            if (!inFrozenCorpses) {
+                if (plain.startsWith("Frozen Corpses")) {
+                    inFrozenCorpses = true;
                 }
+                continue;
+            }
+            if (plain.startsWith("Lapis:")) lapis++;
+        }
+        return inFrozenCorpses ? lapis : -1;
+    }
+
+    private static void tryRunEnterActions(String source) {
+        if (!isInMineshaft()) return;
+        var cfg = ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaft;
+        var action = cfg.portalAction;
+        boolean eligible = mineshaftOwner || isSelfEnteredRecently();
+        if (!eligible) return;
+        if (action != GlaciteMineshaftPortalAction.SEND_PTME && action != GlaciteMineshaftPortalAction.PTME_AND_WARP) return;
+        long now = ServerTick.getTime();
+        if (lastEnterActionTime > 0 && now - lastEnterActionTime < 3_000) return;
+        lastEnterActionTime = now;
+        enterMineshaftTime = now;
+        checkLanternReminder();
+        if (action == GlaciteMineshaftPortalAction.PTME_AND_WARP && cfg.requireTwoLapisForPtmeWarp) {
+            var player = Minecraft.getInstance().player;
+            if (player == null) return;
+            if (lapisGateTask != null) {
+                Scheduler.cancel(lapisGateTask);
+                lapisGateTask = null;
+            }
+            lapisGateRemainingChecks = 40;
+            lapisGateTask = () -> {
+                if (!isInMineshaft()) {
+                    Scheduler.cancel(lapisGateTask);
+                    lapisGateTask = null;
+                    return;
+                }
+                if (lapisGateRemainingChecks-- <= 0) {
+                    Scheduler.cancel(lapisGateTask);
+                    lapisGateTask = null;
+                    return;
+                }
+                var p = Minecraft.getInstance().player;
+                if (p == null) return;
+                var c = ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaft;
+                if (c.portalAction != GlaciteMineshaftPortalAction.PTME_AND_WARP || !c.requireTwoLapisForPtmeWarp) {
+                    Scheduler.cancel(lapisGateTask);
+                    lapisGateTask = null;
+                    return;
+                }
+                int tabLapis = countLapisFromTabList();
+                if (tabLapis >= 2) {
+                    runPartyAction(GlaciteMineshaftPortalAction.PTME_AND_WARP);
+                    Scheduler.cancel(lapisGateTask);
+                    lapisGateTask = null;
+                }
+            };
+            Scheduler.scheduleRepeating(10, lapisGateTask);
+            return;
+        }
+        runPartyAction(action);
+    }
+
+    private static void runPartyAction(GlaciteMineshaftPortalAction action) {
+        if (action != GlaciteMineshaftPortalAction.SEND_PTME && action != GlaciteMineshaftPortalAction.PTME_AND_WARP) return;
+        enterMineshaftTime = ServerTick.getTime();
+        if (action == GlaciteMineshaftPortalAction.SEND_PTME) {
+            Scheduler.schedule(6, () -> ChatUtils.sendCommand("pc !ptme"));
+            return;
+        }
+        PartyTracker.getInstance().runWhenKnown(
+                () -> {
+                    ChatUtils.sendCommand("p warp");
+                },
+                () -> {
+                    Scheduler.schedule(6, () -> ChatUtils.sendCommand("pc !ptme"));
+                    waitingPartyTransfer = true;
+                }
+        );
+    }
+
+    public static void init() {
+        HypixelLocationEvents.LOCATION_UPDATE.register(data -> {
+            if (!data.isInSkyblock()) { inMineshaft = false; return; }
+            boolean nowIn = data.isIn("Mineshaft");
+            if (nowIn && !inMineshaft) {
+                tryRunEnterActions("location-update");
             }
             inMineshaft = nowIn;
         });
@@ -80,25 +218,29 @@ public final class GlaciteMineshaftWaypoints {
         // Portal detection
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             if (overlay) return true;
-            var warpMode = ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaftWarp;
-            if (warpMode == MineshaftWarpMode.OFF) return true;
+            var cfg = ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaft;
+            if (!cfg.portalTitleAlert
+                    && !cfg.portalSoundAlert
+                    && cfg.portalAction == GlaciteMineshaftPortalAction.NONE) return true;
             if (!isInDwarvenMines()) return true;
             if (ChatUtils.stripColor(message.getString()).equals("WOW! You found a Glacite Mineshaft portal!")) {
                 portalTimer = ServerTick.getTime() + 30_000;
-                if (warpMode != MineshaftWarpMode.TITLE_ONLY) {
+                if (cfg.portalSoundAlert) {
                     var player = Minecraft.getInstance().player;
                     if (player != null) {
                         player.level().playSound(player, player.blockPosition(),
-                                net.minecraft.sounds.SoundEvents.ENDER_DRAGON_GROWL,
+                                cfg.portalSound.sound,
                                 net.minecraft.sounds.SoundSource.MASTER, 1f, 1f);
                     }
                 }
-                ChatUtils.showTitle(
-                        tr("babyzombieaddons.glacite.portal_title"),
-                        warpMode == MineshaftWarpMode.PTME_AND_WARP
-                                ? tr("babyzombieaddons.glacite.portal_sub_auto")
-                                : tr("babyzombieaddons.glacite.portal_sub"),
-                        0, 50, 10);
+                if (cfg.portalTitleAlert) {
+                    ChatUtils.showTitle(
+                            tr("babyzombieaddons.glacite.portal_title"),
+                            cfg.portalAction == GlaciteMineshaftPortalAction.PTME_AND_WARP
+                                    ? tr("babyzombieaddons.glacite.portal_sub_auto")
+                                    : tr("babyzombieaddons.glacite.portal_sub"),
+                            0, 50, 10);
+                }
             }
             return true;
         });
@@ -106,7 +248,7 @@ public final class GlaciteMineshaftWaypoints {
         // Mineshaft owner detection
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             if (overlay) return true;
-            if (ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaftWarp == MineshaftWarpMode.OFF) return true;
+            if (ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaft.portalAction == GlaciteMineshaftPortalAction.NONE) return true;
             if (!isInDwarvenMines()) return true;
             var m = MINESHAFT_ENTER_PAT.matcher(message.getString());
             if (m.find()) {
@@ -115,6 +257,8 @@ public final class GlaciteMineshaftWaypoints {
                 if (self != null && name.equals(self.getName().getString())) {
                     mineshaftOwner = true;
                     ownServerName = HypixelLocationTracker.getInstance().getServerName();
+                    lastOwnerDetectTime = ServerTick.getTime();
+                    tryRunEnterActions("owner-detect");
                 }
             }
             return true;
@@ -145,8 +289,10 @@ public final class GlaciteMineshaftWaypoints {
             if (ownServerName != null) {
                 var currentServer = HypixelLocationTracker.getInstance().getServerName();
                 if (currentServer != null && !currentServer.equals(ownServerName)) {
-                    mineshaftOwner = false;
-                    ownServerName = null;
+                    if (ServerTick.getTime() - lastOwnerDetectTime > 10_000) {
+                        mineshaftOwner = false;
+                        ownServerName = null;
+                    }
                 }
             }
             if (enterMineshaftTime > 0 && ServerTick.getTime() - enterMineshaftTime > 60_000) {
@@ -164,37 +310,35 @@ public final class GlaciteMineshaftWaypoints {
                     && t.isIn("Mineshaft")) {
                 var player = Minecraft.getInstance().player;
                 if (player != null) {
-                    var level = player.level();
-                    var stands = level.getEntitiesOfClass(ArmorStand.class,
-                            new AABB(player.blockPosition()).inflate(96),
-                            e -> !e.isDeadOrDying());
-                    for (var stand : stands) {
-                        var helm = stand.getItemBySlot(EquipmentSlot.LEGS);
-                        if (helm.isEmpty()) continue;
-                        String id = ItemUtils.getSkyblockId(helm);
-                        if (id == null) continue;
-                        String name = switch (id) {
-                            case "LAPIS_ARMOR_LEGGINGS" -> "§bLapis";
-                            case "ARMOR_OF_YOG_LEGGINGS" -> "§6Umber";
-                            case "MINERAL_LEGGINGS" -> "§fTungsten";
-                            case "VANGUARD_LEGGINGS" -> "§bVanguard";
-                            default -> null;
-                        };
-                        if (name == null) continue;
-                        var pos = stand.blockPosition();
+                    MineshaftCorpseRenderMode mode = ModConfigManager.get().mining.glaciteTunnels.mineshaftCorpseRenderMode;
+                    for (var corpse : scanCorpses(player.blockPosition(), 96)) {
+                        var stand = corpse.stand;
+                        var pos = corpse.pos;
                         if (player.distanceTo(stand) <= 3) {
                             visitedCorpses.add(pos);
                         }
                         if (visitedCorpses.contains(pos)) continue;
-                        var x = stand.getX();
-                        var y = stand.getY() + 2;
-                        var z = stand.getZ();
+                        String name = corpse.type.displayName;
+                        var x = corpse.x;
+                        var y = corpse.y + 2;
+                        var z = corpse.z;
                         var color = mcColorToAwt(name);
-                        WorldRenderUtils.drawWireframeBox(ctx,
-                                x - 0.4, y - 2.0, z - 0.4,
-                                x + 0.4, y + 0.2, z + 0.4,
-                                color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 0.6f,
-                                false, 4.0f);
+                        float r = color.getRed() / 255f;
+                        float g = color.getGreen() / 255f;
+                        float b = color.getBlue() / 255f;
+                        if (mode == MineshaftCorpseRenderMode.FILLED) {
+                            WorldRenderUtils.drawFilledBox(ctx,
+                                    x - 0.4, y - 2.0, z - 0.4,
+                                    x + 0.4, y + 0.2, z + 0.4,
+                                    r, g, b, 0.6f * 0.5f,
+                                    false);
+                        } else {
+                            WorldRenderUtils.drawWireframeBox(ctx,
+                                    x - 0.4, y - 2.0, z - 0.4,
+                                    x + 0.4, y + 0.2, z + 0.4,
+                                    r, g, b, 0.6f,
+                                    false, 4.0f);
+                        }
                         WorldTextRenderer.renderString(ctx, name, x, y, z, 0xFFFFFF55, 0.05f, true);
                     }
                 }
@@ -221,8 +365,18 @@ public final class GlaciteMineshaftWaypoints {
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
             portalTimer = 0; inMineshaft = false;
-            mineshaftOwner = false; waitingPartyTransfer = false; ownServerName = null;
+            waitingPartyTransfer = false;
+            if (ServerTick.getTime() - lastOwnerDetectTime > 10_000) {
+                mineshaftOwner = false;
+                ownServerName = null;
+            } else {
+                ownServerName = null;
+            }
             visitedCorpses.clear();
+            if (lapisGateTask != null) {
+                Scheduler.cancel(lapisGateTask);
+                lapisGateTask = null;
+            }
         });
     }
 
