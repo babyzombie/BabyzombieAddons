@@ -63,6 +63,10 @@ public class KuudraConfig {
     public boolean fishingHookFix = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideMobNametags", desc = "config.babyzombieaddons.option.hideMobNametags.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("nametag") @SearchTag("mob")
     public boolean hideMobNametags = false;
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.teamHighlight", desc = "config.babyzombieaddons.option.teamHighlight.desc") @ConfigEditorBoolean @SearchTag("team") @SearchTag("highlight") @SearchTag("glow")
+    public boolean teamHighlight = false;
+    @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.teamHighlightColor", desc = "config.babyzombieaddons.option.teamHighlightColor.desc") @SearchTag("team") @SearchTag("highlight") @SearchTag("color")
+    public ChromaColour teamHighlightColor = ChromaColour.fromStaticRGB(0, 255, 0, 255);
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.perkShop", desc = "") @Accordion
     public PerkShop perkShop = new PerkShop();

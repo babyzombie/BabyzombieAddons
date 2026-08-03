@@ -27,6 +27,7 @@ public final class KuudraModule {
         NoPreAlert.init();
         AlreadyPickingAlert.init();
         ElleHighlight.init();
+        TeamHighlight.init();
         KuudraDirectionHUD.init();
         KuudraP4Features.init();
         ChestCounter.init();
