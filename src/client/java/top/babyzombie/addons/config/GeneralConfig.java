@@ -54,6 +54,8 @@ public class GeneralConfig {
     public WindowTitle windowTitle = new WindowTitle();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.waypointMarker", desc = "") @Accordion
     public WaypointMarker waypointMarker = new WaypointMarker();
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.entityHider", desc = "") @Accordion
+    public EntityHider entityHider = new EntityHider();
 
     public static class WaypointMarker {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerKey", desc = "config.babyzombieaddons.option.markerKey.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("marker") @SearchTag("key")
@@ -62,6 +64,19 @@ public class GeneralConfig {
         public ModConfig.MarkerChannel markerChannel = ModConfig.MarkerChannel.PC;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerSuffix", desc = "config.babyzombieaddons.option.markerSuffix.desc") @ConfigEditorText @SearchTag("marker") @SearchTag("suffix")
         public String markerSuffix = "";
+    }
+
+    public static class EntityHider {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderEnabled", desc = "config.babyzombieaddons.option.entityHiderEnabled.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("entity")
+        public boolean enabled = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderSkyblockOnly", desc = "config.babyzombieaddons.option.entityHiderSkyblockOnly.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("skyblock")
+        public boolean skyblockOnly = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderHideOwnBobber", desc = "config.babyzombieaddons.option.entityHiderHideOwnBobber.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("bobber") @SearchTag("fishing")
+        public boolean hideOwnBobber = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderHideOwnMount", desc = "config.babyzombieaddons.option.entityHiderHideOwnMount.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("mount") @SearchTag("riding")
+        public boolean hideOwnMount = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderRange", desc = "config.babyzombieaddons.option.entityHiderRange.desc") @ConfigEditorSlider(minValue = 1, maxValue = 64, minStep = 1) @SearchTag("hide") @SearchTag("range") @SearchTag("distance")
+        public int range = 5;
     }
 
     public static class Autotip {
