@@ -8,6 +8,8 @@ import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import com.google.gson.annotations.Expose;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 
 import java.util.List;
 
@@ -50,6 +52,28 @@ public class ModConfig extends Config {
     public enum MineshaftWarpMode {
         OFF, TITLE_ONLY, TITLE_AND_SOUND, SEND_PTME, PTME_AND_WARP;
         @Override public String toString() { return t("config.babyzombieaddons.option.glaciteMineshaftWarp." + name()); }
+    }
+    public enum GlaciteMineshaftPortalAction {
+        NONE, SEND_PTME, PTME_AND_WARP;
+        @Override public String toString() { return t("config.babyzombieaddons.option.glaciteMineshaftPortalAction." + name()); }
+    }
+    public enum GlaciteMineshaftPortalSound {
+        BELL(SoundEvents.BELL_BLOCK),
+        NOTE_BLOCK(SoundEvents.NOTE_BLOCK_PLING.value()),
+        EXPERIENCE(SoundEvents.EXPERIENCE_ORB_PICKUP),
+        LEVEL_UP(SoundEvents.PLAYER_LEVELUP),
+        DRAGON(SoundEvents.ENDER_DRAGON_GROWL),
+        ANVIL(SoundEvents.ANVIL_LAND),
+        GOAT_HORN(SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(2).value()),
+        LAVA_CHICKEN(SoundEvents.MUSIC_DISC_LAVA_CHICKEN.value());
+
+        public final SoundEvent sound;
+        GlaciteMineshaftPortalSound(SoundEvent sound) { this.sound = sound; }
+        @Override public String toString() { return t("config.babyzombieaddons.option.glaciteMineshaftPortalSoundSelect." + name()); }
+    }
+    public enum MineshaftCorpseRenderMode {
+        FILLED, WIREFRAME;
+        @Override public String toString() { return t("config.babyzombieaddons.option.mineshaftCorpseRenderMode." + name()); }
     }
     public enum GummyPolarBearMode {
         OFF, SMOLDERING_TOMB_ONLY, EVERYWHERE_EXCEPT_DUNGEON;

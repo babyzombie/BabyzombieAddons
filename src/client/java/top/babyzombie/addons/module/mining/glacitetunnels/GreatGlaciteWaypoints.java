@@ -38,7 +38,11 @@ public final class GreatGlaciteWaypoints {
                     WorldRenderUtils.drawFilledBox(ctx,
                         x2, y2, z2,
                         x2 + 0.5, y2 + 0.5, z2 + 0.5,
-                        0.2f, 0.2f, 1, 1, false);
+                        0.2f, 0.2f, 1, 1, true);
+                    WorldRenderUtils.drawFilledBox(ctx,
+                            x2, y2, z2,
+                            x2 + 0.5, y2 + 0.5, z2 + 0.5,
+                            0.2f, 0.2f, 1, 0.25f, false);
                 }
             }
         });
