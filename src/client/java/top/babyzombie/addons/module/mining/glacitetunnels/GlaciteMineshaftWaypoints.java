@@ -109,7 +109,7 @@ public final class GlaciteMineshaftWaypoints {
     private static int countLapisFromTabList() {
         var client = Minecraft.getInstance();
         if (client.getConnection() == null) return -1;
-        var tabList = client.gui.getTabList();
+        var tabList = client.gui.hud.getTabList();
         var ta = (PlayerTabOverlayAccessor) tabList;
         var players = ta.invokeGetPlayerInfos();
         if (players == null || players.isEmpty()) return -1;
