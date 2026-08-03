@@ -74,7 +74,7 @@ public class MiningConfig {
             @Expose @ConfigOption(name = "config.babyzombieaddons.option.glaciteMineshaftPortalSound", desc = "config.babyzombieaddons.option.glaciteMineshaftPortalSound.desc") @ConfigEditorBoolean @SearchTag("mineshaft") @SearchTag("sound")
             public boolean portalSoundAlert = false;
             @Expose @ConfigOption(name = "config.babyzombieaddons.option.glaciteMineshaftPortalSoundSelect", desc = "config.babyzombieaddons.option.glaciteMineshaftPortalSoundSelect.desc") @ConfigEditorDropdown @SearchTag("mineshaft") @SearchTag("sound")
-            public GlaciteMineshaftPortalSound portalSound = GlaciteMineshaftPortalSound.BELL;
+            public GlaciteMineshaftPortalSound portalSound = GlaciteMineshaftPortalSound.DRAGON;
             @Expose @ConfigOption(name = "config.babyzombieaddons.option.glaciteMineshaftPortalAction", desc = "config.babyzombieaddons.option.glaciteMineshaftPortalAction.desc") @ConfigEditorDropdown @SearchTag("mineshaft") @SearchTag("warp")
             public GlaciteMineshaftPortalAction portalAction = GlaciteMineshaftPortalAction.NONE;
             @Expose @ConfigOption(name = "config.babyzombieaddons.option.glaciteMineshaftRequireTwoLapisForPtmeWarp", desc = "config.babyzombieaddons.option.glaciteMineshaftRequireTwoLapisForPtmeWarp.desc") @ConfigEditorBoolean @SearchTag("mineshaft") @SearchTag("lapis") @SearchTag("warp")

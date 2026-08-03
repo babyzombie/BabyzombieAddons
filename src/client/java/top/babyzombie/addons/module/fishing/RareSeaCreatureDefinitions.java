@@ -211,6 +211,9 @@ public final class RareSeaCreatureDefinitions {
 
     public static String cleanNameForMatch(String rawName) {
         String s = ChatUtils.removeEmoji(rawName);
+        // §k（乱码）格式码后的单个字符是乱码占位字符，如腐化海怪名 "§5§ka§5Corrupted Puddle Jumper§5§ka"，
+        // 连格式码一起剥离，否则会残留占位字符导致无法匹配
+        s = s.replaceAll("§k(?![§&]).", "");
         s = ChatUtils.stripColor(s);
         s = s.replaceAll("\\[[Ll][Vv]\\s*\\d+\\]", "");
         s = s.replaceAll("[\\d,./]+[kKmMbB]?", "").replace("❤", "");
@@ -222,8 +225,10 @@ public final class RareSeaCreatureDefinitions {
     public static @Nullable SeaCreature match(String rawName) {
         String cleaned = cleanNameForMatch(rawName);
         if (cleaned.isEmpty()) return null;
+        // 腐化海怪（名字带 Corrupted 前缀，如 "Corrupted Puddle Jumper"）是普通稀有海怪的腐化版，按对应定义匹配
+        String base = cleaned.replaceFirst("(?i)^Corrupted\\s*", "");
         for (SeaCreature sc : SeaCreature.values()) {
-            if (cleaned.equalsIgnoreCase(sc.displayName)) return sc;
+            if (base.equalsIgnoreCase(sc.displayName)) return sc;
         }
         return null;
     }
