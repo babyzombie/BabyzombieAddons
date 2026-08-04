@@ -47,6 +47,9 @@ public final class ContainerChatHelper {
     }
 
     public static void activate(Screen screen, ChatScreen chatScreen) {
+        // 已激活时直接忽略：点击聊天消息时 vanilla 会 setScreen(ChatScreen) 想重设主屏幕，
+        // 重复 activate 会再次 init() 重建输入框（丢输入）并重复安装 GLFW 回调（回调链自指/断链）
+        if (overlay != null) return;
         host = screen;
         overlay = chatScreen;
         inputFocused = true;
