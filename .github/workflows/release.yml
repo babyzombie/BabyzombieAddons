@@ -175,10 +175,15 @@ jobs:
           if [ -n "$RELEASE_ID" ] && [ "$RELEASE_ID" != "null" ]; then
             for f in artifacts/**/*.jar; do
               echo "上传: $f"
-              for i in 1 2 3 4; do
-                RESP=$(curl -sS --retry 2 --connect-timeout 30 --max-time 120 \
+              # 海外 runner 访问 Gitee 很慢：120s 超时经常误杀慢速上传导致反复重试
+              # （3.4.1 那次跑了 28 分钟）。放宽到 300s，让慢速成功不被判超时。
+              for i in 1 2 3; do
+                HTTP=$(curl -sS -o /dev/null -w "%{http_code}" --retry 2 \
+                  --connect-timeout 30 --max-time 300 \
                   -X POST "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
-                  -F "file=@$f" 2>&1) && break
+                  -F "file=@$f" 2>&1) || HTTP="000"
+                if [ "$HTTP" = "200" ]; then echo "上传成功: $f"; break; fi
+                echo "::warning ::Gitee 上传第 $i 次失败 (HTTP $HTTP)，5 秒后重试"
                 sleep 5
               done
             done
@@ -235,7 +240,7 @@ jobs:
 
       - name: Publish main to Modrinth
         if: steps.check-token.outputs.has_token == 'true'
-        uses: Kir-Antipov/mc-publish@v3.8
+        uses: Kir-Antipov/mc-publish@v3.3.1
         with:
           modrinth-id: babyzombieaddons
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
@@ -251,7 +256,7 @@ jobs:
 
       - name: Publish 26.2 to Modrinth
         if: steps.check-token.outputs.has_token == 'true'
-        uses: Kir-Antipov/mc-publish@v3.8
+        uses: Kir-Antipov/mc-publish@v3.3.1
         with:
           modrinth-id: babyzombieaddons
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
