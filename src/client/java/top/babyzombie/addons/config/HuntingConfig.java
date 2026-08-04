@@ -53,6 +53,14 @@ public class HuntingConfig {
         public boolean sculkSensorGlow = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariSculkSensorGlowColor", desc = "config.babyzombieaddons.option.safariSculkSensorGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("warden")
         public ChromaColour sculkSensorGlowColor = ChromaColour.fromStaticRGB(170, 0, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariBatGlow", desc = "config.babyzombieaddons.option.safariBatGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("bat")
+        public boolean batGlow = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariBatGlowColor", desc = "config.babyzombieaddons.option.safariBatGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("bat")
+        public ChromaColour batGlowColor = ChromaColour.fromStaticRGB(255, 255, 85, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariDuplicoGlow", desc = "config.babyzombieaddons.option.safariDuplicoGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("duplico")
+        public boolean duplicoGlow = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariDuplicoGlowColor", desc = "config.babyzombieaddons.option.safariDuplicoGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("duplico")
+        public ChromaColour duplicoGlowColor = ChromaColour.fromStaticRGB(85, 255, 85, 255);
     }
 
     public static class TorrhusCanyon {

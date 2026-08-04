@@ -3,6 +3,7 @@ package top.babyzombie.addons.module.hunting.safari;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Display;
+import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
@@ -25,6 +26,8 @@ import java.util.Set;
  * - Hideyho NPC（淡蓝色）
  * - Warden（冷却红色/可捕捉绿色，开深度测试）
  * - 较频幽匿感测体（紫色方块发光）
+ * - 蝙蝠（自定义颜色，深度测试）
+ * - Duplico 物品展示实体（书架/樱花木/深板岩圆石等，自定义颜色，深度测试）
  */
 public final class SafariEntitiesGlow {
 
@@ -32,6 +35,13 @@ public final class SafariEntitiesGlow {
     private static final int HIDEYHO_COLOR = 0xFF80D8FF;
     private static final int SCULK_SENSOR_RANGE = 32;
     private static final int SCULK_SENSOR_RANGE_SQ = SCULK_SENSOR_RANGE * SCULK_SENSOR_RANGE;
+
+    /** Duplico 物品展示实体可能展示的物品 id（path 部分） */
+    private static final Set<String> DUPLICO_ITEMS = Set.of(
+        "bookshelf",
+        "cherry_wood",
+        "cobbled_deepslate"
+    );
 
     // Warden 战斗场地范围
     private static final int ARENA_X_MIN = -18, ARENA_X_MAX = 24;
@@ -53,9 +63,11 @@ public final class SafariEntitiesGlow {
             boolean glowHideyho = cfg.safari.hideyhoGlow;
             boolean glowWarden = cfg.safari.wardenGlow;
             boolean glowSculkSensor = cfg.safari.sculkSensorGlow;
+            boolean glowBat = cfg.safari.batGlow;
+            boolean glowDuplico = cfg.safari.duplicoGlow;
 
             // === 实体发光 ===
-            if (glowShulker || glowHideyho) {
+            if (glowShulker || glowHideyho || glowBat || glowDuplico) {
                 for (var entity : client.level.entitiesForRendering()) {
                     if (glowShulker) {
                         int argb = cfg.safari.shulkerGlowColor.getEffectiveColourRGB();
@@ -70,6 +82,17 @@ public final class SafariEntitiesGlow {
                     if (glowHideyho && entity instanceof Player player
                             && HIDEYHO_NAME.equals(player.getName().getString())) {
                         GlowController.setGlow(player, true, HIDEYHO_COLOR, true);
+                    }
+                    if (glowBat && entity instanceof Bat bat) {
+                        GlowController.setGlow(bat, true, cfg.safari.batGlowColor.getEffectiveColourRGB(), true);
+                    }
+                    if (glowDuplico && entity instanceof Display.ItemDisplay itemDisplay) {
+                        var stack = itemDisplay.getItemStack();
+                        if (!stack.isEmpty() && DUPLICO_ITEMS.contains(
+                                BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath())) {
+                            GlowController.setGlow(itemDisplay, true,
+                                cfg.safari.duplicoGlowColor.getEffectiveColourRGB(), true);
+                        }
                     }
                 }
             }

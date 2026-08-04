@@ -125,14 +125,17 @@ def render_en(sections):
     return "\n".join(out) + "\n"
 
 
-def render_bilingual(sections):
+def render_bilingual(sections, originals):
+    """英文在上、中文在下对排。originals 是翻译前的原始中文行（sections 里已被替换成英文）。"""
     out = []
+    idx = 0
     for title, lines in sections:
         en_title = local_group_title(title)
         out.append(f"{en_title}（{title[4:]}）")
         for line in lines:
             out.append(line)
-            out.append("  " + line.strip())
+            out.append("  " + originals[idx].strip())
+            idx += 1
     return "\n".join(out) + "\n"
 
 
@@ -151,7 +154,8 @@ def main():
         text = f.read()
 
     sections = parse_changelog(text)
-    commit_lines = [line for _, lines in sections for line in lines]
+    original_lines = [line for _, lines in sections for line in lines]
+    commit_lines = list(original_lines)
     print(f"解析到 {len(sections)} 个分组，{len(commit_lines)} 条 commit")
 
     if not commit_lines:
@@ -191,7 +195,7 @@ def main():
     with open(args.en, "w", encoding="utf-8", newline="\n") as f:
         f.write(render_en(sections))
     with open(args.bilingual, "w", encoding="utf-8", newline="\n") as f:
-        f.write(render_bilingual(sections))
+        f.write(render_bilingual(sections, original_lines))
     print(f"已生成 {args.en}（纯英文）和 {args.bilingual}（中英双语）")
 
 
