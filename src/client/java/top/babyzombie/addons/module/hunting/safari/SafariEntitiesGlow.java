@@ -40,6 +40,7 @@ public final class SafariEntitiesGlow {
     private static final Set<String> DUPLICO_ITEMS = Set.of(
         "bookshelf",
         "cherry_wood",
+        "deepslate",
         "cobbled_deepslate"
     );
 
