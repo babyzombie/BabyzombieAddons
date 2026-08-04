@@ -185,32 +185,42 @@ jobs:
           fi
           echo "Gitee 同步完成"
 
-  # 单独 job：job 级 if 才能引用 secrets（step 级 if 不支持 secrets context）。
-  # 未配置 MODRINTH_TOKEN 时整个 job 跳过，不影响 release 主流程。
+  # 注意：secrets context 不能出现在任何 if 条件中（job 级/step 级都不行），
+  # 只能通过 env 映射后用 steps context 判断。未配置 MODRINTH_TOKEN 时跳过发布。
   publish-modrinth:
     needs: release
-    if: ${{ secrets.MODRINTH_TOKEN != '' }}
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check MODRINTH_TOKEN
+        id: check-token
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: |
+          if [ -n "$MODRINTH_TOKEN" ]; then echo "has_token=true" >> "$GITHUB_OUTPUT"; else echo "has_token=false" >> "$GITHUB_OUTPUT"; fi
+
       - name: Download main jars
+        if: steps.check-token.outputs.has_token == 'true'
         uses: actions/download-artifact@v4
         with:
           name: main-jars
           path: main-jars
 
       - name: Download 26.2 jars
+        if: steps.check-token.outputs.has_token == 'true'
         uses: actions/download-artifact@v4
         with:
           name: sub-jars
           path: sub-jars
 
       - name: Download English changelog
+        if: steps.check-token.outputs.has_token == 'true'
         uses: actions/download-artifact@v4
         with:
           name: changelog-en
 
       - name: Extract MC versions from jars
+        if: steps.check-token.outputs.has_token == 'true'
         id: mc-versions
         env:
           TAG: ${{ github.ref_name }}
@@ -224,6 +234,7 @@ jobs:
           echo "version_sub=${VERSION}-mc${MC_SUB}" >> "$GITHUB_ENV"
 
       - name: Publish main to Modrinth
+        if: steps.check-token.outputs.has_token == 'true'
         uses: Kir-Antipov/mc-publish@v3.8
         with:
           modrinth-id: babyzombieaddons
@@ -239,6 +250,7 @@ jobs:
             fabric-language-kotlin | depends | *
 
       - name: Publish 26.2 to Modrinth
+        if: steps.check-token.outputs.has_token == 'true'
         uses: Kir-Antipov/mc-publish@v3.8
         with:
           modrinth-id: babyzombieaddons
