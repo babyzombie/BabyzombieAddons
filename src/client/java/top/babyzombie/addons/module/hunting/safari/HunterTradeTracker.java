@@ -156,16 +156,12 @@ public final class HunterTradeTracker {
                 // 多行用 fontYOffset 分行（缩放后像素，9 = 一行行高）
                 final float scale = 0.04f;
                 WorldTextRenderer.renderString(ctx, t.npcName, x, y, z, 0xFFFFFF55, scale, true, 0);
+                // 悬浮字固定英文，避免中英混排的渲染问题
                 if (t.shard != null) {
-                    // 物品名可能带 Hypixel 自定义字体字符，本地字体渲染会成方块，先过滤
-                    String give = Component.translatable("babyzombieaddons.hunterTrade.give",
-                            sanitize(t.shard)).getString();
-                    WorldTextRenderer.renderString(ctx, give, x, y, z, 0xFF55FF55, scale, true, 9);
+                    WorldTextRenderer.renderString(ctx, "Give " + t.shard, x, y, z, 0xFF55FF55, scale, true, 9);
                 }
                 if (t.cost != null) {
-                    String want = Component.translatable("babyzombieaddons.hunterTrade.want",
-                            sanitize(t.cost)).getString();
-                    WorldTextRenderer.renderString(ctx, want, x, y, z, 0xFFFF5555, scale, true, 18);
+                    WorldTextRenderer.renderString(ctx, "Want " + t.cost, x, y, z, 0xFFFF5555, scale, true, 18);
                 }
             }
         });
@@ -188,8 +184,8 @@ public final class HunterTradeTracker {
                 if (t.pos != null) {
                     sb.append(" §7@ ").append(t.pos.getX()).append(' ').append(t.pos.getY()).append(' ').append(t.pos.getZ());
                 }
-                String give = Component.translatable("babyzombieaddons.hunterTrade.give", sanitize(t.shard)).getString();
-                String want = Component.translatable("babyzombieaddons.hunterTrade.want", sanitize(t.cost)).getString();
+                String give = Component.translatable("babyzombieaddons.hunterTrade.give", t.shard == null ? "?" : t.shard).getString();
+                String want = Component.translatable("babyzombieaddons.hunterTrade.want", t.cost == null ? "?" : t.cost).getString();
                 sb.append('\n').append("§a ").append(give).append("  §c").append(want);
             }
             HudManager.drawScaled(context, font, sb.toString(), x, y, s);
@@ -210,11 +206,6 @@ public final class HunterTradeTracker {
         currentCost = null;
         currentPos = scanNpc(npcName);
         lastDialogueTick = ServerTick.getTime();
-        if (currentPos != null) {
-            debugMsg("startPos", npcName, currentPos.getX(), currentPos.getY(), currentPos.getZ());
-        } else {
-            debugMsg("startNoPos", npcName);
-        }
     }
 
     /** 从 NPC 消息里动态提取 shard / cost（不依赖白名单，新物品也能识别） */
@@ -223,7 +214,6 @@ public final class HunterTradeTracker {
 
         // 物品名可能显示为 [名字] 带括号，去掉再匹配
         String clean = raw.replaceAll("[\\[\\]]", "");
-        String oldShard = currentShard, oldCost = currentCost;
         if (currentShard == null) {
             Matcher m = SHARD_PATTERN.matcher(clean);
             if (m.find()) currentShard = m.group(1);
@@ -231,9 +221,6 @@ public final class HunterTradeTracker {
         if (currentCost == null) {
             Matcher m = COST_PATTERN.matcher(clean);
             if (m.find()) currentCost = m.group(1);
-        }
-        if (currentShard != oldShard || currentCost != oldCost) {
-            debugMsg("parse", currentShard == null ? "?" : currentShard, currentCost == null ? "?" : currentCost);
         }
     }
 
@@ -256,9 +243,7 @@ public final class HunterTradeTracker {
         }
 
         // 已有记录（含队友发的）→ 只弹 popup，不再发队伍消息 / 记位置
-        boolean known = hasRecordNear(npc.name, currentPos);
-        debugMsg(known ? "triggerKnown" : "triggerNew", npc.name);
-        if (!known) {
+        if (!hasRecordNear(npc.name, currentPos)) {
             if (ht.party) {
                 sendPartyMessage(npc.name, currentPos, currentCost, currentShard);
             }
@@ -371,18 +356,6 @@ public final class HunterTradeTracker {
             if (result != null) return result;
         }
         return null;
-    }
-
-    /** 过滤物品名里的非可打印 ASCII 字符（Hypixel 自定义字体字符本地渲染会变方块） */
-    private static String sanitize(String s) {
-        if (s == null || s.isBlank()) return "?";
-        return s.replaceAll("[^\\x20-\\x7E]", "").trim();
-    }
-
-    /** 调试消息：仅在开启 debug 开关时显示 */
-    private static void debugMsg(String key, Object... args) {
-        if (!ModConfigManager.get().hunting.safari.hunterTrade.debug) return;
-        ChatUtils.showTranslatable("babyzombieaddons.hunterTrade.debug." + key, args);
     }
 
     private static double distSq(BlockPos a, BlockPos b) {

@@ -79,8 +79,6 @@ public class HuntingConfig {
         public boolean worldText = true;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariHunterTradeHud", desc = "config.babyzombieaddons.option.safariHunterTradeHud.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("hunter")
         public boolean hud = true;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariHunterTradeDebug", desc = "config.babyzombieaddons.option.safariHunterTradeDebug.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("hunter") @SearchTag("debug")
-        public boolean debug = false;
     }
 
     public static class TorrhusCanyon {
