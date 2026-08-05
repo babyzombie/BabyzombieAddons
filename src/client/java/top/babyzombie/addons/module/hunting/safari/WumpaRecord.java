@@ -56,7 +56,6 @@ public final class WumpaRecord {
             if (overlay) return true;
             if (!ModConfigManager.get().hunting.safari.wumpaRecord) return true;
             if (!HypixelLocationTracker.getInstance().isInSafari()) return true;
-            if (!isInSnowArea()) return true;
 
             String raw = ChatUtils.stripColor(message.getString());
 
