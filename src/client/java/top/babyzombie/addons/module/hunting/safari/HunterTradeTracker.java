@@ -62,7 +62,7 @@ public final class HunterTradeTracker {
     private static final Pattern PARTY_NO_POS_PATTERN = Pattern.compile(
             "^([A-Za-z ]+), want (.+), offer (.+)$");
 
-    private static final int DIALOGUE_TIMEOUT_TICKS = 200; // 对话无更新 10 秒后视为结束
+    private static final long DIALOGUE_TIMEOUT_MS = 10_000; // 对话无更新 10 秒后视为结束（ServerTick.getTime 单位是毫秒）
     private static final double SAME_NPC_DIST = 8;         // 判定"同一 NPC"的距离
     private static final double SCAN_RADIUS = 32;          // 扫描盔甲架的半径
 
@@ -194,7 +194,7 @@ public final class HunterTradeTracker {
 
         // ── 对话超时清理 ──
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (currentNpc != null && ServerTick.getTime() - lastDialogueTick > DIALOGUE_TIMEOUT_TICKS) {
+            if (currentNpc != null && ServerTick.getTime() - lastDialogueTick > DIALOGUE_TIMEOUT_MS) {
                 resetConversation();
             }
         });
