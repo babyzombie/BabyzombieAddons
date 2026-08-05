@@ -182,7 +182,7 @@ jobs:
                   --connect-timeout 30 --max-time 300 \
                   -X POST "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
                   -F "file=@$f" 2>&1) || HTTP="000"
-                if [ "$HTTP" = "200" ]; then echo "上传成功: $f"; break; fi
+                if [ "$HTTP" -ge 200 ] && [ "$HTTP" -lt 300 ]; then echo "上传成功: $f"; break; fi
                 echo "::warning ::Gitee 上传第 $i 次失败 (HTTP $HTTP)，5 秒后重试"
                 sleep 5
               done
@@ -250,9 +250,6 @@ jobs:
           version: ${{ env.version_main }}
           version-type: release
           changelog-file: changelog-en.md
-          dependencies: |
-            fabric-api | depends | *
-            fabric-language-kotlin | depends | *
 
       - name: Publish 26.2 to Modrinth
         if: steps.check-token.outputs.has_token == 'true'
@@ -266,6 +263,3 @@ jobs:
           version: ${{ env.version_sub }}
           version-type: release
           changelog-file: changelog-en.md
-          dependencies: |
-            fabric-api | depends | *
-            fabric-language-kotlin | depends | *

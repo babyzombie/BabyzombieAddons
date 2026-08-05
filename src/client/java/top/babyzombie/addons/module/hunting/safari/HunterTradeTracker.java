@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.module.chat.PartyModule;
@@ -23,7 +24,9 @@ import top.babyzombie.addons.util.render.WorldTextRenderer;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,6 +64,72 @@ public final class HunterTradeTracker {
             "^x: (-?\\d+), y: (-?\\d+), z: (-?\\d+), ([A-Za-z ]+), want (.+), offer (.+)$");
     private static final Pattern PARTY_NO_POS_PATTERN = Pattern.compile(
             "^([A-Za-z ]+), want (.+), offer (.+)$");
+
+    /**
+     * 物品名 → 品质颜色（队友消息无颜色时查表着色）。
+     * 碎片颜色 = 品质色（wiki 稀有度）：Common §f / Uncommon §a / Rare §9 / Epic §5 / Legendary §6；
+     * 消耗品是 SPECIAL 品质但颜色自定义，默认白色，实测后补色。
+     */
+    private static final Map<String, String> ITEM_COLORS = new HashMap<>();
+    static {
+        // ── 消耗品（SPECIAL 品质但颜色自定义，默认白，实测后把 §f 改成实际色）──
+        ITEM_COLORS.put("Shining Coin", "§6");
+        ITEM_COLORS.put("Yogi Berry", "§b");
+        ITEM_COLORS.put("Orange Gem", "§6");
+        ITEM_COLORS.put("Purple Gem", "§5");
+        ITEM_COLORS.put("Lime Gem", "§a");
+        ITEM_COLORS.put("Bag of Seeds", "§e");
+        ITEM_COLORS.put("Soothing Incense", "§5");
+        ITEM_COLORS.put("Wriggleworm", "§6");
+        ITEM_COLORS.put("Icebreaker", "§c");
+        // ── 碎片 Common §f（wiki Critters）──
+        ITEM_COLORS.put("Cavernfish Shard", "§f");
+        ITEM_COLORS.put("Flitter Shard", "§f");
+        ITEM_COLORS.put("Shyworm Shard", "§f");
+        ITEM_COLORS.put("Strongarm Shard", "§f");
+        ITEM_COLORS.put("Tepid Shard", "§f");
+        ITEM_COLORS.put("Foxtrot Shard", "§f");
+        // ── 碎片 Uncommon §a ──
+        ITEM_COLORS.put("Polaris Shard", "§a");
+        ITEM_COLORS.put("Driftling Shard", "§a");
+        ITEM_COLORS.put("Bluebird Shard", "§a");
+        ITEM_COLORS.put("Honeybug Shard", "§a");
+        ITEM_COLORS.put("Treefrog Shard", "§a");
+        ITEM_COLORS.put("Woodchucker Shard", "§a");
+        ITEM_COLORS.put("Areita Shard", "§a");
+        ITEM_COLORS.put("Bloodbat Shard", "§a");
+        ITEM_COLORS.put("Duplico Shard", "§a");
+        ITEM_COLORS.put("Gazer Shard", "§a");
+        ITEM_COLORS.put("Litterbug Shard", "§a");
+        ITEM_COLORS.put("Solsnatcher Shard", "§a");
+        ITEM_COLORS.put("Shuddersquid Shard", "§a");
+        // ── 碎片 Rare §9 ──
+        ITEM_COLORS.put("Billygoat Shard", "§9");
+        ITEM_COLORS.put("Scrappy Shard", "§9");
+        ITEM_COLORS.put("Hideyho Shard", "§9");
+        ITEM_COLORS.put("Mantis Shrimp Shard", "§9");
+        ITEM_COLORS.put("Chuckwalla Shard", "§9");
+        ITEM_COLORS.put("Hideonfloor Shard", "§9");
+        ITEM_COLORS.put("Snoozle Shard", "§9");
+        ITEM_COLORS.put("Parakeet Shard", "§9");
+        ITEM_COLORS.put("Rockmite Shard", "§9");
+        ITEM_COLORS.put("Nozzlenose Shard", "§9");
+        ITEM_COLORS.put("Fluffling Shard", "§9");
+        ITEM_COLORS.put("Troodon Shard", "§9");
+        ITEM_COLORS.put("Hideonwall Shard", "§9");
+        ITEM_COLORS.put("Gimmiegold Shard", "§9");
+        // ── 碎片 Epic §5 ──
+        ITEM_COLORS.put("Gemzie Shard", "§5");
+        // ── 碎片 Legendary §6 ──
+        ITEM_COLORS.put("Macaw Shard", "§6");
+        ITEM_COLORS.put("Doomspiral Shard", "§6");
+        ITEM_COLORS.put("Wumpa Shard", "§6");
+    }
+
+    /** 查表取物品品质色，未知返回 null（渲染时用默认白色） */
+    private static String lookupColor(String item) {
+        return item == null ? null : ITEM_COLORS.get(item);
+    }
 
     private static final long DIALOGUE_TIMEOUT_MS = 10_000; // 对话无更新 10 秒后视为结束（ServerTick.getTime 单位是毫秒）
     private static final double SAME_NPC_DIST = 8;         // 判定"同一 NPC"的距离
@@ -149,19 +218,27 @@ public final class HunterTradeTracker {
         RenderPhaseRegister.register(ctx -> {
             if (!ModConfigManager.get().hunting.safari.hunterTrade.worldText) return;
             if (!HypixelLocationTracker.getInstance().isInSafari()) return;
+            var player = Minecraft.getInstance().player;
+            if (player == null) return;
             for (HunterTrade t : records) {
                 if (t.pos == null) continue;
                 double x = t.pos.getX() + 0.5, y = t.pos.getY() + 2.4, z = t.pos.getZ() + 0.5;
-                // 悬浮字显示在 NPC 头顶上方：三行（8px 字高 + 9px 行距）共约 1 格高，
+                // 按距离自动放大（参考 Waypoints）：近处 0.04，50 格外封顶 0.20
+                float dist = (float) player.position().distanceTo(new Vec3(x, y, z));
+                float scale = 0.04f + Math.min(dist / 50f, 1f) * 0.16f;
+                // 悬浮字显示在 NPC 头顶上方：三行（8px 字高 + 9px 行距），
                 // 多行用 fontYOffset 分行（缩放后像素，9 = 一行行高）
-                final float scale = 0.04f;
                 WorldTextRenderer.renderString(ctx, t.npcName, x, y, z, 0xFFFFFF55, scale, true, 0);
-                // 悬浮字固定英文，避免中英混排的渲染问题
+                // 悬浮字固定英文，避免中英混排的渲染问题；物品名颜色查表
                 if (t.shard != null) {
-                    WorldTextRenderer.renderString(ctx, "Give " + t.shard, x, y, z, 0xFF55FF55, scale, true, 9);
+                    String sc = lookupColor(t.shard);
+                    WorldTextRenderer.renderString(ctx, "Give " + (sc == null ? "" : sc) + t.shard,
+                            x, y, z, 0xFF55FF55, scale, true, 9);
                 }
                 if (t.cost != null) {
-                    WorldTextRenderer.renderString(ctx, "Want " + t.cost, x, y, z, 0xFFFF5555, scale, true, 18);
+                    String cc = lookupColor(t.cost);
+                    WorldTextRenderer.renderString(ctx, "Want " + (cc == null ? "" : cc) + t.cost,
+                            x, y, z, 0xFFFF5555, scale, true, 18);
                 }
             }
         });
@@ -180,12 +257,18 @@ public final class HunterTradeTracker {
             StringBuilder sb = new StringBuilder("§6§l"
                     + Component.translatable("hud.babyzombieaddons.hunterTrade.title").getString());
             for (HunterTrade t : records) {
-                sb.append('\n').append("§e").append(t.npcName);
+                // NPC 名按所在分区着色（无坐标时用默认黄色）
+                sb.append('\n').append(t.pos == null ? "§e" : zoneColorCode(zoneOf(t.pos))).append(t.npcName);
                 if (t.pos != null) {
                     sb.append(" §7@ ").append(t.pos.getX()).append(' ').append(t.pos.getY()).append(' ').append(t.pos.getZ());
                 }
-                String give = Component.translatable("babyzombieaddons.hunterTrade.give", t.shard == null ? "?" : t.shard).getString();
-                String want = Component.translatable("babyzombieaddons.hunterTrade.want", t.cost == null ? "?" : t.cost).getString();
+                // 物品名颜色查表（表里没有时用白色）
+                String sc = lookupColor(t.shard);
+                String cc = lookupColor(t.cost);
+                String coloredShard = (sc == null ? "§f" : sc) + (t.shard == null ? "?" : t.shard);
+                String coloredCost = (cc == null ? "§f" : cc) + (t.cost == null ? "?" : t.cost);
+                String give = Component.translatable("babyzombieaddons.hunterTrade.give", coloredShard).getString();
+                String want = Component.translatable("babyzombieaddons.hunterTrade.want", coloredCost).getString();
                 sb.append('\n').append("§a ").append(give).append("  §c").append(want);
             }
             HudManager.drawScaled(context, font, sb.toString(), x, y, s);
@@ -356,6 +439,34 @@ public final class HunterTradeTracker {
             if (result != null) return result;
         }
         return null;
+    }
+
+    /** Safari 四个生物群系分区 */
+    private enum SafariZone { CAVERN, FOREST, HAUNTED, ICY }
+
+    /**
+     * 按坐标判定所在分区（用 wiki 的 NPC 候选点 + 铃铛地标拟合的边界，
+     * Icy 与 WumpaRecord 实测的雪地区域一致）：
+     * 雪地（x ≤ -52 且 z ≤ -2）→ Icy；
+     * z > 10 为南侧（x < -50 → Cavern，否则 Forest）；
+     * 其余（z ≤ 10 的北侧）→ x < -50 的过渡带归 Cavern，否则 Haunted。
+     */
+    private static SafariZone zoneOf(BlockPos pos) {
+        int x = pos.getX(), z = pos.getZ();
+        // Icy（雪地）：与 WumpaRecord.isInSnowArea 的边界一致
+        if (x <= -52 && z <= -2) return SafariZone.ICY;
+        if (z > 10) return x < -50 ? SafariZone.CAVERN : SafariZone.FOREST;
+        return x < -50 ? SafariZone.CAVERN : SafariZone.HAUNTED;
+    }
+
+    /** 分区主题色（HUD 色码）：Cavern 金 / Forest 绿 / Haunted 紫 / Icy 青 */
+    private static String zoneColorCode(SafariZone zone) {
+        return switch (zone) {
+            case CAVERN -> "§6";
+            case FOREST -> "§a";
+            case HAUNTED -> "§5";
+            case ICY -> "§b";
+        };
     }
 
     private static double distSq(BlockPos a, BlockPos b) {
