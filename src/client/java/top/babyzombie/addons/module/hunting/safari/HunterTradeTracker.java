@@ -112,7 +112,17 @@ public final class HunterTradeTracker {
                 }
             }
 
-            // 2. 对话中：解析 shard/cost，或收到 Trade 选项
+            // 2. 当前无对话时，任意四猎手 NPC 消息也视为对话开始（防第一句文本变体）
+            if (currentNpc == null) {
+                for (HunterNpc npc : NPCS) {
+                    if (raw.startsWith("[NPC] " + npc.name + ": ")) {
+                        startConversation(npc.name);
+                        return true;
+                    }
+                }
+            }
+
+            // 3. 对话中：解析 shard/cost，或收到 Trade 选项
             if (currentNpc != null) {
                 if (raw.startsWith("[NPC] " + currentNpc + ": ")) {
                     parseOffer(raw);
@@ -197,6 +207,11 @@ public final class HunterTradeTracker {
         currentCost = null;
         currentPos = scanNpc(npcName);
         lastDialogueTick = ServerTick.getTime();
+        if (currentPos != null) {
+            debugMsg("startPos", npcName, currentPos.getX(), currentPos.getY(), currentPos.getZ());
+        } else {
+            debugMsg("startNoPos", npcName);
+        }
     }
 
     /** 从 NPC 消息里动态提取 shard / cost（不依赖白名单，新物品也能识别） */
@@ -205,6 +220,7 @@ public final class HunterTradeTracker {
 
         // 物品名可能显示为 [名字] 带括号，去掉再匹配
         String clean = raw.replaceAll("[\\[\\]]", "");
+        String oldShard = currentShard, oldCost = currentCost;
         if (currentShard == null) {
             Matcher m = SHARD_PATTERN.matcher(clean);
             if (m.find()) currentShard = m.group(1);
@@ -212,6 +228,9 @@ public final class HunterTradeTracker {
         if (currentCost == null) {
             Matcher m = COST_PATTERN.matcher(clean);
             if (m.find()) currentCost = m.group(1);
+        }
+        if (currentShard != oldShard || currentCost != oldCost) {
+            debugMsg("parse", currentShard == null ? "?" : currentShard, currentCost == null ? "?" : currentCost);
         }
     }
 
@@ -234,7 +253,9 @@ public final class HunterTradeTracker {
         }
 
         // 已有记录（含队友发的）→ 只弹 popup，不再发队伍消息 / 记位置
-        if (!hasRecordNear(npc.name, currentPos)) {
+        boolean known = hasRecordNear(npc.name, currentPos);
+        debugMsg(known ? "triggerKnown" : "triggerNew", npc.name);
+        if (!known) {
             if (ht.party) {
                 sendPartyMessage(npc.name, currentPos, currentCost, currentShard);
             }
@@ -347,6 +368,12 @@ public final class HunterTradeTracker {
             if (result != null) return result;
         }
         return null;
+    }
+
+    /** 调试消息：仅在开启 debug 开关时显示 */
+    private static void debugMsg(String key, Object... args) {
+        if (!ModConfigManager.get().hunting.safari.hunterTrade.debug) return;
+        ChatUtils.showTranslatable("babyzombieaddons.hunterTrade.debug." + key, args);
     }
 
     private static double distSq(BlockPos a, BlockPos b) {
