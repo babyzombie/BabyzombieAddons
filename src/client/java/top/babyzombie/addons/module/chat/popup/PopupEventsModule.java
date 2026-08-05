@@ -71,7 +71,8 @@ public final class PopupEventsModule {
     private enum EventType {
         PARTY("party_invite"), GUILD_PARTY("guild_party_invite"),
         FRIEND("friend_request"), TRADE("trade_request"),
-        POSITION_SWAP("position_swap"), DUEL("duel_request"), RESTART("restart_request"), BAIT("bait_low");
+        POSITION_SWAP("position_swap"), DUEL("duel_request"), RESTART("restart_request"), BAIT("bait_low"),
+        HUNTER("hunter_trade");
 
         final String key;
         EventType(String k) { this.key = k; }
@@ -205,6 +206,18 @@ public final class PopupEventsModule {
         playSound();
     }
 
+    /** 猎手交易弹窗：npc 要 cost 换 shard，同意后执行 tradeCommand（可为空） */
+    public static void showHunterTrade(String npc, String cost, String shard, String tradeCommand) {
+        eventType = EventType.HUNTER;
+        title = Component.translatable("babyzombieaddons.popup.title.hunter_trade");
+        body = Component.translatable("babyzombieaddons.popup.body.hunter_trade",
+                "§6" + npc + "§f", "§6" + cost + "§f", "§6" + shard + "§f");
+        command = tradeCommand == null ? "" : tradeCommand;
+        totalTime = 10000;
+        expireTime = ServerTick.getTime() + totalTime;
+        playSound();
+    }
+
     private static void playSound() {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
@@ -246,6 +259,7 @@ public final class PopupEventsModule {
             case DUEL -> 0xFFFF5555;
             case RESTART -> 0xFFFFFF55;
             case BAIT -> 0xFF55FF55;
+            case HUNTER -> 0xFF55FF55;
         };
     }
 

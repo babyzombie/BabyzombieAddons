@@ -152,6 +152,12 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.safariWumpaRecord",
                 () -> get().hunting.safari.wumpaRecord);
 
+        // --- Safari Hunter Trade ---
+        HudManager.register("SafariHunter", 10, 330, 1.0f,
+                "§6§l猎手交易\n§eHunter Billy §7@ -50 81 0\n§a 给 Mantis Shrimp Shard  §c要 Yogi Berry",
+                "config.babyzombieaddons.option.safariHunterTradeHud",
+                () -> get().hunting.safari.hunterTrade.hud);
+
         // --- Cake Buff ---
         HudManager.register("CakeBuffTracker", 10, 50, 1.0f,
                 """
