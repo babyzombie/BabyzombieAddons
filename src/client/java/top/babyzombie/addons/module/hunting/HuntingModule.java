@@ -1,5 +1,6 @@
 package top.babyzombie.addons.module.hunting;
 
+import top.babyzombie.addons.module.hunting.safari.HunterTradeTracker;
 import top.babyzombie.addons.module.hunting.safari.SafariBellDisplay;
 import top.babyzombie.addons.module.hunting.safari.SafariEntitiesGlow;
 import top.babyzombie.addons.module.hunting.safari.WumpaRecord;
@@ -13,6 +14,7 @@ public final class HuntingModule {
         SafariBellDisplay.init();
         SafariEntitiesGlow.init();
         WumpaRecord.init();
+        HunterTradeTracker.init();
         TorrhusCanyonBeeheemoth.init();
         TorrhusCanyonTemple.init();
     }

@@ -61,6 +61,24 @@ public class HuntingConfig {
         public boolean duplicoGlow = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariDuplicoGlowColor", desc = "config.babyzombieaddons.option.safariDuplicoGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("duplico")
         public ChromaColour duplicoGlowColor = ChromaColour.fromStaticRGB(85, 255, 85, 255);
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.group.safariHunterTrade", desc = "")
+        @Accordion
+        public HunterTrade hunterTrade = new HunterTrade();
+    }
+
+    /** 猎手交易（组中组） */
+    public static class HunterTrade {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariHunterTrade", desc = "config.babyzombieaddons.option.safariHunterTrade.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("hunter") @SearchTag("shard")
+        public boolean enabled = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariHunterTradePopup", desc = "config.babyzombieaddons.option.safariHunterTradePopup.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("hunter")
+        public boolean popup = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariHunterTradeParty", desc = "config.babyzombieaddons.option.safariHunterTradeParty.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("hunter")
+        public boolean party = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariHunterTradeWorldText", desc = "config.babyzombieaddons.option.safariHunterTradeWorldText.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("hunter")
+        public boolean worldText = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariHunterTradeHud", desc = "config.babyzombieaddons.option.safariHunterTradeHud.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("hunter")
+        public boolean hud = true;
     }
 
     public static class TorrhusCanyon {
