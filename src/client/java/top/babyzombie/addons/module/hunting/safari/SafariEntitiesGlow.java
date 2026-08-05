@@ -81,7 +81,7 @@ public final class SafariEntitiesGlow {
                             && HIDEYHO_NAME.equals(player.getName().getString())) {
                         GlowController.setGlow(player, true, HIDEYHO_COLOR, true);
                     }
-                    if (glowBat && entity instanceof Bat bat) {
+                    if (glowBat && entity instanceof Bat bat && !bat.isInvisible()) {
                         GlowController.setGlow(bat, true, cfg.safari.batGlowColor.getEffectiveColourRGB(), true);
                     }
                     if (glowDuplico && entity instanceof Display.ItemDisplay itemDisplay) {
