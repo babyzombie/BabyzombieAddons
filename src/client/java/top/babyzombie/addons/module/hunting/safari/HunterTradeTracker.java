@@ -52,9 +52,9 @@ public final class HunterTradeTracker {
 
     // ── 动态提取：碎片名以 "Shard" 结尾，每个词首字母大写（如 Billygoat Shard / Mantis Shrimp Shard）──
     private static final Pattern SHARD_PATTERN = Pattern.compile("\\b([A-Z][a-z]*(?: [A-Z][a-z]*)* Shard)\\b");
-    // ── 动态提取：所需物品在 "exchange for a/an X" / "exchange for, say, a X" / Dennis 的 "give m-m-me a X" 句式里 ──
+    // ── 动态提取：所需物品在 "exchange for a/an/the X" / "exchange for, say, a X" / Dennis 的 "give m-m-me a X" 句式里 ──
     private static final Pattern COST_PATTERN = Pattern.compile(
-            "(?:exchange for(?:, say, (?:a|an)| (?:a|an))|give m-m-me (?:a|an)) ([A-Z][A-Za-z ]+?)(?:[.!?…]|$)");
+            "(?:exchange for(?:, say, (?:a|an|the)| (?:a|an|the))|give m-m-me (?:a|an|the)) ([A-Z][A-Za-z ]+?)(?:[.!?…]|$)");
 
     // ── 队伍消息格式（英文）：x: {x}, y: {y}, z: {z}, {npc}, want {cost}, offer {shard} ──
     private static final Pattern PARTY_PATTERN = Pattern.compile(
