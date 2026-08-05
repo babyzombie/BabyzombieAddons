@@ -157,11 +157,14 @@ public final class HunterTradeTracker {
                 final float scale = 0.04f;
                 WorldTextRenderer.renderString(ctx, t.npcName, x, y, z, 0xFFFFFF55, scale, true, 0);
                 if (t.shard != null) {
-                    String give = Component.translatable("babyzombieaddons.hunterTrade.give", t.shard).getString();
+                    // 物品名可能带 Hypixel 自定义字体字符，本地字体渲染会成方块，先过滤
+                    String give = Component.translatable("babyzombieaddons.hunterTrade.give",
+                            sanitize(t.shard)).getString();
                     WorldTextRenderer.renderString(ctx, give, x, y, z, 0xFF55FF55, scale, true, 9);
                 }
                 if (t.cost != null) {
-                    String want = Component.translatable("babyzombieaddons.hunterTrade.want", t.cost).getString();
+                    String want = Component.translatable("babyzombieaddons.hunterTrade.want",
+                            sanitize(t.cost)).getString();
                     WorldTextRenderer.renderString(ctx, want, x, y, z, 0xFFFF5555, scale, true, 18);
                 }
             }
@@ -185,8 +188,8 @@ public final class HunterTradeTracker {
                 if (t.pos != null) {
                     sb.append(" §7@ ").append(t.pos.getX()).append(' ').append(t.pos.getY()).append(' ').append(t.pos.getZ());
                 }
-                String give = Component.translatable("babyzombieaddons.hunterTrade.give", t.shard == null ? "?" : t.shard).getString();
-                String want = Component.translatable("babyzombieaddons.hunterTrade.want", t.cost == null ? "?" : t.cost).getString();
+                String give = Component.translatable("babyzombieaddons.hunterTrade.give", sanitize(t.shard)).getString();
+                String want = Component.translatable("babyzombieaddons.hunterTrade.want", sanitize(t.cost)).getString();
                 sb.append('\n').append("§a ").append(give).append("  §c").append(want);
             }
             HudManager.drawScaled(context, font, sb.toString(), x, y, s);
@@ -368,6 +371,12 @@ public final class HunterTradeTracker {
             if (result != null) return result;
         }
         return null;
+    }
+
+    /** 过滤物品名里的非可打印 ASCII 字符（Hypixel 自定义字体字符本地渲染会变方块） */
+    private static String sanitize(String s) {
+        if (s == null || s.isBlank()) return "?";
+        return s.replaceAll("[^\\x20-\\x7E]", "").trim();
     }
 
     /** 调试消息：仅在开启 debug 开关时显示 */
