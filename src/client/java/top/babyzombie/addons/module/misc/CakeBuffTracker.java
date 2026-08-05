@@ -57,7 +57,7 @@ public final class CakeBuffTracker {
                 {"1\uE025 Treasure Chance", "§61\uE025 Treasure Chance   "},
                 {"1\uE077 Tracking", "§d1\uE077 Tracking   "},
                 {"5\uE023 Sweep", "§25\uE023 Sweep   "},
-                {"1\uE05B Hunter Fortune", "§d1\uE05B Hunter Fortune   "}
+                {"1\uE05B Hunting Fortune", "§d1\uE05B Hunting Fortune   "}
         };
         NAMES = new String[data.length];
         for (int i = 0; i < data.length; i++) {
