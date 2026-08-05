@@ -180,7 +180,8 @@ public final class HunterTradeTracker {
             StringBuilder sb = new StringBuilder("§6§l"
                     + Component.translatable("hud.babyzombieaddons.hunterTrade.title").getString());
             for (HunterTrade t : records) {
-                sb.append('\n').append("§e").append(t.npcName);
+                // NPC 名按所在分区着色（无坐标时用默认黄色）
+                sb.append('\n').append(t.pos == null ? "§e" : zoneColorCode(zoneOf(t.pos))).append(t.npcName);
                 if (t.pos != null) {
                     sb.append(" §7@ ").append(t.pos.getX()).append(' ').append(t.pos.getY()).append(' ').append(t.pos.getZ());
                 }
@@ -356,6 +357,34 @@ public final class HunterTradeTracker {
             if (result != null) return result;
         }
         return null;
+    }
+
+    /** Safari 四个生物群系分区 */
+    private enum SafariZone { CAVERN, FOREST, HAUNTED, ICY }
+
+    /**
+     * 按坐标判定所在分区（用 wiki 的 NPC 候选点 + 铃铛地标拟合的边界，
+     * Icy 与 WumpaRecord 实测的雪地区域一致）：
+     * 雪地（x ≤ -52 且 z ≤ -2）→ Icy；
+     * z > 10 为南侧（x < -50 → Cavern，否则 Forest）；
+     * 其余（z ≤ 10 的北侧）→ x < -50 的过渡带归 Cavern，否则 Haunted。
+     */
+    private static SafariZone zoneOf(BlockPos pos) {
+        int x = pos.getX(), z = pos.getZ();
+        // Icy（雪地）：与 WumpaRecord.isInSnowArea 的边界一致
+        if (x <= -52 && z <= -2) return SafariZone.ICY;
+        if (z > 10) return x < -50 ? SafariZone.CAVERN : SafariZone.FOREST;
+        return x < -50 ? SafariZone.CAVERN : SafariZone.HAUNTED;
+    }
+
+    /** 分区主题色（HUD 色码）：Cavern 金 / Forest 绿 / Haunted 紫 / Icy 青 */
+    private static String zoneColorCode(SafariZone zone) {
+        return switch (zone) {
+            case CAVERN -> "§6";
+            case FOREST -> "§a";
+            case HAUNTED -> "§5";
+            case ICY -> "§b";
+        };
     }
 
     private static double distSq(BlockPos a, BlockPos b) {
