@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Shulker;
@@ -88,25 +89,25 @@ public final class SafariEntitiesGlow {
                     switch (SafariZoneUtil.zoneOf(entity.blockPosition())) {
                         case ICY -> {
                             var icy = safari.icy;
-                            if (icy.tropicalFishGlow && entity.getType() == EntityType.TROPICAL_FISH) {
+                            if (icy.tropicalFishGlow && entity.getType() == EntityTypes.TROPICAL_FISH) {
                                 setGlow(entity, icy.tropicalFishGlowColor.getEffectiveColourRGB());
                             }
-                            if (icy.dolphinGlow && entity.getType() == EntityType.DOLPHIN) {
+                            if (icy.dolphinGlow && entity.getType() == EntityTypes.DOLPHIN) {
                                 setGlow(entity, icy.dolphinGlowColor.getEffectiveColourRGB());
                             }
-                            if (icy.glowSquidGlow && entity.getType() == EntityType.GLOW_SQUID) {
+                            if (icy.glowSquidGlow && entity.getType() == EntityTypes.GLOW_SQUID) {
                                 setGlow(entity, icy.glowSquidGlowColor.getEffectiveColourRGB());
                             }
-                            if (icy.polarBearGlow && entity.getType() == EntityType.POLAR_BEAR) {
+                            if (icy.polarBearGlow && entity.getType() == EntityTypes.POLAR_BEAR) {
                                 setGlow(entity, icy.polarBearGlowColor.getEffectiveColourRGB());
                             }
-                            if (icy.snowGolemGlow && entity.getType() == EntityType.SNOW_GOLEM) {
+                            if (icy.snowGolemGlow && entity.getType() == EntityTypes.SNOW_GOLEM) {
                                 setGlow(entity, icy.snowGolemGlowColor.getEffectiveColourRGB());
                             }
-                            if (icy.goatGlow && entity.getType() == EntityType.GOAT) {
+                            if (icy.goatGlow && entity.getType() == EntityTypes.GOAT) {
                                 setGlow(entity, icy.goatGlowColor.getEffectiveColourRGB());
                             }
-                            if (icy.ravagerGlow && entity.getType() == EntityType.RAVAGER) {
+                            if (icy.ravagerGlow && entity.getType() == EntityTypes.RAVAGER) {
                                 setGlow(entity, icy.ravagerGlowColor.getEffectiveColourRGB());
                             }
                             if (icy.mantisShrimpGlow && isSkullItemDisplay(entity, MANTIS_SHRIMP_SKULL)) {
@@ -150,13 +151,13 @@ public final class SafariEntitiesGlow {
                                 }
                                 GlowController.setGlow(warden, true, color, true);
                             }
-                            if (haunted.endermiteGlow && entity.getType() == EntityType.ENDERMITE) {
+                            if (haunted.endermiteGlow && entity.getType() == EntityTypes.ENDERMITE) {
                                 setGlow(entity, haunted.endermiteGlowColor.getEffectiveColourRGB());
                             }
-                            if (haunted.caveSpiderGlow && entity.getType() == EntityType.CAVE_SPIDER) {
+                            if (haunted.caveSpiderGlow && entity.getType() == EntityTypes.CAVE_SPIDER) {
                                 setGlow(entity, haunted.caveSpiderGlowColor.getEffectiveColourRGB());
                             }
-                            if (haunted.phantomGlow && entity.getType() == EntityType.PHANTOM) {
+                            if (haunted.phantomGlow && entity.getType() == EntityTypes.PHANTOM) {
                                 setGlow(entity, haunted.phantomGlowColor.getEffectiveColourRGB());
                             }
                             if (haunted.gimmiegoldGlow && isSkullItemDisplay(entity, GIMMIEGOLD_SKULL)) {
@@ -165,19 +166,19 @@ public final class SafariEntitiesGlow {
                         }
                         case CAVERN -> {
                             var cavern = safari.cavern;
-                            if (cavern.tropicalFishGlow && entity.getType() == EntityType.TROPICAL_FISH) {
+                            if (cavern.tropicalFishGlow && entity.getType() == EntityTypes.TROPICAL_FISH) {
                                 setGlow(entity, cavern.tropicalFishGlowColor.getEffectiveColourRGB());
                             }
-                            if (cavern.armadilloGlow && entity.getType() == EntityType.ARMADILLO) {
+                            if (cavern.armadilloGlow && entity.getType() == EntityTypes.ARMADILLO) {
                                 setGlow(entity, cavern.armadilloGlowColor.getEffectiveColourRGB());
                             }
-                            if (cavern.snifferGlow && entity.getType() == EntityType.SNIFFER) {
+                            if (cavern.snifferGlow && entity.getType() == EntityTypes.SNIFFER) {
                                 setGlow(entity, cavern.snifferGlowColor.getEffectiveColourRGB());
                             }
-                            if (cavern.silverfishGlow && entity.getType() == EntityType.SILVERFISH) {
+                            if (cavern.silverfishGlow && entity.getType() == EntityTypes.SILVERFISH) {
                                 setGlow(entity, cavern.silverfishGlowColor.getEffectiveColourRGB());
                             }
-                            if (cavern.vexGlow && entity.getType() == EntityType.VEX) {
+                            if (cavern.vexGlow && entity.getType() == EntityTypes.VEX) {
                                 setGlow(entity, cavern.vexGlowColor.getEffectiveColourRGB());
                             }
                             if (cavern.flitterGlow && isSkullItemDisplay(entity, FLITTER_SKULL)) {
@@ -192,22 +193,22 @@ public final class SafariEntitiesGlow {
                             if (forest.hideonfloorGlow && isShulkerLike(entity)) {
                                 setGlow(entity, forest.hideonfloorGlowColor.getEffectiveColourRGB());
                             }
-                            if (forest.foxGlow && entity.getType() == EntityType.FOX) {
+                            if (forest.foxGlow && entity.getType() == EntityTypes.FOX) {
                                 setGlow(entity, forest.foxGlowColor.getEffectiveColourRGB());
                             }
-                            if (forest.pandaGlow && entity.getType() == EntityType.PANDA) {
+                            if (forest.pandaGlow && entity.getType() == EntityTypes.PANDA) {
                                 setGlow(entity, forest.pandaGlowColor.getEffectiveColourRGB());
                             }
-                            if (forest.creakingGlow && entity.getType() == EntityType.CREAKING) {
+                            if (forest.creakingGlow && entity.getType() == EntityTypes.CREAKING) {
                                 setGlow(entity, forest.creakingGlowColor.getEffectiveColourRGB());
                             }
-                            if (forest.frogGlow && entity.getType() == EntityType.FROG) {
+                            if (forest.frogGlow && entity.getType() == EntityTypes.FROG) {
                                 setGlow(entity, forest.frogGlowColor.getEffectiveColourRGB());
                             }
-                            if (forest.parrotGlow && entity.getType() == EntityType.PARROT) {
+                            if (forest.parrotGlow && entity.getType() == EntityTypes.PARROT) {
                                 setGlow(entity, forest.parrotGlowColor.getEffectiveColourRGB());
                             }
-                            if (forest.beeGlow && entity.getType() == EntityType.BEE) {
+                            if (forest.beeGlow && entity.getType() == EntityTypes.BEE) {
                                 setGlow(entity, forest.beeGlowColor.getEffectiveColourRGB());
                             }
                         }
@@ -215,11 +216,8 @@ public final class SafariEntitiesGlow {
                 }
             }
 
-            // === 较频幽匿感测体方块发光 ===
-            if (safari.haunted.sculkSensorGlow && isInArena(client.player.blockPosition())) {
-                int sculkColor = safari.haunted.sculkSensorGlowColor.getEffectiveColourRGB();
             // === 较频幽匿感测体方块高亮（维护位置集合，渲染由下面的回调每帧批量绘制） ===
-            if (glowSculkSensor && isInArena(client.player.blockPosition())) {
+            if (safari.haunted.sculkSensorGlow && isInArena(client.player.blockPosition())) {
                 var level = client.level;
                 var playerPos = client.player.blockPosition();
                 int chunkX = playerPos.getX() >> 4;
@@ -259,11 +257,11 @@ public final class SafariEntitiesGlow {
         // 每帧批量绘制感测体高亮（半透明填充盒子，同 hitresult 风格，深度测试不穿墙）
         RenderPhaseRegister.register(ctx -> {
             if (sculkSensorHighlighted.isEmpty()) return;
-            if (!ModConfigManager.get().hunting.safari.sculkSensorGlow) return;
+            if (!ModConfigManager.get().hunting.safari.haunted.sculkSensorGlow) return;
             if (Minecraft.getInstance().player == null) return;
             if (!HypixelLocationTracker.getInstance().isInSafari()) return;
 
-            int color = ModConfigManager.get().hunting.safari.sculkSensorGlowColor.getEffectiveColourRGB();
+            int color = ModConfigManager.get().hunting.safari.haunted.sculkSensorGlowColor.getEffectiveColourRGB();
             float r = ((color >> 16) & 0xFF) / 255f;
             float g = ((color >> 8) & 0xFF) / 255f;
             float b = (color & 0xFF) / 255f;
