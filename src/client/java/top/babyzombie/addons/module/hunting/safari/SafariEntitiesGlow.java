@@ -2,34 +2,44 @@ package top.babyzombie.addons.module.hunting.safari;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Display;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ambient.Bat;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
+import top.babyzombie.addons.config.HuntingConfig;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.render.GlowController;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 在 Safari 区域高亮：
- * - 潜影贝（自定义颜色）
- * - Hideyho NPC（淡蓝色）
- * - Warden（冷却红色/可捕捉绿色，开深度测试）
- * - 较频幽匿感测体（紫色方块发光）
- * - 蝙蝠（自定义颜色，深度测试）
- * - Duplico 物品展示实体（书架/樱花木/深板岩圆石等，自定义颜色，深度测试）
+ * 在 Safari 区域按群系分区高亮目标生物，每个生物独立开关和颜色（深度测试发光）：
+ * - Icy 雪地：热带鱼/海豚/荧光鱿鱼/北极熊/雪傀儡/山羊/劫掠兽 + 头颅目标（Mantis Shrimp/Troodon 物品展示）
+ * - Haunted：Hideonwall（潜影贝）/Hideyho NPC/蝙蝠/Duplico 物品展示/Warden/较频幽匿感测体/末影螨/洞穴蜘蛛/幻翼
+ *           + 头颅目标（Gimmiegold 物品展示）
+ * - Cavern 洞穴：热带鱼/犰狳/嗅探兽/蠹虫/恼鬼 + 头颅目标（Flitter/Chuckwalla 物品展示）
+ * - Forest 森林：Hideonfloor（潜影贝）/狐狸/熊猫/嘎吱/青蛙/鹦鹉/蜜蜂
+ * 头颅目标用 skull texture 材质匹配；重复生物（热带鱼）按实体所在分区区分；
+ * 隐身的实体不发光（Display 例外：隐身时仍渲染展示内容）。
  */
 public final class SafariEntitiesGlow {
 
     private static final String HIDEYHO_NAME = "Hideyho ";
-    private static final int HIDEYHO_COLOR = 0xFF80D8FF;
     private static final int SCULK_SENSOR_RANGE = 32;
     private static final int SCULK_SENSOR_RANGE_SQ = SCULK_SENSOR_RANGE * SCULK_SENSOR_RANGE;
 
@@ -40,6 +50,13 @@ public final class SafariEntitiesGlow {
         "deepslate",
         "cobbled_deepslate"
     );
+
+    // ── 头颅目标：skull texture URL 的唯一片段（每个 Safari 目标生物一个）──
+    private static final String MANTIS_SHRIMP_SKULL = "9924c105aa431dab";
+    private static final String TROODON_SKULL = "53de4135a3b19a21";
+    private static final String FLITTER_SKULL = "a89a76deedd42b41";
+    private static final String CHUCKWALLA_SKULL = "fc63cd0d480971a7";
+    private static final String GIMMIEGOLD_SKULL = "8b329e108ac28b0b";
 
     // Warden 战斗场地范围
     private static final int ARENA_X_MIN = -18, ARENA_X_MAX = 24;
@@ -56,72 +73,148 @@ public final class SafariEntitiesGlow {
             if (client.player == null || client.level == null) return;
             if (!HypixelLocationTracker.getInstance().isInSafari()) return;
 
-            var cfg = ModConfigManager.get().hunting;
-            boolean glowShulker = cfg.safari.shulkerGlow;
-            boolean glowHideyho = cfg.safari.hideyhoGlow;
-            boolean glowWarden = cfg.safari.wardenGlow;
-            boolean glowSculkSensor = cfg.safari.sculkSensorGlow;
-            boolean glowBat = cfg.safari.batGlow;
-            boolean glowDuplico = cfg.safari.duplicoGlow;
+            var safari = ModConfigManager.get().hunting.safari;
 
-            // === 实体发光 ===
-            if (glowShulker || glowHideyho || glowBat || glowDuplico) {
+            // === 实体发光（按群系分区 + 每生物独立开关） ===
+            if (anyEnabled(safari.icy) || anyEnabled(safari.haunted)
+                    || anyEnabled(safari.cavern) || anyEnabled(safari.forest)) {
                 for (var entity : client.level.entitiesForRendering()) {
-                    if (glowShulker) {
-                        int argb = cfg.safari.shulkerGlowColor.getEffectiveColourRGB();
-                        if (entity instanceof Shulker shulker) {
-                            GlowController.setGlow(shulker, true, argb, true);
-                        } else if (entity instanceof Display.ItemDisplay itemDisplay
-                                && BuiltInRegistries.ITEM.getKey(itemDisplay.getItemStack().getItem())
-                                    .getPath().contains("shulker_box")) {
-                            GlowController.setGlow(itemDisplay, true, argb, true);
-                        }
-                    }
-                    if (glowHideyho && entity instanceof Player player
-                            && HIDEYHO_NAME.equals(player.getName().getString())) {
-                        GlowController.setGlow(player, true, HIDEYHO_COLOR, true);
-                    }
-                    if (glowBat && entity instanceof Bat bat && !bat.isInvisible()) {
-                        GlowController.setGlow(bat, true, cfg.safari.batGlowColor.getEffectiveColourRGB(), true);
-                    }
-                    if (glowDuplico && entity instanceof Display.ItemDisplay itemDisplay) {
-                        var stack = itemDisplay.getItemStack();
-                        if (!stack.isEmpty() && DUPLICO_ITEMS.contains(
-                                BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath())) {
-                            GlowController.setGlow(itemDisplay, true,
-                                cfg.safari.duplicoGlowColor.getEffectiveColourRGB(), true);
-                        }
-                    }
-                }
-            }
+                    // 隐身的实体不发光（Display 例外：隐身时仍渲染展示内容）
+                    if (entity.isInvisible() && !(entity instanceof Display)) continue;
 
-            // === Warden 高亮（战斗场地内，深度测试，冷却红/可捕捉绿） ===
-            if (glowWarden && isInArena(client.player.blockPosition())) {
-                int cooldownColor = cfg.safari.wardenGlowCooldownColor.getEffectiveColourRGB();
-                int readyColor = cfg.safari.wardenGlowReadyColor.getEffectiveColourRGB();
-                int cooldownTicks = cfg.safari.wardenCooldownTicks;
-                for (var entity : client.level.entitiesForRendering()) {
-                    if (entity instanceof Warden warden && isInArena(warden.blockPosition())) {
-                        int color;
-                        var pose = warden.getPose();
-                        if (pose == net.minecraft.world.entity.Pose.EMERGING
-                                || pose == net.minecraft.world.entity.Pose.DIGGING) {
-                            // 登场动画 / 钻地 → 一定无敌
-                            color = cooldownColor;
-                        } else {
-                            int ping = ServerTick.getPing();
-                            int delay = ping > 0 ? (int) Math.ceil(ping / 50.0) : 0;
-                            int compensated = warden.tickCount + delay;
-                            color = compensated < cooldownTicks ? cooldownColor : readyColor;
+                    switch (SafariZoneUtil.zoneOf(entity.blockPosition())) {
+                        case ICY -> {
+                            var icy = safari.icy;
+                            if (icy.tropicalFishGlow && entity.getType() == EntityType.TROPICAL_FISH) {
+                                setGlow(entity, icy.tropicalFishGlowColor.getEffectiveColourRGB());
+                            }
+                            if (icy.dolphinGlow && entity.getType() == EntityType.DOLPHIN) {
+                                setGlow(entity, icy.dolphinGlowColor.getEffectiveColourRGB());
+                            }
+                            if (icy.glowSquidGlow && entity.getType() == EntityType.GLOW_SQUID) {
+                                setGlow(entity, icy.glowSquidGlowColor.getEffectiveColourRGB());
+                            }
+                            if (icy.polarBearGlow && entity.getType() == EntityType.POLAR_BEAR) {
+                                setGlow(entity, icy.polarBearGlowColor.getEffectiveColourRGB());
+                            }
+                            if (icy.snowGolemGlow && entity.getType() == EntityType.SNOW_GOLEM) {
+                                setGlow(entity, icy.snowGolemGlowColor.getEffectiveColourRGB());
+                            }
+                            if (icy.goatGlow && entity.getType() == EntityType.GOAT) {
+                                setGlow(entity, icy.goatGlowColor.getEffectiveColourRGB());
+                            }
+                            if (icy.ravagerGlow && entity.getType() == EntityType.RAVAGER) {
+                                setGlow(entity, icy.ravagerGlowColor.getEffectiveColourRGB());
+                            }
+                            if (icy.mantisShrimpGlow && isSkullItemDisplay(entity, MANTIS_SHRIMP_SKULL)) {
+                                setGlow(entity, icy.mantisShrimpGlowColor.getEffectiveColourRGB());
+                            }
+                            if (icy.troodonGlow && isSkullItemDisplay(entity, TROODON_SKULL)) {
+                                setGlow(entity, icy.troodonGlowColor.getEffectiveColourRGB());
+                            }
                         }
-                        GlowController.setGlow(warden, true, color, true);
+                        case HAUNTED -> {
+                            var haunted = safari.haunted;
+                            if (haunted.hideonwallGlow && isShulkerLike(entity)) {
+                                setGlow(entity, haunted.hideonwallGlowColor.getEffectiveColourRGB());
+                            }
+                            if (haunted.hideyhoGlow && entity instanceof Player player
+                                    && HIDEYHO_NAME.equals(player.getName().getString())) {
+                                setGlow(player, haunted.hideyhoGlowColor.getEffectiveColourRGB());
+                            }
+                            if (haunted.batGlow && entity instanceof Bat) {
+                                setGlow(entity, haunted.batGlowColor.getEffectiveColourRGB());
+                            }
+                            if (haunted.duplicoGlow && isDuplico(entity)) {
+                                setGlow(entity, haunted.duplicoGlowColor.getEffectiveColourRGB());
+                            }
+                            if (haunted.wardenGlow && entity instanceof Warden warden
+                                    && isInArena(warden.blockPosition())) {
+                                int cooldownColor = haunted.wardenGlowCooldownColor.getEffectiveColourRGB();
+                                int readyColor = haunted.wardenGlowReadyColor.getEffectiveColourRGB();
+                                int cooldownTicks = haunted.wardenCooldownTicks;
+                                int color;
+                                var pose = warden.getPose();
+                                if (pose == net.minecraft.world.entity.Pose.EMERGING
+                                        || pose == net.minecraft.world.entity.Pose.DIGGING) {
+                                    // 登场动画 / 钻地 → 一定无敌
+                                    color = cooldownColor;
+                                } else {
+                                    int ping = ServerTick.getPing();
+                                    int delay = ping > 0 ? (int) Math.ceil(ping / 50.0) : 0;
+                                    int compensated = warden.tickCount + delay;
+                                    color = compensated < cooldownTicks ? cooldownColor : readyColor;
+                                }
+                                GlowController.setGlow(warden, true, color, true);
+                            }
+                            if (haunted.endermiteGlow && entity.getType() == EntityType.ENDERMITE) {
+                                setGlow(entity, haunted.endermiteGlowColor.getEffectiveColourRGB());
+                            }
+                            if (haunted.caveSpiderGlow && entity.getType() == EntityType.CAVE_SPIDER) {
+                                setGlow(entity, haunted.caveSpiderGlowColor.getEffectiveColourRGB());
+                            }
+                            if (haunted.phantomGlow && entity.getType() == EntityType.PHANTOM) {
+                                setGlow(entity, haunted.phantomGlowColor.getEffectiveColourRGB());
+                            }
+                            if (haunted.gimmiegoldGlow && isSkullItemDisplay(entity, GIMMIEGOLD_SKULL)) {
+                                setGlow(entity, haunted.gimmiegoldGlowColor.getEffectiveColourRGB());
+                            }
+                        }
+                        case CAVERN -> {
+                            var cavern = safari.cavern;
+                            if (cavern.tropicalFishGlow && entity.getType() == EntityType.TROPICAL_FISH) {
+                                setGlow(entity, cavern.tropicalFishGlowColor.getEffectiveColourRGB());
+                            }
+                            if (cavern.armadilloGlow && entity.getType() == EntityType.ARMADILLO) {
+                                setGlow(entity, cavern.armadilloGlowColor.getEffectiveColourRGB());
+                            }
+                            if (cavern.snifferGlow && entity.getType() == EntityType.SNIFFER) {
+                                setGlow(entity, cavern.snifferGlowColor.getEffectiveColourRGB());
+                            }
+                            if (cavern.silverfishGlow && entity.getType() == EntityType.SILVERFISH) {
+                                setGlow(entity, cavern.silverfishGlowColor.getEffectiveColourRGB());
+                            }
+                            if (cavern.vexGlow && entity.getType() == EntityType.VEX) {
+                                setGlow(entity, cavern.vexGlowColor.getEffectiveColourRGB());
+                            }
+                            if (cavern.flitterGlow && isSkullItemDisplay(entity, FLITTER_SKULL)) {
+                                setGlow(entity, cavern.flitterGlowColor.getEffectiveColourRGB());
+                            }
+                            if (cavern.chuckwallaGlow && isSkullItemDisplay(entity, CHUCKWALLA_SKULL)) {
+                                setGlow(entity, cavern.chuckwallaGlowColor.getEffectiveColourRGB());
+                            }
+                        }
+                        case FOREST -> {
+                            var forest = safari.forest;
+                            if (forest.hideonfloorGlow && isShulkerLike(entity)) {
+                                setGlow(entity, forest.hideonfloorGlowColor.getEffectiveColourRGB());
+                            }
+                            if (forest.foxGlow && entity.getType() == EntityType.FOX) {
+                                setGlow(entity, forest.foxGlowColor.getEffectiveColourRGB());
+                            }
+                            if (forest.pandaGlow && entity.getType() == EntityType.PANDA) {
+                                setGlow(entity, forest.pandaGlowColor.getEffectiveColourRGB());
+                            }
+                            if (forest.creakingGlow && entity.getType() == EntityType.CREAKING) {
+                                setGlow(entity, forest.creakingGlowColor.getEffectiveColourRGB());
+                            }
+                            if (forest.frogGlow && entity.getType() == EntityType.FROG) {
+                                setGlow(entity, forest.frogGlowColor.getEffectiveColourRGB());
+                            }
+                            if (forest.parrotGlow && entity.getType() == EntityType.PARROT) {
+                                setGlow(entity, forest.parrotGlowColor.getEffectiveColourRGB());
+                            }
+                            if (forest.beeGlow && entity.getType() == EntityType.BEE) {
+                                setGlow(entity, forest.beeGlowColor.getEffectiveColourRGB());
+                            }
+                        }
                     }
                 }
             }
 
             // === 较频幽匿感测体方块发光 ===
-            if (glowSculkSensor && isInArena(client.player.blockPosition())) {
-                int sculkColor = cfg.safari.sculkSensorGlowColor.getEffectiveColourRGB();
+            if (safari.haunted.sculkSensorGlow && isInArena(client.player.blockPosition())) {
+                int sculkColor = safari.haunted.sculkSensorGlowColor.getEffectiveColourRGB();
                 var level = client.level;
                 var playerPos = client.player.blockPosition();
                 int chunkX = playerPos.getX() >> 4;
@@ -182,5 +275,71 @@ public final class SafariEntitiesGlow {
         return pos.getX() >= ARENA_X_MIN && pos.getX() <= ARENA_X_MAX
             && pos.getY() >= ARENA_Y_MIN && pos.getY() <= ARENA_Y_MAX
             && pos.getZ() >= ARENA_Z_MIN && pos.getZ() <= ARENA_Z_MAX;
+    }
+
+    /** 深度测试发光 */
+    private static void setGlow(Entity entity, int color) {
+        GlowController.setGlow(entity, true, color, true);
+    }
+
+    /** Hideonwall / Hideonfloor：潜影贝实体或展示潜影贝箱的物品展示实体 */
+    private static boolean isShulkerLike(Entity entity) {
+        if (entity instanceof Shulker) return true;
+        if (entity instanceof Display.ItemDisplay itemDisplay) {
+            return BuiltInRegistries.ITEM.getKey(itemDisplay.getItemStack().getItem())
+                .getPath().contains("shulker_box");
+        }
+        return false;
+    }
+
+    /** Duplico：物品展示实体且展示物品是书架/樱花木/深板岩等之一 */
+    private static boolean isDuplico(Entity entity) {
+        if (!(entity instanceof Display.ItemDisplay itemDisplay)) return false;
+        var stack = itemDisplay.getItemStack();
+        return !stack.isEmpty() && DUPLICO_ITEMS.contains(
+            BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath());
+    }
+
+    /** 物品展示实体展示的头颅材质是否匹配（物品展示目标直接整体发光） */
+    private static boolean isSkullItemDisplay(Entity entity, String urlSegment) {
+        if (!(entity instanceof Display.ItemDisplay itemDisplay)) return false;
+        return isSkullWithTexture(itemDisplay.getItemStack(), urlSegment);
+    }
+
+    /** 玩家头颅物品的 skull texture（base64）里是否包含目标材质 URL 片段 */
+    private static boolean isSkullWithTexture(ItemStack stack, String urlSegment) {
+        String texture = ItemUtils.getSkullTexture(stack);
+        if (texture == null) return false;
+        try {
+            JsonObject obj = JsonParser.parseString(
+                new String(Base64.getDecoder().decode(texture), StandardCharsets.UTF_8)).getAsJsonObject();
+            String url = obj.getAsJsonObject("textures").getAsJsonObject("SKIN").get("url").getAsString();
+            return url.contains(urlSegment);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static boolean anyEnabled(HuntingConfig.Icy c) {
+        return c.tropicalFishGlow || c.dolphinGlow || c.glowSquidGlow || c.polarBearGlow
+            || c.snowGolemGlow || c.goatGlow || c.ravagerGlow
+            || c.mantisShrimpGlow || c.troodonGlow;
+    }
+
+    private static boolean anyEnabled(HuntingConfig.Haunted c) {
+        return c.hideonwallGlow || c.hideyhoGlow || c.batGlow || c.duplicoGlow || c.wardenGlow
+            || c.endermiteGlow || c.caveSpiderGlow || c.phantomGlow
+            || c.gimmiegoldGlow;
+    }
+
+    private static boolean anyEnabled(HuntingConfig.Cavern c) {
+        return c.tropicalFishGlow || c.armadilloGlow || c.snifferGlow
+            || c.silverfishGlow || c.vexGlow
+            || c.flitterGlow || c.chuckwallaGlow;
+    }
+
+    private static boolean anyEnabled(HuntingConfig.Forest c) {
+        return c.hideonfloorGlow || c.foxGlow || c.pandaGlow || c.creakingGlow
+            || c.frogGlow || c.parrotGlow || c.beeGlow;
     }
 }
