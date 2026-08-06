@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Mirror the Github organization repos to Gitee.
-        uses: Yikun/hub-mirror-action@master
+        uses: Yikun/hub-mirror-action@v1.5
         with:
           src: github/${{ github.repository_owner }}
           dst: gitee/Bluesky-kk
