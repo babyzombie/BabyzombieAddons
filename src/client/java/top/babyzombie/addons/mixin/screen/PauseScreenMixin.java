@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.babyzombie.addons.config.GeneralConfig.QuickButtonType;
 import top.babyzombie.addons.config.ModConfigManager;
 
 import java.util.function.Supplier;
@@ -41,6 +40,7 @@ public abstract class PauseScreenMixin extends Screen {
     // 图标少 → 合并进原版行；图标多/原版行关了 → 另起一行
     // ═══════════════════════════════════════════════
 
+    @Unique
     private static final int MERGE_THRESHOLD = 7;
 
     @Inject(
