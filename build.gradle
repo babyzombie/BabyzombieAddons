@@ -16,7 +16,6 @@ loom {
 
     mods {
         "babyzombieaddons" {
-            sourceSet sourceSets.main
             sourceSet sourceSets.client
         }
     }
@@ -86,7 +85,7 @@ dependencies {
     clientCompileOnly "maven.modrinth:skyblocker-liap:${project.skyblocker_liap_version}"
 }
 
-processResources {
+tasks.withType(ProcessResources).configureEach {
     inputs.property "version", project.version
     inputs.property "minecraft_version", project.minecraft_version
     inputs.property "loader_version", project.loader_version
