@@ -68,14 +68,16 @@ public final class ExitConfirmScreen extends Screen {
     @Override
     protected void init() {
         int centerX = this.width / 2;
+        int centerY = this.height / 2;
         int buttonWidth = 150;
+        int gap = 20; // 两按钮中间空隙
         Component confirmLabel = this.action == Action.DISCONNECT
                 ? CommonComponents.disconnectButtonLabel(this.minecraft.isLocalServer())
                 : Component.translatable("menu.quit");
         this.addRenderableWidget(Button.builder(confirmLabel, button -> this.performAction())
-                .bounds(centerX - buttonWidth / 2, this.height / 2 - 24, buttonWidth, 20).build());
+                .bounds(centerX - buttonWidth - gap / 2, centerY - 10, buttonWidth, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("menu.returnToGame"), button -> this.onClose())
-                .bounds(centerX - buttonWidth / 2, this.height / 2 + 4, buttonWidth, 20).build());
+                .bounds(centerX + gap / 2, centerY - 10, buttonWidth, 20).build());
     }
 
     private void performAction() {
