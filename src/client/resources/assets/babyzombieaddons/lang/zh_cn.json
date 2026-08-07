@@ -1140,6 +1140,8 @@
   "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtSound.desc": "钓出稀有海怪时播放音效。",
   "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtTitle": "Title 提示",
   "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtTitle.desc": "钓出稀有海怪时显示 Title。传说级显示「传说海怪」，神话级显示「神话海怪」。",
+  "config.babyzombieaddons.option.lavaBobberFix": "岩浆鱼漂修复",
+  "config.babyzombieaddons.option.lavaBobberFix.desc": "岩浆钓鱼时鱼漂在客户端本地模拟中会一直下沉（岩浆不算液体），直到被服务器每 3 秒强制同步拉回岩浆表面。开启后客户端把岩浆当液面，鱼漂稳定浮在岩浆表面，只在咬钩时下沉。",
   "config.babyzombieaddons.group.rareSeaCreatures": "稀有海怪",
   "config.babyzombieaddons.option.rareSeaCreaturesExcludeEnabled": "排除指定海怪高亮",
   "config.babyzombieaddons.option.rareSeaCreaturesExcludeEnabled.desc": "启用后，将根据下方列表取消对应海怪的高亮与 Title 提示。",
