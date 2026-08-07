@@ -20,6 +20,17 @@ public class HuntingConfig {
         }
     }
 
+    public enum ThrownCapsuleMode {
+        OFF, CURRENT, UNOBSTRUCTED;
+
+        @Override
+        public String toString() {
+            return Component.translatable(
+                    "config.babyzombieaddons.option.safariTrajectoryThrownCapsuleMode." + name()
+            ).getString();
+        }
+    }
+
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.group.safari", desc = "")
     @Accordion
@@ -36,6 +47,13 @@ public class HuntingConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariWumpaRecord", desc = "config.babyzombieaddons.option.safariWumpaRecord.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("wumpa")
         public boolean wumpaRecord = false;
 
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.group.safariTrajectory", desc = "config.babyzombieaddons.group.safariTrajectory.desc")
+        @Accordion
+        @SearchTag("safari")
+        @SearchTag("trajectory")
+        public SafariTrajectory trajectory = new SafariTrajectory();
+
         // ── 生物群系子组：按 Safari 分区组织，每个生物独立开关 + 颜色 ──
         @Expose @ConfigOption(name = "config.babyzombieaddons.group.safariIcy", desc = "") @Accordion
         public Icy icy = new Icy();
@@ -49,6 +67,77 @@ public class HuntingConfig {
         @ConfigOption(name = "config.babyzombieaddons.group.safariHunterTrade", desc = "")
         @Accordion
         public HunterTrade hunterTrade = new HunterTrade();
+    }
+
+    public static class SafariTrajectory {
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryEnabled", desc = "config.babyzombieaddons.option.safariTrajectoryEnabled.desc")
+        @ConfigEditorBoolean
+        @SearchTag("safari")
+        @SearchTag("trajectory")
+        public boolean enabled = true;
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryThrownCapsuleMode", desc = "config.babyzombieaddons.option.safariTrajectoryThrownCapsuleMode.desc")
+        @ConfigEditorDropdown
+        @SearchTag("safari")
+        @SearchTag("trajectory")
+        public ThrownCapsuleMode thrownCapsuleMode = ThrownCapsuleMode.CURRENT;
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryLineColor", desc = "config.babyzombieaddons.option.safariTrajectoryLineColor.desc")
+        @ConfigEditorColour
+        public ChromaColour lineColor = ChromaColour.fromStaticRGB(80, 255, 220, 255);
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryLineThickness", desc = "config.babyzombieaddons.option.safariTrajectoryLineThickness.desc")
+        @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.1f)
+        public float lineThickness = 0.6f;
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryLandingCube", desc = "config.babyzombieaddons.option.safariTrajectoryLandingCube.desc")
+        @ConfigEditorBoolean
+        public boolean landingCubeEnabled = true;
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryCubeColor", desc = "config.babyzombieaddons.option.safariTrajectoryCubeColor.desc")
+        @ConfigEditorColour
+        public ChromaColour landingColor = ChromaColour.fromStaticRGB(80, 255, 120, 255);
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryCubeSize", desc = "config.babyzombieaddons.option.safariTrajectoryCubeSize.desc")
+        @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.1f)
+        public float landingSize = 0.5f;
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryLandingDisc", desc = "config.babyzombieaddons.option.safariTrajectoryLandingDisc.desc")
+        @ConfigEditorBoolean
+        public boolean landingDiscEnabled = true;
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryDiscColor", desc = "config.babyzombieaddons.option.safariTrajectoryDiscColor.desc")
+        @ConfigEditorColour
+        public ChromaColour landingDiscColor = ChromaColour.fromStaticRGB(80, 255, 120, 255);
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryDiscSize", desc = "config.babyzombieaddons.option.safariTrajectoryDiscSize.desc")
+        @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.1f)
+        public float landingDiscSize = 0.5f;
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryBlockHighlight", desc = "config.babyzombieaddons.option.safariTrajectoryBlockHighlight.desc")
+        @ConfigEditorBoolean
+        public boolean blockHighlightEnabled = true;
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryBlockColor", desc = "config.babyzombieaddons.option.safariTrajectoryBlockColor.desc")
+        @ConfigEditorColour
+        public ChromaColour blockHighlightColor = ChromaColour.fromStaticRGB(255, 220, 60, 255);
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryBlockLineWidth", desc = "config.babyzombieaddons.option.safariTrajectoryBlockLineWidth.desc")
+        @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.1f)
+        public float blockHighlightThickness = 0.5f;
     }
 
     /** 雪地群系（Icy）目标生物 */

@@ -21,6 +21,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 
@@ -260,6 +261,36 @@ public final class WorldRenderUtils {
         var pose = applyCameraTransform(context);
         addLineVertex(pose, linesBuf, (float) x1, (float) y1, (float) z1, r, g, b, a, lineWidth);
         addLineVertex(pose, linesBuf, (float) x2, (float) y2, (float) z2, r, g, b, a, lineWidth);
+        context.matrices().popPose();
+        uploadAndDrawLines(pipeline, linesBuf);
+        linesBuf = null;
+    }
+
+    /**
+     * Draws connected line segments in one upload. Each segment uses a constant
+     * alpha that fades from {@code startAlpha} by at most {@code alphaFade}.
+     */
+    public static void drawPolyline(WorldRenderContext context, List<Vec3> points,
+                                    float r, float g, float b,
+                                    float startAlpha, float alphaFade,
+                                    boolean depthTest, float lineWidth) {
+        if (points.size() < 2) return;
+
+        var pipeline = depthTest ? LINES_DEPTH : LINES_NO_DEPTH;
+        if (linesBuf == null) {
+            linesBuf = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+        }
+        var pose = applyCameraTransform(context);
+        for (int i = 1; i < points.size(); i++) {
+            Vec3 from = points.get(i - 1);
+            Vec3 to = points.get(i);
+            float progress = i / (float) points.size();
+            float alpha = startAlpha - progress * alphaFade;
+            addLineVertex(pose, linesBuf, (float) from.x, (float) from.y, (float) from.z,
+                    r, g, b, alpha, lineWidth);
+            addLineVertex(pose, linesBuf, (float) to.x, (float) to.y, (float) to.z,
+                    r, g, b, alpha, lineWidth);
+        }
         context.matrices().popPose();
         uploadAndDrawLines(pipeline, linesBuf);
         linesBuf = null;
