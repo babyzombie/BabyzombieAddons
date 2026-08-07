@@ -58,6 +58,7 @@
     "screen.KeyMappingMixin",
     "screen.MoulConfigTranslationMixin",
     "screen.PauseScreenMixin",
+    "screen.TitleScreenMixin",
     "screen.ScreenMixin",
     "sound.ChannelAccessor",
     "sound.ChannelHandleAccessor",

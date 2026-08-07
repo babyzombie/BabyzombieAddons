@@ -38,6 +38,8 @@ public class GeneralConfig {
     public boolean useTpsAdjustedTime = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.pauseScreen", desc = "") @Accordion
     public PauseScreen pauseScreen = new PauseScreen();
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.titleScreen", desc = "") @Accordion
+    public TitleScreen titleScreen = new TitleScreen();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.autotip", desc = "") @Accordion
     public Autotip autotip = new Autotip();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.chat", desc = "") @Accordion
@@ -160,6 +162,15 @@ public class GeneralConfig {
         public boolean showPing = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitlePingRangeSeconds", desc = "config.babyzombieaddons.option.windowTitlePingRangeSeconds.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("title") @SearchTag("ping")
         public int pingRangeSeconds = 5;
+    }
+
+    public static class TitleScreen {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideFriendsButton", desc = "config.babyzombieaddons.option.hideFriendsButton.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("hide")
+        public boolean hideFriends = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideLanguageButton", desc = "config.babyzombieaddons.option.hideLanguageButton.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("hide") @SearchTag("language")
+        public boolean hideLanguage = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideAccessibilityButton", desc = "config.babyzombieaddons.option.hideAccessibilityButton.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("hide") @SearchTag("accessibility")
+        public boolean hideAccessibility = false;
     }
 
     public static class PauseScreen {

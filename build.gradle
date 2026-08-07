@@ -89,6 +89,9 @@ dependencies {
 
     // Skyblocker LIAP (optional)
     clientCompileOnly "maven.modrinth:skyblocker-liap:${project.skyblocker_liap_version}"
+
+    // Sodium (optional, 视频设置按钮跳转兼容)
+    clientCompileOnly "maven.modrinth:sodium:${project.sodium_version}"
 }
 
 tasks.withType(ProcessResources).configureEach {

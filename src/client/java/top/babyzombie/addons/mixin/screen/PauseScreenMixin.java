@@ -12,7 +12,6 @@ import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.options.SoundOptionsScreen;
-import net.minecraft.client.gui.screens.options.VideoSettingsScreen;
 import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.network.chat.Component;
@@ -24,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.SodiumCompat;
 
 import java.util.function.Supplier;
 
@@ -82,8 +82,8 @@ public abstract class PauseScreenMixin extends Screen {
                         "pause_menu/server_list", () -> new JoinMultiplayerScreen(this)));
                 case VIDEO_SETTINGS -> targetRow.addChild(icon("options.videoTitle",
                         "pause_menu/video_settings",
-                        () -> new VideoSettingsScreen(this, Minecraft.getInstance(),
-                                Minecraft.getInstance().options)));
+                        // 装 Sodium(及 RSO)时走 Sodium 入口，否则原版界面
+                        () -> SodiumCompat.createVideoSettingsScreen(this)));
                 case KEY_BINDS -> targetRow.addChild(icon("controls.keybinds.title",
                         "pause_menu/key_binds",
                         () -> new KeyBindsScreen(this, Minecraft.getInstance().options)));
