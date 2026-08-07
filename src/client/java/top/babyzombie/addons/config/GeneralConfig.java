@@ -35,6 +35,8 @@ public class GeneralConfig {
     public int secondPerson = GLFW.GLFW_KEY_UNKNOWN;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.useTpsAdjustedTime", desc = "config.babyzombieaddons.option.useTpsAdjustedTime.desc") @ConfigEditorBoolean @SearchTag("tps")
     public boolean useTpsAdjustedTime = false;
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.pauseScreen", desc = "") @Accordion
+    public PauseScreen pauseScreen = new PauseScreen();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.autotip", desc = "") @Accordion
     public Autotip autotip = new Autotip();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.chat", desc = "") @Accordion
@@ -138,6 +140,13 @@ public class GeneralConfig {
         public float itemOffsetX = 0.0f;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.itemOffsetY", desc = "config.babyzombieaddons.option.itemOffsetY.desc") @ConfigEditorSlider(minValue = -1.0f, maxValue = 1.0f, minStep = 0.01f) @SearchTag("hand") @SearchTag("item") @SearchTag("offset")
         public float itemOffsetY = 0.0f;
+    }
+
+    public static class PauseScreen {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.confirmWindowClose", desc = "config.babyzombieaddons.option.confirmWindowClose.desc") @ConfigEditorBoolean @SearchTag("pause") @SearchTag("close") @SearchTag("exit")
+        public boolean confirmWindowClose = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.confirmDisconnect", desc = "config.babyzombieaddons.option.confirmDisconnect.desc") @ConfigEditorBoolean @SearchTag("pause") @SearchTag("disconnect")
+        public boolean confirmDisconnect = false;
     }
 
     public static class WindowTitle {

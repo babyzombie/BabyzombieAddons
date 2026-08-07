@@ -64,6 +64,7 @@
     "network.DisconnectedScreenMixin",
 
     "window.WindowTitleMixin",
+    "window.WindowCloseConfirmMixin",
 
     "screen.CommandSuggestionsMixin",
     "screen.ContainerClickMixin",
@@ -79,6 +80,7 @@
 
 
     "screen.PauseScreenMixin",
+    "screen.DisconnectConfirmMixin",
 
     "compat.ModernUITextRenderTypeMixin",
 
