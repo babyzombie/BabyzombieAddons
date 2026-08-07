@@ -54,6 +54,8 @@ public final class WorldRenderUtils {
             .withDepthStencilState(Optional.empty())
             .build()
     );
+    // 线条管线:26.2 的 LINES 管线线宽由 rendertype_lines.vsh 展开(Normal 当线段方向),
+    // 屏幕像素语义,远近恒定
     private static final RenderPipeline LINES_DEPTH = RenderPipelines.register(
         RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
             .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/bza_lines_depth"))
@@ -259,8 +261,12 @@ public final class WorldRenderUtils {
             linesBuf = new BufferBuilder(ALLOCATOR, PrimitiveTopology.LINES, format);
         }
         var pose = applyCameraTransform(context);
-        addLineVertex(pose, linesBuf, (float) x1, (float) y1, (float) z1, r, g, b, a, lineWidth);
-        addLineVertex(pose, linesBuf, (float) x2, (float) y2, (float) z2, r, g, b, a, lineWidth);
+        // 26.2 rendertype_lines.vsh 把 Normal 当线段方向,必须传真实方向
+        float dx = (float) (x2 - x1);
+        float dy = (float) (y2 - y1);
+        float dz = (float) (z2 - z1);
+        addLineVertex(pose, linesBuf, (float) x1, (float) y1, (float) z1, r, g, b, a, lineWidth, dx, dy, dz);
+        addLineVertex(pose, linesBuf, (float) x2, (float) y2, (float) z2, r, g, b, a, lineWidth, dx, dy, dz);
         context.matrices().popPose();
         uploadAndDrawLines(pipeline, linesBuf);
         linesBuf = null;
@@ -288,10 +294,13 @@ public final class WorldRenderUtils {
             Vec3 to = points.get(i);
             float progress = i / (float) points.size();
             float alpha = startAlpha - progress * alphaFade;
+            float dx = (float) (to.x - from.x);
+            float dy = (float) (to.y - from.y);
+            float dz = (float) (to.z - from.z);
             addLineVertex(pose, linesBuf, (float) from.x, (float) from.y, (float) from.z,
-                    r, g, b, alpha, lineWidth);
+                    r, g, b, alpha, lineWidth, dx, dy, dz);
             addLineVertex(pose, linesBuf, (float) to.x, (float) to.y, (float) to.z,
-                    r, g, b, alpha, lineWidth);
+                    r, g, b, alpha, lineWidth, dx, dy, dz);
         }
         context.matrices().popPose();
         uploadAndDrawLines(pipeline, linesBuf);
@@ -560,8 +569,8 @@ public final class WorldRenderUtils {
             float y2 = (float)(cy + radius * (cos2 * u.y + sin2 * v.y));
             float z2 = (float)(cz + radius * (cos2 * u.z + sin2 * v.z));
 
-            addLineVertex(pose, linesBuf, x1, y1, z1, r, g, b, a, lineWidth);
-            addLineVertex(pose, linesBuf, x2, y2, z2, r, g, b, a, lineWidth);
+            addLineVertex(pose, linesBuf, x1, y1, z1, r, g, b, a, lineWidth, x2 - x1, y2 - y1, z2 - z1);
+            addLineVertex(pose, linesBuf, x2, y2, z2, r, g, b, a, lineWidth, x2 - x1, y2 - y1, z2 - z1);
         }
 
         context.matrices().popPose();
@@ -704,35 +713,37 @@ public final class WorldRenderUtils {
                                             float minX, float minY, float minZ,
                                             float maxX, float maxY, float maxZ,
                                             float r, float g, float b, float a, float lw) {
-        addLineVertex(pose, buf, minX, minY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, minY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, minY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, minY, maxZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, minY, maxZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, minX, minY, maxZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, minX, minY, maxZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, minX, minY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, minX, maxY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, maxY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, maxY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, maxY, maxZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, maxY, maxZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, minX, maxY, maxZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, minX, maxY, maxZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, minX, maxY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, minX, minY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, minX, maxY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, minY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, maxY, minZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, minY, maxZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, maxX, maxY, maxZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, minX, minY, maxZ, r, g, b, a, lw);
-        addLineVertex(pose, buf, minX, maxY, maxZ, r, g, b, a, lw);
+        // 底面
+        addEdge(pose, buf, minX, minY, minZ, maxX, minY, minZ, r, g, b, a, lw);
+        addEdge(pose, buf, maxX, minY, minZ, maxX, minY, maxZ, r, g, b, a, lw);
+        addEdge(pose, buf, maxX, minY, maxZ, minX, minY, maxZ, r, g, b, a, lw);
+        addEdge(pose, buf, minX, minY, maxZ, minX, minY, minZ, r, g, b, a, lw);
+        // 顶面
+        addEdge(pose, buf, minX, maxY, minZ, maxX, maxY, minZ, r, g, b, a, lw);
+        addEdge(pose, buf, maxX, maxY, minZ, maxX, maxY, maxZ, r, g, b, a, lw);
+        addEdge(pose, buf, maxX, maxY, maxZ, minX, maxY, maxZ, r, g, b, a, lw);
+        addEdge(pose, buf, minX, maxY, maxZ, minX, maxY, minZ, r, g, b, a, lw);
+        // 竖边
+        addEdge(pose, buf, minX, minY, minZ, minX, maxY, minZ, r, g, b, a, lw);
+        addEdge(pose, buf, maxX, minY, minZ, maxX, maxY, minZ, r, g, b, a, lw);
+        addEdge(pose, buf, maxX, minY, maxZ, maxX, maxY, maxZ, r, g, b, a, lw);
+        addEdge(pose, buf, minX, minY, maxZ, minX, maxY, maxZ, r, g, b, a, lw);
     }
 
     private static void addLineVertex(Matrix4fc pose, BufferBuilder buf, float x, float y, float z,
-                                       float r, float g, float b, float a, float lw) {
-        buf.addVertex(pose, x, y, z).setColor(r, g, b, a).setNormal(0, 1, 0).setLineWidth(lw);
+                                       float r, float g, float b, float a, float lw,
+                                       float dx, float dy, float dz) {
+        // 26.2 rendertype_lines.vsh 把 Normal 当线段方向(Position+Normal=线段终点),
+        // 线宽沿线段屏幕方向的垂线展开,必须传真实方向而非固定 (0,1,0)
+        buf.addVertex(pose, x, y, z).setColor(r, g, b, a).setNormal(dx, dy, dz).setLineWidth(lw);
+    }
+
+    /** 画一条边(两个顶点),两个顶点都带同一线段方向。 */
+    private static void addEdge(Matrix4fc pose, BufferBuilder buf,
+                                 float x1, float y1, float z1, float x2, float y2, float z2,
+                                 float r, float g, float b, float a, float lw) {
+        addLineVertex(pose, buf, x1, y1, z1, r, g, b, a, lw, x2 - x1, y2 - y1, z2 - z1);
+        addLineVertex(pose, buf, x2, y2, z2, r, g, b, a, lw, x2 - x1, y2 - y1, z2 - z1);
     }
 
     // ═══════════════════════════════════════════════════════════════
