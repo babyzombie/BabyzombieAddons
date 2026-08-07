@@ -1,8 +1,6 @@
 package top.babyzombie.addons.module.hunting.safari;
 
 import io.github.notenoughupdates.moulconfig.ChromaColour;
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -23,6 +21,7 @@ import top.babyzombie.addons.config.HuntingConfig;
 import top.babyzombie.addons.config.HuntingConfig.ThrownCapsuleMode;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ItemUtils;
+import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import top.babyzombie.addons.util.render.WorldRenderContext;
 import top.babyzombie.addons.util.render.WorldRenderUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
@@ -48,10 +47,10 @@ public final class SafariTrajectory {
 
     public static void init() {
         ThrownCapsuleTracker.init();
-        LevelRenderEvents.AFTER_TRANSLUCENT_FEATURES.register(SafariTrajectory::render);
+        RenderPhaseRegister.register(SafariTrajectory::render);
     }
 
-    private static void render(LevelRenderContext fabricContext) {
+    private static void render(WorldRenderContext context) {
         Player player = CLIENT.player;
         HuntingConfig.SafariTrajectory config = config();
         if (!config.enabled || player == null || CLIENT.level == null || CLIENT.screen != null) {
@@ -77,7 +76,6 @@ public final class SafariTrajectory {
             return;
         }
 
-        WorldRenderContext context = WorldRenderContext.from(fabricContext);
         drawTrajectory(context, trajectory, config);
         if (mode == ThrownCapsuleMode.UNOBSTRUCTED) {
             drawTrackedCapsuleBox(context, config);

@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import top.babyzombie.addons.config.HuntingConfig.ThrownCapsuleMode;
+import top.babyzombie.addons.event.EntityRenderEvents;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.HashSet;
@@ -35,6 +36,7 @@ public final class ThrownCapsuleTracker {
                 clearTracked();
             }
         });
+        EntityRenderEvents.BEFORE_RENDER.register(ThrownCapsuleTracker::shouldHide);
     }
 
     private static void onClientTick(Minecraft client) {
