@@ -171,6 +171,12 @@ public class GeneralConfig {
         public boolean hideLanguage = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideAccessibilityButton", desc = "config.babyzombieaddons.option.hideAccessibilityButton.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("hide") @SearchTag("accessibility")
         public boolean hideAccessibility = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.titleQuickButtons", desc = "config.babyzombieaddons.option.titleQuickButtons.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("quick")
+        public boolean enableQuickButtons = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.titleQuickButtonOrder", desc = "config.babyzombieaddons.option.titleQuickButtonOrder.desc") @ConfigEditorDraggableList @SearchTag("title") @SearchTag("quick")
+        public List<QuickButtonType> quickButtonOrder = new ArrayList<>();
     }
 
     public static class PauseScreen {
@@ -218,7 +224,32 @@ public class GeneralConfig {
         SERVER_LIST,
         VIDEO_SETTINGS,
         KEY_BINDS,
-        SOUND_OPTIONS;
+        SOUND_OPTIONS,
+        BZA_CONFIG,
+        HYPIXEL,
+        SKYBLOCKER,
+        FIRMAMENT,
+        SKYHANNI,
+        AARON;
+
+        /** 第三方 mod 设置按钮对应的 mod id；非第三方类型返回 null */
+        public String modId() {
+            return switch (this) {
+                case SKYBLOCKER -> "skyblocker";
+                case FIRMAMENT -> "firmament";
+                case SKYHANNI -> "skyhanni";
+                case AARON -> "aaron-mod";
+                default -> null;
+            };
+        }
+
+        /** 第三方 mod 设置按钮：对应 mod（及 ModMenu）未安装时不可用，渲染时跳过 */
+        public boolean isAvailable() {
+            var id = modId();
+            if (id == null) return true;
+            return net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded(id)
+                    && net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("modmenu");
+        }
 
         @Override
         public String toString() {

@@ -3,7 +3,6 @@ package top.babyzombie.addons.mixin.screen;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
@@ -15,17 +14,18 @@ import net.minecraft.client.gui.screens.options.SoundOptionsScreen;
 import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.babyzombie.addons.config.GeneralConfig;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.HypixelServer;
+import top.babyzombie.addons.util.ModConfigOpener;
+import top.babyzombie.addons.util.ScreenButtons;
 import top.babyzombie.addons.util.SodiumCompat;
-
-import java.util.function.Supplier;
 
 @Mixin(PauseScreen.class)
 public abstract class PauseScreenMixin extends Screen {
@@ -41,7 +41,7 @@ public abstract class PauseScreenMixin extends Screen {
     // ═══════════════════════════════════════════════
 
     @Unique
-    private static final int MERGE_THRESHOLD = 7;
+    private static final int MERGE_THRESHOLD = 9;
 
     @Inject(
             method = "createPauseMenu",
@@ -60,7 +60,11 @@ public abstract class PauseScreenMixin extends Screen {
         var general = ModConfigManager.get().general.pauseScreen;
         if (!general.enableQuickButtons || general.quickButtonOrder.isEmpty()) return;
 
-        int customCount = general.quickButtonOrder.size();
+        // 未安装对应 mod 的第三方设置按钮不渲染（也不计入合并阈值）
+        var quickButtons = general.quickButtonOrder.stream()
+                .filter(GeneralConfig.QuickButtonType::isAvailable)
+                .toList();
+        int customCount = quickButtons.size();
 
         int vanillaVisible = 0;
         var hideCfg = general.hideButtons;
@@ -74,22 +78,32 @@ public abstract class PauseScreenMixin extends Screen {
 
         LinearLayout targetRow = merge ? iconButtonRow : LinearLayout.horizontal().spacing(4);
 
-        for (var type : general.quickButtonOrder) {
+        for (var type : quickButtons) {
             switch (type) {
-                case SINGLEPLAYER -> targetRow.addChild(icon("selectWorld.title",
+                case SINGLEPLAYER -> targetRow.addChild(ScreenButtons.icon("selectWorld.title",
                         "pause_menu/singleplayer", () -> new SelectWorldScreen(this)));
-                case SERVER_LIST -> targetRow.addChild(icon("menu.multiplayer",
+                case SERVER_LIST -> targetRow.addChild(ScreenButtons.icon("menu.multiplayer",
                         "pause_menu/server_list", () -> new JoinMultiplayerScreen(this)));
-                case VIDEO_SETTINGS -> targetRow.addChild(icon("options.videoTitle",
+                case VIDEO_SETTINGS -> targetRow.addChild(ScreenButtons.icon("options.videoTitle",
                         "pause_menu/video_settings",
                         // 装 Sodium(及 RSO)时走 Sodium 入口，否则原版界面
                         () -> SodiumCompat.createVideoSettingsScreen(this)));
-                case KEY_BINDS -> targetRow.addChild(icon("controls.keybinds.title",
+                case KEY_BINDS -> targetRow.addChild(ScreenButtons.icon("controls.keybinds.title",
                         "pause_menu/key_binds",
                         () -> new KeyBindsScreen(this, Minecraft.getInstance().options)));
-                case SOUND_OPTIONS -> targetRow.addChild(icon("options.sounds.title",
+                case SOUND_OPTIONS -> targetRow.addChild(ScreenButtons.icon("options.sounds.title",
                         "pause_menu/sound_options",
                         () -> new SoundOptionsScreen(this, Minecraft.getInstance().options)));
+                case BZA_CONFIG -> targetRow.addChild(ScreenButtons.icon(
+                        "config.babyzombieaddons.quickbutton.BZA_CONFIG", "pause_menu/settings",
+                        () -> ModConfigManager.createGUI(this, "")));
+                case HYPIXEL -> targetRow.addChild(ScreenButtons.icon(
+                        "config.babyzombieaddons.quickbutton.HYPIXEL", "pause_menu/hypixel",
+                        () -> HypixelServer.join(this)));
+                case SKYBLOCKER, FIRMAMENT, SKYHANNI, AARON -> targetRow.addChild(ScreenButtons.icon(
+                        "config.babyzombieaddons.quickbutton." + type.name(),
+                        "pause_menu/" + type.name().toLowerCase(),
+                        () -> ModConfigOpener.createScreen(type.modId(), this)));
             }
         }
 
@@ -97,20 +111,6 @@ public abstract class PauseScreenMixin extends Screen {
             helper.addChild(targetRow, 2,
                     helper.newCellSettings().alignHorizontallyCenter());
         }
-    }
-
-    @Unique
-    private static SpriteIconButton icon(String titleKey, String spritePath,
-                                         Supplier<Screen> screen) {
-        return SpriteIconButton.builder(
-                        Component.translatable(titleKey),
-                        var1 -> Minecraft.getInstance().gui.setScreen(screen.get()),
-                        true
-                ).width(20)
-                .sprite(Identifier.fromNamespaceAndPath(
-                        "babyzombieaddons", spritePath), 15, 15)
-                .withTootip()
-                .build();
     }
 
     // ═══════════════════════════════════════════════
