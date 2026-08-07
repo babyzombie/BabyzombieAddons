@@ -48,7 +48,7 @@ public final class ThrownCapsuleTracker {
         }
 
         boolean useDown = client.options.keyUse.isDown();
-        if (useDown && !useWasDown && client.screen == null
+        if (useDown && !useWasDown && client.gui.screen() == null
                 && (SafariTrajectory.isCapsule(player.getMainHandItem())
                 || SafariTrajectory.isCapsule(player.getOffhandItem()))) {
             arm(player);

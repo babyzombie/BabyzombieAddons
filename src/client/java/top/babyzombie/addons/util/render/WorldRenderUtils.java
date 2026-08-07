@@ -277,8 +277,10 @@ public final class WorldRenderUtils {
         if (points.size() < 2) return;
 
         var pipeline = depthTest ? LINES_DEPTH : LINES_NO_DEPTH;
+        var format = pipeline.getVertexFormatBinding(0);
+        if (format == null) return;
         if (linesBuf == null) {
-            linesBuf = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+            linesBuf = new BufferBuilder(ALLOCATOR, PrimitiveTopology.LINES, format);
         }
         var pose = applyCameraTransform(context);
         for (int i = 1; i < points.size(); i++) {

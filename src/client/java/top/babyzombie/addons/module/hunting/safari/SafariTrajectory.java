@@ -53,12 +53,12 @@ public final class SafariTrajectory {
     private static void render(WorldRenderContext context) {
         Player player = CLIENT.player;
         HuntingConfig.SafariTrajectory config = config();
-        if (!config.enabled || player == null || CLIENT.level == null || CLIENT.screen != null) {
+        if (!config.enabled || player == null || CLIENT.level == null || CLIENT.gui.screen() != null) {
             return;
         }
 
         HypixelLocationTracker tracker = HypixelLocationTracker.getInstance();
-        boolean inSafari = tracker != null && tracker.isInSafari();
+        boolean inSafari = tracker.isInSafari();
         boolean holdingCapsule = isCapsule(player.getMainHandItem()) || isCapsule(player.getOffhandItem());
         if (!inSafari || !holdingCapsule) {
             return;
@@ -83,7 +83,7 @@ public final class SafariTrajectory {
     }
 
     private static Trajectory predict(Player player) {
-        Camera camera = CLIENT.gameRenderer.getMainCamera();
+        Camera camera = CLIENT.gameRenderer.mainCamera();
         Vec3 view = player.getViewVector(1.0f).normalize();
         Vec3 cameraPos = camera.position();
         double yaw = Math.toRadians(player.getYRot());
