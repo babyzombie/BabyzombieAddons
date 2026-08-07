@@ -42,17 +42,17 @@ public final class ExitConfirmScreen extends Screen {
     /// 确认界面已打开则直接退出；否则清除 GLFW shouldClose 标志取消关闭，再弹确认界面。
     /// LWJGL 3.4 在调用关闭回调前就会置位 shouldClose，必须显式清除才能取消关闭。
     public static void onWindowClose(Minecraft mc, long windowHandle) {
-        if (mc.screen instanceof ExitConfirmScreen) {
+        if (mc.gui.screen() instanceof ExitConfirmScreen) {
             mc.stop();
         } else {
             GLFW.glfwSetWindowShouldClose(windowHandle, false);
-            mc.setScreen(new ExitConfirmScreen(mc.screen, Action.EXIT));
+            mc.gui.setScreen(new ExitConfirmScreen(mc.gui.screen(), Action.EXIT));
         }
     }
 
     /// 暂停页断开连接请求：弹确认界面
     public static void openDisconnectConfirm(Minecraft mc) {
-        mc.setScreen(new ExitConfirmScreen(mc.screen, Action.DISCONNECT));
+        mc.gui.setScreen(new ExitConfirmScreen(mc.gui.screen(), Action.DISCONNECT));
     }
 
     /// 断开连接确认后的递归放行
@@ -106,9 +106,9 @@ public final class ExitConfirmScreen extends Screen {
     @Override
     public void onClose() {
         if (this.parent != null) {
-            this.minecraft.setScreen(this.parent);
+            this.minecraft.gui.setScreen(this.parent);
         } else {
-            this.minecraft.setScreen(null);
+            this.minecraft.gui.setScreen(null);
             this.minecraft.mouseHandler.grabMouse();
         }
     }

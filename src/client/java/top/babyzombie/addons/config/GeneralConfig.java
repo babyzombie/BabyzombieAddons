@@ -180,6 +180,11 @@ public class GeneralConfig {
     }
 
     public static class PauseScreen {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.confirmWindowClose", desc = "config.babyzombieaddons.option.confirmWindowClose.desc") @ConfigEditorBoolean @SearchTag("pause") @SearchTag("close") @SearchTag("exit")
+        public boolean confirmWindowClose = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.confirmDisconnect", desc = "config.babyzombieaddons.option.confirmDisconnect.desc") @ConfigEditorBoolean @SearchTag("pause") @SearchTag("disconnect")
+        public boolean confirmDisconnect = false;
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideReturnToGame", desc = "config.babyzombieaddons.option.hideReturnToGame.desc") @ConfigEditorBoolean @SearchTag("pause")
         public boolean hideReturnToGame = false;
 

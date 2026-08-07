@@ -58,8 +58,8 @@
     "screen.KeyMappingMixin",
     "screen.MoulConfigTranslationMixin",
     "screen.PauseScreenMixin",
-    "screen.TitleScreenMixin",
     "screen.ScreenMixin",
+    "screen.TitleScreenMixin",
     "sound.ChannelAccessor",
     "sound.ChannelHandleAccessor",
     "sound.ChannelMixin",
@@ -74,6 +74,8 @@
   },
   "mixins": [
     "entity.LavaBobberFixMixin",
-    "network.ClientPacketListenerMixin"
+    "network.ClientPacketListenerMixin",
+    "screen.DisconnectConfirmMixin",
+    "window.WindowCloseConfirmMixin"
   ]
 }
