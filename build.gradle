@@ -22,7 +22,13 @@ loom {
 
     runs {
         client {
-            runDir = "run-${project.minecraft_version}"
+            runDirectory = "run-${project.minecraft_version}"
+        }
+        // 渲染验证用:QuickPlay 自动进"最新"单人世界,跳过主菜单
+        clientWorld {
+            runDirectory = "run-${project.minecraft_version}"
+            runtimeEnvironment = "client"
+            programArguments = ["--quickPlaySingleplayer"]
         }
     }
 }

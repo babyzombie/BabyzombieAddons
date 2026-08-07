@@ -21,6 +21,13 @@ logs/
 .claude/
 .proxyai/
 
+CLAUDE.md
+docs/
+
+# python
+
+__pycache__/
+
 
 # vscode
 
