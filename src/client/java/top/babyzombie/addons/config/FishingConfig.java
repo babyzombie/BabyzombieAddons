@@ -9,6 +9,9 @@ import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 
 public class FishingConfig {
 
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.lavaBobberFix", desc = "config.babyzombieaddons.option.lavaBobberFix.desc") @ConfigEditorBoolean @SearchTag("lava") @SearchTag("bobber") @SearchTag("fishing")
+    public boolean lavaBobberFix = false;
+
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.group.rareSeaCreatures", desc = "")
     @Accordion

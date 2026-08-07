@@ -1173,6 +1173,8 @@
   "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtSound.desc": "Play a sound when catching a rare sea creature.",
   "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtTitle": "Title Alert",
   "config.babyzombieaddons.option.rareSeaCreaturesSelfCaughtTitle.desc": "Show a title when catching a rare sea creature. Legendary shows 'Legendary Sea Creature', Mythic shows 'Mythic Sea Creature'.",
+  "config.babyzombieaddons.option.lavaBobberFix": "Lava Bobber Fix",
+  "config.babyzombieaddons.option.lavaBobberFix.desc": "Lava fishing bobbers sink in the local client simulation (lava is not water) until the server force-syncs them back every 3 seconds. Makes the client treat lava as a liquid surface so the bobber floats on lava and only sinks when a fish bites.",
   "config.babyzombieaddons.group.rareSeaCreatures": "Rare Sea Creatures",
   "config.babyzombieaddons.option.rareSeaCreaturesExcludeEnabled": "Exclude Specific Sea Creatures",
   "config.babyzombieaddons.option.rareSeaCreaturesExcludeEnabled.desc": "When enabled, disables highlight and title alert for the selected sea creatures below.",
