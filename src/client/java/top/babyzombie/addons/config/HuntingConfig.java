@@ -75,7 +75,7 @@ public class HuntingConfig {
         @ConfigEditorBoolean
         @SearchTag("safari")
         @SearchTag("trajectory")
-        public boolean enabled = true;
+        public boolean enabled = false;
 
         @Expose
         @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryThrownCapsuleMode", desc = "config.babyzombieaddons.option.safariTrajectoryThrownCapsuleMode.desc")
@@ -83,6 +83,13 @@ public class HuntingConfig {
         @SearchTag("safari")
         @SearchTag("trajectory")
         public ThrownCapsuleMode thrownCapsuleMode = ThrownCapsuleMode.CURRENT;
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryTrackedCapsuleBox", desc = "config.babyzombieaddons.option.safariTrajectoryTrackedCapsuleBox.desc")
+        @ConfigEditorBoolean
+        @SearchTag("safari")
+        @SearchTag("trajectory")
+        public boolean trackedCapsuleBoxEnabled = true;
 
         @Expose
         @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryLineColor", desc = "config.babyzombieaddons.option.safariTrajectoryLineColor.desc")

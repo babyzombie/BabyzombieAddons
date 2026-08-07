@@ -245,7 +245,7 @@ public final class SafariTrajectory {
             HuntingConfig.SafariTrajectory config
     ) {
         Vec3 capsulePosition = ThrownCapsuleTracker.trackedRenderPosition();
-        if (capsulePosition == null || !config.landingCubeEnabled) {
+        if (capsulePosition == null || !config.trackedCapsuleBoxEnabled) {
             return;
         }
         int rgb = effectiveRgb(config.landingColor, 0x50FF78);

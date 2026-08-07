@@ -22,6 +22,9 @@ public final class ThrownCapsuleTracker {
     private static long clientTick;
     private static boolean useWasDown;
     private static PendingThrow pendingThrow;
+    // 所有已识别为玩家投掷的精灵球实体。旧球可能还在飞行(玩家已举出下一个),
+    // 轨迹预测必须忽略全部,否则飞行中的球会截断新的预测线。
+    private static final Set<Integer> TRACKED_IDS = new HashSet<>();
     private static int trackedEntityId = -1;
     private static long trackedAtTick;
 
@@ -32,6 +35,7 @@ public final class ThrownCapsuleTracker {
         ClientTickEvents.END_CLIENT_TICK.register(ThrownCapsuleTracker::onClientTick);
         ClientEntityEvents.ENTITY_LOAD.register((entity, level) -> considerLoadedEntity(entity));
         ClientEntityEvents.ENTITY_UNLOAD.register((entity, level) -> {
+            TRACKED_IDS.remove(entity.getId());
             if (entity.getId() == trackedEntityId) {
                 clearTracked();
             }
@@ -62,11 +66,15 @@ public final class ThrownCapsuleTracker {
             }
         }
 
-        if (trackedEntityId >= 0) {
-            Entity tracked = client.level.getEntity(trackedEntityId);
-            if (tracked == null || tracked.isRemoved() || clientTick - trackedAtTick > TRACK_TIMEOUT_TICKS) {
-                clearTracked();
-            }
+        // 已投掷球离开世界即失效,防止实体 ID 复用后误忽略无关实体。
+        TRACKED_IDS.removeIf(id -> {
+            Entity entity = CLIENT.level.getEntity(id);
+            return entity == null || entity.isRemoved();
+        });
+        if (trackedEntityId >= 0 && (clientTick - trackedAtTick > TRACK_TIMEOUT_TICKS
+                || !TRACKED_IDS.contains(trackedEntityId))) {
+            TRACKED_IDS.remove(trackedEntityId);
+            clearTracked();
         }
     }
 
@@ -135,6 +143,7 @@ public final class ThrownCapsuleTracker {
     }
 
     private static void track(Entity entity) {
+        TRACKED_IDS.add(entity.getId());
         trackedEntityId = entity.getId();
         trackedAtTick = clientTick;
         pendingThrow = null;
@@ -146,12 +155,25 @@ public final class ThrownCapsuleTracker {
                 && CLIENT.level.getEntity(trackedEntityId) != null;
     }
 
+    /**
+     * 服务器把投出的球作为携带 CRITTER_CAPSULE item 的 ItemDisplay 下发,
+     * 直接按物品判断即可,不依赖投掷时机。
+     */
+    public static boolean isThrownCapsule(Entity entity) {
+        return entity instanceof Display.ItemDisplay itemDisplay
+                && SafariTrajectory.isCapsule(itemDisplay.getItemStack());
+    }
+
     public static boolean shouldIgnoreCollision(Entity entity) {
-        return mode() == ThrownCapsuleMode.UNOBSTRUCTED && entity.getId() == trackedEntityId;
+        // 优先按物品判断(服务器下发的球带 CRITTER_CAPSULE item);
+        // TRACKED_IDS 兜底实体数据同步延迟/异常的情况。
+        return isThrownCapsule(entity) || TRACKED_IDS.contains(entity.getId());
     }
 
     public static boolean shouldHide(Entity entity) {
-        return shouldIgnoreCollision(entity);
+        // 只有 UNOBSTRUCTED 模式才隐藏球实体(用框替代显示);隐藏必须与画框配对,
+        // 否则识别失败时球会消失却没有框代替。
+        return mode() == ThrownCapsuleMode.UNOBSTRUCTED && entity.getId() == trackedEntityId;
     }
 
     public static Vec3 trackedRenderPosition() {
@@ -179,6 +201,7 @@ public final class ThrownCapsuleTracker {
     private static void reset() {
         useWasDown = false;
         pendingThrow = null;
+        TRACKED_IDS.clear();
         clearTracked();
     }
 
