@@ -18,6 +18,7 @@
     "render.PlayerTabOverlayAccessor",
     "render.BossHealthOverlayMixin",
     "render.EntityRenderDispatcherScaleMixin",
+    "render.SafariTrajectoryEntityRenderDispatcherMixin",
     "render.EntityRenderMixin",
     "render.EntityRendererMixin",
     "render.ItemFeatureRendererMixin",
