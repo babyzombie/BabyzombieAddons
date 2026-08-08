@@ -55,7 +55,7 @@ public abstract class TitleScreenMixin extends Screen {
             }
         }
         if (cfg.enableQuickButtons && !cfg.quickButtonOrder.isEmpty()) {
-            addQuickButtonRow(cfg);
+            addQuickButtons(cfg);
         }
     }
 
@@ -70,18 +70,43 @@ public abstract class TitleScreenMixin extends Screen {
         return false;
     }
 
+    /** 是否原版图标按钮（好友/语言/无障碍） */
     @Unique
-    private void addQuickButtonRow(GeneralConfig.TitleScreen cfg) {
+    private static boolean isVanillaIcon(Object child) {
+        if (child instanceof FriendsButton) return true;
+        if (child instanceof AbstractWidget widget) {
+            String text = widget.getMessage().getString();
+            return text.equals(Component.translatable("options.language").getString())
+                    || text.equals(Component.translatable("options.accessibility").getString());
+        }
+        return false;
+    }
+
+    @Unique
+    private void addQuickButtons(GeneralConfig.TitleScreen cfg) {
         // 未安装对应 mod 的第三方设置按钮不渲染
         var quickButtons = cfg.quickButtonOrder.stream()
                 .filter(GeneralConfig.QuickButtonType::isAvailable)
                 .toList();
-        int n = quickButtons.size();
-        int totalWidth = n * 20 + (n - 1) * 4;
+        if (quickButtons.isEmpty()) return;
+
+        // 可见的原版图标按钮（保持原顺序），与快捷按钮合并成一行统一居中重排
+        List<AbstractWidget> vanillaIcons = new ArrayList<>();
+        for (var child : this.children()) {
+            if (isVanillaIcon(child)) vanillaIcons.add((AbstractWidget) child);
+        }
+
+        int total = vanillaIcons.size() + quickButtons.size();
+        int totalWidth = total * 20 + (total - 1) * 4;
         int startX = this.width / 2 - totalWidth / 2;
         int y = this.height / 4 + ICON_ROW_Y;
+        int x = startX;
 
-        int index = 0;
+        for (var widget : vanillaIcons) {
+            widget.setPosition(x, y);
+            x += 24;
+        }
+
         for (var type : quickButtons) {
             var button = switch (type) {
                 case SINGLEPLAYER -> ScreenButtons.icon("selectWorld.title",
@@ -109,9 +134,9 @@ public abstract class TitleScreenMixin extends Screen {
                         "pause_menu/" + type.name().toLowerCase(),
                         () -> ModConfigOpener.createScreen(type.modId(), this));
             };
-            button.setPosition(startX + index * 24, y);
+            button.setPosition(x, y);
             this.addRenderableWidget(button);
-            index++;
+            x += 24;
         }
     }
 }

@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import top.babyzombie.addons.config.HuntingConfig;
@@ -48,7 +49,7 @@ public final class SafariBeeNestHighlight {
     public static void init() {
         ClientEntityEvents.ENTITY_LOAD.register((entity, level) -> {
             // 主世界也有蜜蜂和蜂巢,只在 Safari 内标记,避免污染状态
-            if (entity.getType() == EntityType.BEE && HypixelLocationTracker.getInstance().isInSafari()) {
+            if (entity.getType() == EntityTypes.BEE && HypixelLocationTracker.getInstance().isInSafari()) {
                 markNestsAround(entity.blockPosition());
             }
         });
