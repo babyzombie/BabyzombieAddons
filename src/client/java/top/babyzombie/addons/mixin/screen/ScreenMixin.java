@@ -4,14 +4,17 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.DisconnectedScreen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.babyzombie.addons.config.hud.CategoryHudSwitcher;
 import top.babyzombie.addons.module.kuudra.ChestCounter;
 import top.babyzombie.addons.module.misc.AutoReconnectHelper;
+import top.babyzombie.addons.util.gui.overlay.GuiOverlayManager;
 
 @Mixin(net.minecraft.client.gui.screens.Screen.class)
 public class ScreenMixin {
@@ -27,8 +30,9 @@ public class ScreenMixin {
 
     @Inject(method = "extractRenderState*", at = @At("RETURN"))
     private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
-        // 容器/背包页面上的箱子计数 HUD（hover 提示）
+        CategoryHudSwitcher.renderOnScreen(graphics, mouseX, mouseY);
         ChestCounter.renderOnScreen(graphics, mouseX, mouseY);
+        GuiOverlayManager.onRender((Screen) (Object) this, graphics, mouseX, mouseY, a);
 
         if (!isDisconnectedScreen(this)) return;
         int remaining = AutoReconnectHelper.getCountdownRemaining();
@@ -40,17 +44,14 @@ public class ScreenMixin {
         int sh = mc.getWindow().getGuiScaledHeight();
         int x = sw / 2;
 
-        // 倒计时 — 粗体 + 金色
         var countdown = Component.translatable("babyzombieaddons.reconnect.countdown", remaining)
                 .withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.GOLD));
         graphics.centeredText(font, countdown, x, sh - 60, 0xFFFFAA00);
 
-        // IP
         graphics.centeredText(font,
                 Component.literal(AutoReconnectHelper.getLastServerIp()).withColor(0xFF888888),
                 x, sh - 38, 0xFF888888);
 
-        // 重试次数 (>0)
         if (AutoReconnectHelper.getRetryCount() > 0) {
             var retry = Component.translatable("babyzombieaddons.reconnect.attempt",
                     AutoReconnectHelper.getRetryCount() + 1)
@@ -58,6 +59,24 @@ public class ScreenMixin {
             graphics.centeredText(font, retry, x, sh - 49, 0xFFAAAAAA);
         }
     }
+
+    // =====================================================================
+    // mouseClicked / mouseReleased / mouseDragged 的注入已迁移至
+    // BabyzombieAddonsClient.onInitializeClient() 中的 Fabric Screen API
+    // 全局注册（ScreenEvents.AFTER_INIT + ScreenMouseEvents.allow/beforeXxx）。
+    //
+    // MC 26.1.2 中 Screen 类本身不重写 ContainerEventHandler 接口的三个
+    // mouse default 方法，直接 @Mixin(Screen.class) 注入这三个方法会失败：
+    // "could not find any targets matching 'mouseClicked' in Screen"。
+    // 尝试 Mixin 到 ContainerEventHandler 接口也被 sponge-mixin 0.8.7 的
+    // SubType$Standard 校验拒绝（@Mixin target type mismatch: ... is an interface）。
+    // 因此使用 Fabric 官方 Screen Mouse Events API 作为最终方案。
+    //
+    // AbstractContainerScreen 子类重写了三方法，仍然由 ContainerClickMixin
+    // 进行针对性注入（slotClicked / keyPressed 等），但全局的
+    // CategoryHudSwitcher 与 GuiOverlayManager 鼠标事件已统一走 Screen API，
+    // ContainerClickMixin 中对应片段已去除以防 AbstractContainerScreen 双重触发。
+    // =====================================================================
 
     private static boolean isDisconnectedScreen(Object screen) {
         return screen instanceof DisconnectedScreen;

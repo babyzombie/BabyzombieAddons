@@ -3,6 +3,8 @@ package top.babyzombie.addons;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import com.mojang.blaze3d.platform.InputConstants;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
@@ -16,7 +18,6 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.misc.abiphone.AbiphoneTracker;
 import top.babyzombie.addons.module.misc.abiphone.CustomRingtoneModule;
 import top.babyzombie.addons.module.misc.abiphone.IncomingCallHandler;
-import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import top.babyzombie.addons.module.misc.AutoJoinModule;
 import top.babyzombie.addons.module.misc.autois.AutoISModule;
 import top.babyzombie.addons.module.misc.autois.KickRecoveryModule;
@@ -51,8 +52,11 @@ import top.babyzombie.addons.module.misc.raredrop.RareDropModule;
 import top.babyzombie.addons.module.slayer.SlayerModule;
 import top.babyzombie.addons.module.misc.UpdateChecker;
 import top.babyzombie.addons.module.misc.WindowTitleModule;
+import top.babyzombie.addons.config.hud.CategoryHudSwitcher;
 import top.babyzombie.addons.module.dungeon.withercloak.WitherCloakModule;
+import top.babyzombie.addons.module.misc.bazaar.BazzarTopOrdersOverlay;
 import top.babyzombie.addons.util.DungeonCooldown;
+import top.babyzombie.addons.util.gui.overlay.GuiOverlayManager;
 import top.babyzombie.addons.util.PersistenceMigration;
 import top.babyzombie.addons.util.render.WorldRenderUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
@@ -87,6 +91,9 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         UpdateChecker.init();
         HudManager.init();
         HudRegistrar.register();
+        GuiOverlayManager.init();
+        CategoryHudSwitcher.init();
+        BazzarTopOrdersOverlay.init();
 
         cancelKeyBindingRelease = KeyBindingUtil.register(
                 "key.babyzombieaddons.cancel_key_release", InputConstants.KEY_LALT);
@@ -152,5 +159,46 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         RavengardModule.init();
 
         ClientLifecycleEvents.CLIENT_STOPPING.register(_ -> WorldRenderUtils.close());
+
+        // =====================================================================
+        // Screen 全局鼠标事件统一入口（替代原来不可行的 ScreenMixin 三方法注入 +
+        // GuiEventHandlerMixin 接口 Mixin 方案）。
+        //
+        // MC 26.1.2 的 Screen 类不重写 ContainerEventHandler 的 mouseClicked /
+        // mouseReleased / mouseDragged 三 default 方法，直接 @Mixin(Screen.class)
+        // 注入会失败；尝试 @Mixin(ContainerEventHandler.class) 也会被
+        // sponge-mixin 0.8.7 的 SubType$Standard 校验拒绝。因此使用官方提供的
+        // Fabric Screen Mouse Events API 完成相同的全局拦截。
+        //
+        // 事件注册基于 per-screen instance，每次 AFTER_INIT（新建/尺寸变更）
+        // 时重新挂到具体 screen 实例上，符合 Fabric 设计。
+        //
+        // 说明：AbstractContainerScreen 子类重写了这三个方法，ContainerClickMixin
+        // 原本也对 CHS / GuiOverlayManager 进行拦截；为避免 AbstractContainerScreen
+        // 子类出现双重触发，ContainerClickMixin 中 CHS + GuiOverlayManager 的
+        // 重复片段已移除，统一由这里的 Screen API 全局注册生效。
+        // =====================================================================
+        ScreenEvents.AFTER_INIT.register((mc, screen, sw, sh) -> {
+            // --- mouseClicked ---
+            // 返回 false = 不允许（= 被消费，屏蔽 Screen 原本的处理）；返回 true = 允许继续。
+            // 重要：CHS 与 GuiOverlayManager 的回调具有副作用（设置 pressed 等状态），
+            // 只允许在 allowMouseClick 中调用一次，after 阶段不再重复触发。
+            ScreenMouseEvents.allowMouseClick(screen).register((s, event) -> {
+                if (CategoryHudSwitcher.onMouseClicked(event)) return false;
+                return !GuiOverlayManager.onMouseClicked(s, event.x(), event.y(), event.button());
+            });
+
+            // --- mouseReleased ---
+            ScreenMouseEvents.allowMouseRelease(screen).register((s, event) -> {
+                if (CategoryHudSwitcher.onMouseReleased(event)) return false;
+                return !GuiOverlayManager.onMouseReleased(s, event.x(), event.y(), event.button());
+            });
+
+            // --- mouseDragged ---
+            ScreenMouseEvents.allowMouseDrag(screen).register((s, event, dx, dy) -> {
+                if (CategoryHudSwitcher.onMouseDragged(event, dx, dy)) return false;
+                return !GuiOverlayManager.onMouseDragged(s, event.x(), event.y(), event.button(), dx, dy);
+            });
+        });
     }
 }

@@ -14,12 +14,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import top.babyzombie.addons.config.hud.CategoryHudSwitcher;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.module.chat.ItemProtectBridge;
 import top.babyzombie.addons.module.kuudra.ChestCounter;
 import top.babyzombie.addons.module.misc.CopyItemInfoKey;
 import top.babyzombie.addons.module.misc.pet.PetPageKeyHandler;
 import top.babyzombie.addons.util.ItemUtils;
+import top.babyzombie.addons.util.gui.overlay.GuiOverlayManager;
 
 @Mixin(AbstractContainerScreen.class)
 public abstract class ContainerClickMixin {
@@ -27,15 +29,24 @@ public abstract class ContainerClickMixin {
     @Shadow
     protected Slot hoveredSlot;
 
-    // 容器页面渲染箱子计数 HUD（hover 提示）
     @Inject(method = "extractRenderState*", at = @At("TAIL"))
     private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+        CategoryHudSwitcher.renderOnScreen(graphics, mouseX, mouseY);
         ChestCounter.renderOnScreen(graphics, mouseX, mouseY);
+        GuiOverlayManager.onRender((AbstractContainerScreen<?>) (Object) this, graphics, mouseX, mouseY, a);
     }
 
-    // 点击箱子计数 HUD（容器/背包页面）→ 触发指令；ALT+左键 物品分享/收藏
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void beforeMouseClicked(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
+        // [根因修复 BZ价格点击] ScreenMouseEvents.allowMouseClick 注入到 Screen.mouseClicked，
+        // 但 AbstractContainerScreen 重写了该方法且不调用 super，导致 Fabric API 的
+        // allowMouseClick 在容器界面上完全不触发。因此 GuiOverlayManager（BZ overlay 等）
+        // 的鼠标点击必须在此 Mixin 中直接调用，否则 BZ 页面价格点击无法到达 overlay。
+        // 不会有双重触发：Fabric allowMouseClick 在 AbstractContainerScreen 上不触发。
+        if (GuiOverlayManager.onMouseClicked((AbstractContainerScreen<?>) (Object) this, event.x(), event.y(), event.button())) {
+            cir.setReturnValue(false);
+            return;
+        }
         if (ChestCounter.onScreenClick(event)) {
             cir.setReturnValue(false);
             return;

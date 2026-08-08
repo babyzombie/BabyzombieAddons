@@ -60,6 +60,9 @@ public class SkyblockConfig {
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.customRingtone", desc = "") @Accordion
     public CustomRingtone customRingtone = new CustomRingtone();
 
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.bazzarTopOrders", desc = "") @Accordion
+    public BazzarTopOrders bazzarTopOrders = new BazzarTopOrders();
+
     public static class AutoIS {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.autois", desc = "config.babyzombieaddons.option.autois.desc") @ConfigEditorBoolean @SearchTag("autois") @SearchTag("island")
         public boolean enabled = false;
@@ -308,5 +311,19 @@ public class SkyblockConfig {
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.customRingtoneDuration", desc = "config.babyzombieaddons.option.customRingtoneDuration.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 5.0f, minStep = 0.01f) @SearchTag("abiphone") @SearchTag("ringtone")
         public float duration = 2.5f;
+    }
+
+    public static class BazzarTopOrders {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarOverlayEnabled", desc = "config.babyzombieaddons.option.bazzarOverlayEnabled.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("bazzar")
+        public boolean overlayEnabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarFlipEnabled", desc = "config.babyzombieaddons.option.bazzarFlipEnabled.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("flip")
+        public boolean flipEnabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarFlipBuyEnabled", desc = "config.babyzombieaddons.option.bazzarFlipBuyEnabled.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("flip")
+        public boolean flipBuyEnabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarFlipSellEnabled", desc = "config.babyzombieaddons.option.bazzarFlipSellEnabled.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("flip")
+        public boolean flipSellEnabled = false;
     }
 }
