@@ -25,7 +25,7 @@ public final class HudManager {
 
     static final Map<String, HudElement> elements = new LinkedHashMap<>();
     private static Map<String, Object> loadedRaw;
-    public static HudTag activeTag = HudTag.ALL;
+    static HudTag activeTag = HudTag.ALL;
 
     private HudManager() {}
 
@@ -108,6 +108,11 @@ public final class HudManager {
     }
 
     public static void openEditScreen(Screen parent) {
+        openEditScreen(parent, HudTag.ALL);
+    }
+
+    public static void openEditScreen(Screen parent, HudTag tag) {
+        activeTag = tag;
         Minecraft.getInstance().gui.setScreen(new HudEditScreen(parent));
     }
 

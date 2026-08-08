@@ -143,6 +143,7 @@
   "config.babyzombieaddons.option.petPageKeySlot5_8": "Pet Slot #28 (Row5,Col8)",
   "babyzombieaddons.command.autois.enabled": "§aAutoIS Enabled",
   "babyzombieaddons.command.autois.disabled": "§cAutoIS Disabled",
+  "babyzombieaddons.command.hud.invalidTag": "§cInvalid HUD tag §e%s§c. Available: §f%s",
   "config.babyzombieaddons.group.autois": "AutoIS Settings",
   "config.babyzombieaddons.option.updateChecker": "Update Checker",
   "config.babyzombieaddons.option.updateChecker.desc": "Check for new versions when joining a world.",

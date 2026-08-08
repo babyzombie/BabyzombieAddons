@@ -211,9 +211,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
                 List.of("config.babyzombieaddons.overlay.bazzar.tooltip.editGui"),
                 () -> {
                     playClickSound();
-                    HudManager.activeTag = HudTag.BAZAAR;
-                    HudManager.save();
-                    HudManager.openEditScreen(Minecraft.getInstance().gui.screen());
+                    HudManager.openEditScreen(Minecraft.getInstance().gui.screen(), HudTag.BAZAAR);
                 }));
         curY += lineH;
         String mainLine = "§f" + title + (cfg.flipEnabled ? onText : offText);
