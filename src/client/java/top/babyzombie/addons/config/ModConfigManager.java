@@ -148,6 +148,9 @@ public final class ModConfigManager {
         editor.wide = get().misc.wideMoulConfig.get();
         var screen = new MoulConfigScreen(editor, parent);
         Minecraft.getInstance().setScreen(screen);
+        if (search != null && !search.isBlank()) {
+            editor.search(search);
+        }
         return screen;
     }
 
