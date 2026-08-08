@@ -312,6 +312,8 @@ public class HuntingConfig {
         public boolean beeGlow = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestBeeGlowColor", desc = "config.babyzombieaddons.option.safariForestBeeGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("bee") @SearchTag("forest")
         public ChromaColour beeGlowColor = ChromaColour.fromStaticRGB(85, 255, 85, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestBeeNestHighlight", desc = "config.babyzombieaddons.option.safariForestBeeNestHighlight.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("bee") @SearchTag("nest") @SearchTag("forest")
+        public boolean beeNestHighlight = false;
     }
 
     /** 猎手交易（组中组） */

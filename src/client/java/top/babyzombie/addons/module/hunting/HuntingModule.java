@@ -2,6 +2,7 @@ package top.babyzombie.addons.module.hunting;
 
 import top.babyzombie.addons.module.hunting.safari.HunterTradeTracker;
 import top.babyzombie.addons.module.hunting.safari.SafariBellDisplay;
+import top.babyzombie.addons.module.hunting.safari.SafariBeeNestHighlight;
 import top.babyzombie.addons.module.hunting.safari.SafariEntitiesGlow;
 import top.babyzombie.addons.module.hunting.safari.SafariTrajectory;
 import top.babyzombie.addons.module.hunting.safari.WumpaRecord;
@@ -14,6 +15,7 @@ public final class HuntingModule {
     public static void init() {
         SafariBellDisplay.init();
         SafariEntitiesGlow.init();
+        SafariBeeNestHighlight.init();
         SafariTrajectory.init();
         WumpaRecord.init();
         HunterTradeTracker.init();
