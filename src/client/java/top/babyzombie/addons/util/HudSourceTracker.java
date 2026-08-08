@@ -31,6 +31,7 @@ public final class HudSourceTracker {
     private static final ThreadLocal<List<RegionEntry>> REGIONS = ThreadLocal.withInitial(ArrayList::new);
     private static final ThreadLocal<GuiGraphicsExtractor> CURRENT_GUI = new ThreadLocal<>();
     private static final ThreadLocal<String> LAST_CALLER = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> IN_RESOLVE = ThreadLocal.withInitial(() -> false);
 
     // ── Global caches ──
     private static final Map<String, String> MOD_CACHE = new ConcurrentHashMap<>();
@@ -163,6 +164,10 @@ public final class HudSourceTracker {
     // ================================================================
 
     private static String resolveCaller(int x1, int y1, int x2, int y2) {
+        // 重入保护：StackWalker.walk() 内部的 Class.forName 可能触发类加载 ->
+        // 渲染 -> blitSprite -> record -> resolveCaller -> walk() 再次进入，
+        // 导致同一个 stream 被操作两次抛出 IllegalStateException。
+        if (IN_RESOLVE.get()) return null;
         String last = LAST_CALLER.get();
         if (last != null && !REGIONS.get().isEmpty()) {
             RegionEntry lastEntry = REGIONS.get().getLast();
@@ -170,13 +175,18 @@ public final class HudSourceTracker {
                 return last;
             }
         }
-        return STACK_WALKER.walk(frames ->
-                frames.map(java.lang.StackWalker.StackFrame::getClassName)
-                        .filter(HudSourceTracker::passesFilter)
-                        .filter(cls -> MOD_CACHE.computeIfAbsent(cls, HudSourceTracker::resolveModByName) != null)
-                        .findFirst()
-                        .orElse(null)
-        );
+        IN_RESOLVE.set(true);
+        try {
+            return STACK_WALKER.walk(frames ->
+                    frames.map(java.lang.StackWalker.StackFrame::getClassName)
+                            .filter(HudSourceTracker::passesFilter)
+                            .filter(cls -> MOD_CACHE.computeIfAbsent(cls, HudSourceTracker::resolveModByName) != null)
+                            .findFirst()
+                            .orElse(null)
+            );
+        } finally {
+            IN_RESOLVE.set(false);
+        }
     }
 
     private static boolean passesFilter(String className) {

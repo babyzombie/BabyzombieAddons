@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public final class HudManager {
 
@@ -22,26 +24,41 @@ public final class HudManager {
             .resolve("babyzombieaddons").resolve("hud.json");
 
     static final Map<String, HudElement> elements = new LinkedHashMap<>();
-    private static Map<String, float[]> loaded;
+    private static Map<String, Object> loadedRaw;
+    public static HudTag activeTag = HudTag.ALL;
 
     private HudManager() {}
 
     public static void init() {
-        loaded = loadRaw();
+        loadedRaw = loadRaw();
+        if (loadedRaw != null && loadedRaw.get("__activeTag") instanceof String s) {
+            try { activeTag = HudTag.valueOf(s); } catch (Exception ignored) { activeTag = HudTag.ALL; }
+        }
+    }
+
+    public static Stream<HudElement> filteredElements() {
+        return elements.values().stream().filter(e -> activeTag == HudTag.ALL || e.mainTag == activeTag);
     }
 
     public static void register(String name, int defaultX, int defaultY, float defaultScale,
                                  String demoText, String labelKey,
-                                 java.util.function.BooleanSupplier showCondition) {
+                                 java.util.function.BooleanSupplier showCondition,
+                                 HudTag mainTag) {
         HudElement e = new HudElement();
         e.name = name; e.x = defaultX; e.y = defaultY; e.scale = defaultScale;
         e.demoText = demoText; e.labelKey = labelKey; e.showCondition = showCondition;
-        if (loaded != null) {
-            float[] saved = loaded.get(name);
-            if (saved != null && saved.length >= 3) {
-                e.x = (int) saved[0];
-                e.y = (int) saved[1];
-                e.scale = saved[2];
+        e.mainTag = mainTag;
+        if (loadedRaw != null) {
+            Object raw = loadedRaw.get(name);
+            if (raw instanceof double[] dArr && dArr.length >= 3) {
+                e.x = (int) dArr[0]; e.y = (int) dArr[1]; e.scale = (float) dArr[2];
+            } else if (raw instanceof float[] fArr && fArr.length >= 3) {
+                e.x = (int) fArr[0]; e.y = (int) fArr[1]; e.scale = fArr[2];
+            } else if (raw instanceof List<?> list && list.size() >= 3) {
+                // GSON 默认把 JSON 数组解析为 ArrayList<Double>，兼容此行为
+                e.x = ((Number) list.get(0)).intValue();
+                e.y = ((Number) list.get(1)).intValue();
+                e.scale = ((Number) list.get(2)).floatValue();
             }
         }
         elements.put(name, e);
@@ -94,22 +111,23 @@ public final class HudManager {
         Minecraft.getInstance().setScreen(new HudEditScreen(parent));
     }
 
-    private static Map<String, float[]> loadRaw() {
+    private static Map<String, Object> loadRaw() {
         if (!Files.exists(SAVE_FILE)) return null;
         try {
             String json = Files.readString(SAVE_FILE);
-            return GSON.fromJson(json, new TypeToken<Map<String, float[]>>(){}.getType());
+            return GSON.fromJson(json, new TypeToken<Map<String, Object>>(){}.getType());
         } catch (IOException ignored) {
             return null;
         }
     }
 
-    static void save() {
-        Map<String, float[]> data = new LinkedHashMap<>();
+    public static void save() {
+        Map<String, Object> data = new LinkedHashMap<>();
         for (var entry : elements.entrySet()) {
             HudElement e = entry.getValue();
             data.put(entry.getKey(), new float[]{e.x, e.y, e.scale});
         }
+        data.put("__activeTag", activeTag.name());
         try {
             Files.createDirectories(SAVE_FILE.getParent());
             Files.writeString(SAVE_FILE, GSON.toJson(data));
@@ -120,6 +138,7 @@ public final class HudManager {
         String name, demoText, labelKey;
         int x, y;
         float scale;
+        HudTag mainTag;
         java.util.function.BooleanSupplier showCondition;
     }
 }

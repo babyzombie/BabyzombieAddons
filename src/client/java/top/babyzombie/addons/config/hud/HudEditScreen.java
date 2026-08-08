@@ -5,13 +5,15 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.MouseButtonEvent;
 import org.lwjgl.glfw.GLFW;
-import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.ChatUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public final class HudEditScreen extends Screen {
     private static final int SNAP_THRESHOLD = 6;
+    private static final String CHS_NAME = "CategoryHudSwitcher";
 
     private final Screen parent;
     private HudManager.HudElement selected;
@@ -25,6 +27,14 @@ public final class HudEditScreen extends Screen {
         this.parent = parent;
     }
 
+    private Stream<HudManager.HudElement> visibleElements() {
+        if (HudManager.activeTag == HudTag.ALL) return HudManager.elements.values().stream();
+        return Stream.concat(
+                HudManager.filteredElements(),
+                HudManager.elements.values().stream().filter(e -> CHS_NAME.equals(e.name))
+        ).distinct();
+    }
+
     @Override
     public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         gui.fill(0, 0, width, height, 0xC0101010);
@@ -32,7 +42,13 @@ public final class HudEditScreen extends Screen {
         var font = minecraft.font;
         hovered = null;
 
-        for (var e : HudManager.elements.values()) {
+        // 顶部显示当前 activeTag 提示
+        String tagHint = ChatUtils.translate("config.babyzombieaddons.hud.edit.tagHint", HudManager.activeTag.toString());
+        int tw = font.width(ChatUtils.stripColor(tagHint));
+        gui.fill(width/2 - tw/2 - 6, 2, width/2 + tw/2 + 6, font.lineHeight + 6, 0x80000000);
+        gui.text(font, tagHint, width/2 - tw/2, 5, 0xFFFFFFFF, true);
+
+        for (var e : (Iterable<HudManager.HudElement>) visibleElements()::iterator) {
             if (!showElement(e)) continue;
             float textScale = e.scale;
             String demoText = HudManager.getDemoText(e.name);
@@ -83,17 +99,22 @@ public final class HudEditScreen extends Screen {
             }
         }
 
-        // External HUD source tooltip — skip when hovering over our own element to avoid overlap
+        // External HUD source tooltip - skip when hovering over our own element to avoid overlap
         top.babyzombie.addons.util.HudSourceTracker.renderTooltipFromScreen(gui, font, mouseX, mouseY, hovered != null);
+
+        // HudEditScreen 不被 ScreenMixin 通配命中，直接手动调用 CHS 渲染
+        CategoryHudSwitcher.renderOnScreen(gui, mouseX, mouseY);
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        // CHS 鼠标点击拦截优先（mixin 不命中，直接手动调用）
+        if (CategoryHudSwitcher.onMouseClicked(event)) return true;
         if (event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return super.mouseClicked(event, doubleClick);
 
         selected = null;
         int mx = (int) event.x(), my = (int) event.y();
-        for (var e : HudManager.elements.values()) {
+        for (var e : (Iterable<HudManager.HudElement>) visibleElements()::iterator) {
             if (!showElement(e)) continue;
             int w = demoWidth(e) + 8;
             int h = demoHeight(e) + 8;
@@ -109,6 +130,8 @@ public final class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
+        // CHS 鼠标拖拽拦截优先
+        if (CategoryHudSwitcher.onMouseDragged(event, deltaX, deltaY)) return true;
         if (selected == null || event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT)
             return super.mouseDragged(event, deltaX, deltaY);
 
@@ -143,7 +166,7 @@ public final class HudEditScreen extends Screen {
         refs.add(0);   // 屏幕左
         refs.add(sw);  // 屏幕右
 
-        for (var e : HudManager.elements.values()) {
+        for (var e : (Iterable<HudManager.HudElement>) visibleElements()::iterator) {
             if (!showElement(e) || e == selected) continue;
             int ew = demoWidth(e) + 8;
             refs.add(e.x);        // 左
@@ -179,7 +202,7 @@ public final class HudEditScreen extends Screen {
         refs.add(0);   // 屏幕顶
         refs.add(sh);  // 屏幕底
 
-        for (var e : HudManager.elements.values()) {
+        for (var e : (Iterable<HudManager.HudElement>) visibleElements()::iterator) {
             if (!showElement(e) || e == selected) continue;
             int eh = demoHeight(e) + 8;
             refs.add(e.y);        // 顶
@@ -204,6 +227,8 @@ public final class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
+        // CHS 鼠标释放拦截优先
+        if (CategoryHudSwitcher.onMouseReleased(event)) return true;
         if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             selected = null;
             snapLineX = -1;
@@ -214,7 +239,7 @@ public final class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
-        for (var e : HudManager.elements.values()) {
+        for (var e : (Iterable<HudManager.HudElement>) visibleElements()::iterator) {
             if (!showElement(e)) continue;
             int w = demoWidth(e) + 8;
             int h = demoHeight(e) + 8;
@@ -227,7 +252,11 @@ public final class HudEditScreen extends Screen {
     }
 
     private boolean showElement(HudManager.HudElement e) {
-        return e.showCondition.getAsBoolean() || ModConfigManager.get().misc.debugMode;
+        // HUD 编辑页面强制忽略 showCondition，让所有已注册 HUD 都能被看到、拖动、调整位置
+        boolean cond = true;
+        boolean chsAlways = CHS_NAME.equals(e.name);
+        boolean tagMatch = (HudManager.activeTag == HudTag.ALL || e.mainTag == HudManager.activeTag);
+        return cond && (chsAlways || tagMatch);
     }
 
     private int demoWidth(HudManager.HudElement e) {

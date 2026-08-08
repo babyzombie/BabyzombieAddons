@@ -1,6 +1,7 @@
 package top.babyzombie.addons.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
@@ -121,6 +122,18 @@ public final class ChatUtils {
 
     public static void copyToClipboard(String text) {
         Minecraft.getInstance().keyboardHandler.setClipboard(text);
+    }
+
+    public static void showToast(String titleKey, String bodyKey, Object... bodyArgs) {
+        try {
+            Minecraft mc = Minecraft.getInstance();
+            mc.getToastManager().addToast(
+                SystemToast.multiline(mc, SystemToast.SystemToastId.NARRATOR_TOGGLE,
+                    Component.translatable(titleKey), Component.translatable(bodyKey, bodyArgs))
+            );
+        } catch (Throwable t) {
+            showMessage(Component.translatable(bodyKey, bodyArgs).getString());
+        }
     }
 
     public static String extractPattern(Component message, java.util.regex.Pattern pattern, int group) {
