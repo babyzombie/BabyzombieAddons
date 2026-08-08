@@ -92,6 +92,13 @@ public class HuntingConfig {
         public boolean trackedCapsuleBoxEnabled = true;
 
         @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryHideNearbyCapsules", desc = "config.babyzombieaddons.option.safariTrajectoryHideNearbyCapsules.desc")
+        @ConfigEditorBoolean
+        @SearchTag("safari")
+        @SearchTag("trajectory")
+        public boolean hideNearbyCapsules = false;
+
+        @Expose
         @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryLineColor", desc = "config.babyzombieaddons.option.safariTrajectoryLineColor.desc")
         @ConfigEditorColour
         public ChromaColour lineColor = ChromaColour.fromStaticRGB(80, 255, 220, 255);
@@ -289,14 +296,24 @@ public class HuntingConfig {
         public boolean frogGlow = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestFrogGlowColor", desc = "config.babyzombieaddons.option.safariForestFrogGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("frog") @SearchTag("forest")
         public ChromaColour frogGlowColor = ChromaColour.fromStaticRGB(85, 255, 85, 255);
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestParrotGlow", desc = "config.babyzombieaddons.option.safariForestParrotGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("parrot") @SearchTag("forest")
-        public boolean parrotGlow = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestParrotGlowColor", desc = "config.babyzombieaddons.option.safariForestParrotGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("parrot") @SearchTag("forest")
-        public ChromaColour parrotGlowColor = ChromaColour.fromStaticRGB(85, 85, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestBluebirdGlow", desc = "config.babyzombieaddons.option.safariForestBluebirdGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("bluebird") @SearchTag("parrot") @SearchTag("forest")
+        public boolean bluebirdGlow = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestBluebirdGlowColor", desc = "config.babyzombieaddons.option.safariForestBluebirdGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("bluebird") @SearchTag("parrot") @SearchTag("forest")
+        public ChromaColour bluebirdGlowColor = ChromaColour.fromStaticRGB(85, 255, 85, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestParakeetGlow", desc = "config.babyzombieaddons.option.safariForestParakeetGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("parakeet") @SearchTag("parrot") @SearchTag("forest")
+        public boolean parakeetGlow = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestParakeetGlowColor", desc = "config.babyzombieaddons.option.safariForestParakeetGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("parakeet") @SearchTag("parrot") @SearchTag("forest")
+        public ChromaColour parakeetGlowColor = ChromaColour.fromStaticRGB(85, 85, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestMacawGlow", desc = "config.babyzombieaddons.option.safariForestMacawGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("macaw") @SearchTag("parrot") @SearchTag("forest")
+        public boolean macawGlow = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestMacawGlowColor", desc = "config.babyzombieaddons.option.safariForestMacawGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("macaw") @SearchTag("parrot") @SearchTag("forest")
+        public ChromaColour macawGlowColor = ChromaColour.fromStaticRGB(255, 170, 0, 255);
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestBeeGlow", desc = "config.babyzombieaddons.option.safariForestBeeGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("bee") @SearchTag("forest")
         public boolean beeGlow = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestBeeGlowColor", desc = "config.babyzombieaddons.option.safariForestBeeGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("bee") @SearchTag("forest")
         public ChromaColour beeGlowColor = ChromaColour.fromStaticRGB(85, 255, 85, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestBeeNestHighlight", desc = "config.babyzombieaddons.option.safariForestBeeNestHighlight.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("bee") @SearchTag("nest") @SearchTag("forest")
+        public boolean beeNestHighlight = false;
     }
 
     /** 猎手交易（组中组） */

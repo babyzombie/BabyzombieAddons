@@ -131,6 +131,16 @@ public final class HunterTradeTracker {
         return item == null ? null : ITEM_COLORS.get(item);
     }
 
+    /**
+     * 物品名着色(与 HUD/世界悬浮字一致):查表取品质色,未知用白色,null 显示 "?"。
+     * 弹窗的 §6 前缀会被内部色码覆盖,直接传带色字符串即可。
+     */
+    private static String colorize(String item) {
+        if (item == null) return "?";
+        String color = lookupColor(item);
+        return (color == null ? "§f" : color) + item;
+    }
+
     private static final long DIALOGUE_TIMEOUT_MS = 10_000; // 对话无更新 10 秒后视为结束（ServerTick.getTime 单位是毫秒）
     private static final double SAME_NPC_DIST = 8;         // 判定"同一 NPC"的距离
     private static final double SCAN_RADIUS = 32;          // 扫描盔甲架的半径
@@ -320,8 +330,8 @@ public final class HunterTradeTracker {
         if (ht.popup) {
             String cmd = findClickCommand(message, "Trade");
             PopupEventsModule.showHunterTrade(npc.name,
-                    currentCost == null ? "?" : currentCost,
-                    currentShard == null ? "?" : currentShard,
+                    colorize(currentCost),
+                    colorize(currentShard),
                     cmd == null ? "" : cmd);
         }
 

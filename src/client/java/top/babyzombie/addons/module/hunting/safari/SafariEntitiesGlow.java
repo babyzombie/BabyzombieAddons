@@ -6,6 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ambient.Bat;
+import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.monster.warden.Warden;
@@ -201,8 +202,18 @@ public final class SafariEntitiesGlow {
                             if (forest.frogGlow && entity.getType() == EntityType.FROG) {
                                 setGlow(entity, forest.frogGlowColor.getEffectiveColourRGB());
                             }
-                            if (forest.parrotGlow && entity.getType() == EntityType.PARROT) {
-                                setGlow(entity, forest.parrotGlowColor.getEffectiveColourRGB());
+                            // 鹦鹉按颜色变体区分三个 critter：Bluebird(蓝)/Parakeet(绿)/Macaw(红蓝)
+                            if (entity instanceof Parrot parrot) {
+                                var variant = parrot.getVariant();
+                                if (forest.bluebirdGlow && variant == Parrot.Variant.BLUE) {
+                                    setGlow(parrot, forest.bluebirdGlowColor.getEffectiveColourRGB());
+                                }
+                                if (forest.parakeetGlow && variant == Parrot.Variant.GREEN) {
+                                    setGlow(parrot, forest.parakeetGlowColor.getEffectiveColourRGB());
+                                }
+                                if (forest.macawGlow && variant == Parrot.Variant.RED_BLUE) {
+                                    setGlow(parrot, forest.macawGlowColor.getEffectiveColourRGB());
+                                }
                             }
                             if (forest.beeGlow && entity.getType() == EntityType.BEE) {
                                 setGlow(entity, forest.beeGlowColor.getEffectiveColourRGB());
@@ -340,6 +351,6 @@ public final class SafariEntitiesGlow {
 
     private static boolean anyEnabled(HuntingConfig.Forest c) {
         return c.hideonfloorGlow || c.foxGlow || c.pandaGlow || c.creakingGlow
-            || c.frogGlow || c.parrotGlow || c.beeGlow;
+            || c.frogGlow || c.bluebirdGlow || c.parakeetGlow || c.macawGlow || c.beeGlow;
     }
 }
