@@ -92,6 +92,13 @@ public class HuntingConfig {
         public boolean trackedCapsuleBoxEnabled = true;
 
         @Expose
+        @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryHideNearbyCapsules", desc = "config.babyzombieaddons.option.safariTrajectoryHideNearbyCapsules.desc")
+        @ConfigEditorBoolean
+        @SearchTag("safari")
+        @SearchTag("trajectory")
+        public boolean hideNearbyCapsules = false;
+
+        @Expose
         @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryLineColor", desc = "config.babyzombieaddons.option.safariTrajectoryLineColor.desc")
         @ConfigEditorColour
         public ChromaColour lineColor = ChromaColour.fromStaticRGB(80, 255, 220, 255);

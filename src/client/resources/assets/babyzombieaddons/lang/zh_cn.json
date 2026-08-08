@@ -1546,6 +1546,8 @@
   "config.babyzombieaddons.option.safariTrajectoryLandingCube.desc": "在精确落点绘制方框。",
   "config.babyzombieaddons.option.safariTrajectoryTrackedCapsuleBox": "飞行中精灵球方框",
   "config.babyzombieaddons.option.safariTrajectoryTrackedCapsuleBox.desc": "在隐身的飞行中精灵球位置绘制方框，标记当前投出的精灵球；颜色与大小沿用落点方框设置。",
+  "config.babyzombieaddons.option.safariTrajectoryHideNearbyCapsules": "隐身附近精灵球",
+  "config.babyzombieaddons.option.safariTrajectoryHideNearbyCapsules.desc": "隐藏玩家头附近(1 格内)的全部精灵球，保持视野干净；对任意投掷显示模式生效。",
   "config.babyzombieaddons.option.safariTrajectoryCubeColor": "方框 RGB",
   "config.babyzombieaddons.option.safariTrajectoryCubeColor.desc": "落点方框与精灵球方框共用的颜色。",
   "config.babyzombieaddons.option.safariTrajectoryCubeSize": "方框大小",
