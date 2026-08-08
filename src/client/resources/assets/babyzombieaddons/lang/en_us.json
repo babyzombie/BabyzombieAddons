@@ -1496,6 +1496,8 @@
   "config.babyzombieaddons.option.safariTrajectoryLandingCube.desc": "Draw a cube around the exact landing point.",
   "config.babyzombieaddons.option.safariTrajectoryTrackedCapsuleBox": "Thrown Capsule Box",
   "config.babyzombieaddons.option.safariTrajectoryTrackedCapsuleBox.desc": "Draw a box around the in-flight capsule (Invisible mode), marking the currently thrown capsule. Colour and size follow the landing cube settings.",
+  "config.babyzombieaddons.option.safariTrajectoryHideNearbyCapsules": "Hide Nearby Capsules",
+  "config.babyzombieaddons.option.safariTrajectoryHideNearbyCapsules.desc": "Hide all capsules near the player's head (within 1 block) to keep the view clean. Works with any thrown capsule display mode.",
   "config.babyzombieaddons.option.safariTrajectoryCubeColor": "Cube RGB",
   "config.babyzombieaddons.option.safariTrajectoryCubeColor.desc": "Colour shared by the landing cube and thrown capsule box.",
   "config.babyzombieaddons.option.safariTrajectoryCubeSize": "Cube Size",
