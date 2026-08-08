@@ -210,8 +210,8 @@ public final class SafariBeeNestHighlight {
         float red = (rgb >> 16 & 0xFF) / 255.0f;
         float green = (rgb >> 8 & 0xFF) / 255.0f;
         float blue = (rgb & 0xFF) / 255.0f;
-        // 实心盒子比蜂巢方块外扩一点,不与方块表面贴合(0.01 太小,正下方仰视会 z-fighting 看不见)
-        double expand = 0.06;
+        // 实心盒子比蜂巢方块外扩一点,贴合表面但又不重叠
+        double expand = 0.01;
         for (BlockPos pos : availableNests) {
             WorldRenderUtils.drawFilledBox(context,
                     pos.getX() - expand, pos.getY() - expand, pos.getZ() - expand,
