@@ -18,7 +18,7 @@ public final class ThrownCapsuleTracker {
     private static final Minecraft CLIENT = Minecraft.getInstance();
     private static final int PENDING_TIMEOUT_TICKS = 40;
     private static final int TRACK_TIMEOUT_TICKS = 200;
-    private static final double HIDE_NEARBY_RADIUS = 1.0;
+    private static final double HIDE_NEARBY_RADIUS = 2.0;
 
     private static long clientTick;
     private static boolean useWasDown;
@@ -180,13 +180,19 @@ public final class ThrownCapsuleTracker {
         if (mode() == ThrownCapsuleMode.UNOBSTRUCTED && entity.getId() == trackedEntityId) {
             return true;
         }
-        // 隐身附近精灵球:独立开关,隐藏玩家头附近的全部球,对任意模式生效。
-        if (SafariTrajectory.config().hideNearbyCapsules && isThrownCapsule(entity)) {
-            Player player = CLIENT.player;
-            return player != null
-                    && player.getEyePosition().distanceToSqr(entity.position()) <= HIDE_NEARBY_RADIUS * HIDE_NEARBY_RADIUS;
+        if (!SafariTrajectory.config().hideNearbyCapsules) {
+            return false;
         }
-        return false;
+        // 头附近 2 格内的球:投掷瞬间球就在眼前(1 格左右),2 格半径直接覆盖;
+        // 已认领的球不依赖 item 同步,避免认领前一两帧闪出来。
+        return isNearPlayerHead(entity)
+                && (entity.getId() == trackedEntityId || isThrownCapsule(entity));
+    }
+
+    private static boolean isNearPlayerHead(Entity entity) {
+        Player player = CLIENT.player;
+        return player != null
+                && player.getEyePosition().distanceToSqr(entity.position()) <= HIDE_NEARBY_RADIUS * HIDE_NEARBY_RADIUS;
     }
 
     public static Vec3 trackedRenderPosition() {
