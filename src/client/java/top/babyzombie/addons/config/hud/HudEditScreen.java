@@ -5,6 +5,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.MouseButtonEvent;
 import org.lwjgl.glfw.GLFW;
+
+import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 
 import java.util.ArrayList;
@@ -252,9 +254,9 @@ public final class HudEditScreen extends Screen {
     }
 
     private boolean showElement(HudManager.HudElement e) {
-        // HUD 编辑页面强制忽略 showCondition，让所有已注册 HUD 都能被看到、拖动、调整位置
-        boolean cond = true;
         boolean chsAlways = CHS_NAME.equals(e.name);
+        // 仅 CategoryHudSwitcher 强制忽略显示条件；其余 HUD 仍遵循 showCondition / debugMode
+        boolean cond = chsAlways || e.showCondition.getAsBoolean() || ModConfigManager.get().misc.debugMode;
         boolean tagMatch = (HudManager.activeTag == HudTag.ALL || e.mainTag == HudManager.activeTag);
         return cond && (chsAlways || tagMatch);
     }
