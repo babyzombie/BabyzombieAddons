@@ -1,6 +1,7 @@
 package top.babyzombie.addons.util.tracker;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.component.DataComponents;
 import org.jetbrains.annotations.Nullable;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.ItemUtils;
@@ -8,6 +9,7 @@ import top.babyzombie.addons.util.pet.RomanNumeral;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Bazaar 物品信息门面：统一入口。
@@ -37,7 +39,34 @@ public final class BazaarItemInfo {
     @Nullable
     public static Info get(ItemStack stack) {
         if (stack == null) return null;
-        return get(ItemUtils.getSkyblockId(stack));
+        String skyblockId = ItemUtils.getSkyblockId(stack);
+        // 附魔书：通用 id ENCHANTED_BOOK，实际附魔在 enchantments 标签（小写名:等级）
+        if ("ENCHANTED_BOOK".equals(skyblockId)) {
+            String ench = extractEnchantmentId(stack);
+            if (ench != null) skyblockId = ench;
+        }
+        return get(skyblockId);
+    }
+
+    /**
+     * 附魔书 NBT 适配：enchantments 标签（如 {"corruption": 1}）→ "CORRUPTION;1"，
+     * 走 bazaarstocks 映射到 ENCHANTMENT_CORRUPTION_1。取第一个附魔（bazaar 附魔书为单附魔产品）。
+     */
+    @Nullable
+    private static String extractEnchantmentId(ItemStack stack) {
+        try {
+            var customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (customData == null) return null;
+            var tag = customData.copyTag();
+            var ench = tag.getCompound("enchantments").orElse(null);
+            if (ench == null) return null;
+            for (Map.Entry<String, net.minecraft.nbt.Tag> e : ench.entrySet()) {
+                if (e.getValue() instanceof net.minecraft.nbt.NumericTag num) {
+                    return e.getKey().toUpperCase(Locale.ROOT) + ";" + num.intValue();
+                }
+            }
+        } catch (RuntimeException ignored) {}
+        return null;
     }
 
     /**
@@ -95,7 +124,14 @@ public final class BazaarItemInfo {
             return BazaarStockMapper.getInstance().lookupByDisplayName(s);
         }
 
-        // 2) 附魔书解析
+        // 2) Essence（无 NBT id 的 head 类）："Safari Essence" → "ESSENCE_SAFARI"。
+        //    essence 产品 id 即 API 产品键（不在 bazaarstocks 映射里），规则生成后由 build 验证存在性
+        if (s.endsWith(" Essence")) {
+            String core = s.substring(0, s.length() - " Essence".length());
+            return "ESSENCE_" + core.toUpperCase(Locale.ROOT).replace(' ', '_');
+        }
+
+        // 3) 附魔书解析
         if (s.startsWith("Enchanted Book")) {
             s = s.substring("Enchanted Book".length()).trim();
         }
@@ -123,7 +159,7 @@ public final class BazaarItemInfo {
                 return BazaarStockMapper.getInstance().lookupEnchantByCore(core, lvl);
             }
         }
-        // 3) 普通物品：大写 + 空格/连字符 → 下划线
+        // 4) 普通物品：大写 + 空格/连字符 → 下划线
         return s.toUpperCase(Locale.ROOT).replace(' ', '_').replace('-', '_');
     }
 
