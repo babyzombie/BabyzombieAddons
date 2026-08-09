@@ -1628,5 +1628,6 @@
   "config.babyzombieaddons.overlay.bazzar.text.lineCount": "> Lines shown: %s",
   "config.babyzombieaddons.option.bazzarShowActionBar": "Show action bar",
   "config.babyzombieaddons.option.bazzarShowActionBar.desc": "Show the action bar on Bazaar pages (edit GUI / Flip / display toggles / API toggle etc.).",
-  "config.babyzombieaddons.overlay.bazzar.text.showActionBar": "> Action Bar: "
+  "config.babyzombieaddons.overlay.bazzar.text.showActionBar": "> Action Bar: ",
+  "config.babyzombieaddons.overlay.bazzar.text.apiMode": "> API Mode: "
 }

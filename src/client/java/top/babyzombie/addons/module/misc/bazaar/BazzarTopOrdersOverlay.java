@@ -160,7 +160,8 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
             String n = ChatUtils.toLegacyString(center.getDisplayName());
             if (!n.trim().isEmpty()) itemName = n.trim();
         }
-        if (cs != null) {
+        // 订单数据只在详情页（两个订单按钮都在）解析；其他 Bazaar 页面仅显示操作栏
+        if (BazzarInventoryMatcher.isItemDetailPage(cs)) {
             if (cfg.apiEnabled) {
                 var info = fetchApiInfo(cs, center);
                 if (info != null) {
