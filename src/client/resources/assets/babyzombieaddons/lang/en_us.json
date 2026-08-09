@@ -1562,6 +1562,7 @@
   "config.babyzombieaddons.overlay.bazzar.toast.copiedTitle": "Price Copied",
   "config.babyzombieaddons.overlay.bazzar.toast.copiedBody": "%s coins",
   "config.babyzombieaddons.overlay.bazzar.toast.copiedFallback": "§a[BZA] §fPrice copied: §e%s coins",
+  "config.babyzombieaddons.copyitem.toast.copiedTitle": "Item Info Copied",
   "config.babyzombieaddons.hud.edit.tagHint": "§eHUD Filter: §f%s  §7(Click CHS at top-right to switch)",
   "config.babyzombieaddons.hud.chs.fallbackDemo": "§eHUD: §fALL ▼"
 }

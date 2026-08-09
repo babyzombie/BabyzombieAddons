@@ -5,9 +5,11 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,6 +22,7 @@ import top.babyzombie.addons.module.chat.ItemProtectBridge;
 import top.babyzombie.addons.module.kuudra.ChestCounter;
 import top.babyzombie.addons.module.misc.CopyItemInfoKey;
 import top.babyzombie.addons.module.misc.pet.PetPageKeyHandler;
+import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.gui.overlay.GuiOverlayManager;
 
@@ -75,8 +78,12 @@ public abstract class ContainerClickMixin {
     private void onKeyPressed(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         if (CopyItemInfoKey.KEY.matches(event)) {
             if (hoveredSlot != null && hoveredSlot.hasItem()) {
-                String text = ItemUtils.formatItemCopyText(hoveredSlot.getItem());
+                ItemStack stack = hoveredSlot.getItem();
+                String text = ItemUtils.formatItemCopyText(stack);
                 Minecraft.getInstance().keyboardHandler.setClipboard(text);
+                ChatUtils.showToast(stack,
+                        Component.translatable("config.babyzombieaddons.copyitem.toast.copiedTitle"),
+                        stack.getHoverName());
                 var player = Minecraft.getInstance().player;
                 if (player != null) {
                     player.playSound(SoundEvents.NOTE_BLOCK_PLING.value(), 0.5f, 2.0f);
