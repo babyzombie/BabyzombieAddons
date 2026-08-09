@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -51,7 +52,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         ClientTickEvents.END_CLIENT_TICK.register(c -> {
             var cfg = getCfg();
             if (cfg == null || !cfg.overlayEnabled) return;
-            Screen s = Minecraft.getInstance().screen;
+            Screen s = Minecraft.getInstance().gui.screen();
             // Bazaar 界面（含列表页）就刷新数据，操作栏常显；订单数据仅详情页解析
             if (!BazzarInventoryMatcher.isBazzarScreen(s)) return;
             // API 模式下刷新数据（60s 节流由 tracker 保证）
@@ -97,7 +98,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
 
     @Override
     public void render(GuiGraphicsExtractor g, int mx, int my, float delta) {
-        if (!(Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> cs)) return;
+        if (!(Minecraft.getInstance().gui.screen() instanceof AbstractContainerScreen<?> cs)) return;
         Font font = Minecraft.getInstance().font;
         if (buyTexts.isEmpty() && sellTexts.isEmpty() && actionTexts.isEmpty()) rebuildTexts();
 
@@ -145,7 +146,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
     private static void rebuildTexts() {
         var cfg = getCfg();
         if (cfg == null) return;
-        Screen s = Minecraft.getInstance().screen;
+        Screen s = Minecraft.getInstance().gui.screen();
         AbstractContainerScreen<?> cs = (s instanceof AbstractContainerScreen<?> a) ? a : null;
 
         // ===== 数据来源：API 优先（开关开启且数据就绪），否则 GUI 解析 =====
@@ -256,7 +257,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
                     List.of("config.babyzombieaddons.overlay.bazzar.tooltip.editGui"),
                     () -> {
                         playClickSound();
-                        HudManager.openEditScreen(Minecraft.getInstance().screen, HudTag.BAZAAR);
+                        HudManager.openEditScreen(Minecraft.getInstance().gui.screen(), HudTag.BAZAAR);
                     }));
             curY += lineH;
             String mainLine = "§f" + title + (cfg.flipEnabled ? onText : offText);
@@ -379,7 +380,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
 
     /** 打开 Mod 设置页并搜索"行数"（定位 maxLines 配置） */
     private static void openConfigSearch() {
-        Minecraft.getInstance().setScreen(ModConfigManager.createGUI(Minecraft.getInstance().screen, "行数"));
+        Minecraft.getInstance().gui.setScreen(ModConfigManager.createGUI(Minecraft.getInstance().gui.screen(), Component.translatable("config.babyzombieaddons.option.bazzarMaxLines").getString()));
     }
 
     private static void copyPriceAndToast(String priceNumberOnly) {
