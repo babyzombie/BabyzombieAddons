@@ -58,7 +58,8 @@ public final class BazzarInventoryMatcher {
         if (itemName.isEmpty()) itemName = findItemName(sellLore, SELL_HEADER);
         List<TopOrderData.TopOrderEntry> buys = extract(buyLore, BUY_HEADER, TopOrderData.OrderType.BUY);
         List<TopOrderData.TopOrderEntry> sells = extract(sellLore, SELL_HEADER, TopOrderData.OrderType.SELL);
-        boolean valid = !buys.isEmpty() && !sells.isEmpty();
+        // 允许单边为空（物品可能只有买单没有卖单，或某侧没有订单行）
+        boolean valid = !buys.isEmpty() || !sells.isEmpty();
         return new TopOrderData.ParsedBazzarGui(itemName, buys, sells, valid);
     }
 
