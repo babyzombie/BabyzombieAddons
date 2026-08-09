@@ -4,8 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
+import top.babyzombie.addons.util.toast.ItemToast;
 
 public final class ChatUtils {
 
@@ -124,15 +126,33 @@ public final class ChatUtils {
         Minecraft.getInstance().keyboardHandler.setClipboard(text);
     }
 
+    /** 自建 id,避免与原版/其他 mod 的 SystemToast 撞 token */
+    private static final SystemToast.SystemToastId TOAST_ID = new SystemToast.SystemToastId();
+
     public static void showToast(String titleKey, String bodyKey, Object... bodyArgs) {
         try {
             Minecraft mc = Minecraft.getInstance();
             mc.gui.toastManager().addToast(
-                new SystemToast(SystemToast.SystemToastId.NARRATOR_TOGGLE,
-                    Component.translatable(titleKey), Component.translatable(bodyKey, bodyArgs))
+                    new SystemToast(SystemToast.SystemToastId.NARRATOR_TOGGLE,
+                            Component.translatable(titleKey), Component.translatable(bodyKey, bodyArgs))
             );
-        } catch (Throwable t) {
-            showMessage(Component.translatable(bodyKey, bodyArgs).getString());
+        } catch (Throwable ignored) {
+            // 静默失败,不影响主流程
+        }
+    }
+
+    /** 带物品图标的 Toast,正文超长自动折行;同样排队显示不覆盖 */
+    public static void showToast(ItemStack icon, String titleKey, String bodyKey, Object... bodyArgs) {
+        showToast(icon, Component.translatable(titleKey), Component.translatable(bodyKey, bodyArgs));
+    }
+
+    /** 带物品图标的 Toast,直接传 Component(如物品 hoverName);排队显示不覆盖 */
+    public static void showToast(ItemStack icon, Component title, Component message) {
+        try {
+            Minecraft mc = Minecraft.getInstance();
+            mc.gui.toastManager().addToast(new ItemToast(icon, title, message));
+        } catch (Throwable ignored) {
+            // 静默失败,不影响复制主流程
         }
     }
 

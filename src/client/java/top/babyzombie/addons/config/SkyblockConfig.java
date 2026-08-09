@@ -325,5 +325,11 @@ public class SkyblockConfig {
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarFlipSellEnabled", desc = "config.babyzombieaddons.option.bazzarFlipSellEnabled.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("flip")
         public boolean flipSellEnabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarApiEnabled", desc = "config.babyzombieaddons.option.bazzarApiEnabled.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("api")
+        public boolean apiEnabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarMaxLines", desc = "config.babyzombieaddons.option.bazzarMaxLines.desc") @ConfigEditorSlider(minValue = 1, maxValue = 30, minStep = 1) @SearchTag("bazaar")
+        public int maxLines = 7;
     }
 }

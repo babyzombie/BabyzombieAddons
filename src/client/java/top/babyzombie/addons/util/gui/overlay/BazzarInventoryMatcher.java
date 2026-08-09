@@ -55,6 +55,34 @@ public final class BazzarInventoryMatcher {
         return new TopOrderData.ParsedBazzarGui(itemName, buys, sells, valid);
     }
 
+    /** 从界面 title 提取当前物品原始显示名（保留颜色码，供 API 门面识别终极附魔等） */
+    public static String getRawItemName(AbstractContainerScreen<?> cs) {
+        if (cs == null) return null;
+        String raw = ChatUtils.toLegacyString(cs.getTitle());
+        int arrowIdx = raw.indexOf('➜');
+        if (arrowIdx < 0) return null;
+        String name = raw.substring(arrowIdx + 1).trim();
+        return name.isEmpty() ? null : name;
+    }
+
+    /**
+     * 定位 Bazaar 详情页（三排容器）正中间的物品槽位：第 2 排第 5 号（index 13）。
+     * 该槽位即当前查看物品，可直接读取 NBT 走精确映射。
+     */
+    public static ItemStack getCenterItem(AbstractContainerScreen<?> cs) {
+        if (cs == null) return null;
+        try {
+            for (var slot : cs.getMenu().slots) {
+                if (slot.container == null) continue;
+                if (slot.container == Minecraft.getInstance().player.getInventory()) continue;
+                if (slot.index != 13) continue;
+                if (!slot.hasItem()) return null;
+                return slot.getItem();
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
+
     // ===================== helpers =====================
 
     private static class Pair { ItemStack a; ItemStack b; Pair(ItemStack x, ItemStack y) { a = x; b = y; } }
