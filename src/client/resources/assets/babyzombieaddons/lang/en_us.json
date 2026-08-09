@@ -1568,5 +1568,15 @@
   "config.babyzombieaddons.option.bazzarApiEnabled": "Fetch more orders via API",
   "config.babyzombieaddons.option.bazzarApiEnabled.desc": "When enabled, fetches the full order ladder (up to 30 tiers) from the official Hypixel Bazaar API, replacing the few lines parsed from the GUI. Data refreshes roughly every 60 seconds; first fetch takes a moment.",
   "config.babyzombieaddons.option.bazzarMaxLines": "Max order lines shown",
-  "config.babyzombieaddons.option.bazzarMaxLines.desc": "Maximum lines shown per buy order / sell offer list. Applies to both GUI-parsed and API data."
+  "config.babyzombieaddons.option.bazzarMaxLines.desc": "Maximum lines shown per buy order / sell offer list. Applies to both GUI-parsed and API data.",
+  "config.babyzombieaddons.option.bazzarShowBuyOrders": "Show buy orders",
+  "config.babyzombieaddons.option.bazzarShowBuyOrders.desc": "Show the buy order list on the Bazaar item page. Quick toggle available in the action bar.",
+  "config.babyzombieaddons.option.bazzarShowSellOffers": "Show sell offers",
+  "config.babyzombieaddons.option.bazzarShowSellOffers.desc": "Show the sell offer list on the Bazaar item page. Quick toggle available in the action bar.",
+  "config.babyzombieaddons.overlay.bazzar.text.showBuy": "> Show Buy Orders: ",
+  "config.babyzombieaddons.overlay.bazzar.text.showSell": "> Show Sell Offers: ",
+  "config.babyzombieaddons.overlay.bazzar.text.lineCount": "> Lines shown: %s",
+  "config.babyzombieaddons.option.bazzarShowActionBar": "Show action bar",
+  "config.babyzombieaddons.option.bazzarShowActionBar.desc": "Show the action bar on Bazaar pages (edit GUI / Flip / display toggles / API toggle etc.).",
+  "config.babyzombieaddons.overlay.bazzar.text.showActionBar": "> Action Bar: "
 }

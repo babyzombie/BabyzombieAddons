@@ -1568,5 +1568,15 @@
   "config.babyzombieaddons.option.bazzarApiEnabled": "使用 API 获取更多订单",
   "config.babyzombieaddons.option.bazzarApiEnabled.desc": "开启后从 Hypixel Bazaar 官方 API 获取完整订单阶梯(最多 30 档),替换界面解析的少量订单行。数据约 60 秒刷新一次,首次获取需等待。",
   "config.babyzombieaddons.option.bazzarMaxLines": "最大显示订单条数",
-  "config.babyzombieaddons.option.bazzarMaxLines.desc": "购买订单和出售报价各自最多显示的行数,对界面解析和 API 数据同时生效。"
+  "config.babyzombieaddons.option.bazzarMaxLines.desc": "购买订单和出售报价各自最多显示的行数,对界面解析和 API 数据同时生效。",
+  "config.babyzombieaddons.option.bazzarShowBuyOrders": "显示购买订单",
+  "config.babyzombieaddons.option.bazzarShowBuyOrders.desc": "在 Bazzar 详情页显示购买订单列表。可在操作栏点击快速开关。",
+  "config.babyzombieaddons.option.bazzarShowSellOffers": "显示出售报价",
+  "config.babyzombieaddons.option.bazzarShowSellOffers.desc": "在 Bazzar 详情页显示出售报价列表。可在操作栏点击快速开关。",
+  "config.babyzombieaddons.overlay.bazzar.text.showBuy": "> 显示购买订单: ",
+  "config.babyzombieaddons.overlay.bazzar.text.showSell": "> 显示出售报价: ",
+  "config.babyzombieaddons.overlay.bazzar.text.lineCount": "> 显示行数: %s",
+  "config.babyzombieaddons.option.bazzarShowActionBar": "显示操作栏",
+  "config.babyzombieaddons.option.bazzarShowActionBar.desc": "在 Bazzar 页面显示操作栏（编辑 GUI/Flip/显示开关/API 开关等）。",
+  "config.babyzombieaddons.overlay.bazzar.text.showActionBar": "> 操作栏: "
 }

@@ -21,7 +21,8 @@ import java.util.List;
  */
 public class ItemToast implements Toast {
 
-    private static final Identifier BACKGROUND_SPRITE = Identifier.withDefaultNamespace("toast/system");
+    // 用 tutorial 纯背景而非 system:system 背景自带感叹号图案,会和物品图标重叠
+    private static final Identifier BACKGROUND_SPRITE = Identifier.withDefaultNamespace("toast/tutorial");
     private static final int MAX_LINE_SIZE = 200;
     private static final int LINE_SPACING = 12;
     private static final int ICON_LEFT = 8;
@@ -70,7 +71,8 @@ public class ItemToast implements Toast {
 
     @Override
     public int height() {
-        return 20 + Math.max(this.lines.size(), 1) * LINE_SPACING;
+        // 标题行不占额外高度(基准 1 行),正文每多一行 +12,同 SystemToast 公式
+        return 20 + Math.max(this.lines.size() - 1, 1) * LINE_SPACING;
     }
 
     @Override

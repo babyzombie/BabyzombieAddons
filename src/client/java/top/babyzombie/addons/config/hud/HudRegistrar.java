@@ -246,7 +246,9 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.hudBazzarBuy",
                 () -> {
                     var cfg = ModConfigManager.get().skyblock;
-                    return cfg != null && cfg.bazzarTopOrders != null && cfg.bazzarTopOrders.overlayEnabled;
+                    return cfg != null && cfg.bazzarTopOrders != null
+                            && cfg.bazzarTopOrders.overlayEnabled
+                            && cfg.bazzarTopOrders.showBuyOrders;
                 },
                 HudTag.BAZAAR);
         HudManager.register("BazzarSellOrder", 260, 50, 1.0f,
@@ -254,7 +256,9 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.hudBazzarSell",
                 () -> {
                     var cfg = ModConfigManager.get().skyblock;
-                    return cfg != null && cfg.bazzarTopOrders != null && cfg.bazzarTopOrders.overlayEnabled;
+                    return cfg != null && cfg.bazzarTopOrders != null
+                            && cfg.bazzarTopOrders.overlayEnabled
+                            && cfg.bazzarTopOrders.showSellOffers;
                 },
                 HudTag.BAZAAR);
         HudManager.register("BazzarAction", 10, 180, 1.0f,
@@ -262,7 +266,9 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.hudBazzarAction",
                 () -> {
                     var cfg = ModConfigManager.get().skyblock;
-                    return cfg != null && cfg.bazzarTopOrders != null && cfg.bazzarTopOrders.overlayEnabled;
+                    return cfg != null && cfg.bazzarTopOrders != null
+                            && cfg.bazzarTopOrders.overlayEnabled
+                            && cfg.bazzarTopOrders.showActionBar;
                 },
                 HudTag.BAZAAR);
     }
