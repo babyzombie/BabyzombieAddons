@@ -1579,5 +1579,15 @@
   "config.babyzombieaddons.option.bazzarShowActionBar": "Show action bar",
   "config.babyzombieaddons.option.bazzarShowActionBar.desc": "Show the action bar on Bazaar pages (edit GUI / Flip / display toggles / API toggle etc.).",
   "config.babyzombieaddons.overlay.bazzar.text.showActionBar": "> Action Bar: ",
-  "config.babyzombieaddons.overlay.bazzar.text.apiMode": "> API Mode: "
+  "config.babyzombieaddons.overlay.bazzar.text.apiMode": "> API Mode: ",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.copyName": "Click to copy item name",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.showActionBar": "Hide the whole action bar (restore it from the settings screen)",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.showBuy": "Show/hide the buy order list",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.showSell": "Show/hide the sell offer list",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.apiMode": "Toggle the API data source (full order ladder, refreshes about every 60 seconds)",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.lineCount": "Open the mod settings and search for the line count setting",
+  "config.babyzombieaddons.overlay.bazzar.text.dataTime": "§7(data %s)",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.copyTime": "Click to copy the data time",
+  "config.babyzombieaddons.overlay.bazzar.toast.copiedTimeTitle": "Data time copied",
+  "config.babyzombieaddons.overlay.bazzar.toast.copiedTimeBody": "%s"
 }

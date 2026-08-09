@@ -28,6 +28,11 @@ public final class BazaarItemInfo {
         BazaarApiTracker.getInstance().ensureFresh();
     }
 
+    /** 服务端快照时间（ms），-1 表示还没拉到过数据 */
+    public static long getSnapshotTs() {
+        return BazaarApiTracker.getInstance().getSnapshotTs();
+    }
+
     /** ItemStack → 完整 bazaar 数据。NBT 物品 id 直查，最可靠；查不到返回 null。 */
     @Nullable
     public static Info get(ItemStack stack) {

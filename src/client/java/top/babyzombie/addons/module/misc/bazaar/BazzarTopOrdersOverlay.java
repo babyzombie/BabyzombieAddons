@@ -185,8 +185,10 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
             // flip 的 /bz 命令需要纯文本名，不能带颜色码
             lastParsedItemName = ChatUtils.stripColor(itemName);
         }
+        final String plainName = ChatUtils.stripColor(itemName);
 
         String copyTipKey = "config.babyzombieaddons.overlay.bazzar.tooltip.copyPrice";
+        String copyNameTipKey = "config.babyzombieaddons.overlay.bazzar.tooltip.copyName";
         String onText = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.flipOn");
         String offText = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.flipOff");
         String title = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.title");
@@ -204,7 +206,8 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         List<ClickableText> bt = new ArrayList<>();
         int curY = 0;
         if (cfg.showBuyOrders && !buys.isEmpty()) {
-            bt.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.buyOrders", itemName), 0xFFFFFFFF, List.of(), null));
+            bt.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.buyOrders", itemName), 0xFFFFFFFF,
+                    List.of(copyNameTipKey), () -> copyNameAndToast(plainName)));
             curY += lineH;
             int idx = 1;
             for (var e : buys) {
@@ -226,7 +229,8 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         List<ClickableText> st = new ArrayList<>();
         curY = 0;
         if (cfg.showSellOffers && !sells.isEmpty()) {
-            st.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.sellOffers", itemName), 0xFFFFFFFF, List.of(), null));
+            st.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.sellOffers", itemName), 0xFFFFFFFF,
+                    List.of(copyNameTipKey), () -> copyNameAndToast(plainName)));
             curY += lineH;
             int idx = 1;
             for (var e : sells) {
@@ -251,7 +255,8 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
             // 操作栏自身开关（第一行，关闭后从设置页恢复）
             String showActionBarLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.showActionBar")
                     + (cfg.showActionBar ? onText : offText);
-            at.add(new ClickableText(0, curY, "§7" + showActionBarLine, 0xFFFFFFFF, List.of(),
+            at.add(new ClickableText(0, curY, "§7" + showActionBarLine, 0xFFFFFFFF,
+                    List.of("config.babyzombieaddons.overlay.bazzar.tooltip.showActionBar"),
                     () -> { playClickSound(); toggleShowActionBar(); }));
             curY += lineH;
             at.add(new ClickableText(0, curY, editGui, 0xFFFFFFFF,
@@ -273,22 +278,35 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
             curY += lineH;
             String showBuyLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.showBuy")
                     + (cfg.showBuyOrders ? onText : offText);
-            at.add(new ClickableText(6, curY, "§7" + showBuyLine, 0xFFFFFFFF, List.of(),
+            at.add(new ClickableText(6, curY, "§7" + showBuyLine, 0xFFFFFFFF,
+                    List.of("config.babyzombieaddons.overlay.bazzar.tooltip.showBuy"),
                     () -> { playClickSound(); toggleShowBuyOrders(); }));
             curY += lineH;
             String showSellLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.showSell")
                     + (cfg.showSellOffers ? onText : offText);
-            at.add(new ClickableText(6, curY, "§7" + showSellLine, 0xFFFFFFFF, List.of(),
+            at.add(new ClickableText(6, curY, "§7" + showSellLine, 0xFFFFFFFF,
+                    List.of("config.babyzombieaddons.overlay.bazzar.tooltip.showSell"),
                     () -> { playClickSound(); toggleShowSellOffers(); }));
             curY += lineH;
             String apiModeLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.apiMode")
                     + (cfg.apiEnabled ? onText : offText);
-            at.add(new ClickableText(6, curY, "§7" + apiModeLine, 0xFFFFFFFF, List.of(),
+            at.add(new ClickableText(6, curY, "§7" + apiModeLine, 0xFFFFFFFF,
+                    List.of("config.babyzombieaddons.overlay.bazzar.tooltip.apiMode"),
                     () -> { playClickSound(); toggleApiEnabled(); }));
             curY += lineH;
             String lineCountLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.lineCount", cfg.maxLines);
-            at.add(new ClickableText(6, curY, "§7" + lineCountLine, 0xFFFFFFFF, List.of(),
+            at.add(new ClickableText(6, curY, "§7" + lineCountLine, 0xFFFFFFFF,
+                    List.of("config.babyzombieaddons.overlay.bazzar.tooltip.lineCount"),
                     () -> { playClickSound(); openConfigSearch(); }));
+            curY += lineH;
+            // 数据时间戳（API 模式）：展示数据新鲜度，点击复制时间
+            if (cfg.apiEnabled) {
+                String timeText = formatSnapshotTime();
+                String dataTimeLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.dataTime", timeText);
+                at.add(new ClickableText(6, curY, "§7" + dataTimeLine, 0xFFFFFFFF,
+                        List.of("config.babyzombieaddons.overlay.bazzar.tooltip.copyTime"),
+                        () -> copyTimeAndToast(timeText)));
+            }
         }
         actionTexts = at;
     }
@@ -388,6 +406,31 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         ChatUtils.copyToClipboard(priceNumberOnly);
         ChatUtils.showToast("config.babyzombieaddons.overlay.bazzar.toast.copiedTitle",
                 "config.babyzombieaddons.overlay.bazzar.toast.copiedBody", priceNumberOnly);
+        playPriceClickSound();
+    }
+
+    /** 复制物品名（纯文本，无颜色码） */
+    private static void copyNameAndToast(String name) {
+        ChatUtils.copyToClipboard(name);
+        ChatUtils.showToast("config.babyzombieaddons.overlay.bazzar.toast.copiedTitle",
+                "config.babyzombieaddons.overlay.bazzar.toast.copiedBody", name);
+        playPriceClickSound();
+    }
+
+    /** 快照时间戳 → "HH:mm:ss"（本地时区） */
+    private static String formatSnapshotTime() {
+        long ts = BazaarItemInfo.getSnapshotTs();
+        if (ts <= 0) return "--:--";
+        return java.time.Instant.ofEpochMilli(ts)
+                .atZone(java.time.ZoneId.systemDefault())
+                .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
+    }
+
+    /** 复制数据时间 */
+    private static void copyTimeAndToast(String timeText) {
+        ChatUtils.copyToClipboard(timeText);
+        ChatUtils.showToast("config.babyzombieaddons.overlay.bazzar.toast.copiedTimeTitle",
+                "config.babyzombieaddons.overlay.bazzar.toast.copiedTimeBody", timeText);
         playPriceClickSound();
     }
 }

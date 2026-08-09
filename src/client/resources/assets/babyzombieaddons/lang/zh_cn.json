@@ -1579,5 +1579,15 @@
   "config.babyzombieaddons.option.bazzarShowActionBar": "显示操作栏",
   "config.babyzombieaddons.option.bazzarShowActionBar.desc": "在 Bazzar 页面显示操作栏（编辑 GUI/Flip/显示开关/API 开关等）。",
   "config.babyzombieaddons.overlay.bazzar.text.showActionBar": "> 操作栏: ",
-  "config.babyzombieaddons.overlay.bazzar.text.apiMode": "> API 模式: "
+  "config.babyzombieaddons.overlay.bazzar.text.apiMode": "> API 模式: ",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.copyName": "点击复制物品名",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.showActionBar": "关闭整个操作栏（可从设置页恢复）",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.showBuy": "显示/隐藏购买订单列表",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.showSell": "显示/隐藏出售报价列表",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.apiMode": "切换 API 数据源（完整订单阶梯，约 60 秒刷新一次）",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.lineCount": "打开 Mod 设置页并搜索行数设置",
+  "config.babyzombieaddons.overlay.bazzar.text.dataTime": "§7(数据 %s)",
+  "config.babyzombieaddons.overlay.bazzar.tooltip.copyTime": "点击复制数据时间",
+  "config.babyzombieaddons.overlay.bazzar.toast.copiedTimeTitle": "数据时间已复制",
+  "config.babyzombieaddons.overlay.bazzar.toast.copiedTimeBody": "%s"
 }
