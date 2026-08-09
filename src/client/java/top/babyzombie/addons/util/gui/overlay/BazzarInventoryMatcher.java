@@ -35,6 +35,13 @@ public final class BazzarInventoryMatcher {
         return hasBoth;
     }
 
+    /** 是否为具体物品详情页：Create Buy Order 和 Create Sell Offer 两个按钮同时在 */
+    public static boolean isItemDetailPage(Screen screen) {
+        if (!(screen instanceof AbstractContainerScreen<?> cs)) return false;
+        var pair = findButtons(cs);
+        return pair.a != null && pair.b != null;
+    }
+
     public static TopOrderData.ParsedBazzarGui parse(AbstractContainerScreen<?> cs) {
         if (cs == null) return TopOrderData.ParsedBazzarGui.EMPTY;
         var pair = findButtons(cs);

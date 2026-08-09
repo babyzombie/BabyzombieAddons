@@ -51,9 +51,10 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         ClientTickEvents.END_CLIENT_TICK.register(c -> {
             var cfg = getCfg();
             if (cfg == null || !cfg.overlayEnabled) return;
-            Screen s = Minecraft.getInstance().gui.screen();
+            Screen s = Minecraft.getInstance().screen;
+            // Bazaar 界面（含列表页）就刷新数据，操作栏常显；订单数据仅详情页解析
             if (!BazzarInventoryMatcher.isBazzarScreen(s)) return;
-            // API 模式下在 Bazaar 界面刷新数据（60s 节流由 tracker 保证）
+            // API 模式下刷新数据（60s 节流由 tracker 保证）
             if (cfg.apiEnabled) BazaarItemInfo.ensureFresh();
             long now = System.currentTimeMillis();
             if (now - lastRebuildMs < REBUILD_INTERVAL_MS) return;
@@ -96,7 +97,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
 
     @Override
     public void render(GuiGraphicsExtractor g, int mx, int my, float delta) {
-        if (!(Minecraft.getInstance().gui.screen() instanceof AbstractContainerScreen<?> cs)) return;
+        if (!(Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> cs)) return;
         Font font = Minecraft.getInstance().font;
         if (buyTexts.isEmpty() && sellTexts.isEmpty() && actionTexts.isEmpty()) rebuildTexts();
 
@@ -144,7 +145,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
     private static void rebuildTexts() {
         var cfg = getCfg();
         if (cfg == null) return;
-        Screen s = Minecraft.getInstance().gui.screen();
+        Screen s = Minecraft.getInstance().screen;
         AbstractContainerScreen<?> cs = (s instanceof AbstractContainerScreen<?> a) ? a : null;
 
         // ===== 数据来源：API 优先（开关开启且数据就绪），否则 GUI 解析 =====
@@ -162,8 +163,10 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
             if (cfg.apiEnabled) {
                 var info = fetchApiInfo(cs, center);
                 if (info != null) {
-                    buys = toEntries(info.buySummary(), TopOrderData.OrderType.BUY, cfg.maxLines);
-                    sells = toEntries(info.sellSummary(), TopOrderData.OrderType.SELL, cfg.maxLines);
+                    // Hypixel 命名反直觉：buy_summary 是卖家报价，sell_summary 是买家订单。
+                    // "购买订单"组显示买单(sellSummary)，"出售报价"组显示卖单(buySummary)
+                    buys = toEntries(info.sellSummary(), TopOrderData.OrderType.BUY, cfg.maxLines);
+                    sells = toEntries(info.buySummary(), TopOrderData.OrderType.SELL, cfg.maxLines);
                     if (itemName.isEmpty()) itemName = info.displayName();
                 }
             }
@@ -198,7 +201,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         // ===== Buy Texts =====
         List<ClickableText> bt = new ArrayList<>();
         int curY = 0;
-        if (!buys.isEmpty()) {
+        if (cfg.showBuyOrders && !buys.isEmpty()) {
             bt.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.buyOrders", itemName), 0xFFFFFFFF, List.of(), null));
             curY += lineH;
             int idx = 1;
@@ -220,7 +223,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         // ===== Sell Texts =====
         List<ClickableText> st = new ArrayList<>();
         curY = 0;
-        if (!sells.isEmpty()) {
+        if (cfg.showSellOffers && !sells.isEmpty()) {
             st.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.sellOffers", itemName), 0xFFFFFFFF, List.of(), null));
             curY += lineH;
             int idx = 1;
@@ -242,22 +245,49 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         // ===== Action Texts =====
         List<ClickableText> at = new ArrayList<>();
         curY = 0;
-        at.add(new ClickableText(0, curY, editGui, 0xFFFFFFFF,
-                List.of("config.babyzombieaddons.overlay.bazzar.tooltip.editGui"),
-                () -> {
-                    playClickSound();
-                    HudManager.openEditScreen(Minecraft.getInstance().gui.screen(), HudTag.BAZAAR);
-                }));
-        curY += lineH;
-        String mainLine = "§f" + title + (cfg.flipEnabled ? onText : offText);
-        at.add(new ClickableText(0, curY, mainLine, 0xFFFFFFFF,
-                List.of(flipTipMain), () -> { playClickSound(); toggleFlipMain(); }));
-        curY += lineH;
-        at.add(new ClickableText(6, curY, "§7" + subBuy + (cfg.flipBuyEnabled ? onText : offText),
-                0xFFFFFFFF, List.of(flipTipBuy), () -> { playClickSound(); toggleFlipBuy(); }));
-        curY += lineH;
-        at.add(new ClickableText(6, curY, "§7" + subSell + (cfg.flipSellEnabled ? onText : offText),
-                0xFFFFFFFF, List.of(flipTipSell), () -> { playClickSound(); toggleFlipSell(); }));
+        if (cfg.showActionBar) {
+            // 操作栏自身开关（第一行，关闭后从设置页恢复）
+            String showActionBarLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.showActionBar")
+                    + (cfg.showActionBar ? onText : offText);
+            at.add(new ClickableText(0, curY, "§7" + showActionBarLine, 0xFFFFFFFF, List.of(),
+                    () -> { playClickSound(); toggleShowActionBar(); }));
+            curY += lineH;
+            at.add(new ClickableText(0, curY, editGui, 0xFFFFFFFF,
+                    List.of("config.babyzombieaddons.overlay.bazzar.tooltip.editGui"),
+                    () -> {
+                        playClickSound();
+                        HudManager.openEditScreen(Minecraft.getInstance().screen, HudTag.BAZAAR);
+                    }));
+            curY += lineH;
+            String mainLine = "§f" + title + (cfg.flipEnabled ? onText : offText);
+            at.add(new ClickableText(0, curY, mainLine, 0xFFFFFFFF,
+                    List.of(flipTipMain), () -> { playClickSound(); toggleFlipMain(); }));
+            curY += lineH;
+            at.add(new ClickableText(6, curY, "§7" + subBuy + (cfg.flipBuyEnabled ? onText : offText),
+                    0xFFFFFFFF, List.of(flipTipBuy), () -> { playClickSound(); toggleFlipBuy(); }));
+            curY += lineH;
+            at.add(new ClickableText(6, curY, "§7" + subSell + (cfg.flipSellEnabled ? onText : offText),
+                    0xFFFFFFFF, List.of(flipTipSell), () -> { playClickSound(); toggleFlipSell(); }));
+            curY += lineH;
+            String showBuyLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.showBuy")
+                    + (cfg.showBuyOrders ? onText : offText);
+            at.add(new ClickableText(6, curY, "§7" + showBuyLine, 0xFFFFFFFF, List.of(),
+                    () -> { playClickSound(); toggleShowBuyOrders(); }));
+            curY += lineH;
+            String showSellLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.showSell")
+                    + (cfg.showSellOffers ? onText : offText);
+            at.add(new ClickableText(6, curY, "§7" + showSellLine, 0xFFFFFFFF, List.of(),
+                    () -> { playClickSound(); toggleShowSellOffers(); }));
+            curY += lineH;
+            String apiModeLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.apiMode")
+                    + (cfg.apiEnabled ? onText : offText);
+            at.add(new ClickableText(6, curY, "§7" + apiModeLine, 0xFFFFFFFF, List.of(),
+                    () -> { playClickSound(); toggleApiEnabled(); }));
+            curY += lineH;
+            String lineCountLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.lineCount", cfg.maxLines);
+            at.add(new ClickableText(6, curY, "§7" + lineCountLine, 0xFFFFFFFF, List.of(),
+                    () -> { playClickSound(); openConfigSearch(); }));
+        }
         actionTexts = at;
     }
 
@@ -325,6 +355,31 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
     private static void toggleFlipSell() {
         var cfg = getCfg(); if (cfg == null) return;
         cfg.flipSellEnabled = !cfg.flipSellEnabled; saveCfg(); rebuildTexts();
+    }
+
+    private static void toggleShowBuyOrders() {
+        var cfg = getCfg(); if (cfg == null) return;
+        cfg.showBuyOrders = !cfg.showBuyOrders; saveCfg(); rebuildTexts();
+    }
+
+    private static void toggleShowSellOffers() {
+        var cfg = getCfg(); if (cfg == null) return;
+        cfg.showSellOffers = !cfg.showSellOffers; saveCfg(); rebuildTexts();
+    }
+
+    private static void toggleShowActionBar() {
+        var cfg = getCfg(); if (cfg == null) return;
+        cfg.showActionBar = !cfg.showActionBar; saveCfg(); rebuildTexts();
+    }
+
+    private static void toggleApiEnabled() {
+        var cfg = getCfg(); if (cfg == null) return;
+        cfg.apiEnabled = !cfg.apiEnabled; saveCfg(); rebuildTexts();
+    }
+
+    /** 打开 Mod 设置页并搜索"行数"（定位 maxLines 配置） */
+    private static void openConfigSearch() {
+        Minecraft.getInstance().setScreen(ModConfigManager.createGUI(Minecraft.getInstance().screen, "行数"));
     }
 
     private static void copyPriceAndToast(String priceNumberOnly) {

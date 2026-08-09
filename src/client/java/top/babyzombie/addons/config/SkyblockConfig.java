@@ -329,7 +329,16 @@ public class SkyblockConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarApiEnabled", desc = "config.babyzombieaddons.option.bazzarApiEnabled.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("api")
         public boolean apiEnabled = false;
 
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarMaxLines", desc = "config.babyzombieaddons.option.bazzarMaxLines.desc") @ConfigEditorSlider(minValue = 1, maxValue = 30, minStep = 1) @SearchTag("bazaar")
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarShowActionBar", desc = "config.babyzombieaddons.option.bazzarShowActionBar.desc") @ConfigEditorBoolean @SearchTag("bazaar")
+        public boolean showActionBar = true;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarShowBuyOrders", desc = "config.babyzombieaddons.option.bazzarShowBuyOrders.desc") @ConfigEditorBoolean @SearchTag("bazaar")
+        public boolean showBuyOrders = true;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarShowSellOffers", desc = "config.babyzombieaddons.option.bazzarShowSellOffers.desc") @ConfigEditorBoolean @SearchTag("bazaar")
+        public boolean showSellOffers = true;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarMaxLines", desc = "config.babyzombieaddons.option.bazzarMaxLines.desc") @ConfigEditorSlider(minValue = 1, maxValue = 30, minStep = 1) @SearchTag("bazaar") @SearchTag("行数") @SearchTag("lines")
         public int maxLines = 7;
     }
 }
