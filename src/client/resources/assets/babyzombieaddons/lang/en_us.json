@@ -1564,5 +1564,9 @@
   "config.babyzombieaddons.overlay.bazzar.toast.copiedFallback": "§a[BZA] §fPrice copied: §e%s coins",
   "config.babyzombieaddons.copyitem.toast.copiedTitle": "Item Info Copied",
   "config.babyzombieaddons.hud.edit.tagHint": "§eHUD Filter: §f%s  §7(Click CHS at top-right to switch)",
-  "config.babyzombieaddons.hud.chs.fallbackDemo": "§eHUD: §fALL ▼"
+  "config.babyzombieaddons.hud.chs.fallbackDemo": "§eHUD: §fALL ▼",
+  "config.babyzombieaddons.option.bazzarApiEnabled": "Fetch more orders via API",
+  "config.babyzombieaddons.option.bazzarApiEnabled.desc": "When enabled, fetches the full order ladder (up to 30 tiers) from the official Hypixel Bazaar API, replacing the few lines parsed from the GUI. Data refreshes roughly every 60 seconds; first fetch takes a moment.",
+  "config.babyzombieaddons.option.bazzarMaxLines": "Max order lines shown",
+  "config.babyzombieaddons.option.bazzarMaxLines.desc": "Maximum lines shown per buy order / sell offer list. Applies to both GUI-parsed and API data."
 }

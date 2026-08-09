@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.ItemStack;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.hud.HudTag;
@@ -15,9 +16,11 @@ import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.Scheduler;
 import top.babyzombie.addons.util.gui.overlay.*;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.BazaarItemInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Bazzar 页面 Top Order 信息映射 + Flip 模式。
@@ -50,6 +53,8 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
             if (cfg == null || !cfg.overlayEnabled) return;
             Screen s = Minecraft.getInstance().screen;
             if (!BazzarInventoryMatcher.isBazzarScreen(s)) return;
+            // API 模式下在 Bazaar 界面刷新数据（60s 节流由 tracker 保证）
+            if (cfg.apiEnabled) BazaarItemInfo.ensureFresh();
             long now = System.currentTimeMillis();
             if (now - lastRebuildMs < REBUILD_INTERVAL_MS) return;
             lastRebuildMs = now;
@@ -141,12 +146,39 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         if (cfg == null) return;
         Screen s = Minecraft.getInstance().screen;
         AbstractContainerScreen<?> cs = (s instanceof AbstractContainerScreen<?> a) ? a : null;
-        TopOrderData.ParsedBazzarGui data = (cs != null)
-                ? BazzarInventoryMatcher.parse(cs)
-                : TopOrderData.ParsedBazzarGui.EMPTY;
 
-        if (data.itemName() != null && !data.itemName().isEmpty()) {
-            lastParsedItemName = data.itemName();
+        // ===== 数据来源：API 优先（开关开启且数据就绪），否则 GUI 解析 =====
+        List<TopOrderData.TopOrderEntry> buys = List.of();
+        List<TopOrderData.TopOrderEntry> sells = List.of();
+        // 真实物品名：优先中间槽 ItemStack 显示名（游戏内权威名），数据源无关
+        ItemStack center = BazzarInventoryMatcher.getCenterItem(cs);
+        String itemName = "";
+        if (center != null) {
+            // 显示用名保留原色（如 §d§lCrop Fever V）
+            String n = ChatUtils.toLegacyString(center.getDisplayName());
+            if (!n.trim().isEmpty()) itemName = n.trim();
+        }
+        if (cs != null) {
+            if (cfg.apiEnabled) {
+                var info = fetchApiInfo(cs, center);
+                if (info != null) {
+                    buys = toEntries(info.buySummary(), TopOrderData.OrderType.BUY, cfg.maxLines);
+                    sells = toEntries(info.sellSummary(), TopOrderData.OrderType.SELL, cfg.maxLines);
+                    if (itemName.isEmpty()) itemName = info.displayName();
+                }
+            }
+            if (buys.isEmpty() && sells.isEmpty()) {
+                TopOrderData.ParsedBazzarGui data = BazzarInventoryMatcher.parse(cs);
+                if (data.valid()) {
+                    buys = limit(data.buyOrders(), cfg.maxLines);
+                    sells = limit(data.sellOrders(), cfg.maxLines);
+                    if (itemName.isEmpty()) itemName = data.itemName();
+                }
+            }
+        }
+        if (!itemName.isEmpty()) {
+            // flip 的 /bz 命令需要纯文本名，不能带颜色码
+            lastParsedItemName = ChatUtils.stripColor(itemName);
         }
 
         String copyTipKey = "config.babyzombieaddons.overlay.bazzar.tooltip.copyPrice";
@@ -166,41 +198,44 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         // ===== Buy Texts =====
         List<ClickableText> bt = new ArrayList<>();
         int curY = 0;
-        bt.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.buyOrders", data.itemName()), 0xFFFFFFFF, List.of(), null));
-        curY += lineH;
-        int idx = 1;
-        for (var e : data.buyOrders()) {
-            String prefix = "§7" + idx + ". ";
-            String price = "§6" + e.priceRaw();
-            String rest = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.buyLineRest", e.amount(), e.orderCount());
-            int pw = font.width(ChatUtils.stripColor(prefix));
-            bt.add(new ClickableText(0, curY, prefix + price + rest, 0xFFFFFFFF, List.of(), null));
-            int pRelX = pw;
-            final String priceNumOnly = e.priceNumberOnly();
-            bt.add(new ClickableText(pRelX, curY, price, 0x00FFFFFF, List.of(copyTipKey),
-                    () -> copyPriceAndToast(priceNumOnly)));
-            idx++;
+        if (!buys.isEmpty()) {
+            bt.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.buyOrders", itemName), 0xFFFFFFFF, List.of(), null));
             curY += lineH;
+            int idx = 1;
+            for (var e : buys) {
+                String prefix = "§7" + idx + ". ";
+                String price = "§6" + e.priceRaw();
+                String rest = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.buyLineRest", e.amount(), e.orderCount());
+                int pw = font.width(ChatUtils.stripColor(prefix));
+                bt.add(new ClickableText(0, curY, prefix + price + rest, 0xFFFFFFFF, List.of(), null));
+                final String priceNumOnly = e.priceNumberOnly();
+                bt.add(new ClickableText(pw, curY, price, 0x00FFFFFF, List.of(copyTipKey),
+                        () -> copyPriceAndToast(priceNumOnly)));
+                idx++;
+                curY += lineH;
+            }
         }
         buyTexts = bt;
 
         // ===== Sell Texts =====
         List<ClickableText> st = new ArrayList<>();
         curY = 0;
-        st.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.sellOffers", data.itemName()), 0xFFFFFFFF, List.of(), null));
-        curY += lineH;
-        idx = 1;
-        for (var e : data.sellOrders()) {
-            String prefix = "§7" + idx + ". ";
-            String price = "§6" + e.priceRaw();
-            String rest = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.sellLineRest", e.amount(), e.orderCount());
-            int pw = font.width(ChatUtils.stripColor(prefix));
-            st.add(new ClickableText(0, curY, prefix + price + rest, 0xFFFFFFFF, List.of(), null));
-            final String priceNumOnly = e.priceNumberOnly();
-            st.add(new ClickableText(pw, curY, price, 0x00FFFFFF, List.of(copyTipKey),
-                    () -> copyPriceAndToast(priceNumOnly)));
-            idx++;
+        if (!sells.isEmpty()) {
+            st.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.sellOffers", itemName), 0xFFFFFFFF, List.of(), null));
             curY += lineH;
+            int idx = 1;
+            for (var e : sells) {
+                String prefix = "§7" + idx + ". ";
+                String price = "§6" + e.priceRaw();
+                String rest = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.sellLineRest", e.amount(), e.orderCount());
+                int pw = font.width(ChatUtils.stripColor(prefix));
+                st.add(new ClickableText(0, curY, prefix + price + rest, 0xFFFFFFFF, List.of(), null));
+                final String priceNumOnly = e.priceNumberOnly();
+                st.add(new ClickableText(pw, curY, price, 0x00FFFFFF, List.of(copyTipKey),
+                        () -> copyPriceAndToast(priceNumOnly)));
+                idx++;
+                curY += lineH;
+            }
         }
         sellTexts = st;
 
@@ -227,6 +262,37 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
     }
 
     private static void saveCfg() { ModConfigManager.save(); }
+
+    // ========== API 数据辅助 ==========
+
+    /** 优先中间物品槽的 ItemStack（NBT id 精确映射），拿不到再用 title 显示名（含颜色码） */
+    private static BazaarItemInfo.Info fetchApiInfo(AbstractContainerScreen<?> cs, ItemStack center) {
+        if (center != null) {
+            BazaarItemInfo.Info info = BazaarItemInfo.get(center);
+            if (info != null) return info;
+        }
+        String rawName = BazzarInventoryMatcher.getRawItemName(cs);
+        if (rawName != null) return BazaarItemInfo.get(rawName);
+        return null;
+    }
+
+    /** API 聚合桶 → 现有 TopOrderEntry 行格式（价格千分位一位小数，与 GUI 解析一致） */
+    private static List<TopOrderData.TopOrderEntry> toEntries(
+            List<BazaarItemInfo.SummaryTier> tiers, TopOrderData.OrderType type, int max) {
+        List<TopOrderData.TopOrderEntry> out = new ArrayList<>();
+        for (BazaarItemInfo.SummaryTier t : tiers) {
+            if (out.size() >= max) break;
+            String price = String.format(Locale.ROOT, "%,.1f", t.pricePerUnit());
+            out.add(new TopOrderData.TopOrderEntry(price + " coins", price, (int) t.amount(), t.orders(), type));
+        }
+        return out;
+    }
+
+    /** GUI 解析数据截断到 max 行 */
+    private static List<TopOrderData.TopOrderEntry> limit(
+            List<TopOrderData.TopOrderEntry> list, int max) {
+        return list.size() > max ? list.subList(0, max) : list;
+    }
 
     /** 播放 MC 自带按钮点击音效（UI_BUTTON_CLICK） */
     private static void playClickSound() {

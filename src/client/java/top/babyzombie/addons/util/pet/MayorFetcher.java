@@ -2,6 +2,7 @@ package top.babyzombie.addons.util.pet;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import top.babyzombie.addons.util.HttpUtils;
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -126,6 +127,8 @@ public final class MayorFetcher {
             conn.setConnectTimeout(5000);
             conn.setReadTimeout(5000);
             conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("User-Agent", HttpUtils.USER_AGENT);
+            conn.setRequestProperty("User-Agent", "BabyzombieAddons");
 
             int code = conn.getResponseCode();
             if (code != 200) return;

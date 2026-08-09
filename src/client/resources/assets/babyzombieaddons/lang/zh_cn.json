@@ -1532,7 +1532,7 @@
   "config.babyzombieaddons.hudTag.POPUP": "弹出通知",
   "config.babyzombieaddons.hudTag.BAZAAR": "Bazzar",
   "config.babyzombieaddons.option.hudCategorySwitcher": "HUD 分类切换器",
-  "config.babyzombieaddons.group.bazzarTopOrders": "Bazzar Top Orders",
+  "config.babyzombieaddons.group.bazzarTopOrders": "Bazzar 订单信息",
   "config.babyzombieaddons.option.bazzarOverlayEnabled": "启用 Bazzar 订单 Overlay",
   "config.babyzombieaddons.option.bazzarOverlayEnabled.desc": "打开 Bazzar 页面时，在 GUI 上层显示 Buy/Sell Top Orders 列表，价格可点击复制纯数字。",
   "config.babyzombieaddons.option.bazzarFlipEnabled": "Flip 模式总开关",
@@ -1564,5 +1564,9 @@
   "config.babyzombieaddons.overlay.bazzar.toast.copiedFallback": "§a[BZA] §f已复制价格: §e%s coins",
   "config.babyzombieaddons.copyitem.toast.copiedTitle": "物品信息已复制",
   "config.babyzombieaddons.hud.edit.tagHint": "§e当前HUD筛选: §f%s",
-  "config.babyzombieaddons.hud.chs.fallbackDemo": "§eHUD: §f全部 ▼"
+  "config.babyzombieaddons.hud.chs.fallbackDemo": "§eHUD: §f全部 ▼",
+  "config.babyzombieaddons.option.bazzarApiEnabled": "使用 API 获取更多订单",
+  "config.babyzombieaddons.option.bazzarApiEnabled.desc": "开启后从 Hypixel Bazaar 官方 API 获取完整订单阶梯(最多 30 档),替换界面解析的少量订单行。数据约 60 秒刷新一次,首次获取需等待。",
+  "config.babyzombieaddons.option.bazzarMaxLines": "最大显示订单条数",
+  "config.babyzombieaddons.option.bazzarMaxLines.desc": "购买订单和出售报价各自最多显示的行数,对界面解析和 API 数据同时生效。"
 }
