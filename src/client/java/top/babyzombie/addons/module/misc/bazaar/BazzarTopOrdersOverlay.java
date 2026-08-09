@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -159,7 +160,8 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
             String n = ChatUtils.toLegacyString(center.getDisplayName());
             if (!n.trim().isEmpty()) itemName = n.trim();
         }
-        if (cs != null) {
+        // 订单数据只在详情页（两个订单按钮都在）解析；其他 Bazaar 页面仅显示操作栏
+        if (BazzarInventoryMatcher.isItemDetailPage(cs)) {
             if (cfg.apiEnabled) {
                 var info = fetchApiInfo(cs, center);
                 if (info != null) {
@@ -379,7 +381,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
 
     /** 打开 Mod 设置页并搜索"行数"（定位 maxLines 配置） */
     private static void openConfigSearch() {
-        Minecraft.getInstance().setScreen(ModConfigManager.createGUI(Minecraft.getInstance().screen, "行数"));
+        Minecraft.getInstance().setScreen(ModConfigManager.createGUI(Minecraft.getInstance().screen, Component.translatable("config.babyzombieaddons.option.bazzarMaxLines").getString()));
     }
 
     private static void copyPriceAndToast(String priceNumberOnly) {

@@ -21,8 +21,9 @@ import java.util.List;
  */
 public class ItemToast implements Toast {
 
-    // 用 tutorial 纯背景而非 system:system 背景自带感叹号图案,会和物品图标重叠
-    private static final Identifier BACKGROUND_SPRITE = Identifier.withDefaultNamespace("toast/tutorial");
+    // 用 advancement 背景而非 system:system 背景自带感叹号图案,会和物品图标重叠;
+    // advancement 左侧只有边框装饰,图标区干净
+    private static final Identifier BACKGROUND_SPRITE = Identifier.withDefaultNamespace("toast/advancement");
     private static final int MAX_LINE_SIZE = 200;
     private static final int LINE_SPACING = 12;
     private static final int ICON_LEFT = 8;

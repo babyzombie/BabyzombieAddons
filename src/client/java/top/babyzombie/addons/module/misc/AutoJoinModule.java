@@ -15,8 +15,14 @@ public final class AutoJoinModule {
         // START_CLIENT_TICK fires from the first frame (including title screen),
         // well after Minecraft.<init> has completed, so framerateLimitTracker is
         // guaranteed to be initialized.
+        //
+        // 必须等 client.isGameLoadFinished():MC 26.1 启动时资源包是异步加载的,
+        // 首个 tick 时 screen 仍是 GenericMessageScreen + LoadingOverlay,
+        // 此时发起连接会被加载完成后的 setScreen(TitleScreen) 顶掉,
+        // 自动进服务器就不生效(此前靠"取消加载屏幕"类模组提前完成加载才正常)。
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             if (hasJoined) return;
+            if (!client.isGameLoadFinished()) return;
             if (!ModConfigManager.get().general.autoJoinServer.enabled) return;
             String ip = ModConfigManager.get().general.autoJoinServer.ip;
             if (ip.isBlank()) return;

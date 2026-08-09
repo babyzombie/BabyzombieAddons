@@ -1578,5 +1578,6 @@
   "config.babyzombieaddons.overlay.bazzar.text.lineCount": "> 显示行数: %s",
   "config.babyzombieaddons.option.bazzarShowActionBar": "显示操作栏",
   "config.babyzombieaddons.option.bazzarShowActionBar.desc": "在 Bazzar 页面显示操作栏（编辑 GUI/Flip/显示开关/API 开关等）。",
-  "config.babyzombieaddons.overlay.bazzar.text.showActionBar": "> 操作栏: "
+  "config.babyzombieaddons.overlay.bazzar.text.showActionBar": "> 操作栏: ",
+  "config.babyzombieaddons.overlay.bazzar.text.apiMode": "> API 模式: "
 }
