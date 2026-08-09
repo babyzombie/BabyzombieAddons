@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "top.babyzombie.addons.mixin",
-    "compatibilityLevel": "JAVA_25",
+  "compatibilityLevel": "JAVA_25",
   "client": [
     "chat.ChatComponentMixin",
     "chat.ChatOverlaySetScreenMixin",
@@ -76,6 +76,7 @@
     "entity.LavaBobberFixMixin",
     "network.ClientPacketListenerMixin",
     "screen.DisconnectConfirmMixin",
+    "window.FramerateLimitTrackerAccessor",
     "window.WindowCloseConfirmMixin"
   ]
 }
