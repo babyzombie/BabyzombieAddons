@@ -1,0 +1,242 @@
+package top.babyzombie.addons.module.fishing;
+
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.FilterMode;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.CloudStatus;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.TextureFilteringMethod;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.state.gui.BlitRenderState;
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
+import net.minecraft.util.Mth;
+import top.babyzombie.addons.config.FishingConfig.CameraYawMode;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3x2f;
+import org.jspecify.annotations.Nullable;
+import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.mixin.render.CameraAccessor;
+import top.babyzombie.addons.mixin.render.CameraInvoker;
+import top.babyzombie.addons.mixin.render.MainRenderTargetAccessor;
+import top.babyzombie.addons.util.render.DepthTestGlowRenderer;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+
+/// 钓鱼浮标第二相机(可行性验证版)。
+/// <p>
+/// 在 GameRenderer 世界渲染完成之后,把主渲染目标临时换成独立的小目标,
+/// 用鱼漂上方 40° 俯视的临时相机( Marker 实体)重跑 extract + renderLevel,
+/// 得到鱼漂特写画面;再由 {@link top.babyzombie.addons.mixin.render.FishingCameraHudMixin}
+/// 在 HUD 提取阶段把画面贴到屏幕右下角。
+/// <p>
+/// 配置开关、HUD 注册、节流等后续再做。
+public final class FishingCameraModule {
+
+    /// 特写画面高度(物理像素),宽度按窗口比例,避免投影纵横比拉伸
+    private static final int FEED_HEIGHT = 256;
+    /// 第二相机视锥远平面(格):限制区块挑选范围,减少提交量(视距配置,直接以格为单位)
+    public static float secondCameraDepthFar() {
+        return ModConfigManager.get().fishing.fishingCamera.viewDistance;
+    }
+    /// marker 相对浮漂的抬升(格):浮漂落地时 marker 会陷入方块内,
+    /// 原版第三人称的射线避让从方块内开始检测会把相机压到贴脸,抬高后脱离方块。
+    /// 保持低位:marker 高会让相机绕"浮标上方的空气"转、浮标偏离画面中心,
+    /// 镜头高度由俯仰/距离配置控制(相机 = marker 斜上方)
+    private static final double MARKER_LIFT = 0.375;
+
+    private static @Nullable TextureTarget feedTarget;
+    private static @Nullable ArmorStand cameraMarker;
+    /// 本帧是否成功捕获,供 HUD 判断是否绘制
+    private static boolean feedReady;
+    /// 是否正在第二相机捕获中(供可见性相关 mixin 判断)
+    public static boolean capturing;
+
+    private FishingCameraModule() {}
+
+    public static void init() {
+        // 捕获与绘制均由 mixin 驱动,无需注册事件
+    }
+
+    /// 世界渲染完成后调用:渲染第二相机画面进 feedTarget。
+    public static void capture(DeltaTracker realDelta) {
+        var mc = Minecraft.getInstance();
+        var player = mc.player;
+        var bobber = player == null ? null : player.fishing;
+        if (mc.level == null) return;
+        if (bobber == null) {
+            // 收杆后不再显示最后一帧
+            feedReady = false;
+            return;
+        }
+        // —— 配置条件(不满足时清掉残留画面) ——
+        var cfg = ModConfigManager.get().fishing.fishingCamera;
+        var loc = HypixelLocationTracker.getInstance();
+        if (!cfg.enabled || (cfg.onlySkyblock && !loc.isInSkyblock())
+                || (cfg.disabledInKuudra && loc.isInKuudra())
+                || (cfg.disabledInDungeon && loc.isInDungeon())) {
+            feedReady = false;
+            return;
+        }
+
+        var gameRenderer = mc.gameRenderer;
+        var camera = gameRenderer.getMainCamera();
+
+        // —— 懒创建 feed target(宽高按窗口比例) ——
+        var window = mc.getWindow();
+        int feedWidth = Math.max(1, FEED_HEIGHT * window.getWidth() / Math.max(1, window.getHeight()));
+        if (feedTarget == null || feedTarget.width != feedWidth || feedTarget.height != FEED_HEIGHT) {
+            if (feedTarget != null) feedTarget.destroyBuffers();
+            feedTarget = new TextureTarget("bza_fishing_feed", feedWidth, FEED_HEIGHT, true);
+        }
+
+        // —— 临时相机实体:隐形 ArmorStand(带 CAMERA_DISTANCE 属性,控制相机距离) ——
+        if (cameraMarker == null || cameraMarker.level() != mc.level) {
+            cameraMarker = new ArmorStand(EntityType.ARMOR_STAND, mc.level);
+            cameraMarker.setInvisible(true);
+        }
+        // 虚拟相机实体:放在浮标位置,朝向按配置(yawMode),俯视配置的 pitch。
+        // 原版第三人称把相机放到 marker 斜上方 distance 格(射线避让方块),浮标落在画面中心。
+        Vec3 bobberPos = bobber.position();
+        Vec3 playerPos = player.position();
+        double toPlayerX = playerPos.x - bobberPos.x;
+        double toPlayerZ = playerPos.z - bobberPos.z;
+        // 兼容旧配置:枚举值可能已删除(yawMode = null),兜底为固定角度
+        var yawMode = cfg.yawMode == null ? CameraYawMode.FIXED : cfg.yawMode;
+        float yaw = switch (yawMode) {
+            case FIXED -> 0.0F;
+            case FRONT -> player.getYRot();
+            case BACK -> player.getYRot() + 180.0F;
+            case LEFT -> player.getYRot() - 90.0F;
+            case RIGHT -> player.getYRot() + 90.0F;
+        };
+        // 偏航偏移 + 动态旋转只在固定角度生效
+        if (yawMode == CameraYawMode.FIXED) {
+            if (cfg.yawSpinSpeed > 0) {
+                // 动态旋转:相机绕鱼漂持续旋转,速度(度/秒),0 = 关闭
+                yaw += (mc.level.getGameTime() * cfg.yawSpinSpeed / 20.0F) % 360.0F;
+            }
+            yaw += cfg.yawOffset;
+        }
+        // 相机实体放浮标位置(眼高由 camera.eyeHeight 置 0 处理,不随玩家蹲起/游泳变化)
+        cameraMarker.setPos(bobberPos.x, bobberPos.y + MARKER_LIFT, bobberPos.z);
+        // 同步旧坐标:Camera 用 xo/yo/zo 插值取位置,marker 不 tick,残留值会导致相机位置错误
+        cameraMarker.xo = cameraMarker.getX();
+        cameraMarker.yo = cameraMarker.getY();
+        cameraMarker.zo = cameraMarker.getZ();
+        // 设置身体+头部旋转:Camera 的第三人称偏移方向读 getViewYRot(头部视角旋转),
+        // 只 setYRot 的话偏移方向不随偏航转(相机只转头不绕浮漂转)
+        cameraMarker.setYRot(yaw);
+        cameraMarker.setXRot(cfg.pitch);
+        cameraMarker.setYHeadRot(yaw);
+        cameraMarker.yRotO = yaw;
+        cameraMarker.xRotO = cfg.pitch;
+        cameraMarker.yHeadRotO = yaw;
+        // 相机距离(CAMERA_DISTANCE 属性)按配置
+        var distanceAttr = cameraMarker.getAttribute(Attributes.CAMERA_DISTANCE);
+        if (distanceAttr != null) {
+            distanceAttr.setBaseValue(cfg.distance);
+        }
+
+        RenderTarget oldTarget = mc.getMainRenderTarget();
+        Entity oldEntity = camera.entity();
+        var optionsState = gameRenderer.getGameRenderState().optionsRenderState;
+        CameraType oldCameraType = optionsState.cameraType;
+        DepthTestGlowRenderer.suppressDepthCopy = true;
+        capturing = true;
+        var oldRealCameraType = mc.options.getCameraType();
+        // 启用原版第三人称(detached):相机自动放到实体后方 4 格并射线避让方块
+        if (oldRealCameraType != CameraType.THIRD_PERSON_BACK) {
+            mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+        }
+        // 视距限制由 CameraUpdateFrustumMixin 在 update 内改 depthFar(不碰区块加载)
+        try {
+            ((MainRenderTargetAccessor) mc).setMainRenderTarget(feedTarget);
+            camera.setEntity(cameraMarker);
+            // marker 眼高为 0:避免玩家蹲起/游泳的 eyeHeight 插值带动子视角高低
+            ((CameraAccessor) camera).setEyeHeight(0.0F);
+            ((CameraAccessor) camera).setEyeHeightOld(0.0F);
+            // update 含 mainCamera.update + levelRenderer.update:按第二相机视锥重算可见区块,
+            // 否则区块可见列表/可见性检查按主相机,浮标会消失、视野外变虚空
+            gameRenderer.update(DeltaTracker.ONE, true);
+            // 强制相机旋转为配置值(实体 getViewYRot 的转换会吞掉 setYRot,直接调 setRotation)
+            ((CameraInvoker) camera).invokeSetRotation(yaw, cfg.pitch);
+            gameRenderer.extract(DeltaTracker.ONE, true);
+            // 重写 Globals uniform:主画面渲染时写入的是玩家的相机位置,
+            // 不更新的话区块按玩家位置平移、实体按第二相机平移,两者错位(实体偏移)
+            var grs = gameRenderer.getGameRenderState();
+            gameRenderer.getGlobalSettingsUniform().update(
+                    grs.windowRenderState.width,
+                    grs.windowRenderState.height,
+                    grs.optionsRenderState.glintStrength,
+                    mc.level.getGameTime(),
+                    DeltaTracker.ONE,
+                    grs.optionsRenderState.menuBackgroundBlurriness,
+                    grs.levelRenderState.cameraRenderState.pos,
+                    grs.optionsRenderState.textureFiltering == TextureFilteringMethod.RGSS);
+            // 第三人称:避免特写画面里出现玩家手持的钓鱼竿/屏幕特效
+            optionsState.cameraType = CameraType.THIRD_PERSON_BACK;
+            // 关闭子视角的云:Globals(相机位置)是全局共享 buffer,主画面/子视角无法同时正确,
+            // 云顶点按浮标生成而 shader 用玩家位置平移会错位;俯视画面里云占比小,直接关掉
+            CloudStatus oldCloudStatus = optionsState.cloudStatus;
+            optionsState.cloudStatus = CloudStatus.OFF;
+            gameRenderer.renderLevel(DeltaTracker.ONE);
+            optionsState.cloudStatus = oldCloudStatus;
+            feedReady = true;
+        } finally {
+            ((MainRenderTargetAccessor) mc).setMainRenderTarget(oldTarget);
+            if (oldEntity != null) {
+                camera.setEntity(oldEntity);
+            }
+            // 恢复玩家眼高:capture 期间置 0 用于子视角,不恢复的话主视角会一直贴地
+            ((CameraAccessor) camera).setEyeHeight(player.getEyeHeight());
+            ((CameraAccessor) camera).setEyeHeightOld(player.getEyeHeight());
+            optionsState.cameraType = oldCameraType;
+            if (oldRealCameraType != CameraType.THIRD_PERSON_BACK) {
+                mc.options.setCameraType(oldRealCameraType);
+            }
+            // 恢复 Globals 为玩家位置:主画面的云等 pass 在帧尾执行时读共享 buffer,
+            // 不恢复的话主画面云会按浮标位置平移导致抖动
+            var grs2 = gameRenderer.getGameRenderState();
+            gameRenderer.getGlobalSettingsUniform().update(
+                    grs2.windowRenderState.width,
+                    grs2.windowRenderState.height,
+                    grs2.optionsRenderState.glintStrength,
+                    mc.level.getGameTime(),
+                    realDelta,
+                    grs2.optionsRenderState.menuBackgroundBlurriness,
+                    mc.player.position(),
+                    grs2.optionsRenderState.textureFiltering == TextureFilteringMethod.RGSS);
+            DepthTestGlowRenderer.suppressDepthCopy = false;
+            capturing = false;
+        }
+    }
+
+    /// HUD 提取阶段调用:把特写画面贴到 HUD 元素位置(支持编辑/缩放)。
+    public static void drawHud(GuiGraphicsExtractor graphics) {
+        if (!feedReady || feedTarget == null) return;
+        if (!HudManager.shouldShow("FishingCamera")) return;
+        var textureView = feedTarget.getColorTextureView();
+        if (textureView == null) return;
+        float s = HudManager.scale("FishingCamera");
+        int dw = Math.max(1, Math.round(256 * s));
+        int dh = Math.max(1, Math.round(dw * feedTarget.height / (float) Math.max(1, feedTarget.width)));
+        int x0 = HudManager.x("FishingCamera");
+        int y0 = HudManager.y("FishingCamera");
+        GuiRenderState guiRenderState = graphics.guiRenderState;
+        guiRenderState.addBlitToCurrentLayer(new BlitRenderState(
+                RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA,
+                TextureSetup.singleTexture(feedTarget.getColorTextureView(),
+                        RenderSystem.getSamplerCache().getRepeat(FilterMode.NEAREST)),
+                new Matrix3x2f(), x0, y0, x0 + dw, y0 + dh,
+                0.0F, 1.0F, 1.0F, 0.0F, -1, null, null));
+    }
+}

@@ -48,6 +48,7 @@ import top.babyzombie.addons.module.chat.ChatChannelModule;
 import top.babyzombie.addons.module.chat.ContainerChatModule;
 import top.babyzombie.addons.module.chat.WaypointMarkerModule;
 import top.babyzombie.addons.module.chat.popup.PopupEventsModule;
+import top.babyzombie.addons.module.fishing.FishingCameraModule;
 import top.babyzombie.addons.module.misc.raredrop.RareDropModule;
 import top.babyzombie.addons.module.slayer.SlayerModule;
 import top.babyzombie.addons.module.misc.UpdateChecker;
@@ -145,6 +146,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         RareSeaCreaturesAlert.init();
         RareSeaCreaturesSelfAlert.init();
         PreventInstantReel.init();
+        FishingCameraModule.init();
         GardenModule.init();
         GreatSpookModule.init();
         FruitDiggingModule.init();

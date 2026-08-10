@@ -3,9 +3,11 @@ import com.google.gson.annotations.Expose;
 
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
+import top.babyzombie.addons.util.ChatUtils;
 
 public class FishingConfig {
 
@@ -21,6 +23,11 @@ public class FishingConfig {
     @ConfigOption(name = "config.babyzombieaddons.group.preventInstantReel", desc = "")
     @Accordion
     public PreventInstantReel preventInstantReel = new PreventInstantReel();
+
+    @Expose
+    @ConfigOption(name = "config.babyzombieaddons.group.fishingCamera", desc = "")
+    @Accordion
+    public FishingCamera fishingCamera = new FishingCamera();
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.popupBaitLow", desc = "config.babyzombieaddons.option.popupBaitLow.desc") @ConfigEditorSlider(minValue = 0, maxValue = 64, minStep = 1) @SearchTag("bait")
     public int popupBaitLow = 0;
@@ -195,5 +202,42 @@ public class FishingConfig {
         public boolean enabled = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.preventInstantReelDelay", desc = "config.babyzombieaddons.option.preventInstantReelDelay.desc") @ConfigEditorSlider(minValue = 50, maxValue = 500, minStep = 1) @SearchTag("reel")
         public int delay = 200;
+    }
+
+    public static class FishingCamera {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCamera", desc = "config.babyzombieaddons.option.fishingCamera.desc") @ConfigEditorBoolean @SearchTag("camera") @SearchTag("bobber")
+        public boolean enabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraOnlySkyblock", desc = "config.babyzombieaddons.option.fishingCameraOnlySkyblock.desc") @ConfigEditorBoolean @SearchTag("skyblock")
+        public boolean onlySkyblock = true;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraDisabledInKuudra", desc = "config.babyzombieaddons.option.fishingCameraDisabledInKuudra.desc") @ConfigEditorBoolean @SearchTag("kuudra")
+        public boolean disabledInKuudra = true;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraDisabledInDungeon", desc = "config.babyzombieaddons.option.fishingCameraDisabledInDungeon.desc") @ConfigEditorBoolean @SearchTag("dungeon")
+        public boolean disabledInDungeon = true;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraYawMode", desc = "config.babyzombieaddons.option.fishingCameraYawMode.desc") @ConfigEditorDropdown
+        public CameraYawMode yawMode = CameraYawMode.FIXED;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraPitch", desc = "config.babyzombieaddons.option.fishingCameraPitch.desc") @ConfigEditorSlider(minValue = 0, maxValue = 90, minStep = 1) @SearchTag("camera")
+        public int pitch = 40;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraYawOffset", desc = "config.babyzombieaddons.option.fishingCameraYawOffset.desc") @ConfigEditorSlider(minValue = -180, maxValue = 180, minStep = 1) @SearchTag("camera")
+        public int yawOffset = 0;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraYawSpinSpeed", desc = "config.babyzombieaddons.option.fishingCameraYawSpinSpeed.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("camera")
+        public int yawSpinSpeed = 0;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraDistance", desc = "config.babyzombieaddons.option.fishingCameraDistance.desc") @ConfigEditorSlider(minValue = 1, maxValue = 8, minStep = 1) @SearchTag("camera")
+        public int distance = 3;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraViewDistance", desc = "config.babyzombieaddons.option.fishingCameraViewDistance.desc") @ConfigEditorSlider(minValue = 16, maxValue = 128, minStep = 1) @SearchTag("camera")
+        public int viewDistance = 48;
+    }
+
+    public enum CameraYawMode {
+        FIXED, FRONT, BACK, LEFT, RIGHT;
+        @Override public String toString() { return ChatUtils.translate("config.babyzombieaddons.option.fishingCameraYawMode." + name()); }
     }
 }

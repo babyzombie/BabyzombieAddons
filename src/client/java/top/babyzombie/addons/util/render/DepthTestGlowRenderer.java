@@ -21,7 +21,12 @@ import top.babyzombie.addons.mixin.render.OutlineBufferSourceAccessor;
  * 深度测试实体绕行到此 buffer，渲染时覆盖输出深度纹理实现遮挡。
  */
 public final class DepthTestGlowRenderer {
+    /// 第二相机捕获期间置 true:主渲染目标被临时替换为小尺寸目标,
+    /// 按窗口尺寸拷贝主目标深度会越界,此期间跳过深度拷贝。
+    public static boolean suppressDepthCopy;
+
     private static DepthTestGlowRenderer INSTANCE;
+
 
     private final Minecraft minecraft;
     private final OutlineBufferSource bufferSource;
@@ -46,6 +51,7 @@ public final class DepthTestGlowRenderer {
     public boolean isRendering() { return rendering; }
 
     public void updateDepth() {
+        if (suppressDepthCopy) return;
         var main = minecraft.getMainRenderTarget();
         if (main == null) return;
         tryUpdateTexture();
