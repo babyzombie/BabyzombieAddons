@@ -469,12 +469,12 @@ public final class PetManager {
 
         // Accessory Bag — scan Beastmaster Crest
         ScreenLoadWaiter.whenScreenOpened(
-            title -> ChatUtils.stripColor(title).startsWith("Accessory Bag"),
+            title -> ChatUtils.stripColor(title).matches("Accessory Bag( \\(\\d+/\\d+\\))?"),
             44, 0, this::scanAccessoryBag);
 
         // Attribute Menu — scan Battle Experience
         ScreenLoadWaiter.whenScreenOpened(
-            title -> "Attribute Menu".equals(ChatUtils.stripColor(title)),
+            title -> ChatUtils.stripColor(title).matches("(\\(\\d+/\\d+\\) )?Attribute Menu"),
             44, 0, this::scanAttributeMenu);
     }
 

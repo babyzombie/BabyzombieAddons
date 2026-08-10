@@ -44,6 +44,7 @@ public final class PartyModule {
     private static final Pattern CMD_JOIN = Pattern.compile("^[!！][ ]?(?:join)?[ ]?([fmt])([e0-7])$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_PTME = Pattern.compile("^[!！][ ]?(pt(?:me)?|[叫抢]地主)$", Pattern.CASE_INSENSITIVE);
     private static final Pattern CMD_SENDCOORDS = Pattern.compile("^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CMD_PING = Pattern.compile("^[!！][ ]?ping$", Pattern.CASE_INSENSITIVE);
     // !play <content> — execute /play <content>
     private static final Pattern CMD_PLAY = Pattern.compile("^[!！][ ]?play(?: (.+))?$", Pattern.CASE_INSENSITIVE);
     // !stream [number|close] → /stream open|close
@@ -277,6 +278,17 @@ public final class PartyModule {
                 } else {
                     ChatUtils.sendCommand(coordCmd);
                 }
+            }
+        }
+
+        // !ping → report local ping
+        if (cfg.partyPing && CMD_PING.matcher(msg).matches()) {
+            int ping = ServerTick.getPing();
+            String pingMsg = "pc ping: " + (ping >= 0 ? ping + "ms" : "?");
+            if (selfSent) {
+                scheduleWithDelay(() -> ChatUtils.sendCommand(pingMsg));
+            } else {
+                ChatUtils.sendCommand(pingMsg);
             }
         }
     }

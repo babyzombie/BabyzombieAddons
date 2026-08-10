@@ -60,6 +60,8 @@
   "config.babyzombieaddons.option.partyJoinInstance.desc": "响应 !join f1/m2/t3 加入地牢或 Kuudra。\n正则: ^[!！][ ]?(?:join)?[ ]?([fmt])([e0-7])$",
   "config.babyzombieaddons.option.partySendCoords": "!sc - 发送坐标",
   "config.babyzombieaddons.option.partySendCoords.desc": "响应队伍聊天中的 !sc 指令发送自己的坐标。\n正则: ^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$",
+  "config.babyzombieaddons.option.partyPing": "!ping - 延迟报告",
+  "config.babyzombieaddons.option.partyPing.desc": "响应队伍聊天中的 !ping 指令，在队伍聊天报告自己的网络延迟。\n正则: ^[!！][ ]?ping$",
   "config.babyzombieaddons.option.partyPlay": "!play - 执行 /play",
   "config.babyzombieaddons.option.partyPlay.desc": "响应队伍聊天中的 !play <内容>，执行 /play <内容>。\n正则: ^[!！][ ]?play(?: (.+))?$",
   "config.babyzombieaddons.option.partyStream": "!stream - 公开组队",

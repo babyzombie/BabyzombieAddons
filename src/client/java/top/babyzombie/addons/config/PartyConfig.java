@@ -50,6 +50,11 @@ public class PartyConfig {
     public boolean partySendCoords = false;
 
     @Expose
+    @ConfigOption(name = "config.babyzombieaddons.option.partyPing", desc = "config.babyzombieaddons.option.partyPing.desc")
+    @ConfigEditorBoolean @SearchTag("party") @SearchTag("ping")
+    public boolean partyPing = false;
+
+    @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.partyPlay", desc = "config.babyzombieaddons.option.partyPlay.desc")
     @ConfigEditorBoolean @SearchTag("party") @SearchTag("play")
     public boolean partyPlay = false;
