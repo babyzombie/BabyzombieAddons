@@ -104,7 +104,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
                 "key.babyzombieaddons.toggle_hand_render", -1);
 
         entityHiderToggleKey = KeyBindingUtil.register(
-                "key.babyzombieaddons.toggle_entity_hider", GLFW.GLFW_KEY_UNKNOWN);
+                "key.babyzombieaddons.toggle_entity_hider", -1);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
