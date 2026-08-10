@@ -55,6 +55,7 @@ import top.babyzombie.addons.module.misc.WindowTitleModule;
 import top.babyzombie.addons.config.hud.CategoryHudSwitcher;
 import top.babyzombie.addons.module.dungeon.withercloak.WitherCloakModule;
 import top.babyzombie.addons.module.misc.bazaar.BazzarTopOrdersOverlay;
+import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DungeonCooldown;
 import top.babyzombie.addons.util.gui.overlay.GuiOverlayManager;
 import top.babyzombie.addons.util.PersistenceMigration;
@@ -73,6 +74,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
 
     public static net.minecraft.client.KeyMapping cancelKeyBindingRelease;
     public static net.minecraft.client.KeyMapping toggleHandRenderKey;
+    public static net.minecraft.client.KeyMapping entityHiderToggleKey;
 
     @Override
     public void onInitializeClient() {
@@ -101,10 +103,20 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         toggleHandRenderKey = KeyBindingUtil.register(
                 "key.babyzombieaddons.toggle_hand_render", -1);
 
+        entityHiderToggleKey = KeyBindingUtil.register(
+                "key.babyzombieaddons.toggle_entity_hider", GLFW.GLFW_KEY_UNKNOWN);
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
             while (toggleHandRenderKey.consumeClick()) {
                 ModConfigManager.get().general.handRender.swapHands = !ModConfigManager.get().general.handRender.swapHands;
+            }
+            while (entityHiderToggleKey.consumeClick()) {
+                var entityHider = ModConfigManager.get().general.entityHider;
+                entityHider.enabled = !entityHider.enabled;
+                ChatUtils.showTranslatable(entityHider.enabled
+                        ? "babyzombieaddons.entityHider.enabled"
+                        : "babyzombieaddons.entityHider.disabled");
             }
         });
 

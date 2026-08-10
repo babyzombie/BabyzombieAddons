@@ -70,6 +70,9 @@ public final class PartyCommandAutocomplete {
             commands.add("!coords");
             commands.add("!sendcoords");
         }
+        if (cfg.partyPing) {
+            commands.add("!ping");
+        }
         if (cfg.partyPlay) {
             commands.add("!play ");
         }

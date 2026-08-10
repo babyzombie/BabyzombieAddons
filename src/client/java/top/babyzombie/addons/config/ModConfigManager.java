@@ -117,6 +117,7 @@ public final class ModConfigManager {
         cfg.general.cancelKeyRelease = KeyBindingUtil.keyCodeFrom(BabyzombieAddonsClient.cancelKeyBindingRelease);
         cfg.general.secondPerson = KeyBindingUtil.keyCodeFrom(SecondPersonKey.KEY);
         cfg.general.handRender.toggleHandRenderKey = KeyBindingUtil.keyCodeFrom(BabyzombieAddonsClient.toggleHandRenderKey);
+        cfg.general.entityHider.toggleKey = KeyBindingUtil.keyCodeFrom(BabyzombieAddonsClient.entityHiderToggleKey);
         cfg.general.waypointMarker.markerKey = KeyBindingUtil.keyCodeFrom(WaypointMarkerModule.key);
         cfg.popup.popupYes = KeyBindingUtil.keyCodeFrom(PopupEventsModule.keyYes);
         cfg.popup.popupNo = KeyBindingUtil.keyCodeFrom(PopupEventsModule.keyNo);
@@ -129,6 +130,7 @@ public final class ModConfigManager {
         KeyBindingUtil.syncToKeyMapping(BabyzombieAddonsClient.cancelKeyBindingRelease, cfg.general.cancelKeyRelease);
         KeyBindingUtil.syncToKeyMapping(SecondPersonKey.KEY, cfg.general.secondPerson);
         KeyBindingUtil.syncToKeyMapping(BabyzombieAddonsClient.toggleHandRenderKey, cfg.general.handRender.toggleHandRenderKey);
+        KeyBindingUtil.syncToKeyMapping(BabyzombieAddonsClient.entityHiderToggleKey, cfg.general.entityHider.toggleKey);
         KeyBindingUtil.syncToKeyMapping(WaypointMarkerModule.key, cfg.general.waypointMarker.markerKey);
         KeyBindingUtil.syncToKeyMapping(PopupEventsModule.keyYes, cfg.popup.popupYes);
         KeyBindingUtil.syncToKeyMapping(PopupEventsModule.keyNo, cfg.popup.popupNo);

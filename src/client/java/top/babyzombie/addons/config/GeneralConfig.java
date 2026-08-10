@@ -71,6 +71,8 @@ public class GeneralConfig {
     public static class EntityHider {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderEnabled", desc = "config.babyzombieaddons.option.entityHiderEnabled.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("entity")
         public boolean enabled = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderToggleKey", desc = "config.babyzombieaddons.option.entityHiderToggleKey.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("hide") @SearchTag("key")
+        public int toggleKey = GLFW.GLFW_KEY_UNKNOWN;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderSkyblockOnly", desc = "config.babyzombieaddons.option.entityHiderSkyblockOnly.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("skyblock")
         public boolean skyblockOnly = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderHideOwnBobber", desc = "config.babyzombieaddons.option.entityHiderHideOwnBobber.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("bobber") @SearchTag("fishing")
