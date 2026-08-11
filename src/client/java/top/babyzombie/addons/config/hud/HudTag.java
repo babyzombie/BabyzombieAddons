@@ -14,7 +14,8 @@ public enum HudTag {
     MISC,
     EVENTS,
     POPUP,
-    BAZAAR;
+    BAZAAR,
+    FISHING;
 
     @Override
     public String toString() {

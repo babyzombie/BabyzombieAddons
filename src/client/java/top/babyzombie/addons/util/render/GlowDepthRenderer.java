@@ -26,8 +26,12 @@ public final class GlowDepthRenderer implements AutoCloseable {
         return Objects.requireNonNull(this.glowDepthTextureView);
     }
 
+    /** 第二相机捕获期间置 true:主渲染目标被临时替换为小尺寸目标,按窗口尺寸拷贝深度会越界。 */
+    public static boolean suppressCopy;
+
     /** 拷贝主渲染目标深度到独立纹理（在主 pass 场景深度就绪后调用）。 */
     public void updateGlowDepthTexDepth() {
+        if (suppressCopy) return;
         tryUpdateDepthTexture();
         RenderSystem.getDevice().createCommandEncoder().copyTextureToTexture(
             Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTexture(),

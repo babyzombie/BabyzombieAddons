@@ -2,6 +2,7 @@ package top.babyzombie.addons.config.hud;
 
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 public final class HudRegistrar {
     private HudRegistrar() {}
@@ -239,6 +240,17 @@ public final class HudRegistrar {
                 "config.babyzombieaddons.option.hudCategorySwitcher",
                 () -> true,
                 HudTag.MISC);
+
+        // --- Fishing Camera ---
+        HudManager.register("FishingCamera", 250, 50, 1.0f,
+                "§f[钓鱼相机]",
+                "config.babyzombieaddons.option.fishingCamera",
+                () -> {
+                    var c = get().fishing.fishingCamera;
+                    var loc = HypixelLocationTracker.getInstance();
+                    return c.enabled;
+                },
+                HudTag.FISHING);
 
         // --- Bazaar ---
         HudManager.register("BazzarBuyOrder", 10, 50, 1.0f,
