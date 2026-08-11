@@ -84,9 +84,10 @@ public final class HudEditScreen extends Screen {
         // Tooltip for hovered element
         if (hovered != null && selected == null) {
             String key = HudManager.getLabelKey(hovered.name);
+            String tag = hovered.mainTag.toString();
             if (!key.isEmpty()) {
                 gui.setComponentTooltipForNextFrame(font,
-                        java.util.List.of(Component.translatable(key)), mouseX, mouseY);
+                        java.util.List.of(Component.translatable(key), Component.translatable(tag)), mouseX, mouseY);
             }
         }
 
