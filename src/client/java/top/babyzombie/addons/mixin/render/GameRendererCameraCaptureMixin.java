@@ -6,9 +6,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.babyzombie.addons.module.fishing.FishingCameraModule;
+import top.babyzombie.addons.event.AfterWorldRenderEvents;
 
-/// 在世界渲染完成之后(renderLevel 返回后)注入第二相机捕获。
+/// 在世界渲染完成之后(renderLevel 返回后)派发 AfterWorldRenderEvents。
+/// 注入点选 renderLevel 返回后而不是 Fabric 的 END_MAIN:
+/// END_MAIN 在云/天气之前触发,期间重跑渲染管线会破坏 Iris 的 pipeline 状态
+/// (主画面后续云/天气 pass NPE),renderLevel 完全返回后则无此问题。
 @Mixin(GameRenderer.class)
 public class GameRendererCameraCaptureMixin {
 
@@ -17,6 +20,6 @@ public class GameRendererCameraCaptureMixin {
                     target = "Lnet/minecraft/client/renderer/GameRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;)V",
                     shift = At.Shift.AFTER))
     private void babyzombieaddons$afterRenderLevel(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
-        FishingCameraModule.capture(deltaTracker);
+        AfterWorldRenderEvents.fire(deltaTracker);
     }
 }

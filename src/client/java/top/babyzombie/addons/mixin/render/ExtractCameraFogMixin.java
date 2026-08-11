@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.babyzombie.addons.module.fishing.FishingCameraModule;
+import top.babyzombie.addons.util.render.SecondCameraRenderer;
 
 /// 第二相机捕获期间跳过 setupFog:
 /// 主画面的 fog 状态(含内部渐变)按玩家位置维护,capture 里按浮标位置重算会污染它,
@@ -21,7 +21,7 @@ public class ExtractCameraFogMixin {
             cancellable = true)
     private void babyzombieaddons$skipSetupFog(DeltaTracker deltaTracker, float worldPartialTicks,
                                                float cameraEntityPartialTicks, CallbackInfo ci) {
-        if (FishingCameraModule.capturing) {
+        if (SecondCameraRenderer.capturing) {
             ci.cancel();
         }
     }
