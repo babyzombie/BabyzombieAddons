@@ -3,10 +3,12 @@ import com.google.gson.annotations.Expose;
 
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorColour;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
+import io.github.notenoughupdates.moulconfig.ChromaColour;
 import top.babyzombie.addons.util.ChatUtils;
 
 public class FishingConfig {
@@ -208,8 +210,8 @@ public class FishingConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCamera", desc = "config.babyzombieaddons.option.fishingCamera.desc") @ConfigEditorBoolean @SearchTag("camera") @SearchTag("bobber")
         public boolean enabled = false;
 
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraOnlySkyblock", desc = "config.babyzombieaddons.option.fishingCameraOnlySkyblock.desc") @ConfigEditorBoolean @SearchTag("skyblock")
-        public boolean onlySkyblock = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraOnlyLobbyOrSkyblock", desc = "config.babyzombieaddons.option.fishingCameraOnlyLobbyOrSkyblock.desc") @ConfigEditorBoolean @SearchTag("skyblock") @SearchTag("lobby")
+        public boolean onlyLobbyOrSkyblock = true;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraDisabledInKuudra", desc = "config.babyzombieaddons.option.fishingCameraDisabledInKuudra.desc") @ConfigEditorBoolean @SearchTag("kuudra")
         public boolean disabledInKuudra = true;
@@ -229,11 +231,34 @@ public class FishingConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraYawSpinSpeed", desc = "config.babyzombieaddons.option.fishingCameraYawSpinSpeed.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("camera")
         public int yawSpinSpeed = 0;
 
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraDistance", desc = "config.babyzombieaddons.option.fishingCameraDistance.desc") @ConfigEditorSlider(minValue = 1, maxValue = 8, minStep = 1) @SearchTag("camera")
-        public int distance = 3;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraDistance", desc = "config.babyzombieaddons.option.fishingCameraDistance.desc") @ConfigEditorSlider(minValue = 0, maxValue = 5, minStep = 0.1f) @SearchTag("camera")
+        public double distance = 2.0;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraViewDistance", desc = "config.babyzombieaddons.option.fishingCameraViewDistance.desc") @ConfigEditorSlider(minValue = 16, maxValue = 128, minStep = 1) @SearchTag("camera")
-        public int viewDistance = 48;
+        public int viewDistance = 32;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraFrameRate", desc = "config.babyzombieaddons.option.fishingCameraFrameRate.desc") @ConfigEditorSlider(minValue = 5, maxValue = 60, minStep = 1) @SearchTag("camera")
+        public int frameRate = 30;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraDisableWithShaders", desc = "config.babyzombieaddons.option.fishingCameraDisableWithShaders.desc") @ConfigEditorBoolean @SearchTag("shader") @SearchTag("iris")
+        public boolean disableWithShaders = true;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraAspectRatio", desc = "config.babyzombieaddons.option.fishingCameraAspectRatio.desc") @ConfigEditorDropdown
+        public CameraAspectRatio aspectRatio = CameraAspectRatio.R2_1;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraBorderColor", desc = "config.babyzombieaddons.option.fishingCameraBorderColor.desc") @ConfigEditorColour
+        public ChromaColour borderColor = ChromaColour.fromStaticRGB(128, 128, 128, 255);
+    }
+
+    public enum CameraAspectRatio {
+        R2_1(2, 1), R1_2(1, 2), R1_1(1, 1), R16_10(16, 10), R16_9(16, 9), R4_3(4, 3);
+        public final int w;
+        public final int h;
+        CameraAspectRatio(int w, int h) {
+            this.w = w;
+            this.h = h;
+        }
+        @Override public String toString() { return ChatUtils.translate("config.babyzombieaddons.option.fishingCameraAspectRatio." + name()); }
     }
 
     public enum CameraYawMode {

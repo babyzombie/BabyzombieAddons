@@ -38,6 +38,7 @@
     "render.MainRenderTargetAccessor",
     "render.LevelRendererAccessor",
     "render.LevelRendererInvoker",
+    "render.LevelRendererUpdateMixin",
     "render.ViewAreaInvoker",
     "render.ExtractVisibleEntitiesMixin",
     "render.CameraAccessor",

@@ -2,6 +2,8 @@ package top.babyzombie.addons.module.fishing;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 import net.minecraft.client.CameraType;
@@ -13,8 +15,11 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.state.gui.BlitRenderState;
+import net.minecraft.client.renderer.state.gui.ColoredRectangleRenderState;
 import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
+import top.babyzombie.addons.config.FishingConfig.CameraAspectRatio;
 import top.babyzombie.addons.config.FishingConfig.CameraYawMode;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -22,6 +27,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3x2f;
+import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
@@ -43,6 +49,13 @@ public final class FishingCameraModule {
 
     /// 特写画面高度(物理像素),宽度按窗口比例,避免投影纵横比拉伸
     private static final int FEED_HEIGHT = 256;
+    /// 是否已加载 Iris(光影):光影接管渲染管线,双相机渲染会导致主画面闪烁
+    private static final boolean IRIS_LOADED = FabricLoader.getInstance().isModLoaded("iris");
+    /// 帧率限制(渲染时间戳):secondCameraFrameRate 配置(帧/秒)
+    private static long lastRenderMillis;
+    /// 光影启用检测缓存(1 秒刷新一次,避免每帧反射)
+    private static boolean shadersInUse;
+    private static long lastShaderCheckMillis;
     /// 第二相机视锥远平面(格):限制区块挑选范围,减少提交量(视距配置,直接以格为单位)
     public static float secondCameraDepthFar() {
         return ModConfigManager.get().fishing.fishingCamera.viewDistance;
@@ -51,7 +64,7 @@ public final class FishingCameraModule {
     /// 原版第三人称的射线避让从方块内开始检测会把相机压到贴脸,抬高后脱离方块。
     /// 保持低位:marker 高会让相机绕"浮标上方的空气"转、浮标偏离画面中心,
     /// 镜头高度由俯仰/距离配置控制(相机 = marker 斜上方)
-    private static final double MARKER_LIFT = 0.375;
+    private static final double MARKER_LIFT = 0.3;
 
     private static @Nullable TextureTarget feedTarget;
     private static @Nullable ArmorStand cameraMarker;
@@ -63,7 +76,14 @@ public final class FishingCameraModule {
     private FishingCameraModule() {}
 
     public static void init() {
-        // 捕获与绘制均由 mixin 驱动,无需注册事件
+        // 捕获与绘制均由 mixin 驱动;这里注册"Hypixel 上强制开启仅大厅/SkyBlock 限制"
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            var cfg = ModConfigManager.get().fishing.fishingCamera;
+            if (cfg.onlyLobbyOrSkyblock) return;
+            if (HypixelLocationTracker.getInstance().isOnHypixel()) {
+                cfg.onlyLobbyOrSkyblock = true;
+            }
+        });
     }
 
     /// 世界渲染完成后调用:渲染第二相机画面进 feedTarget。
@@ -80,19 +100,30 @@ public final class FishingCameraModule {
         // —— 配置条件(不满足时清掉残留画面) ——
         var cfg = ModConfigManager.get().fishing.fishingCamera;
         var loc = HypixelLocationTracker.getInstance();
-        if (!cfg.enabled || (cfg.onlySkyblock && !loc.isInSkyblock())
+        if (!cfg.enabled
+                || (cfg.onlyLobbyOrSkyblock && loc.isOnHypixel()
+                    && loc.getLobbyName() == null && !loc.isInSkyblock())
                 || (cfg.disabledInKuudra && loc.isInKuudra())
                 || (cfg.disabledInDungeon && loc.isInDungeon())) {
             feedReady = false;
             return;
         }
+        // 光影(Iris)启用时禁用:双相机渲染与 shader 状态冲突,主画面会闪烁
+        if (cfg.disableWithShaders && isShaderPackInUse()) {
+            feedReady = false;
+            return;
+        }
+        // 帧率限制(按秒):距离上次渲染不足 1/fps 秒则跳过,保留上一帧画面(feedReady 不清)
+        long now = Util.getMillis();
+        if (now - lastRenderMillis < 1000L / Math.max(1, cfg.frameRate)) return;
+        lastRenderMillis = now;
 
         var gameRenderer = mc.gameRenderer;
         var camera = gameRenderer.getMainCamera();
 
-        // —— 懒创建 feed target(宽高按窗口比例) ——
-        var window = mc.getWindow();
-        int feedWidth = Math.max(1, FEED_HEIGHT * window.getWidth() / Math.max(1, window.getHeight()));
+        // —— 懒创建 feed target(宽高按配置的画面比例) ——
+        var ratio = cfg.aspectRatio == null ? CameraAspectRatio.R2_1 : cfg.aspectRatio;
+        int feedWidth = Math.max(1, FEED_HEIGHT * ratio.w / ratio.h);
         if (feedTarget == null || feedTarget.width != feedWidth || feedTarget.height != FEED_HEIGHT) {
             if (feedTarget != null) feedTarget.destroyBuffers();
             feedTarget = new TextureTarget("bza_fishing_feed", feedWidth, FEED_HEIGHT, true);
@@ -170,17 +201,28 @@ public final class FishingCameraModule {
             // 强制相机旋转为配置值(实体 getViewYRot 的转换会吞掉 setYRot,直接调 setRotation)
             ((CameraInvoker) camera).invokeSetRotation(yaw, cfg.pitch);
             gameRenderer.extract(DeltaTracker.ONE, true);
+            var grs = gameRenderer.getGameRenderState();
+            // 投影比例按 feed target(不能改真实窗口尺寸,会触发 resize 闪烁):
+            // 手动重算投影矩阵 + windowRenderState 宽高
+            var camState = grs.levelRenderState.cameraRenderState;
+            camState.projectionMatrix.set(new Matrix4f().perspective(
+                    camera.getFov() * (float) Math.PI / 180.0F,
+                    (float) feedWidth / FEED_HEIGHT,
+                    0.05F, camState.depthFar, RenderSystem.getDevice().isZZeroToOne()));
+            int oldWinW = grs.windowRenderState.width;
+            int oldWinH = grs.windowRenderState.height;
+            grs.windowRenderState.width = feedWidth;
+            grs.windowRenderState.height = FEED_HEIGHT;
             // 重写 Globals uniform:主画面渲染时写入的是玩家的相机位置,
             // 不更新的话区块按玩家位置平移、实体按第二相机平移,两者错位(实体偏移)
-            var grs = gameRenderer.getGameRenderState();
             gameRenderer.getGlobalSettingsUniform().update(
-                    grs.windowRenderState.width,
-                    grs.windowRenderState.height,
+                    feedWidth,
+                    FEED_HEIGHT,
                     grs.optionsRenderState.glintStrength,
                     mc.level.getGameTime(),
                     DeltaTracker.ONE,
                     grs.optionsRenderState.menuBackgroundBlurriness,
-                    grs.levelRenderState.cameraRenderState.pos,
+                    camState.pos,
                     grs.optionsRenderState.textureFiltering == TextureFilteringMethod.RGSS);
             // 第三人称:避免特写画面里出现玩家手持的钓鱼竿/屏幕特效
             optionsState.cameraType = CameraType.THIRD_PERSON_BACK;
@@ -190,6 +232,8 @@ public final class FishingCameraModule {
             optionsState.cloudStatus = CloudStatus.OFF;
             gameRenderer.renderLevel(DeltaTracker.ONE);
             optionsState.cloudStatus = oldCloudStatus;
+            grs.windowRenderState.width = oldWinW;
+            grs.windowRenderState.height = oldWinH;
             feedReady = true;
         } finally {
             ((MainRenderTargetAccessor) mc).setMainRenderTarget(oldTarget);
@@ -221,20 +265,47 @@ public final class FishingCameraModule {
     }
 
     /// HUD 提取阶段调用:把特写画面贴到 HUD 元素位置(支持编辑/缩放)。
+    /// 光影是否实际启用(反射 IrisApi,1 秒缓存;未装 Iris 或 API 不可用时回退为按安装检测)
+    private static boolean isShaderPackInUse() {
+        if (!IRIS_LOADED) return false;
+        long now = Util.getMillis();
+        if (now - lastShaderCheckMillis < 1000L) return shadersInUse;
+        lastShaderCheckMillis = now;
+        try {
+            Class<?> apiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+            Object api = apiClass.getMethod("getInstance").invoke(null);
+            shadersInUse = (boolean) apiClass.getMethod("isShaderPackInUse").invoke(api);
+        } catch (Exception ignored) {
+            // API 不可用(版本差异):回退为按安装检测
+            shadersInUse = true;
+        }
+        return shadersInUse;
+    }
+
+    /// 画中画边框宽度(逻辑像素)
+    private static final int FRAME_BORDER = 2;
+
     public static void drawHud(GuiGraphicsExtractor graphics) {
         if (!feedReady || feedTarget == null) return;
         if (!HudManager.shouldShow("FishingCamera")) return;
         var textureView = feedTarget.getColorTextureView();
         if (textureView == null) return;
         float s = HudManager.scale("FishingCamera");
-        int dw = Math.max(1, Math.round(256 * s));
-        int dh = Math.max(1, Math.round(dw * feedTarget.height / (float) Math.max(1, feedTarget.width)));
+        // 高度固定、宽度按画面比例(2:1 更宽、1:2 更高);基准高度 192(渲染 256,显示缩小)
+        int dh = Math.max(1, Math.round(192 * s));
+        int dw = Math.max(1, Math.round(dh * feedTarget.width / (float) Math.max(1, feedTarget.height)));
         int x0 = HudManager.x("FishingCamera");
         int y0 = HudManager.y("FishingCamera");
         GuiRenderState guiRenderState = graphics.guiRenderState;
+        // 边框(背景色,像小地图):先画稍大的矩形,画中画覆盖在上面,四周露出边框
+        var borderColor = ModConfigManager.get().fishing.fishingCamera.borderColor.getEffectiveColourRGB();
+        guiRenderState.addGuiElement(new ColoredRectangleRenderState(
+                RenderPipelines.GUI, TextureSetup.noTexture(), new Matrix3x2f(),
+                x0 - FRAME_BORDER, y0 - FRAME_BORDER, x0 + dw + FRAME_BORDER, y0 + dh + FRAME_BORDER,
+                borderColor, borderColor, null));
         guiRenderState.addBlitToCurrentLayer(new BlitRenderState(
                 RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA,
-                TextureSetup.singleTexture(feedTarget.getColorTextureView(),
+                TextureSetup.singleTexture(textureView,
                         RenderSystem.getSamplerCache().getRepeat(FilterMode.NEAREST)),
                 new Matrix3x2f(), x0, y0, x0 + dw, y0 + dh,
                 0.0F, 1.0F, 1.0F, 0.0F, -1, null, null));

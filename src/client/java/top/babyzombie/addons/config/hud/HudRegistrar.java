@@ -248,10 +248,7 @@ public final class HudRegistrar {
                 () -> {
                     var c = get().fishing.fishingCamera;
                     var loc = HypixelLocationTracker.getInstance();
-                    return c.enabled
-                            && (!c.onlySkyblock || loc.isInSkyblock())
-                            && (!c.disabledInKuudra || !loc.isInKuudra())
-                            && (!c.disabledInDungeon || !loc.isInDungeon());
+                    return c.enabled;
                 },
                 HudTag.FISHING);
 
