@@ -282,7 +282,7 @@ public final class SafariTrajectory {
     /// 供精灵球落地镜头等模块使用。
     public static @Nullable Vec3 predictedLanding() {
         Player player = CLIENT.player;
-        if (player == null || CLIENT.level == null || CLIENT.screen != null) {
+        if (player == null || CLIENT.level == null || CLIENT.gui.screen() != null) {
             return null;
         }
         HypixelLocationTracker tracker = HypixelLocationTracker.getInstance();

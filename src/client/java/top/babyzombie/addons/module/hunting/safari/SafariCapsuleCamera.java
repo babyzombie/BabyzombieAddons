@@ -1,5 +1,6 @@
 package top.babyzombie.addons.module.hunting.safari;
 
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
@@ -85,7 +86,7 @@ public final class SafariCapsuleCamera {
         int feedWidth = Math.max(1, FEED_HEIGHT * ratio.w / ratio.h);
         if (feedTarget == null || feedTarget.width != feedWidth || feedTarget.height != FEED_HEIGHT) {
             if (feedTarget != null) feedTarget.destroyBuffers();
-            feedTarget = new TextureTarget("bza_safari_capsule_feed", feedWidth, FEED_HEIGHT, true);
+            feedTarget = new TextureTarget("bza_safari_capsule_feed", feedWidth, FEED_HEIGHT, true, GpuFormat.RGBA8_UNORM);
         }
         // 相机朝向按配置(yawMode),俯视配置的 pitch
         var yawMode = cfg.yawMode == null ? CameraYawMode.FIXED : cfg.yawMode;
