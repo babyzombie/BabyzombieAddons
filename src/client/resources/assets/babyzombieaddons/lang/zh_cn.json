@@ -947,6 +947,7 @@
   "rareropscreen.sharelist": "分享列表（自动发送）",
   "rareropscreen.sharelist.add": "+ 添加到分享列表",
   "rareropscreen.done": "完成",
+  "babyzombieaddons.hud.mainTagSource": "来自 %s",
   "babyzombieaddons.hud.externalSource": "来自 %s (%s)",
   "config.babyzombieaddons.option.showExternalHudSource": "显示外部 HUD 来源",
   "config.babyzombieaddons.option.showExternalHudSource.desc": "打开 HUD 编辑界面后，将鼠标悬停在其他模组的 HUD 元素上时显示来源模组和类名，方便识别画面上的各种 overlay 分别来自哪个模组。",

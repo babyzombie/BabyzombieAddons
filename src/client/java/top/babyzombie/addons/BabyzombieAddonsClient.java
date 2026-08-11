@@ -143,6 +143,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         DungeonModule.init();
         CustomDiscScanner.init();
         DungeonJukeboxModule.init();
+        FishingCameraModule.init();
         RareSeaCreaturesAlert.init();
         RareSeaCreaturesSelfAlert.init();
         PreventInstantReel.init();
