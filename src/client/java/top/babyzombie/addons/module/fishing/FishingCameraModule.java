@@ -3,6 +3,8 @@ package top.babyzombie.addons.module.fishing;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.loader.api.FabricLoader;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
@@ -14,6 +16,7 @@ import net.minecraft.client.TextureFilteringMethod;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.resources.Identifier;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.state.gui.BlitRenderState;
 import net.minecraft.client.renderer.state.gui.ColoredRectangleRenderState;
@@ -83,7 +86,16 @@ public final class FishingCameraModule {
     private FishingCameraModule() {}
 
     public static void init() {
-        // 捕获与绘制均由 mixin 驱动;这里注册"Hypixel 上强制开启仅大厅/SkyBlock 限制"
+        // 特写画面作为 HUD 元素注册:渲染在 HUD 层(原版机制,设置界面等
+        // screen 打开时自动被遮挡,不需要手动判断)
+        HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
+                Identifier.fromNamespaceAndPath("babyzombieaddons", "fishing_camera"),
+                (graphics, tickCounter) -> {
+            if (!feedReady || feedTarget == null) return;
+            if (!HudManager.shouldShow("FishingCamera")) return;
+            drawHud(graphics);
+        });
+        // 捕获由 mixin 驱动;这里注册"Hypixel 上强制开启仅大厅/SkyBlock 限制"
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var cfg = ModConfigManager.get().fishing.fishingCamera;
             if (cfg.onlyLobbyOrSkyblock) return;

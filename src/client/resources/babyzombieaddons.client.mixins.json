@@ -48,7 +48,6 @@
     "render.SectionVisibilityCaptureMixin",
     "render.GameRendererCameraCaptureMixin",
     "render.ExtractCameraFogMixin",
-    "render.FishingCameraHudMixin",
 
     "chat.ChatComponentMixin",
     "chat.ChatOverlaySetScreenMixin",

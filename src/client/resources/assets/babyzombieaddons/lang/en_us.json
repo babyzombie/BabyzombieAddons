@@ -1252,7 +1252,7 @@
   "config.babyzombieaddons.option.fishingCameraDistance": "Camera Distance",
   "config.babyzombieaddons.option.fishingCameraDistance.desc": "Distance from the camera to the bobber (blocks); smaller is closer.",
   "config.babyzombieaddons.option.fishingCameraViewDistance": "Render Distance",
-  "config.babyzombieaddons.option.fishingCameraViewDistance.desc": "Render distance of the close-up view (blocks); smaller is faster.",
+  "config.babyzombieaddons.option.fishingCameraViewDistance.desc": "Render distance of the close-up view (blocks); smaller is faster. Avoid dragging this slider quickly while the second camera is rendering — large values can freeze the game.",
   "config.babyzombieaddons.option.fishingCameraFrameRate": "Camera Frame Rate",
   "config.babyzombieaddons.option.fishingCameraFrameRate.desc": "Frame rate of the close-up view (FPS); lower values cost less performance.",
   "config.babyzombieaddons.option.fishingCameraLinger": "Camera Linger",
