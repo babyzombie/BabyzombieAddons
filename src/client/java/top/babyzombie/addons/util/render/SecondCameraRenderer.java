@@ -1,5 +1,6 @@
 package top.babyzombie.addons.util.render;
 
+import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -11,6 +12,7 @@ import net.minecraft.client.CloudStatus;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.TextureFilteringMethod;
+import net.minecraft.client.renderer.DynamicUniforms;
 import net.minecraft.client.renderer.GlobalSettingsUniform;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.world.entity.Entity;
@@ -24,6 +26,9 @@ import top.babyzombie.addons.mixin.render.CameraAccessor;
 import top.babyzombie.addons.mixin.render.CameraFrustumAccessor;
 import top.babyzombie.addons.mixin.render.CameraInvoker;
 import top.babyzombie.addons.mixin.render.GameRendererAccessor;
+import top.babyzombie.addons.mixin.render.GlobalSettingsUniformAccessor;
+import top.babyzombie.addons.mixin.render.RenderSystemAccessor;
+import top.babyzombie.addons.mixin.render.SkyRendererAccessor;
 import top.babyzombie.addons.mixin.render.LevelExtractorInvoker;
 import top.babyzombie.addons.mixin.render.LevelRendererAccessor;
 import top.babyzombie.addons.mixin.render.MainRenderTargetAccessor;
@@ -42,6 +47,30 @@ public final class SecondCameraRenderer {
 
     /// 临时相机实体:隐形 ArmorStand(带 CAMERA_DISTANCE 属性,控制相机距离)
     private static @Nullable ArmorStand cameraMarker;
+
+    /// 第二相机专用 uniform 实例:第二遍渲染的 transform/区块矩阵写入独立存储,
+    /// 不碰主画面的共享环形缓冲(避免主画面区块按子相机矩阵渲染 + fence 语义冲突)
+    private static @Nullable DynamicUniforms secondUniforms;
+
+    private static DynamicUniforms secondUniforms() {
+        if (secondUniforms == null) {
+            secondUniforms = new DynamicUniforms();
+        }
+        secondUniforms.reset();
+        return secondUniforms;
+    }
+
+    /// 第二相机专用 Globals 实例:Globals 是共享 uniform buffer,主画面 renderLevel
+    /// 编码的区块命令引用它,GPU 异步执行时读值。第二遍 update 若写共享实例,
+    /// 主画面地形会按子相机位置平移(黄块);独立实例 + finally 恢复全局状态即可隔离。
+    private static @Nullable GlobalSettingsUniform secondGlobals;
+
+    private static GlobalSettingsUniform secondGlobals() {
+        if (secondGlobals == null) {
+            secondGlobals = new GlobalSettingsUniform();
+        }
+        return secondGlobals;
+    }
 
     /// 子相机区块采样器(mag=NEAREST):近距放大时 UV 落在 texel 边界,
     /// LINEAR mag 过滤会混合图集相邻 texel 渗漏出白线;NEAREST 取单 texel 无渗漏,
@@ -123,6 +152,19 @@ public final class SecondCameraRenderer {
         CameraType oldCameraType = optionsState.cameraType;
         GlowDepthRenderer.suppressCopy = true;
         capturing = true;
+        // 保存主画面投影矩阵:第二遍 renderLevel 会覆盖共享投影 buffer 的内容,
+        // 结束需写回主投影,否则主画面后续渲染(GUI 等)用第二相机投影错乱
+        var savedProjection = new Matrix4f(gameRenderer.gameRenderState().levelRenderState.cameraRenderState.projectionMatrix);
+        // 保存发光标志:第二遍 extract(ExtractEntityOutlineSkipMixin)会把它改成 false,
+        // 主画面 capture 后的 doEntityOutline 读共享 state 会跳过发光合成
+        boolean savedShowOutlines = gameRenderer.gameRenderState().levelRenderState.shouldShowEntityOutlines;
+        // —— 第二相机 uniform 隔离 ——
+        // transforms/chunkSections 的 uniform 存在共享环形缓冲(每帧一个 slot,帧内多次
+        // 写入覆盖 + fence 绑定当前 submit)。第二遍渲染用独立 DynamicUniforms 实例,
+        // 不写主画面的 slot(否则主画面区块命令读到子相机矩阵,按子相机视角画到主画面;
+        // 手动操控 ring slot 会破坏 fence 语义导致崩溃)。
+        var savedDynamicUniforms = RenderSystem.getDynamicUniforms();
+        RenderSystemAccessor.setDynamicUniforms(secondUniforms());
         var oldRealCameraType = mc.options.getCameraType();
         // 启用原版第三人称(detached):相机自动放到实体后方 4 格并射线避让方块
         if (oldRealCameraType != CameraType.THIRD_PERSON_BACK) {
@@ -173,10 +215,11 @@ public final class SecondCameraRenderer {
             int oldWinH = grs.windowRenderState.height;
             grs.windowRenderState.width = params.target.width;
             grs.windowRenderState.height = params.target.height;
-            // Globals(相机位置)写共享实例:主画面命令已在第一个 renderLevel 编码完毕,
-            // 这里覆盖只影响第二相机的绘制命令;26.2 每帧 render 开头会重新 update(玩家位置),
-            // 无需手动恢复(SC 26.2 同款做法)。
-            mainGlobals.update(
+            // Globals(相机位置)写独立实例:主画面命令已在第一个 renderLevel 编码完毕,
+            // 但 GPU 异步执行时读共享 globals buffer,第二遍 update 若覆盖共享实例,
+            // 主画面区块会按子相机位置渲染(黄块);独立实例只影响第二相机的绘制命令,
+            // finally 再把 RenderSystem 全局状态指回主画面实例。
+            secondGlobals().update(
                     params.target.width,
                     params.target.height,
                     grs.optionsRenderState.glintStrength,
@@ -199,6 +242,12 @@ public final class SecondCameraRenderer {
             // 子相机近距放大时 UV 落在 texel 边界,LINEAR mag 过滤会混合相邻 texel 渗漏出白线;
             // mag 用 NEAREST(放大取单 texel)、min 保持 LINEAR(缩小平滑),既无渗漏又保留平滑
             lrAccessor.setChunkLayerSampler(feedSampler());
+            // SkyRenderer 缓存构造时的主画面 target,第二遍渲染的天空盘仍画到主画面
+            // (斜向黄/蓝块,跟随子相机视角);临时指向子相机输出(SC 26.2 同款修复)
+            var skyRenderer = mc.levelRenderer.skyRenderer();
+            if (skyRenderer != null) {
+                ((SkyRendererAccessor) skyRenderer).setRenderTarget(params.target);
+            }
             try {
                 gameRenderer.renderLevel(DeltaTracker.ONE);
                 return true;
@@ -232,6 +281,22 @@ public final class SecondCameraRenderer {
             visibleSections.addAll(oldVisibleSections);
             // 恢复 frustum 捕获标志(主画面流程每帧设置,恢复保证其语义不丢)
             ((CameraFrustumAccessor) camera).setCaptureFrustum(oldCaptureFrustum);
+            // 写回主画面投影矩阵(第二遍 renderLevel 覆盖了共享 buffer 的内容)
+            RenderSystem.setProjectionMatrix(
+                    ((GameRendererAccessor) gameRenderer).levelProjectionMatrixBuffer().getBuffer(savedProjection),
+                    ProjectionType.PERSPECTIVE);
+            // 恢复主画面 Globals 全局状态(第二遍 update 把它指向了独立实例的 buffer)
+            RenderSystem.setGlobalSettingsUniform(
+                    ((GlobalSettingsUniformAccessor) mainGlobals).buffer());
+            // 恢复主画面 uniform 实例
+            RenderSystemAccessor.setDynamicUniforms(savedDynamicUniforms);
+            // SkyRenderer 指回主画面 target(第二遍可能重建了 skyRenderer,用当前实例恢复)
+            var currentSky = mc.levelRenderer.skyRenderer();
+            if (currentSky != null) {
+                ((SkyRendererAccessor) currentSky).setRenderTarget(oldTarget);
+            }
+            // 恢复发光标志(ExtractEntityOutlineSkipMixin 在第二遍 extract 改的)
+            gameRenderer.gameRenderState().levelRenderState.shouldShowEntityOutlines = savedShowOutlines;
             GlowDepthRenderer.suppressCopy = false;
             capturing = false;
         }

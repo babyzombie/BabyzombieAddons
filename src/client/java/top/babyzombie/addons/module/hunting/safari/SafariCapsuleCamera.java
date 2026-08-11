@@ -34,8 +34,8 @@ public final class SafariCapsuleCamera {
 
     /// 特写画面高度(物理像素),宽度按配置的画面比例
     private static final int FEED_HEIGHT = 256;
-    /// 落点在地面,marker 抬升防止相机陷入方块
-    private static final double MARKER_LIFT = 1;
+    /// 落点在方块表面,marker 微抬升脱离碰撞即可
+    private static final double MARKER_LIFT = 0.3;
     /// 帧率限制(渲染时间戳)
     private static long lastRenderMillis;
 
@@ -100,7 +100,8 @@ public final class SafariCapsuleCamera {
         // 偏航偏移 + 动态旋转只在固定角度生效
         if (yawMode == CameraYawMode.FIXED) {
             if (cfg.yawSpinSpeed > 0) {
-                yaw += (mc.level.getGameTime() * cfg.yawSpinSpeed / 20.0F) % 360.0F;
+                // 用客户端毫秒(每帧平滑);gameTime 是服务器 tick(20Hz),旋转会一顿一顿
+                yaw += (float) ((Util.getMillis() % 100000L) / 1000.0 * cfg.yawSpinSpeed) % 360.0F;
             }
             yaw += cfg.yawOffset;
         }
