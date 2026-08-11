@@ -10,6 +10,8 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import io.github.notenoughupdates.moulconfig.ChromaColour;
 import net.minecraft.network.chat.Component;
+import top.babyzombie.addons.config.FishingConfig.CameraAspectRatio;
+import top.babyzombie.addons.config.FishingConfig.CameraYawMode;
 
 public class HuntingConfig {
 
@@ -152,6 +154,14 @@ public class HuntingConfig {
         @ConfigOption(name = "config.babyzombieaddons.option.safariTrajectoryBlockLineWidth", desc = "config.babyzombieaddons.option.safariTrajectoryBlockLineWidth.desc")
         @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.1f)
         public float blockHighlightThickness = 0.5f;
+
+        // 精灵球落地镜头(依赖轨迹预测的落点,挂在轨迹组下)
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.group.safariCapsuleCamera", desc = "config.babyzombieaddons.group.safariCapsuleCamera.desc")
+        @Accordion
+        @SearchTag("safari")
+        @SearchTag("capsule")
+        public SafariCapsuleCameraConfig capsuleCamera = new SafariCapsuleCameraConfig();
     }
 
     /** 雪地群系（Icy）目标生物 */
@@ -314,6 +324,30 @@ public class HuntingConfig {
         public ChromaColour beeGlowColor = ChromaColour.fromStaticRGB(85, 255, 85, 255);
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestBeeNestHighlight", desc = "config.babyzombieaddons.option.safariForestBeeNestHighlight.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("bee") @SearchTag("nest") @SearchTag("forest")
         public boolean beeNestHighlight = false;
+    }
+
+    /** 精灵球落地镜头（组中组） */
+    public static class SafariCapsuleCameraConfig {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCamera", desc = "config.babyzombieaddons.option.safariCapsuleCamera.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("capsule")
+        public boolean enabled = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraYawMode", desc = "config.babyzombieaddons.option.safariCapsuleCameraYawMode.desc") @ConfigEditorDropdown @SearchTag("safari")
+        public CameraYawMode yawMode = CameraYawMode.FIXED;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraPitch", desc = "config.babyzombieaddons.option.safariCapsuleCameraPitch.desc") @ConfigEditorSlider(minValue = 0, maxValue = 90, minStep = 1) @SearchTag("safari")
+        public int pitch = 40;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraYawOffset", desc = "config.babyzombieaddons.option.safariCapsuleCameraYawOffset.desc") @ConfigEditorSlider(minValue = -180, maxValue = 180, minStep = 1) @SearchTag("safari")
+        public int yawOffset = 0;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraYawSpinSpeed", desc = "config.babyzombieaddons.option.safariCapsuleCameraYawSpinSpeed.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("safari")
+        public int yawSpinSpeed = 0;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraDistance", desc = "config.babyzombieaddons.option.safariCapsuleCameraDistance.desc") @ConfigEditorSlider(minValue = 0, maxValue = 5, minStep = 0.1f) @SearchTag("safari")
+        public double distance = 3.0;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraViewDistance", desc = "config.babyzombieaddons.option.safariCapsuleCameraViewDistance.desc") @ConfigEditorSlider(minValue = 16, maxValue = 128, minStep = 1) @SearchTag("safari")
+        public int viewDistance = 32;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraFrameRate", desc = "config.babyzombieaddons.option.safariCapsuleCameraFrameRate.desc") @ConfigEditorSlider(minValue = 5, maxValue = 60, minStep = 1) @SearchTag("safari")
+        public int frameRate = 30;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraAspectRatio", desc = "config.babyzombieaddons.option.safariCapsuleCameraAspectRatio.desc") @ConfigEditorDropdown @SearchTag("safari")
+        public CameraAspectRatio aspectRatio = CameraAspectRatio.R2_1;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraBorderColor", desc = "config.babyzombieaddons.option.safariCapsuleCameraBorderColor.desc") @ConfigEditorColour @SearchTag("safari")
+        public ChromaColour borderColor = ChromaColour.fromStaticRGB(128, 128, 128, 255);
     }
 
     /** 猎手交易（组中组） */
