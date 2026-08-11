@@ -252,6 +252,13 @@ public final class HudRegistrar {
                 },
                 HudTag.FISHING);
 
+        // --- Safari Capsule Camera ---
+        HudManager.register("SafariCapsuleCamera", 250, 250, 1.0f,
+                "§f[精灵球落地]",
+                "config.babyzombieaddons.option.safariCapsuleCamera",
+                () -> get().hunting.safari.trajectory.capsuleCamera.enabled,
+                HudTag.HUNTING);
+
         // --- Bazaar ---
         HudManager.register("BazzarBuyOrder", 10, 50, 1.0f,
                 "§6§lBuy Orders  §fEnchanted Ruby\n§71. §6180,019.7 coins §7x §a14 §7in §f1 order\n§72. §6180,019.6 coins §7x §a32 §7in §f1 order",

@@ -17,6 +17,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 import top.babyzombie.addons.config.HuntingConfig;
 import top.babyzombie.addons.config.HuntingConfig.ThrownCapsuleMode;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -37,7 +38,7 @@ public final class SafariTrajectory {
     private static final double CAPSULE_INITIAL_VELOCITY = 0.85;
     private static final double CAPSULE_DRAG_PER_TICK = 1.0;
     private static final double CAPSULE_GRAVITY_PER_TICK = 0.02;
-    private static final int MAX_TICKS = 70;
+    private static final int MAX_TICKS = 128;
     private static final int SUBSTEPS_PER_TICK = 4;
     private static final double CAPSULE_SIDE_OFFSET = 0.16;
     private static final double CAPSULE_VERTICAL_OFFSET = 0.1;
@@ -275,6 +276,24 @@ public final class SafariTrajectory {
                 channel(rgb >> 16), channel(rgb >> 8), channel(rgb),
                 0.95f, true, 1.5f + thickness * 5.0f
         );
+    }
+
+    /// 当前预测落点(Safari 内手持胶囊时);不在 Safari/未手持返回 null。
+    /// 供精灵球落地镜头等模块使用。
+    public static @Nullable Vec3 predictedLanding() {
+        Player player = CLIENT.player;
+        if (player == null || CLIENT.level == null || CLIENT.screen != null) {
+            return null;
+        }
+        HypixelLocationTracker tracker = HypixelLocationTracker.getInstance();
+        if (tracker == null || !tracker.isInSafari()) {
+            return null;
+        }
+        if (!isCapsule(player.getMainHandItem()) && !isCapsule(player.getOffhandItem())) {
+            return null;
+        }
+        Trajectory trajectory = predict(player);
+        return trajectory.points().size() < 2 ? null : trajectory.landing();
     }
 
     static HuntingConfig.SafariTrajectory config() {
