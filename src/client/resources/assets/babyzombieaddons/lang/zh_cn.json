@@ -1304,6 +1304,8 @@
   "config.babyzombieaddons.option.fishingCameraViewDistance.desc": "特写画面的渲染距离（格），越小性能越好。",
   "config.babyzombieaddons.option.fishingCameraFrameRate": "第二相机帧率",
   "config.babyzombieaddons.option.fishingCameraFrameRate.desc": "特写画面的渲染帧率（帧/秒），数值越小性能开销越低。",
+  "config.babyzombieaddons.option.fishingCameraLinger": "浮漂消失后相机停留",
+  "config.babyzombieaddons.option.fishingCameraLinger.desc": "浮漂消失（收杆/被拉走）后，第二相机继续在最后位置渲染的时长（tick），0 = 立即关闭。",
   "config.babyzombieaddons.option.fishingCameraDisableWithShaders": "光影开启时禁用",
   "config.babyzombieaddons.option.fishingCameraDisableWithShaders.desc": "检测到 Iris 光影时自动禁用钓鱼相机（光影接管渲染管线，双相机会导致主画面闪烁）。",
   "config.babyzombieaddons.option.fishingCameraAspectRatio": "画面比例",

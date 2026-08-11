@@ -14,6 +14,7 @@ import net.minecraft.client.CloudStatus;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.TextureFilteringMethod;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.GlobalSettingsUniform;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -96,6 +97,12 @@ public final class FishingCameraModule {
     private static boolean feedReady;
     /// 是否正在第二相机捕获中(供可见性相关 mixin 判断)
     public static boolean capturing;
+    /// 浮漂最后位置(浮漂消失后 linger 期间继续用此位置渲染)
+    private static @Nullable Vec3 lastBobberPos;
+    /// 最后看到浮漂的世界(换区/换世界后 linger 失效)
+    private static @Nullable ClientLevel lastBobberLevel;
+    /// 最后看到浮漂的游戏 tick(计时用)
+    private static long lastBobberGameTime;
 
     private FishingCameraModule() {}
 
@@ -114,15 +121,28 @@ public final class FishingCameraModule {
     public static void capture(DeltaTracker realDelta) {
         var mc = Minecraft.getInstance();
         var player = mc.player;
-        var bobber = player == null ? null : player.fishing;
-        if (mc.level == null) return;
-        if (bobber == null) {
-            // 收杆后不再显示最后一帧
+        if (mc.level == null || player == null) {
             feedReady = false;
             return;
         }
-        // —— 配置条件(不满足时清掉残留画面) ——
+        var bobber = player.fishing;
         var cfg = ModConfigManager.get().fishing.fishingCamera;
+        // —— 浮漂已消失:linger 配置时长内继续用最后位置渲染(0 = 立即关闭) ——
+        Vec3 bobberPos;
+        if (bobber == null) {
+            if (cfg.lingerTicks <= 0 || lastBobberLevel != mc.level || lastBobberPos == null
+                    || mc.level.getGameTime() - lastBobberGameTime >= cfg.lingerTicks) {
+                feedReady = false;
+                return;
+            }
+            bobberPos = lastBobberPos;
+        } else {
+            lastBobberPos = bobber.position();
+            lastBobberLevel = mc.level;
+            lastBobberGameTime = mc.level.getGameTime();
+            bobberPos = lastBobberPos;
+        }
+        // —— 配置条件(不满足时清掉残留画面) ——
         var loc = HypixelLocationTracker.getInstance();
         if (!cfg.enabled
                 || (cfg.onlyLobbyOrSkyblock && loc.isOnHypixel()
@@ -160,7 +180,6 @@ public final class FishingCameraModule {
         }
         // 虚拟相机实体:放在浮标位置,朝向按配置(yawMode),俯视配置的 pitch。
         // 原版第三人称把相机放到 marker 斜上方 distance 格(射线避让方块),浮标落在画面中心。
-        Vec3 bobberPos = bobber.position();
         Vec3 playerPos = player.position();
         double toPlayerX = playerPos.x - bobberPos.x;
         double toPlayerZ = playerPos.z - bobberPos.z;
@@ -311,6 +330,12 @@ public final class FishingCameraModule {
             if (oldRealCameraType != CameraType.THIRD_PERSON_BACK) {
                 mc.options.setCameraType(oldRealCameraType);
             }
+            // 恢复相机位置/朝向:capture 期间 update 把相机放到浮漂视角,只恢复 entity 时
+            // position/forwards/up/left 仍停在浮漂,下一帧 tick 的 soundEngine.updateSource
+            // 会用浮漂视角设置声音 listener(衰减/定位错乱 = 电音卡顿)。
+            // 必须放在 cameraType 恢复之后:alignWithEntity 内部按 options.getCameraType()
+            // 重算 detached,顺序反了会把相机按第三人称放到玩家后方 4 格
+            ((CameraInvoker) camera).invokeAlignWithEntity(realDelta.getGameTimeDeltaPartialTick(true));
             // 恢复主视角可见区块列表(doEntityOutline 等在 capture 后使用)
             var visibleSections = mc.levelRenderer.visibleSections();
             visibleSections.clear();
