@@ -1,0 +1,177 @@
+package top.babyzombie.addons.util.render;
+
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.CloudStatus;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.TextureFilteringMethod;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import org.jspecify.annotations.Nullable;
+import top.babyzombie.addons.mixin.render.CameraAccessor;
+import top.babyzombie.addons.mixin.render.CameraInvoker;
+import top.babyzombie.addons.mixin.render.MainRenderTargetAccessor;
+
+/// 第二相机渲染器:通用"临时相机实体 + 重跑 extract/renderLevel"机制。
+/// 调用方提供相机参数与输出目标,capture() 渲染到目标并完整恢复主画面状态;
+/// 恢复(相机位置/眼高/相机类型/Globals/渲染目标)做错任何一步都会污染主画面。
+/// 26.1.2 版:视锥由 update 内重算,无 26.2 的 killFrustum/applyFrustum 适配。
+public final class SecondCameraRenderer {
+
+    /// 是否正在第二相机捕获中(供可见性相关 mixin 判断;同一时刻只有一个第二相机)
+    public static boolean capturing;
+
+    /// 临时相机实体:隐形 ArmorStand(带 CAMERA_DISTANCE 属性,控制相机距离)
+    private static @Nullable ArmorStand cameraMarker;
+
+    /// 第二相机捕获参数
+    public record CaptureParams(
+            Vec3 anchorPos,      // 相机锚点(观察目标的位置)
+            double markerLift,   // 锚点抬升(格):锚点落地时 marker 会陷入方块内,
+                                 // 原版第三人称的射线避让从方块内开始检测会把相机压到贴脸,
+                                 // 抬高后脱离方块。保持低位:marker 高会让相机绕"锚点上方的
+                                 // 空气"转、目标偏离画面中心,镜头高度由俯仰/距离控制
+            float yaw, float pitch, // 朝向(度)
+            double distance,     // 相机距离(格,CAMERA_DISTANCE 属性)
+            float depthFar,      // 视锥远平面(格,限制区块挑选范围)
+            TextureTarget target // 输出目标(第二相机画面渲染到这里)
+    ) {}
+
+    private SecondCameraRenderer() {}
+
+    /// 渲染第二相机画面进 target;返回是否成功(失败时主画面状态已恢复)。
+    public static boolean capture(DeltaTracker realDelta, CaptureParams params) {
+        // 防递归:capture 内部重跑的 renderLevel 会再次触发注入点
+        // (LevelRenderEvents.END_MAIN),capturing 期间直接拒绝
+        if (capturing) return false;
+        var mc = Minecraft.getInstance();
+        var player = mc.player;
+        if (mc.level == null || player == null) return false;
+        var gameRenderer = mc.gameRenderer;
+        var camera = gameRenderer.getMainCamera();
+
+        // —— 临时相机实体:隐形 ArmorStand(带 CAMERA_DISTANCE 属性,控制相机距离) ——
+        if (cameraMarker == null || cameraMarker.level() != mc.level) {
+            cameraMarker = new ArmorStand(EntityType.ARMOR_STAND, mc.level);
+            cameraMarker.setInvisible(true);
+        }
+        // 相机实体放锚点位置(眼高由 camera.eyeHeight 置 0 处理,不随玩家蹲起/游泳变化)
+        cameraMarker.setPos(params.anchorPos.x, params.anchorPos.y + params.markerLift, params.anchorPos.z);
+        // 同步旧坐标:Camera 用 xo/yo/zo 插值取位置,marker 不 tick,残留值会导致相机位置错误
+        cameraMarker.xo = cameraMarker.getX();
+        cameraMarker.yo = cameraMarker.getY();
+        cameraMarker.zo = cameraMarker.getZ();
+        // 设置身体+头部旋转:Camera 的第三人称偏移方向读 getViewYRot(头部视角旋转),
+        // 只 setYRot 的话偏移方向不随偏航转(相机只转头不绕锚点转)
+        cameraMarker.setYRot(params.yaw);
+        cameraMarker.setXRot(params.pitch);
+        cameraMarker.setYHeadRot(params.yaw);
+        cameraMarker.yRotO = params.yaw;
+        cameraMarker.xRotO = params.pitch;
+        cameraMarker.yHeadRotO = params.yaw;
+        // 相机距离(CAMERA_DISTANCE 属性)按参数
+        var distanceAttr = cameraMarker.getAttribute(Attributes.CAMERA_DISTANCE);
+        if (distanceAttr != null) {
+            distanceAttr.setBaseValue(params.distance);
+        }
+
+        RenderTarget oldTarget = mc.getMainRenderTarget();
+        Entity oldEntity = camera.entity();
+        var optionsState = gameRenderer.getGameRenderState().optionsRenderState;
+        CameraType oldCameraType = optionsState.cameraType;
+        DepthTestGlowRenderer.suppressDepthCopy = true;
+        capturing = true;
+        var oldRealCameraType = mc.options.getCameraType();
+        // 启用原版第三人称(detached):相机自动放到实体后方 4 格并射线避让方块
+        if (oldRealCameraType != CameraType.THIRD_PERSON_BACK) {
+            mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+        }
+        // 视距限制由 CameraUpdateFrustumMixin 在 update 内改 depthFar(不碰区块加载)
+        try {
+            ((MainRenderTargetAccessor) mc).setMainRenderTarget(params.target);
+            camera.setEntity(cameraMarker);
+            // marker 眼高为 0:避免玩家蹲起/游泳的 eyeHeight 插值带动子视角高低
+            ((CameraAccessor) camera).setEyeHeight(0.0F);
+            ((CameraAccessor) camera).setEyeHeightOld(0.0F);
+            // update 含 mainCamera.update + levelRenderer.update:按第二相机视锥重算可见区块,
+            // 否则区块可见列表/可见性检查按主相机,目标会消失、视野外变虚空
+            gameRenderer.update(DeltaTracker.ONE, true);
+            // 强制相机旋转为配置值(实体 getViewYRot 的转换会吞掉 setYRot,直接调 setRotation)
+            ((CameraInvoker) camera).invokeSetRotation(params.yaw, params.pitch);
+            gameRenderer.extract(DeltaTracker.ONE, true);
+            var grs = gameRenderer.getGameRenderState();
+            // 投影比例按输出目标(不能改真实窗口尺寸,会触发 resize 闪烁):
+            // 手动重算投影矩阵 + windowRenderState 宽高
+            var camState = grs.levelRenderState.cameraRenderState;
+            camState.projectionMatrix.set(new Matrix4f().perspective(
+                    camera.getFov() * (float) Math.PI / 180.0F,
+                    (float) params.target.width / params.target.height,
+                    0.05F, camState.depthFar, RenderSystem.getDevice().isZZeroToOne()));
+            int oldWinW = grs.windowRenderState.width;
+            int oldWinH = grs.windowRenderState.height;
+            grs.windowRenderState.width = params.target.width;
+            grs.windowRenderState.height = params.target.height;
+            // 重写 Globals uniform:主画面渲染时写入的是玩家的相机位置,
+            // 不更新的话区块按玩家位置平移、实体按第二相机平移,两者错位(实体偏移)
+            gameRenderer.getGlobalSettingsUniform().update(
+                    params.target.width,
+                    params.target.height,
+                    grs.optionsRenderState.glintStrength,
+                    mc.level.getGameTime(),
+                    DeltaTracker.ONE,
+                    grs.optionsRenderState.menuBackgroundBlurriness,
+                    camState.pos,
+                    grs.optionsRenderState.textureFiltering == TextureFilteringMethod.RGSS);
+            // 第三人称:避免特写画面里出现玩家手持的钓鱼竿/屏幕特效
+            optionsState.cameraType = CameraType.THIRD_PERSON_BACK;
+            // 关闭子视角的云:Globals(相机位置)是全局共享 buffer,主画面/子视角无法同时正确,
+            // 云顶点按锚点生成而 shader 用玩家位置平移会错位;俯视画面里云占比小,直接关掉
+            CloudStatus oldCloudStatus = optionsState.cloudStatus;
+            optionsState.cloudStatus = CloudStatus.OFF;
+            gameRenderer.renderLevel(DeltaTracker.ONE);
+            optionsState.cloudStatus = oldCloudStatus;
+            grs.windowRenderState.width = oldWinW;
+            grs.windowRenderState.height = oldWinH;
+            return true;
+        } finally {
+            ((MainRenderTargetAccessor) mc).setMainRenderTarget(oldTarget);
+            if (oldEntity != null) {
+                camera.setEntity(oldEntity);
+            }
+            // 恢复玩家眼高:capture 期间置 0 用于子视角,不恢复的话主视角会一直贴地
+            ((CameraAccessor) camera).setEyeHeight(player.getEyeHeight());
+            ((CameraAccessor) camera).setEyeHeightOld(player.getEyeHeight());
+            optionsState.cameraType = oldCameraType;
+            if (oldRealCameraType != CameraType.THIRD_PERSON_BACK) {
+                mc.options.setCameraType(oldRealCameraType);
+            }
+            // 恢复相机位置/朝向:capture 期间 update 把相机放到第二相机视角,只恢复 entity 时
+            // position/forwards/up/left 仍停在第二相机,下一帧 tick 的 soundEngine.updateSource
+            // 会用第二相机视角设置声音 listener(衰减/定位错乱 = 电音卡顿)。
+            // 必须放在 cameraType 恢复之后:alignWithEntity 内部按 options.getCameraType()
+            // 重算 detached,顺序反了会把相机按第三人称放到玩家后方 4 格
+            ((CameraInvoker) camera).invokeAlignWithEntity(realDelta.getGameTimeDeltaPartialTick(true));
+            // 恢复 Globals 为玩家位置:主画面的云等 pass 在帧尾执行时读共享 buffer,
+            // 不恢复的话主画面云会按第二相机位置平移导致抖动
+            var grs2 = gameRenderer.getGameRenderState();
+            gameRenderer.getGlobalSettingsUniform().update(
+                    grs2.windowRenderState.width,
+                    grs2.windowRenderState.height,
+                    grs2.optionsRenderState.glintStrength,
+                    mc.level.getGameTime(),
+                    realDelta,
+                    grs2.optionsRenderState.menuBackgroundBlurriness,
+                    mc.player.position(),
+                    grs2.optionsRenderState.textureFiltering == TextureFilteringMethod.RGSS);
+            DepthTestGlowRenderer.suppressDepthCopy = false;
+            capturing = false;
+        }
+    }
+}

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.babyzombie.addons.module.fishing.FishingCameraModule;
+import top.babyzombie.addons.util.render.SecondCameraRenderer;
 
 /// 第二相机捕获期间,把玩家实体追加进提取列表。
 /// 原版规则:LocalPlayer 只在相机实体 == 玩家时渲染(第一人称看不到自己);
@@ -22,7 +22,7 @@ public class ExtractVisibleEntitiesMixin {
     @Inject(method = "extractVisibleEntities", at = @At("RETURN"))
     private void babyzombieaddons$extractPlayer(Camera camera, Frustum frustum, DeltaTracker deltaTracker,
                                                 LevelRenderState output, CallbackInfo ci) {
-        if (!FishingCameraModule.capturing) return;
+        if (!SecondCameraRenderer.capturing) return;
         var mc = Minecraft.getInstance();
         var player = mc.player;
         if (player == null) return;

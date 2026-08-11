@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.babyzombie.addons.module.fishing.FishingCameraModule;
+import top.babyzombie.addons.util.render.SecondCameraRenderer;
 
 /// 第二相机捕获期间跳过 GUI 提取:
 /// capture 不需要 GUI 状态,提取会污染主画面的 GUI(准星不消失、物品栏重复渲染),
@@ -20,7 +20,7 @@ public class ExtractGuiSkipMixin {
                     shift = At.Shift.BEFORE),
             cancellable = true)
     private void babyzombieaddons$skipGui(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
-        if (FishingCameraModule.capturing) {
+        if (SecondCameraRenderer.capturing) {
             ci.cancel();
         }
     }

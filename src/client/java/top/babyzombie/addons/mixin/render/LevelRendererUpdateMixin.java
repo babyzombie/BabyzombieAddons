@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.babyzombie.addons.module.fishing.FishingCameraModule;
+import top.babyzombie.addons.util.render.SecondCameraRenderer;
 
 /// 第二相机捕获期间跳过区块编译调度(compileSections):
 /// 只需要 applyFrustum 按第二相机视锥更新可见区块列表,
@@ -20,7 +20,7 @@ public class LevelRendererUpdateMixin {
                     shift = At.Shift.BEFORE),
             cancellable = true)
     private void babyzombieaddons$skipCompileSections(Camera camera, CallbackInfo ci) {
-        if (FishingCameraModule.capturing) {
+        if (SecondCameraRenderer.capturing) {
             ci.cancel();
         }
     }

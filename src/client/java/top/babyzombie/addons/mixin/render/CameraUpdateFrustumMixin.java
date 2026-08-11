@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.module.fishing.FishingCameraModule;
+import top.babyzombie.addons.util.render.SecondCameraRenderer;
 
 /// 第二相机捕获期间限制视锥远平面(depthFar):
 /// update 内部按玩家视距计算 depthFar(很大),这里在 prepareCullFrustum 前改小,
@@ -19,7 +20,7 @@ public class CameraUpdateFrustumMixin {
                     target = "Lnet/minecraft/client/Camera;prepareCullFrustum(Lorg/joml/Matrix4fc;Lorg/joml/Matrix4f;Lnet/minecraft/world/phys/Vec3;)V",
                     shift = At.Shift.BEFORE))
     private void babyzombieaddons$limitDepthFar(DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (FishingCameraModule.capturing) {
+        if (SecondCameraRenderer.capturing) {
             ((CameraAccessor) this).setDepthFar(FishingCameraModule.secondCameraDepthFar());
         }
     }

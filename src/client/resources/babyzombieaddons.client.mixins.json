@@ -46,8 +46,8 @@
     "render.CameraUpdateFrustumMixin",
     "render.ExtractGuiSkipMixin",
     "render.SectionVisibilityCaptureMixin",
-    "render.GameRendererCameraCaptureMixin",
     "render.ExtractCameraFogMixin",
+    "render.GameRendererCameraCaptureMixin",
 
     "chat.ChatComponentMixin",
     "chat.ChatOverlaySetScreenMixin",
