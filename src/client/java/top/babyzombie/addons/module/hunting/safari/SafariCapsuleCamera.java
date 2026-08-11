@@ -99,7 +99,8 @@ public final class SafariCapsuleCamera {
         // 偏航偏移 + 动态旋转只在固定角度生效
         if (yawMode == CameraYawMode.FIXED) {
             if (cfg.yawSpinSpeed > 0) {
-                yaw += (mc.level.getGameTime() * cfg.yawSpinSpeed / 20.0F) % 360.0F;
+                // 用客户端毫秒(每帧平滑);gameTime 是服务器 tick(20Hz),旋转会一顿一顿
+                yaw += (float) ((Util.getMillis() % 100000L) / 1000.0 * cfg.yawSpinSpeed) % 360.0F;
             }
             yaw += cfg.yawOffset;
         }

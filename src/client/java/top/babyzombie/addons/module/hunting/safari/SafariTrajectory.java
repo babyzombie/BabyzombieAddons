@@ -1,7 +1,6 @@
 package top.babyzombie.addons.module.hunting.safari;
 
 import io.github.notenoughupdates.moulconfig.ChromaColour;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -84,11 +83,12 @@ public final class SafariTrajectory {
     }
 
     private static Trajectory predict(Player player) {
-        Camera camera = CLIENT.gameRenderer.getMainCamera();
         Vec3 view = player.getViewVector(1.0f).normalize();
-        Vec3 cameraPos = camera.position();
+        // 起点绑定玩家实体眼睛位置,不绑定相机:第二相机捕获期间 mainCamera 是子相机,
+        // 用 camera.position() 会让轨迹线从第二相机射出,与主视角轨迹不一致
+        Vec3 eyePos = player.getEyePosition(1.0F);
         double yaw = Math.toRadians(player.getYRot());
-        Vec3 pos = cameraPos.add(
+        Vec3 pos = eyePos.add(
                 -Math.cos(yaw) * CAPSULE_SIDE_OFFSET,
                 -CAPSULE_VERTICAL_OFFSET,
                 -Math.sin(yaw) * CAPSULE_SIDE_OFFSET
