@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.babyzombie.addons.module.fishing.FishingCameraModule;
+import top.babyzombie.addons.util.render.SecondCameraRenderer;
 
 /// 第二相机捕获期间,阻止第二个 renderLevel 污染主画面的区块状态(SC 26.2 同款):
 /// - repositionCamera:第二相机位置可能触发 viewArea 重定位,主画面区块加载范围被挪走;
@@ -17,7 +17,7 @@ public class CaptureCancelSectionStateMixin {
 
     @Inject(method = "repositionCamera", at = @At("HEAD"), cancellable = true)
     private void babyzombieaddons$cancelRepositionCamera(CameraRenderState camera, CallbackInfo ci) {
-        if (FishingCameraModule.capturing) {
+        if (SecondCameraRenderer.capturing) {
             ci.cancel();
         }
     }
@@ -26,7 +26,7 @@ public class CaptureCancelSectionStateMixin {
             target = "Lnet/minecraft/client/renderer/SectionOcclusionGraph;update(Lnet/minecraft/client/renderer/state/level/CameraRenderState;ILnet/minecraft/client/renderer/state/level/ChunkLoadingRenderState;)V"),
             cancellable = true)
     private void babyzombieaddons$cancelSectionOcclusionGraphUpdate(CallbackInfo ci) {
-        if (FishingCameraModule.capturing) {
+        if (SecondCameraRenderer.capturing) {
             ci.cancel();
         }
     }
@@ -36,7 +36,7 @@ public class CaptureCancelSectionStateMixin {
     /// 浮标附近的区块在主 viewArea 内已编译,跳过编译不影响第二相机画面。
     @Inject(method = "compileSections", at = @At("HEAD"), cancellable = true)
     private void babyzombieaddons$cancelCompileSections(CameraRenderState cameraState, CallbackInfo ci) {
-        if (FishingCameraModule.capturing) {
+        if (SecondCameraRenderer.capturing) {
             ci.cancel();
         }
     }

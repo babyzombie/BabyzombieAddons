@@ -191,6 +191,11 @@ public final class SecondCameraRenderer {
             // 云顶点按锚点生成而 shader 用玩家位置平移会错位;俯视画面里云占比小,直接关掉
             CloudStatus oldCloudStatus = optionsState.cloudStatus;
             optionsState.cloudStatus = CloudStatus.OFF;
+            // 恢复窗口尺寸:不恢复的话下一帧主画面 render 的 resize 检查
+            // (windowRenderState != mainRenderTarget)会误触发,把主渲染目标改成
+            // 第二相机尺寸,画面在小窗/全屏之间闪
+            grs.windowRenderState.width = oldWinW;
+            grs.windowRenderState.height = oldWinH;
             // 子相机近距放大时 UV 落在 texel 边界,LINEAR mag 过滤会混合相邻 texel 渗漏出白线;
             // mag 用 NEAREST(放大取单 texel)、min 保持 LINEAR(缩小平滑),既无渗漏又保留平滑
             lrAccessor.setChunkLayerSampler(feedSampler());
