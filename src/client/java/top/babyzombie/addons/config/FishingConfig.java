@@ -234,7 +234,7 @@ public class FishingConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraDistance", desc = "config.babyzombieaddons.option.fishingCameraDistance.desc") @ConfigEditorSlider(minValue = 0, maxValue = 5, minStep = 0.1f) @SearchTag("camera")
         public double distance = 2.0;
 
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraViewDistance", desc = "config.babyzombieaddons.option.fishingCameraViewDistance.desc") @ConfigEditorSlider(minValue = 16, maxValue = 128, minStep = 1) @SearchTag("camera")
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraViewDistance", desc = "config.babyzombieaddons.option.fishingCameraViewDistance.desc") @ConfigEditorSlider(minValue = 4, maxValue = 128, minStep = 1) @SearchTag("camera")
         public int viewDistance = 32;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraFrameRate", desc = "config.babyzombieaddons.option.fishingCameraFrameRate.desc") @ConfigEditorSlider(minValue = 5, maxValue = 60, minStep = 1) @SearchTag("camera")

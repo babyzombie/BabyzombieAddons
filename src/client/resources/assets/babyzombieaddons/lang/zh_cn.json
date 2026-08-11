@@ -1302,7 +1302,7 @@
   "config.babyzombieaddons.option.fishingCameraDistance": "相机距离",
   "config.babyzombieaddons.option.fishingCameraDistance.desc": "相机到鱼漂的距离（格），越小画面越近。",
   "config.babyzombieaddons.option.fishingCameraViewDistance": "渲染视距",
-  "config.babyzombieaddons.option.fishingCameraViewDistance.desc": "特写画面的渲染距离（格），越小性能越好。",
+  "config.babyzombieaddons.option.fishingCameraViewDistance.desc": "特写画面的渲染距离（格），越小性能越好。第二相机渲染中请勿快速拖动本滑块，数值过大会卡顿。",
   "config.babyzombieaddons.option.fishingCameraFrameRate": "第二相机帧率",
   "config.babyzombieaddons.option.fishingCameraFrameRate.desc": "特写画面的渲染帧率（帧/秒），数值越小性能开销越低。",
   "config.babyzombieaddons.option.fishingCameraLinger": "浮漂消失后相机停留",
