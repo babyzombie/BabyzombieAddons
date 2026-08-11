@@ -87,7 +87,7 @@ public final class HudEditScreen extends Screen {
             String tag = hovered.mainTag.toString();
             if (!key.isEmpty()) {
                 gui.setComponentTooltipForNextFrame(font,
-                        java.util.List.of(Component.translatable(key), Component.translatable(tag)), mouseX, mouseY);
+                        java.util.List.of(Component.translatable(key), Component.translatable("babyzombieaddons.hud.mainTagSource",Component.translatable(tag))), mouseX, mouseY);
             }
         }
 

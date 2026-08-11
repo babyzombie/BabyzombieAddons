@@ -240,6 +240,9 @@ public class FishingConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraFrameRate", desc = "config.babyzombieaddons.option.fishingCameraFrameRate.desc") @ConfigEditorSlider(minValue = 5, maxValue = 60, minStep = 1) @SearchTag("camera")
         public int frameRate = 30;
 
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraLinger", desc = "config.babyzombieaddons.option.fishingCameraLinger.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("camera")
+        public int lingerTicks = 0;
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraDisableWithShaders", desc = "config.babyzombieaddons.option.fishingCameraDisableWithShaders.desc") @ConfigEditorBoolean @SearchTag("shader") @SearchTag("iris")
         public boolean disableWithShaders = true;
 
