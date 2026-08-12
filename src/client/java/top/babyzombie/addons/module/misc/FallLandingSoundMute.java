@@ -1,13 +1,11 @@
 package top.babyzombie.addons.module.misc;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
+import top.babyzombie.addons.util.PlaySoundHelper;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 /**
@@ -45,15 +43,7 @@ public final class FallLandingSoundMute {
             double dz = sound.getZ() - player.getZ();
             if (dx * dx + dy * dy + dz * dz > SELF_RADIUS * SELF_RADIUS) return sound;
 
-            var resolved = sound.getSound();
-            return new SimpleSoundInstance(
-                    sound.getIdentifier(), sound.getSource(), cfg.fallSoundVolume, sound.getPitch(),
-                    RandomSource.create(), sound.isLooping(), sound.getDelay(), sound.getAttenuation(),
-                    sound.getX(), sound.getY(), sound.getZ(), sound.isRelative()
-            ) {{
-                this.sound = resolved;
-            }
-            @Override public float getVolume() { return cfg.fallSoundVolume; }};
+            return PlaySoundHelper.withVolume(sound, cfg.fallSoundVolume);
         });
     }
 }

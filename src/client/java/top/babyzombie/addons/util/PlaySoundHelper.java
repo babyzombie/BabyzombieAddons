@@ -2,10 +2,12 @@ package top.babyzombie.addons.util;
 
 import com.mojang.blaze3d.audio.Channel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.AudioStream;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundEngine;
+import net.minecraft.util.RandomSource;
 import top.babyzombie.addons.mixin.sound.ChannelAccessor;
 import top.babyzombie.addons.mixin.sound.ChannelHandleAccessor;
 import top.babyzombie.addons.mixin.sound.ChannelStreamAccessor;
@@ -33,6 +35,23 @@ import java.util.Map;
  */
 public final class PlaySoundHelper {
     private PlaySoundHelper() {}
+
+    /**
+     * 返回一个音量被覆盖的包装实例。音量 &ge; 1.0 时直接返回原实例（零开销）。
+     * 保留已解析的 Sound，避免重新查找声音事件。
+     */
+    public static SoundInstance withVolume(SoundInstance sound, float volume) {
+        if (volume >= 1.0f) return sound;
+        var resolved = sound.getSound();
+        return new SimpleSoundInstance(
+                sound.getIdentifier(), sound.getSource(), volume, sound.getPitch(),
+                RandomSource.create(), sound.isLooping(), sound.getDelay(), sound.getAttenuation(),
+                sound.getX(), sound.getY(), sound.getZ(), sound.isRelative()
+        ) {{
+            this.sound = resolved;
+        }
+        @Override public float getVolume() { return volume; }};
+    }
 
     /**
      * 等待 Channel.attachBufferStream() 被调用时应用的 seek 偏移。

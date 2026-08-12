@@ -1584,6 +1584,8 @@
   "config.babyzombieaddons.option.beeheemothHighlightMode.BOTH": "Both",
   "config.babyzombieaddons.option.templePuzzle": "Temple Puzzle Helper",
   "config.babyzombieaddons.option.templePuzzle.desc": "Show puzzle helpers in the Torrhus Canyon underground temple. Puzzle 1 highlights the button to press, Puzzle 2 shows correct statue directions.",
+  "config.babyzombieaddons.option.blackHoleVolume": "Black Hole Sound Volume",
+  "config.babyzombieaddons.option.blackHoleVolume.desc": "Volume of the teleport sound played by a nearby Black Hole deployable while it pulls monsters (0%-100%).",
   "config.babyzombieaddons.group.loadout": "Loadout Display",
   "config.babyzombieaddons.option.loadoutGui": "Custom Loadout GUI",
   "config.babyzombieaddons.option.loadoutGui.desc": "Replace Hypixel's vanilla Loadout chest page with a custom screen showing player / armor stand models. No Skyblocker needed when item cache is enabled.",
