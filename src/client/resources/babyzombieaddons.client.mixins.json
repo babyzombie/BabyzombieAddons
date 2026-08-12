@@ -37,6 +37,8 @@
     "render.EntityRenderMixin",
     "render.ExtractCameraFogMixin",
     "render.ExtractGuiSkipMixin",
+    "render.FeatureRenderDispatcherMixin",
+    "render.PreparedFrameAccessor",
     "render.ExtractVisibleEntitiesMixin",
     "render.FogUpdateSkipMixin",
     "render.RenderSystemAccessor",

@@ -163,6 +163,8 @@ public final class SecondCameraRenderer {
         RenderTarget oldTarget = gameRenderer.mainRenderTarget();
         // 用 accessor 读字段:entityOutlineTarget() 是帧内句柄解析,renderLevel 后返回 null
         RenderTarget oldOutlineTarget = ((LevelRendererAccessor) mc.levelRenderer).getEntityOutlineTarget();
+        // 矩阵栈基线(第二遍渲染异常打断 push/pop 时,finally 恢复用;渲染流程每帧
+        // push/pop 配对,正常时栈底为 identity,clear 后等效)
         GlobalSettingsUniform mainGlobals = ((GameRendererAccessor) gameRenderer).globalSettingsUniform();
         Entity oldEntity = camera.entity();
         // 子相机区块采样器临时替换(mag=NEAREST 防图集渗漏白线)
@@ -300,10 +302,20 @@ public final class SecondCameraRenderer {
                 }
                 return true;
             } catch (Throwable t) {
-                // 第二相机渲染异常不影响主画面(状态已在 finally 恢复),吞掉避免刷屏
+                // 第二相机渲染异常不影响主画面(状态已在 finally 恢复),吞掉避免刷屏;
+                // 记录日志便于定位(如 PreparedFrame 泄漏等渲染状态异常)
+                org.slf4j.LoggerFactory.getLogger("BabyzombieAddons")
+                        .warn("second camera render failed", t);
                 return false;
             } finally {
                 lrAccessor.setChunkLayerSampler(oldSampler);
+                // 恢复 StagedVertexBuffer:第二遍渲染(含 outline)异常时(如其他 mod 的
+                // 深度发光附件尺寸不匹配)upload 状态残留,主画面 GUI 渲染 appendDraw
+                // 会抛 "Cannot append draw after upload" 崩端;endDraw 清 draws 与当前 buffer
+                try {
+                    ((GameRendererAccessor) gameRenderer).renderBuffers().stagedVertexBuffer().endDraw();
+                } catch (Throwable ignored) {
+                }
             }
         } finally {
             ((MainRenderTargetAccessor) gameRenderer).setMainRenderTarget(oldTarget);
@@ -347,6 +359,17 @@ public final class SecondCameraRenderer {
             lrAccessor.setEntityOutlineTarget(oldOutlineTarget);
             // 恢复发光标志(ExtractEntityOutlineSkipMixin 在第二遍 extract 改的)
             gameRenderer.gameRenderState().levelRenderState.shouldShowEntityOutlines = savedShowOutlines;
+            // 恢复输出 override:executeOutline 异常时 beforeOutline 设置的
+            // outputColorTextureOverride 不会被 afterOutline 恢复,残留会让主画面
+            // 后续渲染(天空/地形/实体/GUI)全部输出到子相机 outline target(抽搐/闪烁);
+            // 其他 mod 的发光(自定义深度附件)在第二相机画面尺寸不匹配也会抛异常,
+            // 统一在这里恢复,主画面不再被污染
+            RenderSystem.outputColorTextureOverride = null;
+            RenderSystem.outputDepthTextureOverride = null;
+            // 恢复矩阵栈:第二遍渲染异常打断 push/pop 配对时,共享矩阵栈残留,
+            // 主画面天空渲染(SkyRenderer.renderSun)pushMatrix 会栈满崩端;
+            // 渲染流程每帧 push/pop 配对,栈底为 identity,clear 后等效
+            RenderSystem.getModelViewStack().clear();
             capturing = false;
         }
     }
