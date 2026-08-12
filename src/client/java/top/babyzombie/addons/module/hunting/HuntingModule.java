@@ -23,5 +23,6 @@ public final class HuntingModule {
         HunterTradeTracker.init();
         TorrhusCanyonBeeheemoth.init();
         TorrhusCanyonTemple.init();
+        BlackHoleSound.init();
     }
 }

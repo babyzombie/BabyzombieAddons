@@ -43,6 +43,10 @@ public class HuntingConfig {
     @Accordion
     public TorrhusCanyon torrhusCanyon = new TorrhusCanyon();
 
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.blackHoleVolume", desc = "config.babyzombieaddons.option.blackHoleVolume.desc") @ConfigEditorSlider(minValue = 0.0f, maxValue = 1.0f, minStep = 0.01f)
+    @SearchTag("black") @SearchTag("hole") @SearchTag("hunting") @SearchTag("volume")
+    public float blackHoleVolume = 1.0f;
+
     public static class Safari {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariBellDisplay", desc = "config.babyzombieaddons.option.safariBellDisplay.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("rainbowbug")
         public boolean bellDisplay = false;
