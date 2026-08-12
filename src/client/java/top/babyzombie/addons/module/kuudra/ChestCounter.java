@@ -50,7 +50,6 @@ public final class ChestCounter {
     private static Map<String, Integer> allCounts = new HashMap<>();
     private static String currentKey;
     private static int count;
-    private static boolean dirty;
 
     public static int getCount() { return count; }
 
@@ -58,7 +57,6 @@ public final class ChestCounter {
     public static void resetCounter() {
         count = 0;
         if (currentKey != null) allCounts.put(currentKey, 0);
-        dirty = true;
         save();
     }
 
@@ -66,7 +64,7 @@ public final class ChestCounter {
     private static void onRunEnd() {
         if (count >= MAX_CHESTS) return;
         count++;
-        dirty = true;
+        save();
 
         var cc = ModConfigManager.get().kuudra.chestCounterCfg;
         int remaining = MAX_CHESTS - count;
@@ -167,7 +165,7 @@ public final class ChestCounter {
                 pendingChestOpen = false;
                 if (count > 0) {
                     count--;
-                    dirty = true;
+                    save();
                 }
             }
         });
@@ -179,7 +177,6 @@ public final class ChestCounter {
                     if (!ModConfigManager.get().kuudra.chestCounterCfg.enabled) return;
                     if (count <= 0) return;
                     if (!shouldDisplay()) return;
-                    if (dirty) { save(); dirty = false; }
 
                     int x = HudManager.x("ChestCounter"), y = HudManager.y("ChestCounter");
                     float s = HudManager.scale("ChestCounter");
@@ -225,7 +222,6 @@ public final class ChestCounter {
         if (count <= 0) return;
         if (!(Minecraft.getInstance().screen instanceof AbstractContainerScreen)) return;
         if (!shouldDisplay()) return;
-        if (dirty) { save(); dirty = false; }
 
         int x = HudManager.x("ChestCounter"), y = HudManager.y("ChestCounter");
         float s = HudManager.scale("ChestCounter");
@@ -307,6 +303,7 @@ public final class ChestCounter {
             if (currentKey != null) allCounts.put(currentKey, count);
             currentKey = key;
             count = allCounts.getOrDefault(key, 0);
+            save(); // profile 切换也是数据更新点，旧计数落盘
         }
     }
 
