@@ -201,9 +201,24 @@ public final class FishingCameraModule {
         var textureView = feedTarget.getColorTextureView();
         if (textureView == null) return;
         float s = HudManager.scale("FishingCamera");
-        // 高度固定、宽度按画面比例(2:1 更宽、1:2 更高);基准高度 192(渲染 256,显示缩小)
+        var cfg = ModConfigManager.get().fishing.fishingCamera;
         int dh = Math.max(1, Math.round(192 * s));
-        int dw = Math.max(1, Math.round(dh * feedTarget.width / (float) Math.max(1, feedTarget.height)));
+        // 显示比例按配置,从窗口比例纹理中裁切居中区域(渲染 target 是窗口尺寸,
+        // mod 发光纹理按窗口尺寸缓存,比例设置通过 UV 裁切生效)
+        var ratio = cfg.aspectRatio == null ? CameraAspectRatio.R2_1 : cfg.aspectRatio;
+        float r = ratio.w / (float) ratio.h;
+        int dw = Math.max(1, Math.round(dh * r));
+        float texR = feedTarget.width / (float) Math.max(1, feedTarget.height);
+        float u0 = 0.0F, v0 = 1.0F, u1 = 1.0F, v1 = 0.0F;
+        if (r >= texR) {
+            float vRange = texR / r;
+            v0 = (1.0F + vRange) / 2.0F;
+            v1 = (1.0F - vRange) / 2.0F;
+        } else {
+            float uRange = r / texR;
+            u0 = (1.0F - uRange) / 2.0F;
+            u1 = (1.0F + uRange) / 2.0F;
+        }
         int x0 = HudManager.x("FishingCamera");
         int y0 = HudManager.y("FishingCamera");
         GuiRenderState guiRenderState = Minecraft.getInstance().gameRenderer.gameRenderState().guiRenderState;
@@ -218,6 +233,6 @@ public final class FishingCameraModule {
                 TextureSetup.singleTexture(textureView,
                         RenderSystem.getSamplerCache().getRepeat(FilterMode.NEAREST)),
                 new Matrix3x2f(), x0, y0, x0 + dw, y0 + dh,
-                0.0F, 1.0F, 1.0F, 0.0F, -1, null, null));
+                u0, v0, u1, v1, -1, null, null));
     }
 }
