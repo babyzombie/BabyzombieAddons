@@ -124,7 +124,7 @@ public final class ChestCounter {
             if (!ModConfigManager.get().kuudra.chestCounterCfg.enabled) return;
 
             String text = ChatUtils.stripColor(msg.getString());
-            boolean win = text.equals("                               KUUDRA DOWN!") || text.contains("Good job everyone");
+            boolean win = text.equals("                               KUUDRA DOWN!") || KuudraChatLines.isGoodJob(text);
             boolean fail = text.equals("                                   DEFEAT")
                     || text.equals("                             > EXTRA STATS <");
             if (win || fail) {

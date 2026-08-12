@@ -14,9 +14,7 @@ import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Kuudra 各阶段计时器，按 tier 跟踪不同阶段并以 HUD 形式显示。
@@ -81,7 +79,7 @@ public final class KuudraPhaseTimer {
             if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
             String text = ChatUtils.stripColor(message.getString());
 
-            if (text.contains("Okay adventurers, I will go and fish up Kuudra")) {
+            if (KuudraChatLines.isFishUpKuudra(text)) {
                 startRun();
                 return;
             }
@@ -93,13 +91,13 @@ public final class KuudraPhaseTimer {
                 return;
             }
 
-            if (!text.startsWith("[NPC] Elle:") && !text.contains("destroyed one of Kuudra's pods")
-                    && !text.contains("has been eaten by Kuudra!"))
+            if (!text.startsWith("[NPC] Elle:") && !KuudraChatLines.isDestroyedPod(text)
+                    && !KuudraChatLines.isEatenByKuudra(text))
                 return;
 
-            if (text.contains("OMG! Great work collecting my supplies")) {
+            if (KuudraChatLines.isSuppliesCollected(text)) {
                 endPhase(Phase.SUPPLIES);
-            } else if (text.contains("Phew! The Ballista is finally ready")) {
+            } else if (KuudraChatLines.isBallistaReady(text)) {
                 if (isT12()) {
                     // T1/T2: BUILD → FUEL
                     endPhase(Phase.BUILD);
@@ -107,11 +105,11 @@ public final class KuudraPhaseTimer {
                     // T3+: BUILD → EATEN
                     endPhase(Phase.BUILD);
                 }
-            } else if (text.contains("has been eaten by Kuudra!") && !text.contains("Elle")) {
+            } else if (KuudraChatLines.isEatenByKuudra(text) && !text.contains("Elle")) {
                 if (currentPhase == Phase.EATEN && isT3Plus()) endPhase(Phase.EATEN);
-            } else if (text.contains("destroyed one of Kuudra's pods")) {
+            } else if (KuudraChatLines.isDestroyedPod(text)) {
                 if (currentPhase == Phase.STUN && isT3Plus()) endPhase(Phase.STUN);
-            } else if (text.contains("POW! SURELY THAT'S IT")) {
+            } else if (KuudraChatLines.isP4Start(text)) {
                 if (isT5()) {
                     endPhase(Phase.DPS);
                 } else if (isT3Plus()) {
@@ -119,7 +117,7 @@ public final class KuudraPhaseTimer {
                     endPhase(Phase.DPS);
                     endRun();
                 }
-            } else if (text.contains("Good job everyone")) {
+            } else if (KuudraChatLines.isGoodJob(text)) {
                 endRun();
             }
         });

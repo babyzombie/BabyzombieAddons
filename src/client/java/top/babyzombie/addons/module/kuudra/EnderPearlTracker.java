@@ -51,7 +51,7 @@ public final class EnderPearlTracker {
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             if (overlay) return true;
             String text = ChatUtils.stripColor(message.getString());
-            if (text.contains("OMG! Great work collecting my supplies")) {
+            if (KuudraChatLines.isSuppliesCollected(text)) {
                 phase1Ended = true;  // 补给收集完,阶段1结束
             }
             return true;

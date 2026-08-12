@@ -5,10 +5,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.player.Player;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.mixin.render.PlayerTabOverlayAccessor;
-import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.render.GlowController;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+import top.babyzombie.addons.util.tracker.PartyTracker;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,8 +15,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 队友高亮 — 只在 Kuudra 中生效（不深度测试）。Kuudra 是私有实例，tab 列表里的玩家即队友；
- * 拿玩家实体的名字去 tab 里找，能找到说明是真人（过滤 Elle/商人等 NPC），给其施加彩色发光。
+ * 队友高亮 — 只在 Kuudra 中生效。Kuudra 是私有实例，队伍成员即队友；
+ * 玩家实体的 UUID 与 PartyTracker（Hypixel ModAPI）里的队伍成员 UUID 比对，
+ * 命中即真人队友（NPC 实体不在队伍里），给其施加彩色发光。
  * 与 fresh 等其它发光功能互不干扰：别人的发光不顶掉，清理时只关自己颜色还在的。
  */
 public final class TeamHighlight {
@@ -38,18 +38,18 @@ public final class TeamHighlight {
             }
             if (world == null) return;
 
-            // tab 列表中的名字（真人玩家；Kuudra 是私有实例，tab 里即队友）
-            var tabAccessor = (PlayerTabOverlayAccessor) client.gui.getTabList();
-            Set<String> tabNames = new HashSet<>();
-            for (var info : tabAccessor.invokeGetPlayerInfos()) {
-                tabNames.add(info.getProfile().name());
-            }
+            // 队伍成员 UUID（Hypixel ModAPI）。不主动 request——Kuudra 开局时
+            // 别处（重开判定）会拉取一次，用那次数据即可持续整局（成员一局内不变）
+            var tracker = PartyTracker.getInstance();
+            var info = tracker.getLastInfo();
+            if (info == null) return; // 队伍信息还没拉到，等其它功能拉取后自动生效
 
-            // 玩家实体名能在 tab 中找到 → 真人队友 → 发光
+            // 玩家实体 UUID 在队伍成员中 → 真人队友 → 发光
+            Set<UUID> members = info.members();
             Set<UUID> current = new HashSet<>();
             for (var p : world.players()) {
                 if (p == client.player) continue; // 不给自己发光
-                if (tabNames.contains(ChatUtils.stripColor(p.getName().getString()))) {
+                if (members.contains(p.getUUID())) {
                     current.add(p.getUUID());
                 }
             }

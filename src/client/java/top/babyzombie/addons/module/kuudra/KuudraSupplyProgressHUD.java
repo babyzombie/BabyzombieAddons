@@ -83,15 +83,15 @@ public final class KuudraSupplyProgressHUD {
             if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
             String text = ChatUtils.stripColor(message.getString());
 
-            if (text.contains("Okay adventurers, I will go and fish up Kuudra")) {
+            if (KuudraChatLines.isFishUpKuudra(text)) {
                 reset();
                 return;
             }
-            if (text.contains("OMG! Great work collecting my supplies")) {
+            if (KuudraChatLines.isSuppliesCollected(text)) {
                 inSuppliesPhase = false;
                 return;
             }
-            if (text.contains("Phew! The Ballista is finally ready")) {
+            if (KuudraChatLines.isBallistaReady(text)) {
                 fuelCount = 0;
                 currentProgress = 0;
                 return;

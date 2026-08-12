@@ -29,7 +29,7 @@ public final class KuudraScreenProtector {
                     && HypixelLocationTracker.getInstance().isInKuudra()) {
                 active = true;
                 startMs = System.currentTimeMillis();
-            } else if (text.contains("Head over to the main platform")) {
+            } else if (KuudraChatLines.isHeadToPlatform(text)) {
                 active = false;
             }
         });

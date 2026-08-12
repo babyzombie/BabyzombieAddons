@@ -14,14 +14,7 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.Scheduler;
 
-import java.util.regex.Pattern;
-
 public final class ArrowPoisonRefill {
-
-    private static final Pattern EATEN_BY_KUUDRA = Pattern.compile(
-            "([0-9a-zA-Z_]{2,24}) has been eaten by Kuudra!");
-    private static final Pattern DESTROYED_POD = Pattern.compile(
-            "([0-9a-zA-Z_]{2,24}) destroyed one of Kuudra's pods");
 
     private static long toxicCooldown;
     private static long twilightCooldown;
@@ -103,25 +96,23 @@ public final class ArrowPoisonRefill {
 
     private static boolean matchesToxicTiming(String text, ToxicArrowTiming timing) {
         return switch (timing) {
-            case STUNNER_ENTER -> EATEN_BY_KUUDRA.matcher(text).find();
-            case KUUDRA_START -> text.contains("Okay adventurers, I will go and fish up Kuudra");
-            case SUPPLIES_DONE -> text.equals("[NPC] Elle: OMG! Great work collecting my supplies!");
-            case BALLISTA_READY -> text.equals("[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!")
-                    || text.equals("[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blow!");
-            case KUUDRA_STUNNED -> DESTROYED_POD.matcher(text).find();
+            case STUNNER_ENTER -> KuudraChatLines.isEatenByKuudra(text);
+            case KUUDRA_START -> KuudraChatLines.isFishUpKuudra(text);
+            case SUPPLIES_DONE -> KuudraChatLines.isSuppliesCollected(text);
+            case BALLISTA_READY -> KuudraChatLines.isBallistaReady(text);
+            case KUUDRA_STUNNED -> KuudraChatLines.isDestroyedPod(text);
         };
     }
 
     private static boolean matchesTwilightTiming(String text, TwilightArrowTiming timing) {
         return switch (timing) {
-            case P4_SHORTLY_AFTER -> text.equals("[NPC] Elle: I knew you could do it!");
-            case KUUDRA_START -> text.contains("Okay adventurers, I will go and fish up Kuudra");
-            case SUPPLIES_DONE -> text.equals("[NPC] Elle: OMG! Great work collecting my supplies!");
-            case BALLISTA_READY -> text.equals("[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!")
-                    || text.equals("[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blow!");
-            case KUUDRA_STUNNED -> DESTROYED_POD.matcher(text).find();
-            case P4_START -> text.equals("[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!");
-            case P4_TRUE_LAIR -> text.equals("[NPC] Elle: What just happened? Is this Kuudra's real lair?");
+            case P4_SHORTLY_AFTER -> KuudraChatLines.isKnewYouCouldDoIt(text);
+            case KUUDRA_START -> KuudraChatLines.isFishUpKuudra(text);
+            case SUPPLIES_DONE -> KuudraChatLines.isSuppliesCollected(text);
+            case BALLISTA_READY -> KuudraChatLines.isBallistaReady(text);
+            case KUUDRA_STUNNED -> KuudraChatLines.isDestroyedPod(text);
+            case P4_START -> KuudraChatLines.isP4Start(text);
+            case P4_TRUE_LAIR -> KuudraChatLines.isTrueLair(text);
         };
     }
 

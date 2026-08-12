@@ -11,8 +11,6 @@ import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.ServerTick;
 
-import java.util.regex.Pattern;
-
 public final class KuudraStunTimer {
     private KuudraStunTimer() {}
 
@@ -20,23 +18,20 @@ public final class KuudraStunTimer {
     private static long downEnd;
     private static long p4End;
 
-    private static final Pattern DESTROYED_POD = Pattern.compile(
-            "([0-9a-zA-Z_]{2,24}) destroyed one of Kuudra's pods");
-
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (!ModConfigManager.get().kuudra.phase3.stunTimer) return;
             if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
 
-            if (DESTROYED_POD.matcher(message.getString()).find()) {
+            String text = ChatUtils.stripColor(message.getString());
+            if (KuudraChatLines.isDestroyedPod(text)) {
                 var loc = HypixelLocationTracker.getInstance().getLocation();
                 if (loc == null) return;
                 int duration = loc.contains("T5") ? 8000 : (loc.contains("T3") ? 12000 : 10000);
                 stunEnd = ServerTick.getTime() + duration;
             }
 
-            String text = ChatUtils.stripColor(message.getString());
-            if (text.contains("POW! SURELY THAT'S IT")) {
+            if (KuudraChatLines.isP4Start(text)) {
                 stunEnd = 0;
                 KuudraLocationTracker.p4 = true;
                 var loc = HypixelLocationTracker.getInstance().getLocation();

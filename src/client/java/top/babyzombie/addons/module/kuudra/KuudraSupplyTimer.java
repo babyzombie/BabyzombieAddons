@@ -57,6 +57,8 @@ public final class KuudraSupplyTimer {
             // 去掉 rank 文本（[MVP] 等）但保留其格式码——名字颜色常继承自 rank；去掉 emoji
             String playerName = ChatUtils.removeEmoji(m.group(1))
                     .replaceAll("^((?:§.)*)\\[[^]]*]\\s*", "$1").trim();
+            // 玩家名不含空格——含空格说明是玩家聊天消息（如 "Party > name: ..."），放行不记录
+            if (playerName.isEmpty() || playerName.contains(" ")) return message;
             int supplyNum = Integer.parseInt(m.group(2));
             long now = ServerTick.getTime(); // 服务器 tick 时间，不受本地时钟/延迟影响
 
@@ -77,8 +79,8 @@ public final class KuudraSupplyTimer {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (!ModConfigManager.get().kuudra.phase1.supplyPlaceTimerHud) return;
             if (overlay) return;
-            String text = message.getString();
-            if (text.contains("Okay adventurers, I will go and fish up Kuudra")) {
+            String text = ChatUtils.stripColor(message.getString());
+            if (KuudraChatLines.isFishUpKuudra(text)) {
                 entries.clear();
                 suppliesStartMs = ServerTick.getTime();
             }
