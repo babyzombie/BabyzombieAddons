@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.util.render.DepthTestSubmitTracker;
 import top.babyzombie.addons.util.render.GlowController;
-import top.babyzombie.addons.util.render.SecondCameraRenderer;
 
 /**
  * 在 SubmitNodeCollection 创建 submit node 时，
@@ -35,9 +34,6 @@ public class SubmitNodeMixin {
     }
 
     private static void markIfNeeded(Object submitNode) {
-        // 第二相机捕获期间不标记:第二遍渲染的深度发光节点会写进共享 outline buffer,
-        // 主画面 outline 渲染被污染(发光闪烁/出框)
-        if (SecondCameraRenderer.capturing) return;
         EntityRenderState state = DepthTestSubmitTracker.CURRENT_ENTITY_STATE.get();
         if (state != null && state.getDataOrDefault(GlowController.NEEDS_DEPTH_TEST, false)) {
             DepthTestSubmitTracker.mark(submitNode);

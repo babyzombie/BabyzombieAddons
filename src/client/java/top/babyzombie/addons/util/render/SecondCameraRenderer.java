@@ -17,6 +17,7 @@ import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 import top.babyzombie.addons.mixin.render.CameraAccessor;
 import top.babyzombie.addons.mixin.render.CameraInvoker;
+import top.babyzombie.addons.mixin.render.LevelRendererAccessor;
 import top.babyzombie.addons.mixin.render.MainRenderTargetAccessor;
 
 /// 第二相机渲染器:通用"临时相机实体 + 重跑 extract/renderLevel"机制。
@@ -30,6 +31,25 @@ public final class SecondCameraRenderer {
 
     /// 临时相机实体:隐形 ArmorStand(带 CAMERA_DISTANCE 属性,控制相机距离)
     private static @Nullable ArmorStand cameraMarker;
+
+    /// 第二相机专用 outline 目标(子相机尺寸):第二遍渲染的发光实体画到这里,
+    /// 不污染主画面共享的 entityOutlineTarget(主画面 doEntityOutline 会全屏 blit 它)。
+    private static @Nullable TextureTarget secondOutlineTarget;
+
+    /// outline 绘制前调用:RenderType 的输出是它自己的 outputTarget(构造时缓存的引用,
+    /// 替换字段无效),draw 里 outputColorTextureOverride 优先;第二遍渲染时把 outline
+    /// 导向子相机 outline target。深度不 override:深度测试发光(DepthTestGlowRenderer)
+    /// 自己设置 outputDepthTextureOverride,设了会挡掉它。
+    public static void beginOutlineOverride() {
+        if (secondOutlineTarget == null) return;
+        RenderSystem.outputColorTextureOverride = secondOutlineTarget.getColorTextureView();
+        RenderSystem.outputDepthTextureOverride = null;
+    }
+
+    public static void endOutlineOverride() {
+        RenderSystem.outputColorTextureOverride = null;
+        RenderSystem.outputDepthTextureOverride = null;
+    }
 
     /// 第二相机捕获参数
     public record CaptureParams(
@@ -83,10 +103,10 @@ public final class SecondCameraRenderer {
         }
 
         RenderTarget oldTarget = mc.getMainRenderTarget();
+        RenderTarget oldOutlineTarget = ((LevelRendererAccessor) mc.levelRenderer).getEntityOutlineTarget();
         Entity oldEntity = camera.entity();
         var optionsState = gameRenderer.getGameRenderState().optionsRenderState;
         CameraType oldCameraType = optionsState.cameraType;
-        DepthTestGlowRenderer.suppressDepthCopy = true;
         capturing = true;
         var oldRealCameraType = mc.options.getCameraType();
         // 启用原版第三人称(detached):相机自动放到实体后方 4 格并射线避让方块
@@ -135,13 +155,33 @@ public final class SecondCameraRenderer {
             // 云顶点按锚点生成而 shader 用玩家位置平移会错位;俯视画面里云占比小,直接关掉
             CloudStatus oldCloudStatus = optionsState.cloudStatus;
             optionsState.cloudStatus = CloudStatus.OFF;
+            // outline 目标临时替换为子相机尺寸:第二遍渲染的发光实体(原版/Skyblocker 的
+            // 标记不经过 shouldShowEntityOutlines)画进共享 entityOutlineTarget 后,
+            // 主画面 doEntityOutline 会把它全屏 blit 到主画面(发光放大平移污染/闪烁);
+            // 替换后子相机发光画进子相机 outline target,主画面 outline 不被污染
+            var lrAccessor = (LevelRendererAccessor) mc.levelRenderer;
+            if (secondOutlineTarget == null
+                    || secondOutlineTarget.width != params.target.width
+                    || secondOutlineTarget.height != params.target.height) {
+                if (secondOutlineTarget != null) secondOutlineTarget.destroyBuffers();
+                secondOutlineTarget = new TextureTarget(
+                        "bza_second_outline", params.target.width, params.target.height, true);
+            }
+            lrAccessor.setEntityOutlineTarget(secondOutlineTarget);
             gameRenderer.renderLevel(DeltaTracker.ONE);
+            // 手动把第二遍 outline(含 entity_outline.json sobel 描边后处理的结果)
+            // 合成进子相机画面:原版 outline chain 的合成 pass 在第二遍 frame
+            // 不输出到 main,直接 blit 子相机 outline target 到 feedTarget 等效且可靠
+            if (secondOutlineTarget != null) {
+                secondOutlineTarget.blitAndBlendToTexture(params.target.getColorTextureView());
+            }
             optionsState.cloudStatus = oldCloudStatus;
             grs.windowRenderState.width = oldWinW;
             grs.windowRenderState.height = oldWinH;
             return true;
         } finally {
             ((MainRenderTargetAccessor) mc).setMainRenderTarget(oldTarget);
+            ((LevelRendererAccessor) mc.levelRenderer).setEntityOutlineTarget(oldOutlineTarget);
             if (oldEntity != null) {
                 camera.setEntity(oldEntity);
             }
@@ -170,7 +210,6 @@ public final class SecondCameraRenderer {
                     grs2.optionsRenderState.menuBackgroundBlurriness,
                     mc.player.position(),
                     grs2.optionsRenderState.textureFiltering == TextureFilteringMethod.RGSS);
-            DepthTestGlowRenderer.suppressDepthCopy = false;
             capturing = false;
         }
     }

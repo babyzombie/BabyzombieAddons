@@ -21,10 +21,6 @@ import top.babyzombie.addons.mixin.render.OutlineBufferSourceAccessor;
  * 深度测试实体绕行到此 buffer，渲染时覆盖输出深度纹理实现遮挡。
  */
 public final class DepthTestGlowRenderer {
-    /// 第二相机捕获期间置 true:主渲染目标被临时替换为小尺寸目标,
-    /// 按窗口尺寸拷贝主目标深度会越界,此期间跳过深度拷贝。
-    public static boolean suppressDepthCopy;
-
     private static DepthTestGlowRenderer INSTANCE;
 
 
@@ -51,7 +47,6 @@ public final class DepthTestGlowRenderer {
     public boolean isRendering() { return rendering; }
 
     public void updateDepth() {
-        if (suppressDepthCopy) return;
         var main = minecraft.getMainRenderTarget();
         if (main == null) return;
         tryUpdateTexture();
@@ -82,8 +77,10 @@ public final class DepthTestGlowRenderer {
     }
 
     private void tryUpdateTexture() {
-        int w = minecraft.getWindow().getWidth();
-        int h = minecraft.getWindow().getHeight();
+        // 尺寸跟随当前主渲染目标:第二相机捕获期间 mainRenderTarget 是子相机小尺寸目标,
+        // 用窗口尺寸会按大窗口拷贝越界;跟随 target 自动适配主画面/子相机两套尺寸
+        int w = minecraft.getMainRenderTarget().width;
+        int h = minecraft.getMainRenderTarget().height;
         if (depthTexture != null && depthTexture.getWidth(0) == w && depthTexture.getHeight(0) == h) return;
 
         if (depthTexture != null) { depthTexture.close(); depthTextureView.close(); }

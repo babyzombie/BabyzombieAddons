@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.util.render.DepthTestGlowRenderer;
 import top.babyzombie.addons.util.render.DepthTestSubmitTracker;
+import top.babyzombie.addons.util.render.SecondCameraRenderer;
 
 /**
  * - 追踪 submitEntities 中当前实体的 EntityRenderState（通过 ThreadLocal）
@@ -18,7 +19,9 @@ import top.babyzombie.addons.util.render.DepthTestSubmitTracker;
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
 
-    // ── 深度拷贝（entity_outline 清空后，实体渲染前） ──
+    // ── 深度拷贝(entity_outline 清空后,实体渲染前) ──
+    // 拷贝时机保持在实体前:实体后拷贝会与实体渲染冲突导致实体表面闪烁。
+    // depthTexture 只含地形,描边(NO_CULL)背面像素会漏一点(可接受)。
     @Inject(
         method = "lambda$addMainPass$0",
         slice = @Slice(from = @At(value = "INVOKE",
@@ -60,6 +63,17 @@ public class LevelRendererMixin {
     }
 
     // ── 自定义发光缓冲区刷新 ──
+    // 第二相机捕获期间:endOutlineBatch 前把 outline 输出导向子相机 outline target
+    // (RenderType 的 outputTarget 是构造时缓存的引用,替换字段无效,override 优先);
+    // 原版 outline 画完后(本方法)刷新深度测试发光(其内部用 outputDepthTextureOverride
+    // 指向独立深度纹理),全部画完再恢复 override。深度不 override:挡掉会失效。
+    @Inject(method = "lambda$addMainPass$0", at = @At(
+        value = "INVOKE",
+        target = "Lnet/minecraft/client/renderer/OutlineBufferSource;endOutlineBatch()V"))
+    private void beforeOutline(CallbackInfo ci) {
+        if (SecondCameraRenderer.capturing) SecondCameraRenderer.beginOutlineOverride();
+    }
+
     @Inject(method = "lambda$addMainPass$0", at = @At(
         value = "INVOKE",
         target = "Lnet/minecraft/client/renderer/OutlineBufferSource;endOutlineBatch()V",
@@ -67,5 +81,6 @@ public class LevelRendererMixin {
     private void flushDepthTestOutlines(CallbackInfo ci) {
         DepthTestGlowRenderer.getInstance().endBatch();
         DepthTestSubmitTracker.clear();
+        if (SecondCameraRenderer.capturing) SecondCameraRenderer.endOutlineOverride();
     }
 }
