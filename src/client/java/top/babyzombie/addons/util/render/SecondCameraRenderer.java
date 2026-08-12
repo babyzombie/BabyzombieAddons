@@ -235,6 +235,15 @@ public final class SecondCameraRenderer {
                     grs2.optionsRenderState.menuBackgroundBlurriness,
                     mc.player.position(),
                     grs2.optionsRenderState.textureFiltering == TextureFilteringMethod.RGSS);
+            // 恢复输出 override:第二遍渲染(executeOutline)异常时 beginOutlineOverride 设置的
+            // outputColorTextureOverride 残留,主画面后续渲染会全部输出到子相机 target
+            // (抽搐/闪烁);其他 mod 的发光在第二相机画面尺寸不匹配也会抛异常,统一恢复
+            RenderSystem.outputColorTextureOverride = null;
+            RenderSystem.outputDepthTextureOverride = null;
+            // 恢复矩阵栈:第二遍渲染异常打断 push/pop 配对时,共享矩阵栈残留,
+            // 主画面天空渲染 pushMatrix 会栈满崩端;渲染流程每帧 push/pop 配对,
+            // 栈底为 identity,clear 后等效
+            RenderSystem.getModelViewStack().clear();
             capturing = false;
         }
     }
