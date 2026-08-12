@@ -331,7 +331,7 @@ public class HuntingConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCamera", desc = "config.babyzombieaddons.option.safariCapsuleCamera.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("capsule")
         public boolean enabled = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraYawMode", desc = "config.babyzombieaddons.option.safariCapsuleCameraYawMode.desc") @ConfigEditorDropdown @SearchTag("safari")
-        public CameraYawMode yawMode = CameraYawMode.FIXED;
+        public CameraYawMode yawMode = CameraYawMode.FRONT;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraPitch", desc = "config.babyzombieaddons.option.safariCapsuleCameraPitch.desc") @ConfigEditorSlider(minValue = 0, maxValue = 90, minStep = 1) @SearchTag("safari")
         public int pitch = 40;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCapsuleCameraYawOffset", desc = "config.babyzombieaddons.option.safariCapsuleCameraYawOffset.desc") @ConfigEditorSlider(minValue = -180, maxValue = 180, minStep = 1) @SearchTag("safari")

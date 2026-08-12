@@ -1,6 +1,7 @@
 package top.babyzombie.addons.mixin.render;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.textures.GpuSampler;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.ViewArea;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -15,6 +16,14 @@ public interface LevelRendererAccessor {
 
     @Accessor("entityRenderDispatcher")
     EntityRenderDispatcher getEntityRenderDispatcher();
+
+    /// 区块纹理采样器(白线缓解):第二相机捕获期间换成 NEAREST mag + 禁 mip 的采样器,
+    /// 防 RGSS 按小视口算 mip 层级导致图集边界 texel 渗漏白线
+    @Accessor("chunkLayerSampler")
+    GpuSampler getChunkLayerSampler();
+
+    @Accessor("chunkLayerSampler")
+    void setChunkLayerSampler(GpuSampler chunkLayerSampler);
 
     /// 第二相机捕获期间临时替换 outline 目标为子相机尺寸:
     /// 第二遍渲染的发光实体画进共享 entityOutlineTarget 后,主画面 doEntityOutline

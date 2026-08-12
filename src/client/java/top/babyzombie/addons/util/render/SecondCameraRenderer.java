@@ -3,6 +3,9 @@ package top.babyzombie.addons.util.render;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.AddressMode;
+import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.blaze3d.textures.GpuSampler;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.CloudStatus;
 import net.minecraft.client.DeltaTracker;
@@ -31,6 +34,21 @@ public final class SecondCameraRenderer {
 
     /// 临时相机实体:隐形 ArmorStand(带 CAMERA_DISTANCE 属性,控制相机距离)
     private static @Nullable ArmorStand cameraMarker;
+
+    /// 子相机区块采样器(mag=NEAREST,禁 mip):近距放大时 UV 落在 texel 边界,
+    /// LINEAR mag 过滤会混合图集相邻 texel 渗漏出白线;NEAREST 取单 texel 无渗漏,
+    /// mipLevels=1 禁用 mipmap(RGSS 按视口算 mip 层级,子相机小视口会切到低分辨率
+    /// mip 导致边界渗漏),min 保持 LINEAR 缩小平滑。懒创建复用。
+    private static @Nullable GpuSampler feedSampler;
+
+    private static GpuSampler feedSampler() {
+        if (feedSampler == null) {
+            feedSampler = RenderSystem.getDevice().createSampler(
+                    AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE,
+                    FilterMode.LINEAR, FilterMode.NEAREST, 1, java.util.OptionalDouble.empty());
+        }
+        return feedSampler;
+    }
 
     /// 第二相机专用 outline 目标(子相机尺寸):第二遍渲染的发光实体画到这里,
     /// 不污染主画面共享的 entityOutlineTarget(主画面 doEntityOutline 会全屏 blit 它)。
@@ -104,6 +122,7 @@ public final class SecondCameraRenderer {
 
         RenderTarget oldTarget = mc.getMainRenderTarget();
         RenderTarget oldOutlineTarget = ((LevelRendererAccessor) mc.levelRenderer).getEntityOutlineTarget();
+        GpuSampler oldSampler = ((LevelRendererAccessor) mc.levelRenderer).getChunkLayerSampler();
         Entity oldEntity = camera.entity();
         var optionsState = gameRenderer.getGameRenderState().optionsRenderState;
         CameraType oldCameraType = optionsState.cameraType;
@@ -168,6 +187,11 @@ public final class SecondCameraRenderer {
                         "bza_second_outline", params.target.width, params.target.height, true);
             }
             lrAccessor.setEntityOutlineTarget(secondOutlineTarget);
+            // 白线缓解(26.2 同步):区块采样器换 NEAREST mag + 禁 mip。
+            // RGSS 的 mip 层级按视口算,子相机视口小 → mip 层级变化 → 图集边界
+            // texel 渗漏出白线(草方块土/草交界最明显);NEAREST mag 取单 texel,
+            // mipLevels=1 禁用 mipmap,min 保持 LINEAR 缩小平滑
+            lrAccessor.setChunkLayerSampler(feedSampler());
             gameRenderer.renderLevel(DeltaTracker.ONE);
             // 手动把第二遍 outline(含 entity_outline.json sobel 描边后处理的结果)
             // 合成进子相机画面:原版 outline chain 的合成 pass 在第二遍 frame
@@ -182,6 +206,7 @@ public final class SecondCameraRenderer {
         } finally {
             ((MainRenderTargetAccessor) mc).setMainRenderTarget(oldTarget);
             ((LevelRendererAccessor) mc.levelRenderer).setEntityOutlineTarget(oldOutlineTarget);
+            ((LevelRendererAccessor) mc.levelRenderer).setChunkLayerSampler(oldSampler);
             if (oldEntity != null) {
                 camera.setEntity(oldEntity);
             }

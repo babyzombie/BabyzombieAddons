@@ -171,21 +171,21 @@ public final class HudRegistrar {
 
         // --- AutoIS ---
         HudManager.register("AutoIS", 10, 10, 1.0f,
-                "AutoIS §aEnabled",
+                "hud.babyzombieaddons.autois",
                 "config.babyzombieaddons.option.autois",
                 () -> get().skyblock.autois.enabled,
                 HudTag.MISC);
 
         // --- Wumpa Record ---
         HudManager.register("WumpaRecord", 10, 300, 1.0f,
-                "§b§lWumpa Record\n§a✔ §fStrongarm\n§a✔ §fTepid\n§a✔ §fMantis Shrimp\n§a✔ §fNozzlenose\n§a✔ §fPolaris\n§a✔ §fShuddersquid\n§a✔ §fBillygoat\n§6§lWumpa 可以生成!",
+                "hud.babyzombieaddons.wumpaRecord.demo",
                 "config.babyzombieaddons.option.safariWumpaRecord",
                 () -> get().hunting.safari.wumpaRecord,
                 HudTag.HUNTING);
 
         // --- Safari Hunter Trade ---
         HudManager.register("SafariHunter", 10, 330, 1.0f,
-                "§6§l猎手交易\n§eHunter Billy §7@ -50 81 0\n§a 给 Mantis Shrimp Shard  §c要 Yogi Berry",
+                "hud.babyzombieaddons.hunterTrade.demo",
                 "config.babyzombieaddons.option.safariHunterTradeHud",
                 () -> get().hunting.safari.hunterTrade.hud,
                 HudTag.HUNTING);
@@ -243,7 +243,7 @@ public final class HudRegistrar {
 
         // --- Fishing Camera ---
         HudManager.register("FishingCamera", 250, 50, 1.0f,
-                "§f[钓鱼相机]",
+                "hud.babyzombieaddons.fishingCamera",
                 "config.babyzombieaddons.option.fishingCamera",
                 () -> {
                     var c = get().fishing.fishingCamera;
@@ -254,10 +254,18 @@ public final class HudRegistrar {
 
         // --- Safari Capsule Camera ---
         HudManager.register("SafariCapsuleCamera", 250, 250, 1.0f,
-                "§f[精灵球落地]",
+                "hud.babyzombieaddons.safariCapsuleCamera",
                 "config.babyzombieaddons.option.safariCapsuleCamera",
                 () -> get().hunting.safari.trajectory.capsuleCamera.enabled,
                 HudTag.HUNTING);
+
+        // --- Ender Pearl Camera ---
+        HudManager.register("EnderPearlCamera", 250, 300, 1.0f,
+                "hud.babyzombieaddons.pearlCamera",
+                "config.babyzombieaddons.option.pearlTrajectoryCamera",
+                () -> get().kuudra.phase1.pearlTrajectory.enabled
+                        && get().kuudra.phase1.pearlTrajectory.cameraEnabled,
+                HudTag.KUUDRA);
 
         // --- Bazaar ---
         HudManager.register("BazzarBuyOrder", 10, 50, 1.0f,
@@ -281,7 +289,7 @@ public final class HudRegistrar {
                 },
                 HudTag.BAZAAR);
         HudManager.register("BazzarAction", 10, 180, 1.0f,
-                "§e[ 编辑GUI ]\n§fFlip模式: §c关\n§7> §f购买订单: §c关\n§7> §f出售订单: §c关",
+                "hud.babyzombieaddons.bazzarAction",
                 "config.babyzombieaddons.option.hudBazzarAction",
                 () -> {
                     var cfg = ModConfigManager.get().skyblock;
