@@ -13,7 +13,6 @@ import top.babyzombie.addons.util.render.WorldRenderUtils;
 import top.babyzombie.addons.util.render.WorldTextRenderer;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
-import java.awt.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -259,35 +258,38 @@ public final class PearlWaypoints {
                 outlines.add(new BlockOutline(w.block[0], w.block[1], w.block[2], c[0], c[1], c[2], c[3]));
             }
 
-            // Text: supply tick percentage target — 靠近才显示
+            // Text: supply tick percentage target — 靠近才显示；
+            // 进度为 0（没在拿箱子）时隐藏倒计时，只显示站位框
             if (near && !w.text.isEmpty()) {
                 double pct = KuudraSupplyProgressHUD.getCurrentProgress();
-                int targetPct = Integer.parseInt(w.text);
-                int targetIdx = getTickIndex(targetPct);
-                int curIdx = getTickIndex(pct);
-                int remainingTicks = targetIdx - curIdx;
+                if (pct > 0) {
+                    int targetPct = Integer.parseInt(w.text);
+                    int targetIdx = getTickIndex(targetPct);
+                    int curIdx = getTickIndex(pct);
+                    int remainingTicks = targetIdx - curIdx;
 
-                String label;
-                int color;
-                if (remainingTicks <= 0) {
-                    label = "§aREADY";
-                    color = 0xFF00FF00;
-                    // 就绪提示音（独立开关，与 IQ 的 pearlThrowAlert 一致）
-                    String alertKey = area.name + "_" + w.text;
-                    if (alertedWaypoints.add(alertKey) && w.alert
-                            && ModConfigManager.get().kuudra.phase1.pearlWaypoints.throwAlert) {
-                        var p = Minecraft.getInstance().player;
-                        if (p != null) {
-                            p.playSound(net.minecraft.sounds.SoundEvents.NOTE_BLOCK_PLING.value(), 1.3f, 1.6f);
+                    String label;
+                    int color;
+                    if (remainingTicks <= 0) {
+                        label = "§aREADY";
+                        color = 0xFF00FF00;
+                        // 就绪提示音（独立开关，与 IQ 的 pearlThrowAlert 一致）
+                        String alertKey = area.name + "_" + w.text;
+                        if (alertedWaypoints.add(alertKey) && w.alert
+                                && ModConfigManager.get().kuudra.phase1.pearlWaypoints.throwAlert) {
+                            var p = Minecraft.getInstance().player;
+                            if (p != null) {
+                                p.playSound(net.minecraft.sounds.SoundEvents.NOTE_BLOCK_PLING.value(), 1.3f, 1.6f);
+                            }
                         }
+                    } else {
+                        alertedWaypoints.remove(area.name + "_" + w.text);
+                        double remainingSec = (remainingTicks * TICK_MS) / 1000.0;
+                        label = String.format("§e%.1fs", remainingSec);
+                        color = 0xFFFFFF00;
                     }
-                } else {
-                    alertedWaypoints.remove(area.name + "_" + w.text);
-                    double remainingSec = (remainingTicks * TICK_MS) / 1000.0;
-                    label = String.format("§e%.1fs", remainingSec);
-                    color = 0xFFFFFF00;
+                    texts.add(new WaypointText(label, wx, wy + 0.5, wz, color));
                 }
-                texts.add(new WaypointText(label, wx, wy + 0.5, wz, color));
             }
         }
     }

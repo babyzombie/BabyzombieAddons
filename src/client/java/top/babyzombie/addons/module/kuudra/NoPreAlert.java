@@ -93,7 +93,7 @@ public final class NoPreAlert {
             if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
             String text = ChatUtils.stripColor(msg.getString());
 
-            if (text.contains("Okay adventurers, I will go and fish up Kuudra")) {
+            if (KuudraChatLines.isFishUpKuudra(text)) {
                 detectedPre = null;
                 checked = false;
                 missingPreName = null;
@@ -102,7 +102,7 @@ public final class NoPreAlert {
                 carrierCheckAttempted = false;
                 return;
             }
-            if (text.contains("OMG! Great work collecting my supplies")) {
+            if (KuudraChatLines.isSuppliesCollected(text)) {
                 checked = true; // supplies phase over, stop checking
                 return;
             }
@@ -114,11 +114,11 @@ public final class NoPreAlert {
             }
 
             // Elle flies over → detect pre spot from player position
-            if (text.contains("Head over to the main platform")) {
+            if (KuudraChatLines.isHeadToPlatform(text)) {
                 detectPreSpot();
             }
             // Elle reports no crate → re-scan
-            if (text.contains("Not again!") && !checked) {
+            if (KuudraChatLines.isNotAgain(text) && !checked) {
                 checkAndAlert();
             }
         });

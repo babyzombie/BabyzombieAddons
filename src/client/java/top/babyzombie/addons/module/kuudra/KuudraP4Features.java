@@ -55,13 +55,13 @@ public final class KuudraP4Features {
 
             String text = ChatUtils.stripColor(msg.getString());
             // Reset rend tracking on boss start
-            if (text.contains("Okay adventurers, I will go and fish up Kuudra")) {
+            if (KuudraChatLines.isFishUpKuudra(text)) {
                 lastHP = -1;
                 ichorPools.clear();
                 return;
             }
             // Start boss timer
-            if (text.contains("POW! SURELY THAT'S IT")) {
+            if (KuudraChatLines.isP4Start(text)) {
                 bossStartMs = System.currentTimeMillis();
             }
 

@@ -65,7 +65,7 @@ public final class FreshSystem {
             String text = ChatUtils.stripColor(message.getString());
 
             // P2 start（不清倒计时：让它自然走完，避免提前变进度条）
-            if (text.contains("OMG! Great work collecting my supplies")) {
+            if (KuudraChatLines.isSuppliesCollected(text)) {
                 inBuildPhase = true;
                 buildProgress = 0;
                 freshHistory.clear();
@@ -73,7 +73,7 @@ public final class FreshSystem {
                 return;
             }
             // P2 end（清除建造开始倒计时，避免结束后仍显示 0.00s）
-            if (text.contains("Phew! The Ballista is finally ready")) {
+            if (KuudraChatLines.isBallistaReady(text)) {
                 inBuildPhase = false;
                 buildCountdownEndMs = -1;
                 return;
@@ -85,8 +85,9 @@ public final class FreshSystem {
                 buildCountdownEndMs = ServerTick.getTime() + BUILD_START_COUNTDOWN_MS;
             }
 
-            // Self fresh
-            if (text.contains("Your Fresh Tools Perk bonus doubles your building speed")) {
+            // Self fresh：完整消息 "Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!"，
+            // 消息无前缀，startsWith 防止玩家在聊天栏复制这句造成误判
+            if (text.startsWith("Your Fresh Tools Perk bonus doubles your building speed")) {
                 onSelfFresh();
                 return;
             }
