@@ -40,8 +40,10 @@ public final class GlowDepthRenderer implements AutoCloseable {
     }
 
     private void tryUpdateDepthTexture() {
-        int neededWidth = Minecraft.getInstance().getWindow().getWidth();
-        int neededHeight = Minecraft.getInstance().getWindow().getHeight();
+        // 尺寸跟随当前主渲染目标:第二相机捕获期间 mainRenderTarget 是子相机小尺寸目标,
+        // 用窗口尺寸会按大窗口拷贝越界;跟随 target 自动适配主画面/子相机两套尺寸
+        int neededWidth = Minecraft.getInstance().gameRenderer.mainRenderTarget().width;
+        int neededHeight = Minecraft.getInstance().gameRenderer.mainRenderTarget().height;
 
         if (this.glowDepthTexture == null
             || this.glowDepthTexture.getWidth(0) != neededWidth

@@ -25,7 +25,6 @@ import top.babyzombie.addons.util.render.CurrentEntityTracker;
 import top.babyzombie.addons.util.render.DepthTestMarker;
 import top.babyzombie.addons.util.render.GlowController;
 import top.babyzombie.addons.util.render.GlowRenderTypeHolder;
-import top.babyzombie.addons.util.render.SecondCameraRenderer;
 
 /**
  * 深度测试发光：实体模型提交时额外提交深度 outline 节点（被墙挡的发光描边）。
@@ -41,9 +40,6 @@ public class SubmitNodeCollectionMixin {
             @Local(name = "renderType") RenderType renderType,
             @Local(name = "sprite") TextureAtlasSprite sprite,
             @Local(name = "pose") PoseStack.Pose pose) {
-        // 第二相机捕获期间不提交深度发光 outline:第二遍渲染的 outline 画到
-        // 共享 entityOutlineTarget,主画面 doEntityOutline 输出会被污染(发光闪烁/出框)
-        if (SecondCameraRenderer.capturing) return;
         EntityRenderState ers = CurrentEntityTracker.STATE.get();
         if (ers == null || !ers.getDataOrDefault(GlowController.NEEDS_DEPTH_TEST, false)) return;
         RenderType dt = renderType.isOutline() ? renderType
@@ -60,7 +56,6 @@ public class SubmitNodeCollectionMixin {
             target = "Lnet/minecraft/client/renderer/SubmitNodeCollection;outline:Lnet/minecraft/client/renderer/feature/phase/SimpleFeatureRenderPhase;",
             opcode = Opcodes.GETFIELD)))
     private SubmitNode markItem(SubmitNode submit) {
-        if (SecondCameraRenderer.capturing) return submit;
         EntityRenderState ers = CurrentEntityTracker.STATE.get();
         if (ers != null && ers.getDataOrDefault(GlowController.NEEDS_DEPTH_TEST, false))
             ((DepthTestMarker)(Object)submit).babyzombie$setNeedsDepthTest(true);

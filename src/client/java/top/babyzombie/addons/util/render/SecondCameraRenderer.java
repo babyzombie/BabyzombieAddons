@@ -1,5 +1,6 @@
 package top.babyzombie.addons.util.render;
 
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -86,6 +87,28 @@ public final class SecondCameraRenderer {
         return feedSampler;
     }
 
+    /// 第二相机专用 outline 目标(子相机尺寸):第二遍渲染的发光实体画到这里,
+    /// 不污染主画面共享的 entityOutlineTarget(主画面 doEntityOutline 会全屏 blit 它)。
+    private static @Nullable TextureTarget secondOutlineTarget;
+
+    /// outline 节点绘制前调用:PreparedRenderType 的输出是它自己的 outputTarget
+    /// (构造时缓存的引用,替换字段无效),drawFromBuffer 里 outputColorTextureOverride
+    /// 优先于 outputTarget;第二遍渲染时把 outline 导向子相机 outline target。
+    public static void beginOutlineOverride() {
+        if (secondOutlineTarget == null) return;
+        RenderSystem.outputColorTextureOverride = secondOutlineTarget.getColorTextureView();
+        // 深度不 override:深度测试发光节点(OUTLINE_CULL/NO_CULL 管线)的深度附件
+        // 由 PreparedRenderTypeMixin 替换成 glow 深度纹理(场景深度拷贝);
+        // 若设 depth override,drawFromBuffer 里 override 优先,深度测试发光失效
+        // (深度开/关无差异)。原版 outline 节点用 secondOutlineTarget 自身深度。
+        RenderSystem.outputDepthTextureOverride = null;
+    }
+
+    public static void endOutlineOverride() {
+        RenderSystem.outputColorTextureOverride = null;
+        RenderSystem.outputDepthTextureOverride = null;
+    }
+
     /// 第二相机捕获参数
     public record CaptureParams(
             Vec3 anchorPos,      // 相机锚点(观察目标的位置)
@@ -138,6 +161,8 @@ public final class SecondCameraRenderer {
         }
 
         RenderTarget oldTarget = gameRenderer.mainRenderTarget();
+        // 用 accessor 读字段:entityOutlineTarget() 是帧内句柄解析,renderLevel 后返回 null
+        RenderTarget oldOutlineTarget = ((LevelRendererAccessor) mc.levelRenderer).getEntityOutlineTarget();
         GlobalSettingsUniform mainGlobals = ((GameRendererAccessor) gameRenderer).globalSettingsUniform();
         Entity oldEntity = camera.entity();
         // 子相机区块采样器临时替换(mag=NEAREST 防图集渗漏白线)
@@ -150,7 +175,6 @@ public final class SecondCameraRenderer {
         var oldVisibleSections = mc.levelRenderer.visibleSections().clone();
         var optionsState = gameRenderer.gameRenderState().optionsRenderState;
         CameraType oldCameraType = optionsState.cameraType;
-        GlowDepthRenderer.suppressCopy = true;
         capturing = true;
         // 保存主画面投影矩阵:第二遍 renderLevel 会覆盖共享投影 buffer 的内容,
         // 结束需写回主投影,否则主画面后续渲染(GUI 等)用第二相机投影错乱
@@ -248,8 +272,30 @@ public final class SecondCameraRenderer {
             if (skyRenderer != null) {
                 ((SkyRendererAccessor) skyRenderer).setRenderTarget(params.target);
             }
+            // outline 目标临时替换为子相机尺寸:第二遍渲染的发光实体(原版/Skyblocker 的
+            // data key 标记不经过 shouldShowEntityOutlines)画进共享 entityOutlineTarget 后,
+            // 主画面 doEntityOutline 会把它全屏 blit 到主画面(发光放大平移污染/闪烁);
+            // 替换后子相机发光画进子相机 outline target,主画面 outline 不被污染,
+            // 子相机画面里也正常合成发光。
+            var lrAccessor2 = (LevelRendererAccessor) mc.levelRenderer;
+            if (secondOutlineTarget == null
+                    || secondOutlineTarget.width != params.target.width
+                    || secondOutlineTarget.height != params.target.height) {
+                if (secondOutlineTarget != null) secondOutlineTarget.destroyBuffers();
+                secondOutlineTarget = new TextureTarget(
+                        "bza_second_outline", params.target.width, params.target.height, true,
+                        GpuFormat.RGBA8_UNORM);
+            }
+            lrAccessor2.setEntityOutlineTarget(secondOutlineTarget);
             try {
                 gameRenderer.renderLevel(DeltaTracker.ONE);
+                // 手动把第二遍 outline(含 sobel 描边后处理的结果)合成进子相机画面:
+                // 原版 outline chain 的合成 pass 在第二遍 frame 不输出到 main,
+                // 直接 blit 子相机 outline target 到 feedTarget 等效且可靠
+                if (secondOutlineTarget != null) {
+                    secondOutlineTarget.blitAndBlendToTexture(
+                            params.target.getColorTextureView(), params.target.getDepthTextureView());
+                }
                 return true;
             } catch (Throwable t) {
                 // 第二相机渲染异常不影响主画面(状态已在 finally 恢复),吞掉避免刷屏
@@ -295,9 +341,10 @@ public final class SecondCameraRenderer {
             if (currentSky != null) {
                 ((SkyRendererAccessor) currentSky).setRenderTarget(oldTarget);
             }
+            // outline 目标指回主画面实例(第二遍渲染用了子相机 outline target)
+            lrAccessor.setEntityOutlineTarget(oldOutlineTarget);
             // 恢复发光标志(ExtractEntityOutlineSkipMixin 在第二遍 extract 改的)
             gameRenderer.gameRenderState().levelRenderState.shouldShowEntityOutlines = savedShowOutlines;
-            GlowDepthRenderer.suppressCopy = false;
             capturing = false;
         }
     }

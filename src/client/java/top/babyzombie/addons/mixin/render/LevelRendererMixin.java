@@ -1,16 +1,10 @@
 package top.babyzombie.addons.mixin.render;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
@@ -18,12 +12,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.util.render.CurrentEntityTracker;
 import top.babyzombie.addons.util.render.GlowController;
 import top.babyzombie.addons.util.render.GlowDepthRenderer;
+import top.babyzombie.addons.util.render.SecondCameraRenderer;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
-    @Shadow @Final private @Nullable RenderTarget entityOutlineTarget;
-    @Shadow @Final private LevelTargetBundle targets;
-
     // ── 深度拷贝 ──
     // 时机与 Skyblocker 一致：第一个 clearColorAndDepthTextures 之后（main 深度为上一帧完整深度）。
     // 26.2 帧图延迟执行下，executeSolid 后 main 深度可能尚未写入，拷贝会拿到无效内容。
@@ -62,4 +54,22 @@ public class LevelRendererMixin {
             + "DDDLcom/mojang/blaze3d/vertex/PoseStack;"
             + "Lnet/minecraft/client/renderer/SubmitNodeCollector;)V", shift = At.Shift.AFTER))
     private void clearEntity(CallbackInfo ci) { CurrentEntityTracker.STATE.remove(); }
+
+    // ── 第二相机 outline 输出导向 ──
+    // PreparedRenderType 的输出是它自己的 outputTarget(构造时缓存的引用,替换字段无效),
+    // drawFromBuffer 里 RenderSystem.outputColorTextureOverride 优先于 outputTarget;
+    // 第二遍渲染时把 outline 节点导向子相机 outline target(不污染主画面,且子相机画面能合成发光)
+    @Inject(method = "lambda$addMainPass$0", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/feature/FeatureRenderDispatcher$PreparedFrame;executeOutline()V"))
+    private void beforeOutline(CallbackInfo ci) {
+        if (SecondCameraRenderer.capturing) SecondCameraRenderer.beginOutlineOverride();
+    }
+
+    @Inject(method = "lambda$addMainPass$0", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/feature/FeatureRenderDispatcher$PreparedFrame;executeOutline()V",
+            shift = At.Shift.AFTER))
+    private void afterOutline(CallbackInfo ci) {
+        if (SecondCameraRenderer.capturing) SecondCameraRenderer.endOutlineOverride();
+    }
+
 }
