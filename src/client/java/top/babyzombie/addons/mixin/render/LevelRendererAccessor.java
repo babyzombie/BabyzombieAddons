@@ -18,6 +18,8 @@ public interface LevelRendererAccessor {
     @Accessor("entityRenderDispatcher")
     EntityRenderDispatcher getEntityRenderDispatcher();
 
+    /// 区块纹理采样器(白线缓解):第二相机捕获期间换成 NEAREST mag + 禁 mip 的采样器,
+    /// 防 RGSS 按小视口算 mip 层级导致图集边界 texel 渗漏白线
     @Accessor("chunkLayerSampler")
     GpuSampler getChunkLayerSampler();
 

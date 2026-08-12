@@ -14,6 +14,8 @@ public final class KuudraModule {
         KuudraEnergyDisplay.init();
         KuudraStunTimer.init();
         KuudraWaypoints.init();
+        EnderPearlTrajectory.init();
+        EnderPearlCamera.init();
         KuudraPerkShopBlacklist.init();
         EnderPearlRefill.init();
         KuudraFollowerHelmetPrice.init();

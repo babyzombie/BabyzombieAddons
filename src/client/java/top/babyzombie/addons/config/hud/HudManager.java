@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -97,9 +98,20 @@ public final class HudManager {
         }
     }
 
+    /**
+     * HUD 编辑页面的演示文本。demoText 可以存翻译键(注册在资源加载前,
+     * 不能提前 getString)或纯文本;渲染时(资源已加载)再解翻译。
+     */
     static String getDemoText(String name) {
         var e = elements.get(name);
-        return e != null ? e.demoText : "";
+        if (e == null) return "";
+        String text = e.demoText;
+        if (text.startsWith("config.babyzombieaddons.")
+                || text.startsWith("hud.babyzombieaddons.")
+                || text.startsWith("babyzombieaddons.")) {
+            return Component.translatable(text).getString();
+        }
+        return text;
     }
 
     static String getLabelKey(String name) {

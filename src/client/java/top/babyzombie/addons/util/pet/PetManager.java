@@ -582,15 +582,38 @@ public final class PetManager {
     /** Write equipment from Loadouts container column 1 to Skyblocker's static array. */
     private static void syncEquipmentToSkyblocker(java.util.List<net.minecraft.world.inventory.Slot> slots) {
         if (!FabricLoader.getInstance().isModLoaded("skyblocker")) return;
+        // v6.9.1 起字段改名 EQUIPMENT(区分主视角/rift/safari 三数组);
+        // 旧版没有该字段,静态引用会崩端,版本守卫跳过;try 再兜底版本判断失误/其他异常
+        if (!isSkyblockerAtLeast(6, 9)) return;
 
-        var equipment = SkyblockInventoryScreen.equipment;
-        int[] equipSlots = {10, 19, 28, 37}; // necklace, cloak, belt, glove
-        for (int i = 0; i < 4 && i < equipment.length; i++) {
-            if (equipSlots[i] < slots.size()) {
-                ItemStack stack = slots.get(equipSlots[i]).getItem();
-                equipment[i] = (stack.isEmpty() || isPlaceholder(stack))
-                    ? ItemStack.EMPTY : stack.copy();
+        try {
+            var equipment = SkyblockInventoryScreen.EQUIPMENT;
+            int[] equipSlots = {10, 19, 28, 37}; // necklace, cloak, belt, glove
+            for (int i = 0; i < 4 && i < equipment.length; i++) {
+                if (equipSlots[i] < slots.size()) {
+                    ItemStack stack = slots.get(equipSlots[i]).getItem();
+                    equipment[i] = (stack.isEmpty() || isPlaceholder(stack))
+                        ? ItemStack.EMPTY : stack.copy();
+                }
             }
+        } catch (Throwable ignored) {
+            // skyblocker 版本/结构不兼容时静默跳过,不影响主功能
+        }
+    }
+
+    /** skyblocker 版本是否 >= 目标主次版本(版本号形如 "v6.9.1+26.1.2" 或 "6.8.1+26.1.2")。 */
+    private static boolean isSkyblockerAtLeast(int major, int minor) {
+        var container = FabricLoader.getInstance().getModContainer("skyblocker").orElse(null);
+        if (container == null) return false;
+        try {
+            String[] seg = container.getMetadata().getVersion().getFriendlyString()
+                    .replaceFirst("^[vV]", "").split("[+\\-]")[0].split("\\.");
+            if (seg.length < 2) return false;
+            int m = Integer.parseInt(seg[0]);
+            int n = Integer.parseInt(seg[1]);
+            return m > major || (m == major && n >= minor);
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 

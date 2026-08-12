@@ -74,6 +74,13 @@ public class KuudraConfig {
     // ── Phase 1: Supplies ──
 
     public static class Phase1 {
+        // 珍珠投掷路径点(置顶)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.group.pearlWaypoints", desc = "") @Accordion @SearchTag("pearl")
+        public PearlWaypointsCfg pearlWaypoints = new PearlWaypointsCfg();
+        // 珍珠轨迹(手持预测/投出追踪/第二相机)
+        @Expose @ConfigOption(name = "config.babyzombieaddons.group.pearlTrajectory", desc = "") @Accordion @SearchTag("pearl")
+        public PearlTrajectoryCfg pearlTrajectory = new PearlTrajectoryCfg();
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyBeacons", desc = "config.babyzombieaddons.option.supplyBeacons.desc") @ConfigEditorBoolean @SearchTag("supply")
         public boolean supplyBeacons = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.supplyBeaconColor", desc = "config.babyzombieaddons.option.supplyBeaconColor.desc") @SearchTag("supply") @SearchTag("beacon") @SearchTag("color")
@@ -98,8 +105,6 @@ public class KuudraConfig {
         public boolean supplyPlaceTimerHud = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyProgressHud", desc = "config.babyzombieaddons.option.supplyProgressHud.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("progress") @SearchTag("hud")
         public boolean supplyProgressHud = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.group.pearlWaypoints", desc = "") @Accordion
-        public PearlWaypointsCfg pearlWaypoints = new PearlWaypointsCfg();
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.supplyGiantHitbox", desc = "config.babyzombieaddons.option.supplyGiantHitbox.desc") @ConfigEditorBoolean @SearchTag("supply") @SearchTag("giant")
         public boolean supplyGiantHitbox = false;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.supplyGiantHitboxColor", desc = "config.babyzombieaddons.option.supplyGiantHitboxColor.desc") @SearchTag("supply") @SearchTag("giant") @SearchTag("color")
@@ -242,6 +247,48 @@ public class KuudraConfig {
         public transient Runnable editConfig = PearlWaypoints::openConfigFile;
         @ConfigOption(name = "config.babyzombieaddons.option.pearlOpenIqModrinth", desc = "config.babyzombieaddons.option.pearlOpenIqModrinth.desc") @ConfigEditorButton(buttonText = "IQ Modrinth")
         public transient Runnable openIqModrinth = PearlWaypoints::openIqModrinth;
+    }
+
+    /** 珍珠轨迹(组中组):手持预测/投出追踪/第二相机。 */
+    public static class PearlTrajectoryCfg {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlTrajectoryEnabled", desc = "config.babyzombieaddons.option.pearlTrajectoryEnabled.desc") @ConfigEditorBoolean @SearchTag("pearl") @SearchTag("trajectory")
+        public boolean enabled = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlTrajectoryOnlyInKuudra", desc = "config.babyzombieaddons.option.pearlTrajectoryOnlyInKuudra.desc") @ConfigEditorBoolean @SearchTag("pearl") @SearchTag("kuudra")
+        public boolean onlyInKuudra = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlTrajectoryOnlyPhase1", desc = "config.babyzombieaddons.option.pearlTrajectoryOnlyPhase1.desc") @ConfigEditorBoolean @SearchTag("pearl") @SearchTag("phase")
+        public boolean onlyPhase1 = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlTrajectoryCamera", desc = "config.babyzombieaddons.option.pearlTrajectoryCamera.desc") @ConfigEditorBoolean @SearchTag("pearl") @SearchTag("camera")
+        public boolean cameraEnabled = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlTrajectoryFollowPearl", desc = "config.babyzombieaddons.option.pearlTrajectoryFollowPearl.desc") @ConfigEditorBoolean @SearchTag("pearl") @SearchTag("follow")
+        public boolean followPearl = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlTrajectoryLine", desc = "config.babyzombieaddons.option.pearlTrajectoryLine.desc") @ConfigEditorBoolean @SearchTag("pearl") @SearchTag("line")
+        public boolean trajectoryEnabled = true;
+        @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.pearlTrajectoryLineColor", desc = "config.babyzombieaddons.option.pearlTrajectoryLineColor.desc") @SearchTag("pearl") @SearchTag("line") @SearchTag("color")
+        public ChromaColour trajectoryColor = ChromaColour.fromStaticRGB(170, 0, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlTrajectoryDisc", desc = "config.babyzombieaddons.option.pearlTrajectoryDisc.desc") @ConfigEditorBoolean @SearchTag("pearl") @SearchTag("disc")
+        public boolean landingDiscEnabled = true;
+        @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.pearlTrajectoryDiscColor", desc = "config.babyzombieaddons.option.pearlTrajectoryDiscColor.desc") @SearchTag("pearl") @SearchTag("disc") @SearchTag("color")
+        public ChromaColour landingDiscColor = ChromaColour.fromStaticRGB(170, 0, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlCameraYawMode", desc = "config.babyzombieaddons.option.pearlCameraYawMode.desc") @ConfigEditorDropdown @SearchTag("pearl")
+        public FishingConfig.CameraYawMode pearlCameraYawMode = FishingConfig.CameraYawMode.FRONT;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlCameraAspectRatio", desc = "config.babyzombieaddons.option.pearlCameraAspectRatio.desc") @ConfigEditorDropdown @SearchTag("pearl")
+        public FishingConfig.CameraAspectRatio pearlCameraAspectRatio = FishingConfig.CameraAspectRatio.R2_1;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlCameraPitch", desc = "config.babyzombieaddons.option.pearlCameraPitch.desc") @ConfigEditorSlider(minValue = 0, maxValue = 90, minStep = 1) @SearchTag("pearl")
+        public int pearlCameraPitch = 40;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlCameraYawOffset", desc = "config.babyzombieaddons.option.pearlCameraYawOffset.desc") @ConfigEditorSlider(minValue = -180, maxValue = 180, minStep = 1) @SearchTag("pearl")
+        public int pearlCameraYawOffset = 0;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlCameraYawSpinSpeed", desc = "config.babyzombieaddons.option.pearlCameraYawSpinSpeed.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("pearl")
+        public int pearlCameraYawSpinSpeed = 0;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlCameraDistance", desc = "config.babyzombieaddons.option.pearlCameraDistance.desc") @ConfigEditorSlider(minValue = 0, maxValue = 5, minStep = 0.1f) @SearchTag("pearl")
+        public double pearlCameraDistance = 3.0;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlCameraViewDistance", desc = "config.babyzombieaddons.option.pearlCameraViewDistance.desc") @ConfigEditorSlider(minValue = 16, maxValue = 128, minStep = 1) @SearchTag("pearl")
+        public int pearlCameraViewDistance = 32;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlCameraFrameRate", desc = "config.babyzombieaddons.option.pearlCameraFrameRate.desc") @ConfigEditorSlider(minValue = 5, maxValue = 60, minStep = 1) @SearchTag("pearl")
+        public int pearlCameraFrameRate = 30;
+        @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.pearlCameraBorderColor", desc = "config.babyzombieaddons.option.pearlCameraBorderColor.desc") @SearchTag("pearl")
+        public ChromaColour pearlCameraBorderColor = ChromaColour.fromStaticRGB(128, 128, 128, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.pearlTrajectoryShowTime", desc = "config.babyzombieaddons.option.pearlTrajectoryShowTime.desc") @ConfigEditorBoolean @SearchTag("pearl") @SearchTag("time")
+        public boolean showLandingTime = true;
     }
 
     public static class ChestCounterCfg {

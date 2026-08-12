@@ -89,12 +89,15 @@ public final class SafariTrajectory {
         Vec3 view = player.getViewVector(1.0f).normalize();
         // 起点绑定玩家实体眼睛位置,不绑定相机:第二相机捕获期间 mainCamera 是子相机,
         // 用 camera.position() 会让轨迹线从第二相机射出,与主视角轨迹不一致
-        Vec3 eyePos = player.getEyePosition(1.0F);
+        // 用渲染插值位置:getEyePosition(1.0F) 是 tick 时刻位置,移动时线起点会跳
+        Vec3 eyePos = player.getEyePosition(CLIENT.getDeltaTracker().getGameTimeDeltaPartialTick(false));
         double yaw = Math.toRadians(player.getYRot());
+        // 侧向偏移 = 右眼;左右手切换开启时取反(左眼)
+        double flip = ModConfigManager.get().general.handRender.swapHands ? 1.0 : -1.0;
         Vec3 pos = eyePos.add(
-                -Math.cos(yaw) * CAPSULE_SIDE_OFFSET,
+                flip * Math.cos(yaw) * CAPSULE_SIDE_OFFSET,
                 -CAPSULE_VERTICAL_OFFSET,
-                -Math.sin(yaw) * CAPSULE_SIDE_OFFSET
+                flip * Math.sin(yaw) * CAPSULE_SIDE_OFFSET
         );
         // The server-side capsule does not inherit the player's movement.
         Vec3 motion = view.scale(CAPSULE_INITIAL_VELOCITY);

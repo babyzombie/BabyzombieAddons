@@ -263,8 +263,10 @@ public final class SecondCameraRenderer {
             // 第二相机尺寸,画面在小窗/全屏之间闪
             grs.windowRenderState.width = oldWinW;
             grs.windowRenderState.height = oldWinH;
-            // 子相机近距放大时 UV 落在 texel 边界,LINEAR mag 过滤会混合相邻 texel 渗漏出白线;
-            // mag 用 NEAREST(放大取单 texel)、min 保持 LINEAR(缩小平滑),既无渗漏又保留平滑
+            // 白线缓解:子相机近距放大时 UV 落在 texel 边界,LINEAR mag 过滤会混合
+            // 相邻 texel 渗漏出白线;mag 用 NEAREST(放大取单 texel)、min 保持 LINEAR
+            // (缩小平滑),mipLevels=1 禁用 mipmap(RGSS 按视口算 mip 层级,子相机小视口
+            // 会切到低分辨率 mip 导致图集边界渗漏,草方块土/草交界最明显)
             lrAccessor.setChunkLayerSampler(feedSampler());
             // SkyRenderer 缓存构造时的主画面 target,第二遍渲染的天空盘仍画到主画面
             // (斜向黄/蓝块,跟随子相机视角);临时指向子相机输出(SC 26.2 同款修复)
