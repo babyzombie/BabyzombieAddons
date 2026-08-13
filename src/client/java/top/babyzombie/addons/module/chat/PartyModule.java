@@ -183,8 +183,9 @@ public final class PartyModule {
 
         // !pt / !ptme / !叫地主 / !抢地主 → transfer party leader to sender
         if (cfg.partyTransfer && CMD_PTME.matcher(msg).matches()) {
+            if (selfSent) return;
             nextCommand = "party transfer " + player;
-            runWhenLeader(selfSent);
+            runWhenLeader(false);
             return;
         }
 
