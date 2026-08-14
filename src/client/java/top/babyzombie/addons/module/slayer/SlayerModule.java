@@ -3,6 +3,7 @@ package top.babyzombie.addons.module.slayer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.minecraft.sounds.SoundEvents;
 import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.module.slayer.itemtimer.*;
 import top.babyzombie.addons.util.ChatUtils;
@@ -29,27 +30,24 @@ public final class SlayerModule {
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {
             var snd = sound.getSound();
             if (snd == null) return false;
-            String path = snd.getLocation().getPath().toLowerCase();
-            String name;
-            if (path.contains("zpigangry") || path.contains("angry") || path.contains("zombified_piglin")) {
-                name = "zpigangry";
-            } else if (path.contains("zombie/remedy") || path.contains("remedy")) {
-                name = "zombie/remedy";
-            } else if (path.contains("drink") || path.contains("generic/drink")) {
-                name = "drink";
+            var identifier  = sound.getIdentifier();
+            float pitch = 1f;
+            try { pitch = sound.getPitch(); } catch (Exception ignored) {}
+            if (identifier.equals(SoundEvents.ZOMBIFIED_PIGLIN_ANGRY.location())) {
+                PigmanSwordTimer.onSound(true);
+            } else if (identifier.equals(SoundEvents.ZOMBIE_VILLAGER_CURE.location())) {
+                ReaperArmorTimer.onSound(pitch);
+            } else if (identifier.equals(SoundEvents.GENERIC_DRINK.value().location())) {
+                PigmanSwordTimer.onSound(false);
             } else {
                 return false;
             }
-            PigmanSwordTimer.onSound(name);
-            float pitch = 1f;
-            try { pitch = sound.getPitch(); } catch (Exception ignored) {}
-            ReaperArmorTimer.onSound(name, pitch);
             return false;
         });
 
         // ---- Wire entity death for NoSlayerQuestWarning ----
         ClientEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
-            if (entity == null || entity.isAlive()) return;
+            if (entity.isAlive()) return;
             NoSlayerQuestWarning.onEntityDeath();
         });
 

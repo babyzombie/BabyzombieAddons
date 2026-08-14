@@ -1,6 +1,7 @@
 package top.babyzombie.addons.module.dungeon;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.minecraft.sounds.SoundEvents;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.util.ChatUtils;
@@ -31,9 +32,7 @@ public final class StormThunderMute {
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {
             if (!mutingStorm[0]) return false;
             if (!ModConfigManager.get().dungeon.muteStormThunder) return false;
-            var snd = sound.getSound();
-            if (snd == null) return false;
-            return snd.getLocation().getPath().contains("ambient/weather/thunder");
+            return sound.getIdentifier().equals(SoundEvents.LIGHTNING_BOLT_THUNDER.location());
         });
     }
 }

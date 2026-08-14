@@ -55,14 +55,13 @@ public final class PigmanSwordTimer {
     /**
      * Called from PlaySoundEvents when a sound plays.
      */
-    public static void onSound(String name) {
-        if (name.equals("zpigangry")) {
+    public static void onSound(boolean drink) {
+        if (drink) {
             if (!ModConfigManager.get().slayer.itemSkillTimers.pigmanSwordTimer) return;
             if (!pigmanListening) return;
             time = ServerTick.getTime();
             pigmanListening = false;
-        }
-        if (name.equals("drink")) {
+        } else {
             if (!ModConfigManager.get().slayer.itemSkillTimers.holyIceTimer) return;
             if (!holyIceListening) return;
             HolyIceTimer.activated = true;

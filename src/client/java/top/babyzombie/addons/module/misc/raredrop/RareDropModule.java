@@ -2,6 +2,7 @@ package top.babyzombie.addons.module.misc.raredrop;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.sounds.SoundEvents;
 import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
@@ -81,17 +82,15 @@ public final class RareDropModule {
                 ignoreSoundTime = 0;
                 return false;
             }
-            var snd = sound.getSound();
-            if (snd == null) return false;
-            String path = snd.getLocation().getPath();
+            var identifier = sound.getIdentifier();
             float p = sound.getPitch();
-            if (path.equals("note/pling")) {
+            if (identifier.equals(SoundEvents.NOTE_BLOCK_PLING.value().location())) {
                 return Math.abs(p - 0.59f) < 0.01f || Math.abs(p - 0.79f) < 0.01f
-                    || Math.abs(p - 1.05f) < 0.01f || Math.abs(p - 1.17f) < 0.01f;
+                        || Math.abs(p - 1.05f) < 0.01f || Math.abs(p - 1.17f) < 0.01f;
             }
-            if (path.equals("random/orb")) {
+            if (identifier.equals(SoundEvents.EXPERIENCE_ORB_PICKUP.location())) {
                 return Math.abs(p - 0.70f) < 0.01f || Math.abs(p - 0.94f) < 0.01f
-                    || Math.abs(p - 1.25f) < 0.01f || Math.abs(p - 1.41f) < 0.01f;
+                        || Math.abs(p - 1.25f) < 0.01f || Math.abs(p - 1.41f) < 0.01f;
             }
             return false;
         });

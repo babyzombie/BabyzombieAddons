@@ -6,6 +6,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
@@ -43,15 +44,13 @@ public final class NecronBladeModule {
     // ===== Sound =====
 
     private static SoundInstance modifySound(SoundInstance sound) {
-        var theSound = sound.getSound();
-        if (theSound == null) return sound;
-        String path = theSound.getLocation().getPath();
+        var identifier = sound.getIdentifier();
 
         var player = Minecraft.getInstance().player;
         if (player == null) return sound;
 
         // Explosion sound — requires Implosion scroll + near player
-        if (path.startsWith("random/explode") && shouldModifyExplosion() && isNearPlayerSound(sound, player)) {
+        if (identifier.equals(SoundEvents.GENERIC_EXPLODE.value().location()) && shouldModifyExplosion() && isNearPlayerSound(sound, player)) {
             return PlaySoundHelper.withVolume(sound, ModConfigManager.get().skyblock.necronBlade.explosionVolume);
         }
 
@@ -59,7 +58,7 @@ public final class NecronBladeModule {
         if (!isNearPlayerSound(sound, player)) return sound;
 
         // Shadow warp / teleport sound
-        if (path.startsWith("mob/endermen/portal")) {
+        if (identifier.equals(SoundEvents.ENDERMAN_TELEPORT.location())) {
             // Teleport sword takes priority
             if (isHoldingTeleportSword()) {
                 return PlaySoundHelper.withVolume(sound, ModConfigManager.get().skyblock.teleportSword.teleportVolume);
@@ -70,12 +69,12 @@ public final class NecronBladeModule {
         }
 
         // Wither shield sound
-        if (path.equals("mob/zombie/remedy") && isHoldingWitherBlade()) {
+        if (identifier.equals(SoundEvents.ZOMBIE_VILLAGER_CURE.location()) && isHoldingWitherBlade()) {
             return PlaySoundHelper.withVolume(sound, ModConfigManager.get().skyblock.necronBlade.witherShieldVolume);
         }
 
         // Etherwarp sound (teleport sword)
-        if (path.startsWith("mob/enderdragon/hit") && isHoldingTeleportSword()) {
+        if (identifier.equals(SoundEvents.ENDER_DRAGON_HURT.location()) && isHoldingTeleportSword()) {
             return PlaySoundHelper.withVolume(sound, ModConfigManager.get().skyblock.teleportSword.etherwarpVolume);
         }
 

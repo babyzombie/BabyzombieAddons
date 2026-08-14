@@ -2,6 +2,7 @@ package top.babyzombie.addons.module.hunting;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -28,9 +29,7 @@ public final class BlackHoleSound {
 
     private static SoundInstance modifySound(SoundInstance sound) {
         if (!HypixelLocationTracker.getInstance().isInSkyblock()) return sound;
-        var theSound = sound.getSound();
-        if (theSound == null) return sound;
-        if (!theSound.getLocation().getPath().startsWith("mob/endermen/portal")) return sound;
+        if (!sound.getIdentifier().equals(SoundEvents.ENDERMAN_TELEPORT.location())) return sound;
 
         var player = Minecraft.getInstance().player;
         if (player == null) return sound;

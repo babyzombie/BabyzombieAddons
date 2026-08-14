@@ -7,8 +7,8 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
-public final class InfoCommand {
-    private InfoCommand() {}
+public final class DebugInfoCommand {
+    private DebugInfoCommand() {}
 
     public static void register(
             com.mojang.brigadier.builder.ArgumentBuilder<FabricClientCommandSource, ?> parent) {

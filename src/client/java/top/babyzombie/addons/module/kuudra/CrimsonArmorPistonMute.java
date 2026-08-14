@@ -1,6 +1,7 @@
 package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.minecraft.sounds.SoundEvents;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
@@ -26,10 +27,8 @@ public final class CrimsonArmorPistonMute {
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {
             if (!muted) return false;
             if (!ModConfigManager.get().kuudra.muteCrimsonArmor) return false;
-            var snd = sound.getSound();
-            if (snd == null) return false;
-            String path = snd.getLocation().getPath();
-            return path.contains("tile/piston/in") || path.contains("tile/piston/out");
+            var identifier = sound.getIdentifier();
+            return identifier.equals(SoundEvents.PISTON_CONTRACT.location()) || identifier.equals(SoundEvents.PISTON_EXTEND.location());
         });
     }
 }

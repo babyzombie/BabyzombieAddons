@@ -2,7 +2,6 @@ package top.babyzombie.addons.command.debug;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.event.PlaySoundEvents;
@@ -11,22 +10,16 @@ import top.babyzombie.addons.util.ChatUtils;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
-public final class SoundCommand {
+public final class DebugGetSoundCommand {
     private static boolean monitor;
     private static final java.util.Set<String> blacklist = new java.util.LinkedHashSet<>();
 
-    private SoundCommand() {}
+    private DebugGetSoundCommand() {}
 
     public static void init() {
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {
             if (!monitor) return false;
-            var snd = sound.getSound();
-            String id;
-            if (snd != null) {
-                id = snd.getLocation().toString();
-            } else {
-                id = "?";
-            }
+            String id = sound.getIdentifier().toString();
             if (blacklist.contains(id)) return false;
 
             float vol = 0, pit = 0;
