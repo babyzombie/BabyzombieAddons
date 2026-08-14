@@ -65,6 +65,8 @@
   "config.babyzombieaddons.option.partySendCoords.desc": "Respond to !sc in party chat to send your coordinates.\nRegex: ^[!！][ ]?(?:s)?(?:end)?[ ]?c(?:oord|oords)?$",
   "config.babyzombieaddons.option.partyPing": "!ping - Ping Report",
   "config.babyzombieaddons.option.partyPing.desc": "Respond to !ping in party chat to report your network latency.\nRegex: ^[!！][ ]?ping$",
+  "config.babyzombieaddons.option.partyPingRange": "Ping Range Window (seconds)",
+  "config.babyzombieaddons.option.partyPingRange.desc": "When reporting !ping, show the min~max ping within the last N seconds. 0 = no range.",
   "config.babyzombieaddons.option.partyPlay": "!play - Play Command",
   "config.babyzombieaddons.option.partyPlay.desc": "Respond to !play <content> in party chat to execute /play <content>.\nRegex: ^[!！][ ]?play(?: (.+))?$",
   "config.babyzombieaddons.option.partyStream": "!stream - Public Party",

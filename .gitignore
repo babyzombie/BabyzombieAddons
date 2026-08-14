@@ -18,6 +18,7 @@ logs/
 *.iws
 
 # ai agent
+.dsh/
 .claude/
 .proxyai/
 

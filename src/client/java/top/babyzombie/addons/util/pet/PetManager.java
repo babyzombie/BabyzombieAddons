@@ -71,6 +71,11 @@ public final class PetManager {
     private final Set<String> sharedPetUuids = new LinkedHashSet<>();
     private final PlayerPetState petState = new PlayerPetState();
 
+    // Batch-save state: scans mutate many pets at once, so persistence is
+    // deferred until the outermost batch closes to avoid one disk write per pet.
+    private int batchDepth;
+    private boolean dirty;
+
     private PetManager() {}
 
     public static PetManager getInstance() { return INSTANCE; }
@@ -148,13 +153,50 @@ public final class PetManager {
 
     public void saveAll() { saveCurrentProfile(); }
 
+    // ===== Batch Save =====
+
+    /**
+     * Defer persistence until {@link #endBatch()}. Nesting is supported;
+     * a write only happens when the outermost batch closes and data changed.
+     */
+    public void beginBatch() {
+        batchDepth++;
+    }
+
+    /** Close a batch and persist once if anything changed during it. */
+    public void endBatch() {
+        if (batchDepth <= 0) return;
+        batchDepth--;
+        if (batchDepth == 0 && dirty) {
+            dirty = false;
+            saveCurrentProfile();
+        }
+    }
+
+    /** Called after any in-memory mutation: persist now, or mark dirty while batching. */
+    private void onDataChanged() {
+        if (batchDepth == 0) {
+            saveCurrentProfile();
+        } else {
+            dirty = true;
+        }
+    }
+
     // ===== CRUD =====
 
     public void addPet(PetData pet) {
         if (HypixelLocationTracker.getInstance().isInAlpha()) return;
-        if (pet.uuid() != null) pets.removeIf(p -> pet.uuid().equals(p.uuid()));
+        if (pet.uuid() != null) {
+            for (int i = 0; i < pets.size(); i++) {
+                if (pet.uuid().equals(pets.get(i).uuid())) {
+                    pets.set(i, pet); // update in place, keep list order stable
+                    onDataChanged();
+                    return;
+                }
+            }
+        }
         pets.add(pet);
-        saveCurrentProfile();
+        onDataChanged();
     }
 
     public void removePet(@Nullable String uuid) {
@@ -164,13 +206,13 @@ public final class PetManager {
         if (uuid.equals(currentPetUuid)) {
             currentPetUuid = null;
         }
-        saveCurrentProfile();
+        onDataChanged();
     }
 
     public void setCurrentPet(@Nullable PetData pet) {
         if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         this.currentPetUuid = pet != null ? pet.uuid() : null;
-        saveCurrentProfile();
+        onDataChanged();
     }
 
     @Nullable
@@ -210,7 +252,7 @@ public final class PetManager {
     public void setSharedPetUuids(Set<String> uuids) {
         sharedPetUuids.clear();
         if (uuids != null) sharedPetUuids.addAll(uuids);
-        saveCurrentProfile();
+        onDataChanged();
     }
 
     public Set<String> getSharedPetUuids() {
@@ -556,20 +598,25 @@ public final class PetManager {
 
         // --- Pet (slot 21) ---
         if (scanPet) {
-            int petSlot = 21;
-            if (petSlot < slots.size()) {
-                ItemStack stack = slots.get(petSlot).getItem();
-                if (!stack.isEmpty()) {
-                    String petInfo = getPetInfoFromStack(stack);
-                    if (petInfo != null) {
-                        PetData pet = PetData.fromPetInfo(petInfo);
-                        pet = resolveAndApplySkin(pet, petInfo, stack);
-                        if (pet.uuid() != null) {
-                            addPet(pet);
-                            setCurrentPet(pet);
+            beginBatch();
+            try {
+                int petSlot = 21;
+                if (petSlot < slots.size()) {
+                    ItemStack stack = slots.get(petSlot).getItem();
+                    if (!stack.isEmpty()) {
+                        String petInfo = getPetInfoFromStack(stack);
+                        if (petInfo != null) {
+                            PetData pet = PetData.fromPetInfo(petInfo);
+                            pet = resolveAndApplySkin(pet, petInfo, stack);
+                            if (pet.uuid() != null) {
+                                addPet(pet);
+                                setCurrentPet(pet);
+                            }
                         }
                     }
                 }
+            } finally {
+                endBatch();
             }
         }
 
@@ -652,40 +699,45 @@ public final class PetManager {
     /** Scan the Pets container for summoned pet items and add them to the list. */
     private void scanPetsContainer(AbstractContainerScreen<?> screen) {
         var slots = screen.getMenu().slots;
-        for (int i = 10; i < 44; i++) {
-            ItemStack stack = slots.get(i).getItem();
-            if (stack.isEmpty()) continue;
-            if (getPetInfoFromStack(stack) == null) continue;
+        beginBatch();
+        try {
+            for (int i = 10; i < 44; i++) {
+                ItemStack stack = slots.get(i).getItem();
+                if (stack.isEmpty()) continue;
+                if (getPetInfoFromStack(stack) == null) continue;
 
-            ItemLore lore = stack.get(DataComponents.LORE);
-            if (lore == null) continue;
+                ItemLore lore = stack.get(DataComponents.LORE);
+                if (lore == null) continue;
 
-            boolean isConvertible = false;
-            boolean isDespawnable = false;
-            for (Component line : lore.lines()) {
-                String text = ChatUtils.stripColor(line.getString());
-                if ("Right-click to convert to an item!".equals(text)) isConvertible = true;
-                if ("Click to despawn!".equals(text)) isDespawnable = true;
-            }
-            if (!isConvertible) continue;
+                boolean isConvertible = false;
+                boolean isDespawnable = false;
+                for (Component line : lore.lines()) {
+                    String text = ChatUtils.stripColor(line.getString());
+                    if ("Right-click to convert to an item!".equals(text)) isConvertible = true;
+                    if ("Click to despawn!".equals(text)) isDespawnable = true;
+                }
+                if (!isConvertible) continue;
 
-            String petInfo = getPetInfoFromStack(stack);
-            if (petInfo == null) continue;
+                String petInfo = getPetInfoFromStack(stack);
+                if (petInfo == null) continue;
 
-            String uuid = getItemUuid(stack);
-            if (uuid != null) removePet(uuid);
-            PetData pet = PetData.fromPetInfo(petInfo);
-            pet = resolveAndApplySkin(pet, petInfo, stack);
-            addPet(pet);
+                String uuid = getItemUuid(stack);
+                if (uuid != null) removePet(uuid);
+                PetData pet = PetData.fromPetInfo(petInfo);
+                pet = resolveAndApplySkin(pet, petInfo, stack);
+                addPet(pet);
 
-            if (isDespawnable && uuid != null) {
-                for (PetData p : pets) {
-                    if (uuid.equals(p.uuid())) {
-                        setCurrentPet(p);
-                        break;
+                if (isDespawnable && uuid != null) {
+                    for (PetData p : pets) {
+                        if (uuid.equals(p.uuid())) {
+                            setCurrentPet(p);
+                            break;
+                        }
                     }
                 }
             }
+        } finally {
+            endBatch();
         }
     }
 
@@ -694,20 +746,23 @@ public final class PetManager {
         if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         var slots = screen.getMenu().slots;
         Set<String> foundUuids = new LinkedHashSet<>();
-        for (int slot : new int[]{30, 31, 32}) {
-            ItemStack stack = slots.get(slot).getItem();
-            if (stack.isEmpty()) continue;
-            String petInfo = getPetInfoFromStack(stack);
-            if (petInfo == null) continue;
-            PetData pet = PetData.fromPetInfo(petInfo);
-            if (pet.uuid() != null) {
-                // Ensure pet is in the main list
-                pets.removeIf(p -> pet.uuid().equals(p.uuid()));
-                pets.add(pet);
-                foundUuids.add(pet.uuid());
+        beginBatch();
+        try {
+            for (int slot : new int[]{30, 31, 32}) {
+                ItemStack stack = slots.get(slot).getItem();
+                if (stack.isEmpty()) continue;
+                String petInfo = getPetInfoFromStack(stack);
+                if (petInfo == null) continue;
+                PetData pet = PetData.fromPetInfo(petInfo);
+                if (pet.uuid() != null) {
+                    addPet(pet); // update in place if the uuid is already tracked
+                    foundUuids.add(pet.uuid());
+                }
             }
+            setSharedPetUuids(foundUuids);
+        } finally {
+            endBatch();
         }
-        setSharedPetUuids(foundUuids);
     }
 
     /** Scan the Your Skills page for pet-relevant skill levels. */
