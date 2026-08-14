@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.babyzombie.addons.config.hud.CategoryHudSwitcher;
 import top.babyzombie.addons.module.kuudra.ChestCounter;
 import top.babyzombie.addons.module.misc.AutoReconnectHelper;
 import top.babyzombie.addons.util.gui.overlay.GuiOverlayManager;
@@ -30,7 +29,6 @@ public class ScreenMixin {
 
     @Inject(method = "extractRenderState*", at = @At("RETURN"))
     private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
-        CategoryHudSwitcher.renderOnScreen(graphics, mouseX, mouseY);
         ChestCounter.renderOnScreen(graphics, mouseX, mouseY);
         GuiOverlayManager.onRender((Screen) (Object) this, graphics, mouseX, mouseY, a);
 
@@ -73,9 +71,10 @@ public class ScreenMixin {
     // 因此使用 Fabric 官方 Screen Mouse Events API 作为最终方案。
     //
     // AbstractContainerScreen 子类重写了三方法，仍然由 ContainerClickMixin
-    // 进行针对性注入（slotClicked / keyPressed 等），但全局的
-    // CategoryHudSwitcher 与 GuiOverlayManager 鼠标事件已统一走 Screen API，
-    // ContainerClickMixin 中对应片段已去除以防 AbstractContainerScreen 双重触发。
+    // 进行针对性注入（slotClicked / keyPressed 等），但全局的 GuiOverlayManager
+    // 鼠标事件已统一走 Screen API，ContainerClickMixin 中对应片段已去除以防
+    // AbstractContainerScreen 双重触发。分类 HUD 切换器（CHS）已内联到
+    // HudEditScreen 自行处理，不再走此全局入口。
     // =====================================================================
 
     private static boolean isDisconnectedScreen(Object screen) {

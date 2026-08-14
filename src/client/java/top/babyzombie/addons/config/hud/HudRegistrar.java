@@ -236,7 +236,7 @@ public final class HudRegistrar {
 
         // --- Category HUD Switcher (永远显示，不走 activeTag 过滤) ---
         HudManager.register("CategoryHudSwitcher", 1600, 10, 1.0f,
-                "§eHUD: §fALL ▼",
+                "config.babyzombieaddons.hud.chs.fallbackDemo",
                 "config.babyzombieaddons.option.hudCategorySwitcher",
                 () -> true,
                 HudTag.MISC);

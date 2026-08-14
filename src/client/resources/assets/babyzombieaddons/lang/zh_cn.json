@@ -1709,7 +1709,7 @@
   "config.babyzombieaddons.overlay.bazzar.toast.copiedFallback": "§a[BZA] §f已复制价格: §e%s coins",
   "config.babyzombieaddons.copyitem.toast.copiedTitle": "物品信息已复制",
   "config.babyzombieaddons.hud.edit.tagHint": "§e当前HUD筛选: §f%s",
-  "config.babyzombieaddons.hud.chs.fallbackDemo": "§eHUD: §f全部 ▼",
+  "config.babyzombieaddons.hud.chs.fallbackDemo": "§eHUD筛选: §f全部 ▼",
   "config.babyzombieaddons.option.bazzarApiEnabled": "使用 API 获取更多订单",
   "config.babyzombieaddons.option.bazzarApiEnabled.desc": "开启后从 Hypixel Bazaar 官方 API 获取完整订单阶梯(最多 30 档),替换界面解析的少量订单行。数据约 60 秒刷新一次,首次获取需等待。",
   "config.babyzombieaddons.option.bazzarMaxLines": "最大显示订单条数",
