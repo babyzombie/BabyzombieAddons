@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import top.babyzombie.addons.config.hud.CategoryHudSwitcher;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.module.chat.ItemProtectBridge;
 import top.babyzombie.addons.module.kuudra.ChestCounter;
@@ -34,7 +33,6 @@ public abstract class ContainerClickMixin {
 
     @Inject(method = "extractRenderState*", at = @At("TAIL"))
     private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
-        CategoryHudSwitcher.renderOnScreen(graphics, mouseX, mouseY);
         ChestCounter.renderOnScreen(graphics, mouseX, mouseY);
         GuiOverlayManager.onRender((AbstractContainerScreen<?>) (Object) this, graphics, mouseX, mouseY, a);
     }

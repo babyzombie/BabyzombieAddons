@@ -50,7 +50,6 @@ import top.babyzombie.addons.module.misc.raredrop.RareDropModule;
 import top.babyzombie.addons.module.slayer.SlayerModule;
 import top.babyzombie.addons.module.misc.UpdateChecker;
 import top.babyzombie.addons.module.misc.WindowTitleModule;
-import top.babyzombie.addons.config.hud.CategoryHudSwitcher;
 import top.babyzombie.addons.module.dungeon.withercloak.WitherCloakModule;
 import top.babyzombie.addons.module.misc.bazaar.BazzarTopOrdersOverlay;
 import top.babyzombie.addons.util.ChatUtils;
@@ -92,7 +91,6 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         HudManager.init();
         HudRegistrar.register();
         GuiOverlayManager.init();
-        CategoryHudSwitcher.init();
         BazzarTopOrdersOverlay.init();
 
         cancelKeyBindingRelease = KeyBindingUtil.register(
@@ -185,32 +183,23 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         // 事件注册基于 per-screen instance，每次 AFTER_INIT（新建/尺寸变更）
         // 时重新挂到具体 screen 实例上，符合 Fabric 设计。
         //
-        // 说明：AbstractContainerScreen 子类重写了这三个方法，ContainerClickMixin
-        // 原本也对 CHS / GuiOverlayManager 进行拦截；为避免 AbstractContainerScreen
-        // 子类出现双重触发，ContainerClickMixin 中 CHS + GuiOverlayManager 的
-        // 重复片段已移除，统一由这里的 Screen API 全局注册生效。
+        // 说明：这里只负责全局的 GuiOverlayManager 拦截。分类 HUD 切换器（CHS）
+        // 仅在 HudEditScreen 内生效，已内联到 HudEditScreen 自己处理，不再走全局
+        // 注册，避免与 HudEditScreen 的手动调用双重触发。
         // =====================================================================
         ScreenEvents.AFTER_INIT.register((mc, screen, sw, sh) -> {
             // --- mouseClicked ---
             // 返回 false = 不允许（= 被消费，屏蔽 Screen 原本的处理）；返回 true = 允许继续。
-            // 重要：CHS 与 GuiOverlayManager 的回调具有副作用（设置 pressed 等状态），
-            // 只允许在 allowMouseClick 中调用一次，after 阶段不再重复触发。
-            ScreenMouseEvents.allowMouseClick(screen).register((s, event) -> {
-                if (CategoryHudSwitcher.onMouseClicked(event)) return false;
-                return !GuiOverlayManager.onMouseClicked(s, event.x(), event.y(), event.button());
-            });
+            ScreenMouseEvents.allowMouseClick(screen).register((s, event) ->
+                    !GuiOverlayManager.onMouseClicked(s, event.x(), event.y(), event.button()));
 
             // --- mouseReleased ---
-            ScreenMouseEvents.allowMouseRelease(screen).register((s, event) -> {
-                if (CategoryHudSwitcher.onMouseReleased(event)) return false;
-                return !GuiOverlayManager.onMouseReleased(s, event.x(), event.y(), event.button());
-            });
+            ScreenMouseEvents.allowMouseRelease(screen).register((s, event) ->
+                    !GuiOverlayManager.onMouseReleased(s, event.x(), event.y(), event.button()));
 
             // --- mouseDragged ---
-            ScreenMouseEvents.allowMouseDrag(screen).register((s, event, dx, dy) -> {
-                if (CategoryHudSwitcher.onMouseDragged(event, dx, dy)) return false;
-                return !GuiOverlayManager.onMouseDragged(s, event.x(), event.y(), event.button(), dx, dy);
-            });
+            ScreenMouseEvents.allowMouseDrag(screen).register((s, event, dx, dy) ->
+                    !GuiOverlayManager.onMouseDragged(s, event.x(), event.y(), event.button(), dx, dy));
         });
     }
 }

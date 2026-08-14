@@ -5,7 +5,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.config.hud.CategoryHudSwitcher;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,7 +19,6 @@ public class InventoryScreenMixin {
 
     @Inject(method = "extractRenderState*", at = @At("TAIL"))
     private void onRender(GuiGraphicsExtractor g, int mouseX, int mouseY, float a, CallbackInfo ci) {
-        CategoryHudSwitcher.renderOnScreen(g, mouseX, mouseY);
         ChestCounter.renderOnScreen(g, mouseX, mouseY);
         GuiOverlayManager.onRender((InventoryScreen) (Object) this, g, mouseX, mouseY, a);
 
