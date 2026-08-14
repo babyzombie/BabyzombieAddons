@@ -2,6 +2,7 @@ package top.babyzombie.addons.module.garden;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.sounds.SoundEvents;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.util.ItemUtils;
@@ -21,9 +22,7 @@ public final class XpOrbSoundReducer {
     }
 
     private static boolean shouldReduce(SoundInstance sound) {
-        var theSound = sound.getSound();
-        if (theSound == null) return false;
-        if (!theSound.getLocation().getPath().equals("random/orb")) return false;
+        if (!sound.getIdentifier().equals(SoundEvents.EXPERIENCE_ORB_PICKUP.location())) return false;
         if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
         var location = HypixelLocationTracker.getInstance().getLocation();
         if (location == null || !location.equals("Garden")) return false;

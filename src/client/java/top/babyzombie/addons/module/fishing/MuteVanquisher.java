@@ -1,13 +1,13 @@
 package top.babyzombie.addons.module.fishing;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.util.PlaySoundHelper;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
-
-import java.util.Objects;
 
 public final class MuteVanquisher {
     private MuteVanquisher() {};
@@ -15,19 +15,20 @@ public final class MuteVanquisher {
     public static void init() {
         PlaySoundEvents.MODIFY.register((sound) -> {
             if (!HypixelLocationTracker.getInstance().isInCrimson()) return sound;
-            var item = Objects.requireNonNull(Minecraft.getInstance().player).getMainHandItem();
+            if (Minecraft.getInstance().player == null) return sound;
+            ItemStack item = Minecraft.getInstance().player.getMainHandItem();
             if (!item.is(Items.FISHING_ROD)) return sound;
-            var name = sound.getIdentifier().getPath();
+            var soundIdentifier  = sound.getIdentifier();
             var cfg = ModConfigManager.get().fishing.muteVanquisher;
-            if (name.startsWith("mob/wither/spawn") && cfg.spawn < 1) {
+            if (soundIdentifier.equals(SoundEvents.WITHER_SPAWN.location()) && cfg.spawn < 1) {
                 return PlaySoundHelper.withVolume(sound, cfg.spawn);
-            } else if (name.startsWith("mob/wither/idle") && cfg.idle < 1) {
+            } else if (soundIdentifier.equals(SoundEvents.WITHER_AMBIENT.location()) && cfg.idle < 1) {
                 return PlaySoundHelper.withVolume(sound, cfg.idle);
-            } else if (name.startsWith("mob/wither/hurt") && cfg.hurt < 1) {
+            } else if (soundIdentifier.equals(SoundEvents.WITHER_HURT.location()) && cfg.hurt < 1) {
                 return PlaySoundHelper.withVolume(sound, cfg.hurt);
-            } else if (name.startsWith("mob/wither/shoot") && cfg.shoot < 1) {
+            } else if (soundIdentifier.equals(SoundEvents.WITHER_SHOOT.location()) && cfg.shoot < 1) {
                 return PlaySoundHelper.withVolume(sound, cfg.shoot);
-            } else if (name.startsWith("mob/wither/death") && cfg.death < 1) {
+            } else if (soundIdentifier.equals(SoundEvents.WITHER_DEATH.location()) && cfg.death < 1) {
                 return PlaySoundHelper.withVolume(sound, cfg.death);
             }
             return sound;

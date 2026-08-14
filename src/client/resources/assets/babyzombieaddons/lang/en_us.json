@@ -1582,6 +1582,7 @@
   "config.babyzombieaddons.option.loadoutKeyNextPage.desc": "Key to go to the next page of loadouts.",
   "config.babyzombieaddons.option.loadoutKeyClose": "Close",
   "config.babyzombieaddons.option.loadoutKeyClose.desc": "Key to close the loadout screen (ESC always works).",
+  "babyzombieaddons.loadout.currentlyEquipped": "Currently Equipped",
   "babyzombieaddons.loadout.prev_page": "◀ Prev",
   "babyzombieaddons.loadout.next_page": "Next ▶",
   "babyzombieaddons.loadout.close": "✕ Close",

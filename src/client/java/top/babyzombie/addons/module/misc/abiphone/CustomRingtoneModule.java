@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -64,14 +65,12 @@ public final class CustomRingtoneModule {
                 || System.currentTimeMillis() - callDetectedAt > CANCEL_WINDOW_MS) {
             return false;
         }
-        var snd = sound.getSound();
-        if (snd == null) return false;
-        String path = snd.getLocation().getPath();
+        var identifier = sound.getIdentifier();
         float pitch = sound.getPitch();
 
         // pling pitch ≈ 1.67   /   bassattack pitch ≈ 0.49
-        if (path.contains("pling") && Math.abs(pitch - 1.67f) < 0.02f) return true;
-        if (path.contains("bassattack") && Math.abs(pitch - 0.49f) < 0.02f) return true;
+        if (identifier.equals(SoundEvents.NOTE_BLOCK_PLING.value().location()) && Math.abs(pitch - 1.67f) < 0.02f) return true;
+        if (identifier.equals(SoundEvents.NOTE_BLOCK_BASS.value().location()) && Math.abs(pitch - 0.49f) < 0.02f) return true;
 
         return false;
     }

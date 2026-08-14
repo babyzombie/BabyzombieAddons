@@ -2,6 +2,7 @@ package top.babyzombie.addons.module.misc;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.PlaySoundEvents;
@@ -25,13 +26,10 @@ public final class FallLandingSoundMute {
             var cfg = ModConfigManager.get().skyblock;
             if (cfg.fallSoundVolume >= 1.0f) return sound;
 
-            var snd = sound.getSound();
-            if (snd == null) return sound;
-
             // 只处理实体落地声
-            var loc = snd.getLocation();
-            if (!loc.getPath().equals("damage/fallsmall")
-                    && !loc.getPath().equals("damage/fallbig")) {
+            var identifier = sound.getIdentifier();
+            if (!identifier.equals(SoundEvents.PLAYER_SMALL_FALL.location())
+                    && !identifier.equals(SoundEvents.PLAYER_BIG_FALL.location())) {
                 return sound;
             }
 

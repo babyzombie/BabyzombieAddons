@@ -186,7 +186,7 @@ public class LoadoutDisplayScreen extends Screen {
 
     private void renderLeft(GuiGraphicsExtractor g, int mx, int my) {
         int pl = lm, pr = lm + lpw;
-        g.centeredText(this.font, "§e当前装备", (pl + pr) / 2, gt - 12, 0xFFFFFFFF);
+        g.centeredText(this.font, Component.translatable("babyzombieaddons.loadout.currentlyEquipped").getString(), (pl + pr) / 2, gt - 12, 0xFFFFFFFF);
 
         // 动态更新图标大小
         icSz = Math.max(18, this.width / 55);
