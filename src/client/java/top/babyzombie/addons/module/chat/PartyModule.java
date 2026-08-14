@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.Scheduler;
+import top.babyzombie.addons.util.ServerTickCounter;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.HypixelPlayerInfoTracker;
 import top.babyzombie.addons.util.tracker.PartyTracker;
@@ -285,7 +286,8 @@ public final class PartyModule {
         // !ping → report local ping
         if (cfg.partyPing && CMD_PING.matcher(msg).matches()) {
             int ping = ServerTick.getPing();
-            String pingMsg = "pc ping: " + (ping >= 0 ? ping + "ms" : "?");
+            int[] range = ServerTickCounter.getPingRange(cfg.partyPingRange);
+            String pingMsg = "pc ping: " + (ping >= 0 ? ping + "ms" : "?") + (range != null ? " (" + range[0] + "~" + range[1] + " in " + cfg.partyPingRange + "s)" : "");
             if (selfSent) {
                 scheduleWithDelay(() -> ChatUtils.sendCommand(pingMsg));
             } else {

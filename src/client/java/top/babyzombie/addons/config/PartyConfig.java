@@ -55,6 +55,11 @@ public class PartyConfig {
     public boolean partyPing = false;
 
     @Expose
+    @ConfigOption(name = "config.babyzombieaddons.option.partyPingRange", desc = "config.babyzombieaddons.option.partyPingRange.desc")
+    @ConfigEditorSlider(minValue = 0, maxValue = 300, minStep = 1) @SearchTag("party") @SearchTag("ping")
+    public int partyPingRange = 5;
+
+    @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.partyPlay", desc = "config.babyzombieaddons.option.partyPlay.desc")
     @ConfigEditorBoolean @SearchTag("party") @SearchTag("play")
     public boolean partyPlay = false;
