@@ -32,7 +32,13 @@ public class FishingConfig {
     public FishingCamera fishingCamera = new FishingCamera();
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.popupBaitLow", desc = "config.babyzombieaddons.option.popupBaitLow.desc") @ConfigEditorSlider(minValue = 0, maxValue = 64, minStep = 1) @SearchTag("bait")
-    public int popupBaitLow = 0;
+    public int popupBaitLow = 0;;
+
+    @Expose
+    @ConfigOption(name = "config.babyzombieaddons.group.muteVanquisher", desc = "")
+    @Accordion
+    public MuteVanquisher muteVanquisher = new MuteVanquisher();
+
 
     public static class RareSeaCreatures {
         @Expose
@@ -267,5 +273,22 @@ public class FishingConfig {
     public enum CameraYawMode {
         FIXED, FRONT, BACK, LEFT, RIGHT;
         @Override public String toString() { return ChatUtils.translate("config.babyzombieaddons.option.fishingCameraYawMode." + name()); }
+    }
+
+    public static class MuteVanquisher {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.muteVanquisher.spawn", desc = "config.babyzombieaddons.option.muteVanquisher.spawn.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1, minStep = 0.01f) @SearchTag("mute") @SearchTag("vanquisher")
+        public float spawn = 1;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.muteVanquisher.idle", desc = "config.babyzombieaddons.option.muteVanquisher.idle.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1, minStep = 0.01f) @SearchTag("mute") @SearchTag("vanquisher")
+        public float idle = 1;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.muteVanquisher.hurt", desc = "config.babyzombieaddons.option.muteVanquisher.hurt.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1, minStep = 0.01f) @SearchTag("mute") @SearchTag("vanquisher")
+        public float hurt = 1;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.muteVanquisher.shoot", desc = "config.babyzombieaddons.option.muteVanquisher.shoot.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1, minStep = 0.01f) @SearchTag("mute") @SearchTag("vanquisher")
+        public float shoot = 1;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.muteVanquisher.death", desc = "config.babyzombieaddons.option.muteVanquisher.death.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1, minStep = 0.01f) @SearchTag("mute") @SearchTag("vanquisher")
+        public float death = 1;
     }
 }

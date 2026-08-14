@@ -259,12 +259,15 @@ public final class PetManager {
         return Collections.unmodifiableSet(sharedPetUuids);
     }
 
-    /** Get all pets currently in exp share slots, filtered from the pets list. */
+    /** Get all pets currently in exp share slots, ordered by slot position (sharedPetUuids order). */
     public List<PetData> getSharedPets() {
         List<PetData> result = new ArrayList<>();
-        for (PetData p : pets) {
-            if (p.uuid() != null && sharedPetUuids.contains(p.uuid())) {
-                result.add(p);
+        for (String uuid : sharedPetUuids) {
+            for (PetData p : pets) {
+                if (uuid.equals(p.uuid())) {
+                    result.add(p);
+                    break;
+                }
             }
         }
         return result;
