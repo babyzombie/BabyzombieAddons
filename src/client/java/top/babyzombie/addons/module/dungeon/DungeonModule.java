@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.chat.PartyModule;
+import top.babyzombie.addons.module.dungeon.withercloak.WitherCloakModule;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.PartyTracker;
@@ -29,11 +30,13 @@ public final class DungeonModule {
     private DungeonModule() {}
 
     public static void init() {
+        WitherCloakModule.init();
         AutoRequeue.init();
         F4CrowdHiding.init();
         AutoChestClose.init();
         StormThunderMute.init();
         MuteRareDropSound.init();
+        DungeonJukeboxModule.init();
 
         // Instance start
         ClientReceiveMessageEvents.GAME.register((m, o) -> {
