@@ -1,11 +1,10 @@
 package top.babyzombie.addons.module.kuudra;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
-
 public final class KuudraModule {
     private KuudraModule() {}
 
     public static void init() {
+        ArrowPoisonRefill.init();
         KuudraLocationTracker.init();
         KuudraScreenProtector.init();
         KuudraHPDisplay.init();
@@ -34,9 +33,5 @@ public final class KuudraModule {
         KuudraP4Features.init();
         ChestCounter.init();
         KuudraEtherwarpLavaPrevent.init();
-
-        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
-            KuudraLocationTracker.reset();
-        });
     }
 }

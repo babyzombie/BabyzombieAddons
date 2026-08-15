@@ -16,29 +16,23 @@ public class FishingConfig {
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.lavaBobberFix", desc = "config.babyzombieaddons.option.lavaBobberFix.desc") @ConfigEditorBoolean @SearchTag("lava") @SearchTag("bobber") @SearchTag("fishing")
     public boolean lavaBobberFix = false;
 
-    @Expose
-    @ConfigOption(name = "config.babyzombieaddons.group.rareSeaCreatures", desc = "")
-    @Accordion
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.rareSeaCreatures", desc = "") @Accordion
     public RareSeaCreatures rareSeaCreatures = new RareSeaCreatures();
 
-    @Expose
-    @ConfigOption(name = "config.babyzombieaddons.group.preventInstantReel", desc = "")
-    @Accordion
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.preventInstantReel", desc = "") @Accordion
     public PreventInstantReel preventInstantReel = new PreventInstantReel();
 
-    @Expose
-    @ConfigOption(name = "config.babyzombieaddons.group.fishingCamera", desc = "")
-    @Accordion
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.fishingCamera", desc = "") @Accordion
     public FishingCamera fishingCamera = new FishingCamera();
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.popupBaitLow", desc = "config.babyzombieaddons.option.popupBaitLow.desc") @ConfigEditorSlider(minValue = 0, maxValue = 64, minStep = 1) @SearchTag("bait")
-    public int popupBaitLow = 0;;
+    public int popupBaitLow = 0;
 
-    @Expose
-    @ConfigOption(name = "config.babyzombieaddons.group.muteVanquisher", desc = "")
-    @Accordion
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.muteVanquisher", desc = "") @Accordion
     public MuteVanquisher muteVanquisher = new MuteVanquisher();
 
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.thunderSpark", desc = "") @Accordion
+    public ThunderSpark thunderSpark = new ThunderSpark();
 
     public static class RareSeaCreatures {
         @Expose
@@ -290,5 +284,16 @@ public class FishingConfig {
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.muteVanquisher.death", desc = "config.babyzombieaddons.option.muteVanquisher.death.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1, minStep = 0.01f) @SearchTag("mute") @SearchTag("vanquisher")
         public float death = 1;
+    }
+
+    public static class ThunderSpark {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.thunderSpark.hide", desc = "config.babyzombieaddons.option.thunderSpark.hide.desc") @ConfigEditorBoolean @SearchTag("Thunder") @SearchTag("Spark")
+        public boolean hide = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.thunderSpark.message", desc = "config.babyzombieaddons.option.thunderSpark.message.desc") @ConfigEditorBoolean @SearchTag("Thunder") @SearchTag("Spark")
+        public boolean message = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.thunderSpark.sound", desc = "config.babyzombieaddons.option.thunderSpark.sound.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1, minStep = 0.01f) @SearchTag("Thunder") @SearchTag("Spark")
+        public float sound = 1;
     }
 }

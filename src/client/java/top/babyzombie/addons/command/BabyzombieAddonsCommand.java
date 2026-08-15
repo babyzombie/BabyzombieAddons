@@ -39,6 +39,7 @@ public final class BabyzombieAddonsCommand {
 
     public static void init() {
         DebugGetSoundCommand.init();
+        DebugGetParticleCommand.init();
         FindCommand.init();
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
@@ -85,6 +86,7 @@ public final class BabyzombieAddonsCommand {
 
             var debug = literal("debug");
             DebugGetSoundCommand.register(debug);
+            DebugGetParticleCommand.register(debug);
             DebugInfoCommand.register(debug);
             DebugPlaySoundCommand.register(debug);
             DebugStopSoundCommand.register(debug);

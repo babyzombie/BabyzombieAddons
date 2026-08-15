@@ -19,7 +19,7 @@ public class IncomingCallHandler {
     private static final Pattern CALLER_PATTERN = Pattern.compile("✆\\s*(.+?)\\s*✆");
     private static String pendingCaller;
 
-    public static void register() {
+    public static void init() {
         ClientReceiveMessageEvents.GAME.register(IncomingCallHandler::onGameMessage);
         SendCommandEvents.BEFORE_SEND.register(command -> {
             if (!HypixelLocationTracker.getInstance().isOnHypixel()) return false;

@@ -15,43 +15,19 @@ import top.babyzombie.addons.command.BabyzombieAddonsCommand;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.hud.HudRegistrar;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.module.chat.ChatModule;
+import top.babyzombie.addons.module.events.EventsModule;
 import top.babyzombie.addons.module.fishing.*;
-import top.babyzombie.addons.module.misc.abiphone.AbiphoneTracker;
-import top.babyzombie.addons.module.misc.abiphone.CustomRingtoneModule;
-import top.babyzombie.addons.module.misc.abiphone.IncomingCallHandler;
-import top.babyzombie.addons.module.misc.AutoJoinModule;
-import top.babyzombie.addons.module.misc.autois.AutoISModule;
-import top.babyzombie.addons.module.misc.autois.KickRecoveryModule;
-import top.babyzombie.addons.module.misc.AutoReconnectHelper;
-import top.babyzombie.addons.module.misc.BazaarSellFromSacks;
 import top.babyzombie.addons.module.dungeon.CustomDiscScanner;
-import top.babyzombie.addons.module.dungeon.DungeonJukeboxModule;
 import top.babyzombie.addons.module.dungeon.DungeonModule;
 import top.babyzombie.addons.module.garden.GardenModule;
-import top.babyzombie.addons.module.events.FruitDiggingModule;
-import top.babyzombie.addons.module.events.GreatSpookModule;
-import top.babyzombie.addons.module.events.RaffleTaskModule;
 import top.babyzombie.addons.module.kuudra.KuudraModule;
 import top.babyzombie.addons.module.hunting.HuntingModule;
-import top.babyzombie.addons.module.misc.loadout.LoadoutModule;
-import top.babyzombie.addons.module.misc.pet.PetDisplayHud;
-import top.babyzombie.addons.module.kuudra.ArrowPoisonRefill;
 import top.babyzombie.addons.module.mining.MiningModule;
 import top.babyzombie.addons.module.minigames.ravengard.RavengardModule;
 import top.babyzombie.addons.module.misc.MiscModule;
-import top.babyzombie.addons.module.chat.PartyModule;
-import top.babyzombie.addons.module.chat.playcmd.PlayCmdModule;
-import top.babyzombie.addons.module.chat.AutotipModule;
-import top.babyzombie.addons.module.chat.ChatChannelModule;
-import top.babyzombie.addons.module.chat.ContainerChatModule;
-import top.babyzombie.addons.module.chat.WaypointMarkerModule;
-import top.babyzombie.addons.module.chat.popup.PopupEventsModule;
-import top.babyzombie.addons.module.misc.raredrop.RareDropModule;
 import top.babyzombie.addons.module.slayer.SlayerModule;
 import top.babyzombie.addons.module.misc.UpdateChecker;
-import top.babyzombie.addons.module.misc.WindowTitleModule;
-import top.babyzombie.addons.module.dungeon.withercloak.WitherCloakModule;
-import top.babyzombie.addons.module.misc.bazaar.BazzarTopOrdersOverlay;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DungeonCooldown;
 import top.babyzombie.addons.util.gui.overlay.GuiOverlayManager;
@@ -91,7 +67,6 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         HudManager.init();
         HudRegistrar.register();
         GuiOverlayManager.init();
-        BazzarTopOrdersOverlay.init();
 
         cancelKeyBindingRelease = KeyBindingUtil.register(
                 "key.babyzombieaddons.cancel_key_release", InputConstants.KEY_LALT);
@@ -118,54 +93,29 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
 
         HypixelLocationTracker.getInstance().init();
         ServerVisitTracker.getInstance().init();
-        AbiphoneTracker.getInstance().init();
         PartyTracker.getInstance().init();
         HypixelPlayerInfoTracker.getInstance().init();
         ClientBossbarManager.init();
         DungeonCooldown.init();
         ServerTickCounter.init();
         Waypoints.init();
-        IncomingCallHandler.register();
-        CustomRingtoneModule.init();
 
         BabyzombieAddonsCommand.init();
 
-        AutoJoinModule.init();
-        AutoISModule.init();
-        KickRecoveryModule.init();
-        AutoReconnectHelper.init();
-        BazaarSellFromSacks.init();
         DungeonModule.init();
         CustomDiscScanner.init();
-        DungeonJukeboxModule.init();
-        FishingCameraModule.init();
-        MuteVanquisher.init();
-        RareSeaCreaturesAlert.init();
-        RareSeaCreaturesSelfAlert.init();
-        PreventInstantReel.init();
+        FishingModule.init();
         GardenModule.init();
-        GreatSpookModule.init();
-        FruitDiggingModule.init();
-        RaffleTaskModule.init();
+        EventsModule.init();
         KuudraModule.init();
-        ArrowPoisonRefill.init();
         MiningModule.init();
         MiscModule.init();
-        PartyModule.init();
-        PlayCmdModule.init();
-        AutotipModule.init();
-        ChatChannelModule.init();
-        WaypointMarkerModule.init();
-        ContainerChatModule.init();
-        PopupEventsModule.init();
-        RareDropModule.init();
+        ChatModule.init();
         SlayerModule.init();
-        WitherCloakModule.init();
-        WindowTitleModule.init();
-        PetManager.getInstance().init();
-        PetDisplayHud.init();
         HuntingModule.init();
-        LoadoutModule.init();
+
+        PetManager.getInstance().init();
+
         RavengardModule.init();
 
         ClientLifecycleEvents.CLIENT_STOPPING.register(_ -> WorldRenderUtils.close());
@@ -187,7 +137,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         // 仅在 HudEditScreen 内生效，已内联到 HudEditScreen 自己处理，不再走全局
         // 注册，避免与 HudEditScreen 的手动调用双重触发。
         // =====================================================================
-        ScreenEvents.AFTER_INIT.register((mc, screen, sw, sh) -> {
+        ScreenEvents.AFTER_INIT.register((minecraft, screen, sw, sh) -> {
             // --- mouseClicked ---
             // 返回 false = 不允许（= 被消费，屏蔽 Screen 原本的处理）；返回 true = 允许继续。
             ScreenMouseEvents.allowMouseClick(screen).register((s, event) ->

@@ -1,5 +1,6 @@
 package top.babyzombie.addons.module.kuudra;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,6 +31,8 @@ public final class KuudraLocationTracker {
             checkPlayerLocation(client);
             findKuudra(client);
         });
+
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((_, _) -> reset());
     }
 
     private static void checkPlayerLocation(Minecraft client) {
@@ -71,7 +74,7 @@ public final class KuudraLocationTracker {
         }
     }
 
-    public static void reset() {
+    private static void reset() {
         if (kuudraEntity != null) {
             GlowController.setGlow(kuudraEntity, false, 0);
         }
