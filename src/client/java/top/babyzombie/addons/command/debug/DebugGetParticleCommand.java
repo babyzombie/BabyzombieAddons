@@ -43,9 +43,16 @@ public final class DebugGetParticleCommand {
 
             var hover = Component.translatable(
                     "babyzombieaddons.debug.particle.hover",
-                    className, xa, ya, za);
+                    className,
+                    String.format("%.2f", xa),
+                    String.format("%.2f", ya),
+                    String.format("%.2f", za));
             var line = Component.translatable(
-                    "babyzombieaddons.debug.particle.line", id, x, y, z)
+                    "babyzombieaddons.debug.particle.line",
+                    id,
+                    String.format("%.2f", x),
+                    String.format("%.2f", y),
+                    String.format("%.2f", z))
                     .withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(hover)));
             ChatUtils.showMessage(line);
             return false;
@@ -64,7 +71,7 @@ public final class DebugGetParticleCommand {
         monitor = !monitor;
         if (monitor) range = 5.0;
         src.sendFeedback(monitor
-                ? Component.translatable("babyzombieaddons.debug.particle.monitor_on", range)
+                ? Component.translatable("babyzombieaddons.debug.particle.monitor_on", String.format("%.1f", range))
                 : Component.translatable("babyzombieaddons.debug.particle.monitor_off"));
         return 1;
     }
@@ -72,7 +79,7 @@ public final class DebugGetParticleCommand {
     private static int setRange(FabricClientCommandSource src, double r) {
         range = r;
         monitor = true;
-        src.sendFeedback(Component.translatable("babyzombieaddons.debug.particle.monitor_on", range));
+        src.sendFeedback(Component.translatable("babyzombieaddons.debug.particle.monitor_on", String.format("%.1f", range)));
         return 1;
     }
 }

@@ -99,6 +99,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         DungeonCooldown.init();
         ServerTickCounter.init();
         Waypoints.init();
+        PetManager.getInstance().init();
 
         BabyzombieAddonsCommand.init();
 
@@ -113,8 +114,6 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         ChatModule.init();
         SlayerModule.init();
         HuntingModule.init();
-
-        PetManager.getInstance().init();
 
         RavengardModule.init();
 

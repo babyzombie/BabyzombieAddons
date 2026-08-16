@@ -44,7 +44,7 @@ public final class RavengardModule {
     /** 是否处于 Ravengard 小游戏（Hub 或 三人地牢）。 */
     public static boolean isInRavengard() {
         String mode = HypixelLocationTracker.getInstance().getMode();
-        return "RAVENGARD_HUB".equals(mode) || "RAVENGARD_DUNGEON_TRIO".equals(mode);
+        return mode != null && mode.startsWith("RAVENGARD_");
     }
 
     /** 价格显示功能是否开启且当前处于 Ravengard。 */

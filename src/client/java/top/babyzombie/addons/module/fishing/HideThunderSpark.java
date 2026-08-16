@@ -66,10 +66,7 @@ public class HideThunderSpark {
         EntityRenderEvents.BEFORE_RENDER.register(entity -> {
             if (!HypixelLocationTracker.getInstance().isInCrimson()) return false;
             if (!ModConfigManager.get().fishing.thunderSpark.hide) return false;
-            if (entity instanceof ArmorStand armorStand) {
-                var item = armorStand.getMainHandItem();
-                return !item.isEmpty() && SPARK_TEXTURE.equals(ItemUtils.getSkullTexture(item));
-            }
+            if (entity instanceof ArmorStand armorStand) return sparks.contains(armorStand);
             return false;
         });
 

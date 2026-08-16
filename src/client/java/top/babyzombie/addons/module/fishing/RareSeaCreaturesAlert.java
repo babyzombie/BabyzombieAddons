@@ -64,7 +64,7 @@ public final class RareSeaCreaturesAlert {
             String firstTitleKey = null;
             Integer titleEntityId = null;
             for (var stand : stands) {
-                String rawName = stand.getName().getString();
+                String rawName = ChatUtils.toLegacyString(stand.getName());
                 if (!((rawName.contains(AQUATIC) || rawName.contains(MAGMATIC)) && rawName.contains(ELUSIVE))) continue;
 
                 var def = RareSeaCreatureDefinitions.match(rawName);
