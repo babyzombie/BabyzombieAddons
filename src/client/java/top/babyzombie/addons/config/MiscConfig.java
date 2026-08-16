@@ -20,6 +20,12 @@ public class MiscConfig {
     public boolean showClickEventInHover = false;
 
     @Expose
+    @ConfigOption(name = "config.babyzombieaddons.option.allowOverMaxStackSize", desc = "config.babyzombieaddons.option.allowOverMaxStackSize.desc")
+    @ConfigEditorBoolean
+    @SearchTag("stack") @SearchTag("item") @SearchTag("max")
+    public boolean allowOverMaxStackSize = true;
+
+    @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.renderPhase", desc = "config.babyzombieaddons.option.renderPhase.desc")
     @ConfigEditorDropdown
     @SearchTag("render")

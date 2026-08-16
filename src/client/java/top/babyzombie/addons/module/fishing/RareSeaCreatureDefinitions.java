@@ -213,7 +213,7 @@ public final class RareSeaCreatureDefinitions {
         String s = ChatUtils.removeEmoji(rawName);
         // §k（乱码）格式码后的单个字符是乱码占位字符，如腐化海怪名 "§5§ka§5Corrupted Puddle Jumper§5§ka"，
         // 连格式码一起剥离，否则会残留占位字符导致无法匹配
-        s = s.replaceAll("§k(?![§&]).", "");
+        s = s.replaceAll("§k(?![§&]).", "").trim();
         s = ChatUtils.stripColor(s);
         s = s.replaceAll("\\[[Ll][Vv]\\s*\\d+\\]", "");
         s = s.replaceAll("[\\d,./]+[kKmMbB]?", "").replace("❤", "");

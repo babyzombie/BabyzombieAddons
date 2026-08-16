@@ -23,6 +23,7 @@ logs/
 .proxyai/
 
 CLAUDE.md
+.mcp.json
 docs/
 
 # python
