@@ -33,6 +33,7 @@ public class HideThunderSpark {
             if (!HypixelLocationTracker.getInstance().isInCrimson()) return;
             if (client.level == null || client.player == null) return;
             if (client.player.tickCount % 10 != 0) return;
+            if (!ModConfigManager.get().fishing.thunderSpark.hide && ModConfigManager.get().fishing.thunderSpark.sound >= 1) return;
             sparks.clear();
             var ab = client.player.getBoundingBox().inflate(ARMOR_STAND_SCAN_RANGE);
             var entities = client.level.getEntitiesOfClass(ArmorStand.class, ab, e -> {
