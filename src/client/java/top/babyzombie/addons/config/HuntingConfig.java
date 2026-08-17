@@ -328,6 +328,8 @@ public class HuntingConfig {
         public ChromaColour beeGlowColor = ChromaColour.fromStaticRGB(85, 255, 85, 255);
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestBeeNestHighlight", desc = "config.babyzombieaddons.option.safariForestBeeNestHighlight.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("bee") @SearchTag("nest") @SearchTag("forest")
         public boolean beeNestHighlight = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariForestBeeNestHighlightColor", desc = "config.babyzombieaddons.option.safariForestBeeNestHighlightColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("bee") @SearchTag("nest") @SearchTag("forest")
+        public ChromaColour beeNestHighlightColor = ChromaColour.fromStaticRGB(255, 0, 0, 255);
     }
 
     /** 精灵球落地镜头（组中组） */
