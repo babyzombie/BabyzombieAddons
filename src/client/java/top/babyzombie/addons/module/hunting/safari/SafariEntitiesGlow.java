@@ -311,7 +311,7 @@ public final class SafariEntitiesGlow {
     private static boolean isShulkerLike(Entity entity) {
         if (entity instanceof Shulker) return true;
         if (entity instanceof Display.ItemDisplay itemDisplay) {
-            return itemDisplay.getItemStack().is(Items.GREEN_SHULKER_BOX) || itemDisplay.getItemStack().is(Items.PURPLE_SHULKER_BOX);
+            return itemDisplay.getItemStack().is(Items.DYED_SHULKER_BOX.green()) || itemDisplay.getItemStack().is(Items.DYED_SHULKER_BOX.purple());
         }
         return false;
     }
