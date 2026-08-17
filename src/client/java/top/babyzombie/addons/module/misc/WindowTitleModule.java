@@ -3,7 +3,10 @@ package top.babyzombie.addons.module.misc;
 import com.sun.management.OperatingSystemMXBean;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.mixin.window.FramerateLimitTrackerAccessor;
 import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.ServerTickCounter;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
@@ -11,6 +14,7 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public final class WindowTitleModule {
 
@@ -56,13 +60,21 @@ public final class WindowTitleModule {
             }
         }
 
-        // ── 自定义片段（位置 → 内存 → 延迟）──
+        // ── 自定义片段（位置 → 世界天数 → 内存 → 系统内存 → 延迟 → 会话 → 挂机）──
         List<String> parts = new ArrayList<>();
 
         if (wt.windowTitle.showLocation) {
             String loc = buildLocationString(tracker);
             if (loc != null) {
                 parts.add(loc);
+            }
+        }
+
+        if (wt.windowTitle.showSkyblockDay) {
+            double day = tracker.getDays();
+            if (day >= 0) {
+                parts.add(String.format(Locale.ROOT, t("babyzombieaddons.windowTitle.display.day"),
+                    String.format(Locale.ROOT, "%.1f", day)));
             }
         }
 
@@ -94,6 +106,19 @@ public final class WindowTitleModule {
                 } else {
                     parts.add("Ping " + ping + "ms");
                 }
+            }
+        }
+
+        if (wt.windowTitle.showSession) {
+            parts.add(String.format(Locale.ROOT, t("babyzombieaddons.windowTitle.display.session"),
+                formatDuration(ManagementFactory.getRuntimeMXBean().getUptime())));
+        }
+
+        if (wt.windowTitle.showIdle) {
+            long idleMs = idleMs();
+            if (idleMs >= wt.windowTitle.idleThresholdSeconds * 1000L) {
+                parts.add(String.format(Locale.ROOT, t("babyzombieaddons.windowTitle.display.idle"),
+                    formatDuration(idleMs)));
             }
         }
 
@@ -137,6 +162,30 @@ public final class WindowTitleModule {
     }
 
     // ── Helpers ──
+
+    private static String t(String key) {
+        return Component.translatable(key).getString();
+    }
+
+    private static long idleMs() {
+        var tracker = Minecraft.getInstance().getFramerateLimitTracker();
+        if (tracker == null) return -1;
+        return Util.getMillis() - ((FramerateLimitTrackerAccessor) tracker).getLatestInputTime();
+    }
+
+    private static String formatDuration(long ms) {
+        if (ms < 1000) return ms + "ms";
+        long s = ms / 1000;
+        if (s < 60) return s + "s";
+        long m = s / 60;
+        s %= 60;
+        if (m < 60) return s == 0 ? m + "m" : m + "m" + s + "s";
+        long h = m / 60;
+        m %= 60;
+        if (m == 0 && s == 0) return h + "h";
+        if (s == 0) return h + "h" + m + "m";
+        return h + "h" + m + "m" + s + "s";
+    }
 
     private static String formatMB(long bytes) {
         long mb = bytes / (1024 * 1024);

@@ -160,6 +160,8 @@ public class GeneralConfig {
         public boolean showLocation = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleOverride", desc = "config.babyzombieaddons.option.windowTitleOverride.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("override")
         public boolean overrideOriginal = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowSkyblockDay", desc = "config.babyzombieaddons.option.windowTitleShowSkyblockDay.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("day") @SearchTag("skyblock")
+        public boolean showSkyblockDay = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowMemory", desc = "config.babyzombieaddons.option.windowTitleShowMemory.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("memory")
         public boolean showMemory = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowSystemMemory", desc = "config.babyzombieaddons.option.windowTitleShowSystemMemory.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("memory")
@@ -168,5 +170,11 @@ public class GeneralConfig {
         public boolean showPing = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitlePingRangeSeconds", desc = "config.babyzombieaddons.option.windowTitlePingRangeSeconds.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("title") @SearchTag("ping")
         public int pingRangeSeconds = 5;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowSession", desc = "config.babyzombieaddons.option.windowTitleShowSession.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("session") @SearchTag("uptime")
+        public boolean showSession = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowIdle", desc = "config.babyzombieaddons.option.windowTitleShowIdle.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("idle") @SearchTag("afk")
+        public boolean showIdle = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleIdleThreshold", desc = "config.babyzombieaddons.option.windowTitleIdleThreshold.desc") @ConfigEditorSlider(minValue = 1, maxValue = 3600, minStep = 1) @SearchTag("title") @SearchTag("idle") @SearchTag("afk") @SearchTag("threshold")
+        public int idleThresholdSeconds = 60;
     }
 }

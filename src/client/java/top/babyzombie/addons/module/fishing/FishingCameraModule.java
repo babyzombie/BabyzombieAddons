@@ -39,13 +39,8 @@ public final class FishingCameraModule {
 
     /// 特写画面高度(物理像素),宽度按窗口比例,避免投影纵横比拉伸
     private static final int FEED_HEIGHT = 256;
-    /// 是否已加载 Iris(光影):光影接管渲染管线,双相机渲染会导致主画面闪烁
-    private static final boolean IRIS_LOADED = FabricLoader.getInstance().isModLoaded("iris");
     /// 帧率限制(渲染时间戳):secondCameraFrameRate 配置(帧/秒)
     private static long lastRenderMillis;
-    /// 光影启用检测缓存(1 秒刷新一次,避免每帧反射)
-    private static boolean shadersInUse;
-    private static long lastShaderCheckMillis;
     /// 第二相机视锥远平面(格):限制区块挑选范围,减少提交量(视距配置,直接以格为单位)
     public static float secondCameraDepthFar() {
         return ModConfigManager.get().fishing.fishingCamera.viewDistance;
@@ -127,11 +122,6 @@ public final class FishingCameraModule {
             feedReady = false;
             return;
         }
-        // 光影(Iris)启用时禁用:双相机渲染与 shader 状态冲突,主画面会闪烁
-        if (cfg.disableWithShaders && isShaderPackInUse()) {
-            feedReady = false;
-            return;
-        }
         // 帧率限制(按秒):距离上次渲染不足 1/fps 秒则跳过,保留上一帧画面(feedReady 不清)
         long now = Util.getMillis();
         if (now - lastRenderMillis < 1000L / Math.max(1, cfg.frameRate)) return;
@@ -177,23 +167,6 @@ public final class FishingCameraModule {
     }
 
     /// HUD 提取阶段调用:把特写画面贴到 HUD 元素位置(支持编辑/缩放)。
-    /// 光影是否实际启用(反射 IrisApi,1 秒缓存;未装 Iris 或 API 不可用时回退为按安装检测)
-    private static boolean isShaderPackInUse() {
-        if (!IRIS_LOADED) return false;
-        long now = Util.getMillis();
-        if (now - lastShaderCheckMillis < 1000L) return shadersInUse;
-        lastShaderCheckMillis = now;
-        try {
-            Class<?> apiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
-            Object api = apiClass.getMethod("getInstance").invoke(null);
-            shadersInUse = (boolean) apiClass.getMethod("isShaderPackInUse").invoke(api);
-        } catch (Exception ignored) {
-            // API 不可用(版本差异):回退为按安装检测
-            shadersInUse = true;
-        }
-        return shadersInUse;
-    }
-
     /// 画中画边框宽度(逻辑像素)
     private static final int FRAME_BORDER = 2;
 
