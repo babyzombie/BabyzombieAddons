@@ -222,11 +222,11 @@ public class HypixelLocationTracker {
         return Objects.equals(currentLocation.map(), map);
     }
 
-    /** @return the current skyblock day from world time, or -1 if not in a world. */
-    public int getSkyblockDay() {
+    /** @return the current day from world time. */
+    public double getDays() {
         var world = Minecraft.getInstance().level;
-        if (world == null || !isInSkyblock()) return -1;
-        return (int)(world.getOverworldClockTime() / 24000L);
+        if (world == null) return -1;
+        return world.getOverworldClockTime() / 24000.0;
     }
 
     /** @return the dungeon floor from the location string, or null. */

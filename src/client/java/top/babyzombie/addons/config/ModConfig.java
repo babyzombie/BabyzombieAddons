@@ -74,7 +74,7 @@ public class ModConfig extends Config {
         @Override public String toString() { return t("config.babyzombieaddons.option.glaciteMineshaftPortalSoundSelect." + name()); }
     }
     public enum MineshaftCorpseRenderMode {
-        FILLED, WIREFRAME;
+        FILLED, WIREFRAME, GLOW;
         @Override public String toString() { return t("config.babyzombieaddons.option.mineshaftCorpseRenderMode." + name()); }
     }
     public enum GummyPolarBearMode {

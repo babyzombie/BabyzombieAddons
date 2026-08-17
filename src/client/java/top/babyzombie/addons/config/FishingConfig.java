@@ -243,9 +243,6 @@ public class FishingConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraLinger", desc = "config.babyzombieaddons.option.fishingCameraLinger.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("camera")
         public int lingerTicks = 0;
 
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraDisableWithShaders", desc = "config.babyzombieaddons.option.fishingCameraDisableWithShaders.desc") @ConfigEditorBoolean @SearchTag("shader") @SearchTag("iris")
-        public boolean disableWithShaders = true;
-
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.fishingCameraAspectRatio", desc = "config.babyzombieaddons.option.fishingCameraAspectRatio.desc") @ConfigEditorDropdown
         public CameraAspectRatio aspectRatio = CameraAspectRatio.R2_1;
 

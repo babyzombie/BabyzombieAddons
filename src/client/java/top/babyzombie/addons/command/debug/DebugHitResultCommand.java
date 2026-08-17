@@ -25,7 +25,7 @@ public final class DebugHitResultCommand {
     static {
         LevelRenderEvents.AFTER_TRANSLUCENT_FEATURES.register(ctx -> {
             if (!showHitResult) return;
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
+            if (HypixelLocationTracker.getInstance().isOnHypixel() && !HypixelLocationTracker.getInstance().isInSkyblock()) return;
             var mc = Minecraft.getInstance();
             var hit = mc.hitResult;
             if (hit == null) return;

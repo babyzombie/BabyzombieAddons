@@ -1,18 +1,20 @@
 package top.babyzombie.addons.module.mining.glacitetunnels;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
-import top.babyzombie.addons.util.render.RenderPhaseRegister;
+import net.minecraft.sounds.SoundSource;
+import top.babyzombie.addons.config.ModConfig;
+import top.babyzombie.addons.module.chat.popup.PopupEventsModule;
+import top.babyzombie.addons.util.*;
+import top.babyzombie.addons.util.render.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -20,13 +22,6 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.event.HypixelLocationEvents;
 import top.babyzombie.addons.mixin.render.PlayerTabOverlayAccessor;
-import top.babyzombie.addons.util.ChatUtils;
-import top.babyzombie.addons.util.ItemUtils;
-import top.babyzombie.addons.util.Scheduler;
-import top.babyzombie.addons.util.ServerTick;
-import top.babyzombie.addons.util.render.BeamRenderer;
-import top.babyzombie.addons.util.render.WorldRenderUtils;
-import top.babyzombie.addons.util.render.WorldTextRenderer;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.PartyTracker;
 import top.babyzombie.addons.config.ModConfig.GlaciteMineshaftPortalAction;
@@ -54,6 +49,8 @@ public final class GlaciteMineshaftWaypoints {
 
     private static final Set<String> LANTERN_IDS = Set.of(
             "LANTERN", "MITHRIL_LANTERN", "TITANIUM_LANTERN", "GLACITE_LANTERN", "WILL_O_WASP");
+
+    private static final List<Float> lllllava = Arrays.asList(0.9f, 2.45f, 40.7f, 42.2f);
 
     private GlaciteMineshaftWaypoints() {}
 
@@ -228,9 +225,21 @@ public final class GlaciteMineshaftWaypoints {
                 if (cfg.portalSoundAlert) {
                     var player = Minecraft.getInstance().player;
                     if (player != null) {
-                        player.level().playSound(player, player.blockPosition(),
-                                cfg.portalSound.sound,
-                                net.minecraft.sounds.SoundSource.MASTER, 1f, 1f);
+                        if (cfg.portalSound == ModConfig.GlaciteMineshaftPortalSound.LAVA_CHICKEN) {
+                            var instance = new SimpleSoundInstance(
+                                    cfg.portalSound.sound.location(), SoundSource.MASTER,
+                                    1f, 1f,
+                                    SoundInstance.createUnseededRandom(),
+                                    false, 0,
+                                    SoundInstance.Attenuation.NONE,
+                                    0, 0, 0, true
+                            );
+                            PlaySoundHelper.playSeeked(instance, lllllava.get((int) (Math.random() * lllllava.size())), 1.5f);
+                        } else {
+                            player.level().playSound(player, player.blockPosition(),
+                                    cfg.portalSound.sound,
+                                    net.minecraft.sounds.SoundSource.MASTER, 1f, 1f);
+                        }
                     }
                 }
                 if (cfg.portalTitleAlert) {
@@ -317,7 +326,10 @@ public final class GlaciteMineshaftWaypoints {
                         if (player.distanceTo(stand) <= 3) {
                             visitedCorpses.add(pos);
                         }
-                        if (visitedCorpses.contains(pos)) continue;
+                        if (visitedCorpses.contains(pos)) {
+                            if (mode == MineshaftCorpseRenderMode.GLOW) GlowController.setGlow(stand, false);
+                            continue;
+                        };
                         String name = corpse.type.displayName;
                         var x = corpse.x;
                         var y = corpse.y + 2;
@@ -326,18 +338,16 @@ public final class GlaciteMineshaftWaypoints {
                         float r = color.getRed() / 255f;
                         float g = color.getGreen() / 255f;
                         float b = color.getBlue() / 255f;
-                        if (mode == MineshaftCorpseRenderMode.FILLED) {
-                            WorldRenderUtils.drawFilledBox(ctx,
+                        switch (mode) {
+                            case FILLED -> WorldRenderUtils.drawFilledBox(ctx,
                                     x - 0.4, y - 2.0, z - 0.4,
                                     x + 0.4, y + 0.2, z + 0.4,
-                                    r, g, b, 0.6f * 0.5f,
-                                    false);
-                        } else {
-                            WorldRenderUtils.drawWireframeBox(ctx,
-                                    x - 0.4, y - 2.0, z - 0.4,
-                                    x + 0.4, y + 0.2, z + 0.4,
-                                    r, g, b, 0.6f,
-                                    false, 4.0f);
+                                    r, g, b, 0.6f * 0.5f, false);
+                            case WIREFRAME -> WorldRenderUtils.drawWireframeBox(ctx,
+                                            x - 0.4, y - 2.0, z - 0.4,
+                                            x + 0.4, y + 0.2, z + 0.4,
+                                            r, g, b, 0.6f, false, 4.0f);
+                            case GLOW -> GlowController.setGlow(stand, true, color.getRGB());
                         }
                         WorldTextRenderer.renderString(ctx, name, x, y, z, 0xFFFFFF55, 0.05f, true);
                     }

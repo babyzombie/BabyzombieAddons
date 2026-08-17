@@ -99,7 +99,7 @@ public final class PopupEventsModule {
             var cfg = ModConfigManager.get().popup;
             String text = message.getString();
 
-            boolean isSysMsg = !text.matches("^(公会|Guild|组队|Party|Officer|Co-op) > .+|From .+|(?:\\[[^]]+\\] )?\\w{2,16}: .+");
+            boolean isSysMsg = !text.matches("^((公会|Guild|组队|Party|Officer|Co-op) > .+|From .+|(?:\\[[^]]+\\] )?\\w{2,16}: .+)");
 
             if (isSysMsg) {
                 if (cfg.popupPartyInvite || cfg.popupGuildPartyInvite) {

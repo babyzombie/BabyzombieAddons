@@ -15,6 +15,12 @@ public final class ParticleRenderEvents {
                 return false;
             });
 
+    @FunctionalInterface
+    public interface BeforeAdd {
+        /** Return true to cancel adding this particle. */
+        boolean beforeAdd(Particle particle);
+    }
+
     public static final Event<BeforeCreate> BEFORE_CREATE =
             EventFactory.createArrayBacked(BeforeCreate.class, callbacks -> (ParticleOptions options, double x, double y, double z, double xa, double ya, double za) -> {
                 for (BeforeCreate cb : callbacks) {
@@ -22,12 +28,6 @@ public final class ParticleRenderEvents {
                 }
                 return false;
             });
-
-    @FunctionalInterface
-    public interface BeforeAdd {
-        /** Return true to cancel adding this particle. */
-        boolean beforeAdd(Particle particle);
-    }
 
     @FunctionalInterface
     public interface BeforeCreate {

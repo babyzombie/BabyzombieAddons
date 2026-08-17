@@ -12,7 +12,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
 import top.babyzombie.addons.config.HuntingConfig;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -48,12 +50,9 @@ public final class SafariEntitiesGlow {
     private static final int SCULK_SENSOR_RANGE = 32;
     private static final int SCULK_SENSOR_RANGE_SQ = SCULK_SENSOR_RANGE * SCULK_SENSOR_RANGE;
 
-    /** Duplico 物品展示实体可能展示的物品 id（path 部分） */
-    private static final Set<String> DUPLICO_ITEMS = Set.of(
-        "bookshelf",
-        "cherry_wood",
-        "deepslate",
-        "cobbled_deepslate"
+    /** Duplico 物品展示实体可能展示的物品 */
+    private static final Set<Item> DUPLICO_ITEMS = Set.of(
+        Items.BOOKSHELF,Items.CHERRY_WOOD,Items.CHERRY_LOG,Items.DEEPSLATE,Items.COBBLED_DEEPSLATE
     );
 
     // ── 头颅目标：skull texture URL 的唯一片段（每个 Safari 目标生物一个）──
@@ -312,18 +311,19 @@ public final class SafariEntitiesGlow {
     private static boolean isShulkerLike(Entity entity) {
         if (entity instanceof Shulker) return true;
         if (entity instanceof Display.ItemDisplay itemDisplay) {
-            return BuiltInRegistries.ITEM.getKey(itemDisplay.getItemStack().getItem())
-                .getPath().contains("shulker_box");
+            return itemDisplay.getItemStack().is(Items.GREEN_SHULKER_BOX) || itemDisplay.getItemStack().is(Items.PURPLE_SHULKER_BOX);
         }
         return false;
     }
 
     /** Duplico：物品展示实体且展示物品是书架/樱花木/深板岩等之一 */
     private static boolean isDuplico(Entity entity) {
-        if (!(entity instanceof Display.ItemDisplay itemDisplay)) return false;
-        var stack = itemDisplay.getItemStack();
-        return !stack.isEmpty() && DUPLICO_ITEMS.contains(
-            BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath());
+        if (entity instanceof Display.ItemDisplay itemDisplay) {
+            for (Item item : DUPLICO_ITEMS) {
+                if (itemDisplay.getItemStack().is(item)) return true;
+            }
+        }
+        return false;
     }
 
     /** 物品展示实体展示的头颅材质是否匹配（物品展示目标直接整体发光） */
