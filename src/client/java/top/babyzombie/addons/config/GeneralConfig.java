@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
@@ -14,6 +15,10 @@ import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfig.*;
 import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.util.ChatUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GeneralConfig {
 
@@ -152,28 +157,38 @@ public class GeneralConfig {
     }
 
     public static class WindowTitle {
+        public enum WindowTitleElement {
+            ORIGINAL_TITLE,
+            LOCATION,
+            DAY,
+            JVM_MEMORY,
+            SYSTEM_MEMORY,
+            CPU,
+            PING,
+            SESSION,
+            IDLE;
+
+            @Override
+            public String toString() {
+                return ChatUtils.translate("config.babyzombieaddons.option.windowTitleElements." + name() + ".preview")
+                    + " (" + ChatUtils.translate("config.babyzombieaddons.option.windowTitleElements." + name()) + ")";
+            }
+        }
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleEnabled", desc = "config.babyzombieaddons.option.windowTitleEnabled.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("window")
         public boolean enabled = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleUpdateInterval", desc = "config.babyzombieaddons.option.windowTitleUpdateInterval.desc") @ConfigEditorSlider(minValue = 1, maxValue = 20, minStep = 1) @SearchTag("title") @SearchTag("interval")
         public int updateInterval = 1;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowLocation", desc = "config.babyzombieaddons.option.windowTitleShowLocation.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("location")
-        public boolean showLocation = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleElements", desc = "config.babyzombieaddons.option.windowTitleElements.desc") @ConfigEditorDraggableList @SearchTag("title") @SearchTag("display") @SearchTag("order")
+        public List<WindowTitleElement> elements = new ArrayList<>(List.of(
+            WindowTitleElement.ORIGINAL_TITLE
+        ));
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleSeparator", desc = "config.babyzombieaddons.option.windowTitleSeparator.desc") @ConfigEditorText @SearchTag("title") @SearchTag("separator")
+        public String separator = " | ";
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleOverride", desc = "config.babyzombieaddons.option.windowTitleOverride.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("override")
         public boolean overrideOriginal = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowSkyblockDay", desc = "config.babyzombieaddons.option.windowTitleShowSkyblockDay.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("day") @SearchTag("skyblock")
-        public boolean showSkyblockDay = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowMemory", desc = "config.babyzombieaddons.option.windowTitleShowMemory.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("memory")
-        public boolean showMemory = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowSystemMemory", desc = "config.babyzombieaddons.option.windowTitleShowSystemMemory.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("memory")
-        public boolean showSystemMemory = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowPing", desc = "config.babyzombieaddons.option.windowTitleShowPing.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("ping")
-        public boolean showPing = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitlePingRangeSeconds", desc = "config.babyzombieaddons.option.windowTitlePingRangeSeconds.desc") @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1) @SearchTag("title") @SearchTag("ping")
         public int pingRangeSeconds = 5;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowSession", desc = "config.babyzombieaddons.option.windowTitleShowSession.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("session") @SearchTag("uptime")
-        public boolean showSession = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleShowIdle", desc = "config.babyzombieaddons.option.windowTitleShowIdle.desc") @ConfigEditorBoolean @SearchTag("title") @SearchTag("idle") @SearchTag("afk")
-        public boolean showIdle = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.windowTitleIdleThreshold", desc = "config.babyzombieaddons.option.windowTitleIdleThreshold.desc") @ConfigEditorSlider(minValue = 1, maxValue = 3600, minStep = 1) @SearchTag("title") @SearchTag("idle") @SearchTag("afk") @SearchTag("threshold")
         public int idleThresholdSeconds = 60;
     }
