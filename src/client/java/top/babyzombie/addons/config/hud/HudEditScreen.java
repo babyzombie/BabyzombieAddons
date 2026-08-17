@@ -1,11 +1,11 @@
 package top.babyzombie.addons.config.hud;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.MouseButtonEvent;
-import org.lwjgl.glfw.GLFW;
 
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
@@ -124,7 +124,7 @@ public final class HudEditScreen extends Screen {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         // CHS 鼠标点击拦截优先（本屏内联，避免与全局 Fabric 注册双重触发）
         if (categorySwitcherMouseClicked(event)) return true;
-        if (event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return super.mouseClicked(event, doubleClick);
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return super.mouseClicked(event, doubleClick);
 
         selected = null;
         int mx = (int) event.x(), my = (int) event.y();
@@ -146,7 +146,7 @@ public final class HudEditScreen extends Screen {
     public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
         // CHS 鼠标拖拽拦截优先
         if (categorySwitcherMouseDragged(event, deltaX, deltaY)) return true;
-        if (selected == null || event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT)
+        if (selected == null || event.button() != InputConstants.MOUSE_BUTTON_LEFT)
             return super.mouseDragged(event, deltaX, deltaY);
 
         int mx = (int) event.x(), my = (int) event.y();
@@ -243,7 +243,7 @@ public final class HudEditScreen extends Screen {
     public boolean mouseReleased(MouseButtonEvent event) {
         // CHS 鼠标释放拦截优先
         if (categorySwitcherMouseReleased(event)) return true;
-        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             selected = null;
             snapLineX = -1;
             snapLineY = -1;
@@ -358,7 +358,7 @@ public final class HudEditScreen extends Screen {
     }
 
     private boolean categorySwitcherMouseClicked(MouseButtonEvent event) {
-        if (event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return false;
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return false;
         Font font = minecraft.font;
         int x = HudManager.x(CHS_NAME);
         int y = HudManager.y(CHS_NAME);
@@ -394,7 +394,7 @@ public final class HudEditScreen extends Screen {
     }
 
     private boolean categorySwitcherMouseReleased(MouseButtonEvent event) {
-        if (event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return false;
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return false;
         if (!chsPressed) return false;
         Font font = minecraft.font;
         int x = HudManager.x(CHS_NAME);
@@ -438,7 +438,7 @@ public final class HudEditScreen extends Screen {
     }
 
     private boolean categorySwitcherMouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
-        if (event.button() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return false;
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return false;
         if (!chsPressed) return false;
         Font font = minecraft.font;
         int boxW = Math.max(chsLastW, 120);
