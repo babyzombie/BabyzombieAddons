@@ -49,8 +49,8 @@ public class SubmitNodeCollectionMixin {
             @Local(name = "pose") PoseStack.Pose pose) {
         EntityRenderState ers = CurrentEntityTracker.STATE.get();
         if (ers == null || !ers.getDataOrDefault(GlowController.NEEDS_DEPTH_TEST, false)) return;
-        // 选择性发光时，只有当前槽位临时把 outlineColor 置为非 0 的 submit 才需要深度 outline
-        if (isSelective(ers) && ers.outlineColor == 0) return;
+        // 选择性发光时，已由原版 outline 分支 + markModel 换成深度 RenderType，这里不再额外补
+        if (isSelective(ers)) return;
         RenderType dt = renderType.isOutline() ? renderType
             : ((GlowRenderTypeHolder)(Object)renderType).babyzombie$getGlowRenderType().orElse(null);
         if (dt == null) return;
@@ -82,6 +82,29 @@ public class SubmitNodeCollectionMixin {
                 ItemStackRenderState.FoilType.NONE);
         ((DepthTestMarker)(Object) submit).babyzombie$setNeedsDepthTest(true);
         this.outline.submit(submit);
+    }
+
+    @ModifyArg(method = "submitModel", at = @At(value = "INVOKE",
+        target = "Lnet/minecraft/client/renderer/feature/phase/SimpleFeatureRenderPhase;submit(Lnet/minecraft/client/renderer/feature/submit/SubmitNode;)V"),
+        slice = @Slice(from = @At(value = "FIELD",
+            target = "Lnet/minecraft/client/renderer/SubmitNodeCollection;outline:Lnet/minecraft/client/renderer/feature/phase/SimpleFeatureRenderPhase;",
+            opcode = Opcodes.GETFIELD)))
+    private SubmitNode markModel(SubmitNode submit,
+            @Local(name = "renderType") RenderType renderType) {
+        EntityRenderState ers = CurrentEntityTracker.STATE.get();
+        if (ers == null || !ers.getDataOrDefault(GlowController.NEEDS_DEPTH_TEST, false)
+                || !isSelective(ers) || ers.outlineColor == 0) {
+            return submit;
+        }
+        if (submit instanceof ModelFeatureRenderer.Submit<?> ms) {
+            RenderType dt = renderType.isOutline() ? renderType
+                : ((GlowRenderTypeHolder)(Object) renderType).babyzombie$getGlowRenderType().orElse(null);
+            if (dt != null) {
+                return new ModelFeatureRenderer.Submit(dt, ms.pose(), ms.model(), ms.state(),
+                        ms.lightCoords(), ms.overlayCoords(), ms.tintedColor(), ms.sprite(), ms.sheetedDecalPose());
+            }
+        }
+        return submit;
     }
 
     @ModifyArg(method = "submitItem", at = @At(value = "INVOKE",
