@@ -254,6 +254,10 @@ public class HuntingConfig {
         public boolean gimmiegoldGlow = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariHauntedGimmiegoldGlowColor", desc = "config.babyzombieaddons.option.safariHauntedGimmiegoldGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("gimmiegold") @SearchTag("haunted")
         public ChromaColour gimmiegoldGlowColor = ChromaColour.fromStaticRGB(85, 85, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariHauntedGazerGlow", desc = "config.babyzombieaddons.option.safariHauntedGazerGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("gazer") @SearchTag("haunted")
+        public boolean gazerGlow = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariHauntedGazerGlowColor", desc = "config.babyzombieaddons.option.safariHauntedGazerGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("gazer") @SearchTag("haunted")
+        public ChromaColour gazerGlowColor = ChromaColour.fromStaticRGB(85, 255, 85, 255);
     }
 
     /** 洞穴群系（Cavern）目标生物 */
@@ -286,6 +290,14 @@ public class HuntingConfig {
         public boolean chuckwallaGlow = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCavernChuckwallaGlowColor", desc = "config.babyzombieaddons.option.safariCavernChuckwallaGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("chuckwalla") @SearchTag("cavern")
         public ChromaColour chuckwallaGlowColor = ChromaColour.fromStaticRGB(85, 85, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCavernShywormGlow", desc = "config.babyzombieaddons.option.safariCavernShywormGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("shyworm") @SearchTag("cavern")
+        public boolean shywormGlow = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCavernShywormGlowColor", desc = "config.babyzombieaddons.option.safariCavernShywormGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("shyworm") @SearchTag("cavern")
+        public ChromaColour shywormGlowColor = ChromaColour.fromStaticRGB(255, 255, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCavernDriftlingGlow", desc = "config.babyzombieaddons.option.safariCavernDriftlingGlow.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("driftling") @SearchTag("cavern")
+        public boolean driftlingGlow = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCavernDriftlingGlowColor", desc = "config.babyzombieaddons.option.safariCavernDriftlingGlowColor.desc") @ConfigEditorColour @SearchTag("safari") @SearchTag("driftling") @SearchTag("cavern")
+        public ChromaColour driftlingGlowColor = ChromaColour.fromStaticRGB(85, 255, 85, 255);
     }
 
     /** 森林群系（Forest）目标生物（含已有的 hideonfloor） */

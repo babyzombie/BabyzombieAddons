@@ -2,13 +2,13 @@ package top.babyzombie.addons.module.hunting.safari;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Display;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
@@ -61,6 +61,9 @@ public final class SafariEntitiesGlow {
     private static final String FLITTER_SKULL = "a89a76deedd42b41";
     private static final String CHUCKWALLA_SKULL = "fc63cd0d480971a7";
     private static final String GIMMIEGOLD_SKULL = "8b329e108ac28b0b";
+    private static final String GAZER_SKULL = "407b3c3d2c3fe259";
+    private static final String SHYWORM_SKULL = "a684e00e7394cb0c";
+    private static final String DRIFTLING_SKULL = "f4c4f8e5fce1ec2d";
 
     // Warden 战斗场地范围
     private static final int ARENA_X_MIN = -18, ARENA_X_MAX = 24;
@@ -163,6 +166,10 @@ public final class SafariEntitiesGlow {
                             if (haunted.gimmiegoldGlow && isSkullItemDisplay(entity, GIMMIEGOLD_SKULL)) {
                                 setGlow(entity, haunted.gimmiegoldGlowColor.getEffectiveColourRGB());
                             }
+                            if (haunted.gazerGlow && isArmorStandSkull(entity, EquipmentSlot.HEAD, GAZER_SKULL)) {
+                                GlowController.setGlowSlots(entity, true,
+                                    haunted.gazerGlowColor.getEffectiveColourRGB(), true, EquipmentSlot.HEAD);
+                            }
                         }
                         case CAVERN -> {
                             var cavern = safari.cavern;
@@ -186,6 +193,14 @@ public final class SafariEntitiesGlow {
                             }
                             if (cavern.chuckwallaGlow && isSkullItemDisplay(entity, CHUCKWALLA_SKULL)) {
                                 setGlow(entity, cavern.chuckwallaGlowColor.getEffectiveColourRGB());
+                            }
+                            if (cavern.shywormGlow && isArmorStandSkull(entity, EquipmentSlot.MAINHAND, SHYWORM_SKULL)) {
+                                GlowController.setGlowSlots(entity, true,
+                                    cavern.shywormGlowColor.getEffectiveColourRGB(), true, EquipmentSlot.MAINHAND);
+                            }
+                            if (cavern.driftlingGlow && isArmorStandSkull(entity, EquipmentSlot.HEAD, DRIFTLING_SKULL)) {
+                                GlowController.setGlowSlots(entity, true,
+                                    cavern.driftlingGlowColor.getEffectiveColourRGB(), true, EquipmentSlot.HEAD);
                             }
                         }
                         case FOREST -> {
@@ -332,6 +347,12 @@ public final class SafariEntitiesGlow {
         return isSkullWithTexture(itemDisplay.getItemStack(), urlSegment);
     }
 
+    /** 盔甲架指定槽位（头戴/手持）的头颅材质是否匹配（只给该槽位选择性发光） */
+    private static boolean isArmorStandSkull(Entity entity, EquipmentSlot slot, String urlSegment) {
+        if (!(entity instanceof ArmorStand stand)) return false;
+        return isSkullWithTexture(stand.getItemBySlot(slot), urlSegment);
+    }
+
     /** 玩家头颅物品的 skull texture（base64）里是否包含目标材质 URL 片段 */
     private static boolean isSkullWithTexture(ItemStack stack, String urlSegment) {
         String texture = ItemUtils.getSkullTexture(stack);
@@ -355,13 +376,14 @@ public final class SafariEntitiesGlow {
     private static boolean anyEnabled(HuntingConfig.Haunted c) {
         return c.hideonwallGlow || c.hideyhoGlow || c.batGlow || c.duplicoGlow || c.wardenGlow
             || c.endermiteGlow || c.caveSpiderGlow || c.phantomGlow
-            || c.gimmiegoldGlow;
+            || c.gimmiegoldGlow || c.gazerGlow;
     }
 
     private static boolean anyEnabled(HuntingConfig.Cavern c) {
         return c.tropicalFishGlow || c.armadilloGlow || c.snifferGlow
             || c.silverfishGlow || c.vexGlow
-            || c.flitterGlow || c.chuckwallaGlow;
+            || c.flitterGlow || c.chuckwallaGlow
+            || c.shywormGlow || c.driftlingGlow;
     }
 
     private static boolean anyEnabled(HuntingConfig.Forest c) {
