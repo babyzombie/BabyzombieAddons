@@ -3,6 +3,7 @@ package top.babyzombie.addons.mixin.render;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -10,7 +11,10 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.util.render.DepthTestGlowRenderer;
 import top.babyzombie.addons.util.render.DepthTestSubmitTracker;
+import top.babyzombie.addons.util.render.GlowController;
 import top.babyzombie.addons.util.render.SecondCameraRenderer;
+
+import java.util.Set;
 
 /**
  * - 追踪 submitEntities 中当前实体的 EntityRenderState（通过 ThreadLocal）
@@ -33,6 +37,21 @@ public class LevelRendererMixin {
     )
     private void copyDepthForGlow(CallbackInfo ci) {
         DepthTestGlowRenderer.getInstance().updateDepth();
+    }
+
+    // ── 选择性发光也要让原版 entity_outline 后处理生效 ──
+    // 原版只有在 extract 时 state.appearsGlowing() 为 true 才会把 haveGlowingEntities 置 true；
+    // 选择性发光在 extract 时 outlineColor 为 0，需要手动补上，否则 outline target 的纯色填充不会被 Sobel 描边。
+    @Inject(method = "extractVisibleEntities", at = @At("RETURN"))
+    private void markSelectiveGlowForOutlinePost(CallbackInfo ci,
+            @Local(argsOnly = true) LevelRenderState output) {
+        if (output.haveGlowingEntities) return;
+        for (var state : output.entityRenderStates) {
+            if (!state.getDataOrDefault(GlowController.SELECTIVE_SLOTS, Set.of()).isEmpty()) {
+                output.haveGlowingEntities = true;
+                break;
+            }
+        }
     }
 
     // ── 追踪当前实体 → ThreadLocal ──

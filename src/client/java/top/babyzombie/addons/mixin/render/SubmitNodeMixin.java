@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.SubmitNodeCollection;
 import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -33,9 +34,14 @@ public class SubmitNodeMixin {
         }
     }
 
+    @Unique
     private static void markIfNeeded(Object submitNode) {
         EntityRenderState state = DepthTestSubmitTracker.CURRENT_ENTITY_STATE.get();
-        if (state != null && state.getDataOrDefault(GlowController.NEEDS_DEPTH_TEST, false)) {
+        // outlineColor == 0 的 submit 不会生成 outline，也不需要标记为深度测试；
+        // 选择性发光时未选中的身体/槽位正是靠这个条件排除的。
+        if (state != null
+                && state.outlineColor != 0
+                && state.getDataOrDefault(GlowController.NEEDS_DEPTH_TEST, false)) {
             DepthTestSubmitTracker.mark(submitNode);
         }
     }
