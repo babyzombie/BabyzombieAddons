@@ -31,6 +31,7 @@ import top.babyzombie.addons.util.render.GlowController;
 import top.babyzombie.addons.util.render.GlowRenderTypeHolder;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 深度测试发光：实体模型提交时额外提交深度 outline 节点（被墙挡的发光描边）。
@@ -48,6 +49,8 @@ public class SubmitNodeCollectionMixin {
             @Local(name = "pose") PoseStack.Pose pose) {
         EntityRenderState ers = CurrentEntityTracker.STATE.get();
         if (ers == null || !ers.getDataOrDefault(GlowController.NEEDS_DEPTH_TEST, false)) return;
+        // 选择性发光时，只有当前槽位临时把 outlineColor 置为非 0 的 submit 才需要深度 outline
+        if (isSelective(ers) && ers.outlineColor == 0) return;
         RenderType dt = renderType.isOutline() ? renderType
             : ((GlowRenderTypeHolder)(Object)renderType).babyzombie$getGlowRenderType().orElse(null);
         if (dt == null) return;
@@ -69,6 +72,8 @@ public class SubmitNodeCollectionMixin {
         if (outlineColor != 0) return;
         EntityRenderState ers = CurrentEntityTracker.STATE.get();
         if (ers == null || !ers.getDataOrDefault(GlowController.NEEDS_DEPTH_TEST, false)) return;
+        // 选择性发光由 layer mixin 设置 outlineColor 并走原版 outline 提交，这里不再额外补
+        if (isSelective(ers)) return;
         ItemFeatureRenderer.Submit submit = new ItemFeatureRenderer.Submit(
                 poseStack.last().copy(), displayContext,
                 LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
@@ -86,8 +91,14 @@ public class SubmitNodeCollectionMixin {
             opcode = Opcodes.GETFIELD)))
     private SubmitNode markItem(SubmitNode submit) {
         EntityRenderState ers = CurrentEntityTracker.STATE.get();
-        if (ers != null && ers.getDataOrDefault(GlowController.NEEDS_DEPTH_TEST, false))
+        if (ers != null
+                && ers.getDataOrDefault(GlowController.NEEDS_DEPTH_TEST, false)
+                && (!isSelective(ers) || ers.outlineColor != 0))
             ((DepthTestMarker)(Object)submit).babyzombie$setNeedsDepthTest(true);
         return submit;
+    }
+
+    private static boolean isSelective(EntityRenderState ers) {
+        return ers != null && !ers.getDataOrDefault(GlowController.SELECTIVE_SLOTS, Set.of()).isEmpty();
     }
 }

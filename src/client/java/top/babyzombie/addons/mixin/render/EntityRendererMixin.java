@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.babyzombie.addons.util.render.GlowController;
 
 /**
- * 在 extractRenderState 中设置 EntityRenderState.outlineColor / 深度测试标记，
+ * 在 extractRenderState 中设置 EntityRenderState.outlineColor / 选择性发光标记，
  * 使 GlowController 追踪的实体进入发光渲染管线。
  * 深度测试发光由 SubmitNodeCollectionMixin 代为提交自定义 outline（被墙挡）。
  */
@@ -22,7 +22,17 @@ public class EntityRendererMixin {
     private void onExtractRenderState(Entity entity, EntityRenderState state, float tickDelta, CallbackInfo ci) {
         if (GlowController.shouldGlow(entity)) {
             int color = ARGB.opaque(GlowController.getGlowColor(entity));
-            if (GlowController.isDepthTestEnabled(entity)) {
+            state.setData(GlowController.GLOW_COLOR, color);
+
+            if (GlowController.isSelectiveGlow(entity)) {
+                // 选择性发光：先全局关掉 outline，由各部位 layer mixin 按需临时打开
+                state.outlineColor = 0;
+                state.setData(GlowController.SELECTIVE_SLOTS, GlowController.getGlowSlots(entity));
+                if (GlowController.isDepthTestEnabled(entity)) {
+                    state.setData(GlowController.NEEDS_DEPTH_TEST, true);
+                    state.setData(GlowController.DEPTH_GLOW_COLOR, color);
+                }
+            } else if (GlowController.isDepthTestEnabled(entity)) {
                 // 不设 outlineColor：阻止原版 outline（无深度测试），由 SubmitNodeCollectionMixin 代为提交自定义 outline
                 state.setData(GlowController.NEEDS_DEPTH_TEST, true);
                 state.setData(GlowController.DEPTH_GLOW_COLOR, color);
