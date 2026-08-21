@@ -124,11 +124,11 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: python3 scripts/translate_changelog.py changelog.md
 
-      - name: Upload English changelog
+      - name: Upload bilingual changelog
         uses: actions/upload-artifact@v4
         with:
-          name: changelog-en
-          path: changelog-en.md
+          name: changelog-bilingual
+          path: changelog-bilingual.md
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -146,7 +146,7 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           set -e
-          BODY=$(cat changelog.md)
+          BODY=$(cat changelog-bilingual.md)
           API="https://gitee.com/api/v5/repos/$GITEE_OWNER/$GITEE_REPO"
           TOKEN="access_token=$GITEE_TOKEN"
           RESP=$(curl -sS "$API/releases/tags/$TAG?$TOKEN")
@@ -218,11 +218,11 @@ jobs:
           name: sub-jars
           path: sub-jars
 
-      - name: Download English changelog
+      - name: Download bilingual changelog
         if: steps.check-token.outputs.has_token == 'true'
         uses: actions/download-artifact@v4
         with:
-          name: changelog-en
+          name: changelog-bilingual
 
       - name: Extract MC versions from jars
         if: steps.check-token.outputs.has_token == 'true'
@@ -249,7 +249,7 @@ jobs:
           loaders: fabric
           version: ${{ env.version_main }}
           version-type: release
-          changelog-file: changelog-en.md
+          changelog-file: changelog-bilingual.md
 
       - name: Publish 26.2 to Modrinth
         if: steps.check-token.outputs.has_token == 'true'
@@ -262,4 +262,4 @@ jobs:
           loaders: fabric
           version: ${{ env.version_sub }}
           version-type: release
-          changelog-file: changelog-en.md
+          changelog-file: changelog-bilingual.md

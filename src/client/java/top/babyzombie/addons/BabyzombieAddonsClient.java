@@ -69,7 +69,7 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         GuiOverlayManager.init();
 
         cancelKeyBindingRelease = KeyBindingUtil.register(
-                "key.babyzombieaddons.cancel_key_release", GLFW.GLFW_KEY_LEFT_ALT);
+                "key.babyzombieaddons.cancel_key_release", GLFW.GLFW_KEY_UNKNOWN);
 
         toggleHandRenderKey = KeyBindingUtil.register(
                 "key.babyzombieaddons.toggle_hand_render", GLFW.GLFW_KEY_UNKNOWN);

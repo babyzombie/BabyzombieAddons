@@ -55,6 +55,9 @@ repositories {
 
     // REI
     maven { url 'https://maven.shedaniel.me/' }
+
+    // RRV (Reliable Recipe Viewer)
+    maven { url 'https://maven.cassian.cc/' }
 }
 
 dependencies {
@@ -87,6 +90,9 @@ dependencies {
     // REI (optional)
     clientCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
 
+    // RRV Reliable Recipe Viewer (optional)
+    clientCompileOnly "cc.cassian.rrv:reliable-recipe-viewer-fabric:${project.rrv_version}"
+
     // Skyblocker LIAP (optional)
     clientCompileOnly "maven.modrinth:skyblocker-liap:${project.skyblocker_liap_version}"
 }
@@ -102,7 +108,12 @@ tasks.withType(ProcessResources).configureEach {
                 "minecraft_version": project.minecraft_version.replace("-rc-", "-rc."),
                 "loader_version": project.loader_version,
                 "fabric_version": project.fabric_api_version,
-                "mod_menu_mod_version": project.mod_menu_version.split('-')[0]
+                "mod_menu_mod_version": project.mod_menu_version.split('-')[0],
+                "rei_version": project.rei_version,
+                "rrv_version": project.rrv_version,
+                // suggests 下限从 liap 版本派生：剥 v 前缀、去掉 build metadata，
+                // 带 v 的版本比较会退化为字符串比较（误拒 v6.10.0 这类更高版本）
+                "skyblocker_suggests_version": project.skyblocker_liap_version.replaceFirst('^v', '').split('\\+')[0]
     }
 }
 

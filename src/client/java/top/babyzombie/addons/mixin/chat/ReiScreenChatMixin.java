@@ -15,10 +15,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.chat.ContainerChatHelper;
 import top.babyzombie.addons.module.chat.ReiHelper;
+import top.babyzombie.addons.module.chat.RrvHelper;
 import top.babyzombie.addons.util.StarIndicator;
 
 /**
- * REI 配方查看页面等非容器屏幕的聊天 overlay 支持。
+ * REI / RRV 配方查看页面等非容器屏幕的聊天 overlay 支持。
  */
 @Mixin(Screen.class)
 public abstract class ReiScreenChatMixin {
@@ -38,8 +39,8 @@ public abstract class ReiScreenChatMixin {
             return;
         }
 
-        // 以下仅对 REI 配方页面生效
-        if (!ReiHelper.isReiDisplayScreen(screen)) return;
+        // 以下仅对 REI / RRV 配方页面生效
+        if (!ReiHelper.isReiDisplayScreen(screen) && !RrvHelper.isRrvScreen(screen)) return;
         if (ContainerChatHelper.isBlocklistedScreen(screen)) return;
 
         var opts = Minecraft.getInstance().options;
@@ -67,9 +68,11 @@ public abstract class ReiScreenChatMixin {
     private void onAfterMouseAction(CallbackInfo ci) {
         if ((Object) this instanceof AbstractContainerScreen) return;
 
-        if (ReiHelper.isReiDisplayScreen(this) && ContainerChatHelper.isActive()) {
-            double mx = Minecraft.getInstance().mouseHandler.xpos();
-            double my = Minecraft.getInstance().mouseHandler.ypos();
+        if ((ReiHelper.isReiDisplayScreen(this) || RrvHelper.isRrvScreen(this)) && ContainerChatHelper.isActive()) {
+            // 26.1 的 MouseHandler.xpos/ypos 是物理像素，ChatScreen.isMouseOver 期望 GUI 缩放坐标
+            double scale = Minecraft.getInstance().getWindow().getGuiScale();
+            double mx = Minecraft.getInstance().mouseHandler.xpos() / scale;
+            double my = Minecraft.getInstance().mouseHandler.ypos() / scale;
             var chatScreen = ContainerChatHelper.getOverlay();
             ContainerChatHelper.setInputFocused(chatScreen.isMouseOver(mx, my));
         }

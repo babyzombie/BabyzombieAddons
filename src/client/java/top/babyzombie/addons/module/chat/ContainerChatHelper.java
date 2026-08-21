@@ -65,18 +65,21 @@ public final class ContainerChatHelper {
         });
         previousScrollCallback = GLFW.glfwSetScrollCallback(window, (w, xOffset, yOffset) -> {
             if (overlay != null) {
-                double mx = Minecraft.getInstance().mouseHandler.xpos();
-                double my = Minecraft.getInstance().mouseHandler.ypos();
+                // 26.1 的 MouseHandler.xpos/ypos 是物理像素，ChatScreen.mouseScrolled 期望 GUI 缩放坐标
+                double scale = Minecraft.getInstance().getWindow().getGuiScale();
+                double mx = Minecraft.getInstance().mouseHandler.xpos() / scale;
+                double my = Minecraft.getInstance().mouseHandler.ypos() / scale;
                 overlay.mouseScrolled(mx, my, xOffset, yOffset);
             } else if (previousScrollCallback != null) {
                 previousScrollCallback.invoke(w, xOffset, yOffset);
             }
         });
-        // ALT+左键 REI 物品：GLFW 层拦截，mods 参数直接给到，无需查询
+        // ALT+左键 REI / RRV 物品：GLFW 层拦截，mods 参数直接给到，无需查询
         previousMouseButtonCallback = GLFW.glfwSetMouseButtonCallback(window, (w, button, action, mods) -> {
             if (action == GLFW.GLFW_PRESS && button == GLFW.GLFW_MOUSE_BUTTON_LEFT
                     && (mods & GLFW.GLFW_MOD_ALT) != 0) {
                 String itemName = ReiHelper.getHoveredEntryName();
+                if (itemName == null) itemName = RrvHelper.getHoveredEntryName();
                 if (itemName != null) {
                     ((ChatScreenAccessor) overlay).getInput().insertText(itemName + " ");
                     return;

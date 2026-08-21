@@ -30,8 +30,8 @@ public class GeneralConfig {
     public boolean replaceReportWithServerList = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.serverResourcePackAutoAccept", desc = "config.babyzombieaddons.option.serverResourcePackAutoAccept.desc") @ConfigEditorBoolean @SearchTag("resourcepack")
     public boolean serverResourcePackAutoAccept = false;
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.cancelKeyRelease", desc = "config.babyzombieaddons.option.cancelKeyRelease.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_LEFT_ALT) @SearchTag("key")
-    public int cancelKeyRelease = GLFW.GLFW_KEY_LEFT_ALT;
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.cancelKeyRelease", desc = "config.babyzombieaddons.option.cancelKeyRelease.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("key")
+    public int cancelKeyRelease = GLFW.GLFW_KEY_UNKNOWN;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.playCmd", desc = "config.babyzombieaddons.option.playCmd.desc") @ConfigEditorBoolean @SearchTag("play")
     public boolean playCmd = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.skipSecondPerson", desc = "config.babyzombieaddons.option.skipSecondPerson.desc") @ConfigEditorSlider(minValue = 0, maxValue = 30, minStep = 1) @SearchTag("camera")
