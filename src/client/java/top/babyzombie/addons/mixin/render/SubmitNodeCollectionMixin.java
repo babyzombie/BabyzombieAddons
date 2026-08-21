@@ -100,11 +100,20 @@ public class SubmitNodeCollectionMixin {
             RenderType dt = renderType.isOutline() ? renderType
                 : ((GlowRenderTypeHolder)(Object) renderType).babyzombie$getGlowRenderType().orElse(null);
             if (dt != null) {
-                return new ModelFeatureRenderer.Submit(dt, ms.pose(), ms.model(), ms.state(),
-                        ms.lightCoords(), ms.overlayCoords(), ms.tintedColor(), ms.sprite(), ms.sheetedDecalPose());
+                return copySubmitWithRenderType(ms, dt);
             }
         }
         return submit;
+    }
+
+    /**
+     * 捕获转换辅助：把 Submit&lt;?&gt; 的捕获类型固定为 S 后重新构造，
+     * 避免裸类型构造（unchecked 警告）。
+     */
+    private static <S> ModelFeatureRenderer.Submit<S> copySubmitWithRenderType(
+            ModelFeatureRenderer.Submit<S> ms, RenderType dt) {
+        return new ModelFeatureRenderer.Submit<>(dt, ms.pose(), ms.model(), ms.state(),
+                ms.lightCoords(), ms.overlayCoords(), ms.tintedColor(), ms.sprite(), ms.sheetedDecalPose());
     }
 
     @ModifyArg(method = "submitItem", at = @At(value = "INVOKE",

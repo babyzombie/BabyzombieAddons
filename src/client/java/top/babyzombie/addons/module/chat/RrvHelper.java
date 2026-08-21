@@ -59,7 +59,7 @@ public final class RrvHelper {
             try {
                 // 1) 配方详情页内部槽位（hoveredSlot / workstationSlot 是私有字段，用反射读；
                 //    字段名随 RRV 升级变化时抛普通异常，被外层 catch 兜住，静默降级不崩溃）
-                var screen = Minecraft.getInstance().screen;
+                var screen = Minecraft.getInstance().gui.screen();
                 if (screen instanceof cc.cassian.rrv.common.recipe.inventory.RecipeViewScreen rvs) {
                     String name = recipeViewHoveredName(rvs);
                     if (name != null) return name;

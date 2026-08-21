@@ -70,7 +70,7 @@ public final class ReiHelper {
             try {
                 // 1) 配方详情页内部槽位（EntryWidget 是 impl 包类，不编译期引用，
                 //    反射调 getCurrentEntry；方法/类变化时抛普通异常被兜住，静默降级）
-                var screen = Minecraft.getInstance().screen;
+                var screen = Minecraft.getInstance().gui.screen();
                 if (screen instanceof DisplayScreen) {
                     String name = displayScreenHoveredName(screen);
                     if (name != null) return name;
