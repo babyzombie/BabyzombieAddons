@@ -6,8 +6,8 @@
     python3 scripts/translate_changelog.py [changelog.md] [--en changelog-en.md] [--bilingual changelog-bilingual.md] [--mock]
 
 输出:
-    changelog-en.md          纯英文版（供 Modrinth 版本说明使用）
-    changelog-bilingual.md   双语版，英文在上、中文在下（供 GitHub Release 使用）
+    changelog-en.md          纯英文版（备用）
+    changelog-bilingual.md   双语版，英文在上、中文在下（GitHub Release / Gitee / Modrinth 统一使用）
 
 依赖:
     需要环境变量 DEEPSEEK_API_KEY（DeepSeek 的 OpenAI 兼容接口）。
@@ -32,8 +32,7 @@ except AttributeError:
     pass
 
 API_URL = "https://api.deepseek.com/chat/completions"
-# 注意：deepseek-chat / deepseek-reasoner 已于 2026-07-24 停用，
-# 现在必须使用 V4 模型 ID（flash 默认非思考，翻译任务够用且便宜）。
+# deepseek-v4-flash 默认非思考，翻译任务够用且便宜。
 MODEL = os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash")
 
 GROUP_MAP = {
