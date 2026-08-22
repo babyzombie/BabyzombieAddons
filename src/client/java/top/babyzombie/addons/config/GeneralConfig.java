@@ -59,6 +59,8 @@ public class GeneralConfig {
     public HandRender handRender = new HandRender();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.windowTitle", desc = "") @Accordion
     public WindowTitle windowTitle = new WindowTitle();
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.tray", desc = "") @Accordion
+    public Tray tray = new Tray();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.waypointMarker", desc = "") @Accordion
     public WaypointMarker waypointMarker = new WaypointMarker();
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.entityHider", desc = "") @Accordion
@@ -286,5 +288,22 @@ public class GeneralConfig {
             return net.minecraft.network.chat.Component.translatable(
                     "config.babyzombieaddons.quickbutton." + name()).getString();
         }
+    }
+
+    public static class Tray {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.minimizeToTray", desc = "config.babyzombieaddons.option.minimizeToTray.desc") @ConfigEditorBoolean @SearchTag("tray") @SearchTag("minimize") @SearchTag("afk")
+        public boolean minimizeToTray = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.trayButton", desc = "config.babyzombieaddons.option.trayButton.desc") @ConfigEditorBoolean @SearchTag("tray") @SearchTag("button") @SearchTag("titlebar")
+        public boolean trayButton = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.muteInTray", desc = "config.babyzombieaddons.option.muteInTray.desc") @ConfigEditorBoolean @SearchTag("tray") @SearchTag("mute") @SearchTag("sound")
+        public boolean muteInTray = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.limitFpsInTray", desc = "config.babyzombieaddons.option.limitFpsInTray.desc") @ConfigEditorBoolean @SearchTag("tray") @SearchTag("fps")
+        public boolean limitFpsInTray = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.trayFpsLimit", desc = "config.babyzombieaddons.option.trayFpsLimit.desc") @ConfigEditorSlider(minValue = 1, maxValue = 60, minStep = 1) @SearchTag("tray") @SearchTag("fps")
+        public int trayFpsLimit = 10;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideEntitiesInTray", desc = "config.babyzombieaddons.option.hideEntitiesInTray.desc") @ConfigEditorBoolean @SearchTag("tray") @SearchTag("entity") @SearchTag("hide")
+        public boolean hideEntitiesInTray = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideParticlesInTray", desc = "config.babyzombieaddons.option.hideParticlesInTray.desc") @ConfigEditorBoolean @SearchTag("tray") @SearchTag("particle") @SearchTag("hide")
+        public boolean hideParticlesInTray = false;
     }
 }

@@ -87,6 +87,9 @@ dependencies {
     // Gson (config persistence)
     clientImplementation 'com.google.code.gson:gson:2.10.1'
 
+    // JNA — Win32 窗口钩子 / 系统托盘(仅 Windows 使用;运行时由 MC 自带提供,此处仅编译期引用)
+    clientCompileOnly "net.java.dev.jna:jna:5.17.0"
+
     // REI (optional)
     clientCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
 

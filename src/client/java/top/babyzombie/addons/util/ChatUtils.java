@@ -155,11 +155,14 @@ public final class ChatUtils {
     private static final SystemToast.SystemToastId TOAST_ID = new SystemToast.SystemToastId();
 
     public static void showToast(String titleKey, String bodyKey, Object... bodyArgs) {
+        showToast(Component.translatable(titleKey), Component.translatable(bodyKey, bodyArgs));
+    }
+
+    public static void showToast(Component title, Component body) {
         try {
             Minecraft mc = Minecraft.getInstance();
             mc.gui.toastManager().addToast(
-                    new SystemToast(SystemToast.SystemToastId.NARRATOR_TOGGLE,
-                            Component.translatable(titleKey), Component.translatable(bodyKey, bodyArgs))
+                    new SystemToast(SystemToast.SystemToastId.NARRATOR_TOGGLE, title, body)
             );
         } catch (Throwable ignored) {
             // 静默失败,不影响主流程
