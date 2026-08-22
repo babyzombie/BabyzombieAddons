@@ -30,6 +30,7 @@ public final class MiscModule {
         EntityHider.init();
         RareDropModule.init();
         WindowTitleModule.init();
+        MinimizeToTrayModule.init();
         PetDisplayHud.init();
         LoadoutModule.init();
 

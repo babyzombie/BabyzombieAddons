@@ -155,10 +155,12 @@ public final class ChatUtils {
     private static final SystemToast.SystemToastId TOAST_ID = new SystemToast.SystemToastId();
 
     public static void showToast(String titleKey, String bodyKey, Object... bodyArgs) {
+        showToast(Component.translatable(titleKey), Component.translatable(bodyKey, bodyArgs));
+    }
+
+    public static void showToast(Component title, Component body) {
         try {
             Minecraft mc = Minecraft.getInstance();
-            Component title = Component.translatable(titleKey);
-            Component body = Component.translatable(bodyKey, bodyArgs);
             SystemToast toast = mc.font.width(body) > 200
                     ? SystemToast.multiline(mc, TOAST_ID, title, body)
                     : new SystemToast(TOAST_ID, title, body);

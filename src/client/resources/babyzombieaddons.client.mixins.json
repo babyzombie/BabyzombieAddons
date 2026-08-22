@@ -82,6 +82,7 @@
     "window.WindowTitleMixin",
     "window.WindowCloseConfirmMixin",
     "window.FramerateLimitTrackerAccessor",
+    "window.FramerateLimitTrackerMixin",
 
     "screen.CommandSuggestionsMixin",
     "screen.ContainerClickMixin",
