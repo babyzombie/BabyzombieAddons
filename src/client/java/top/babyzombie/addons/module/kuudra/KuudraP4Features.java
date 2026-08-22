@@ -5,8 +5,10 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -85,6 +87,11 @@ public final class KuudraP4Features {
                         int cx = Integer.parseInt(im.group(1));
                         int cy = Integer.parseInt(im.group(2));
                         int cz = Integer.parseInt(im.group(3));
+                        var level = Minecraft.getInstance().level;
+                        if (level == null) return;
+                        while (cy >= -64 && level.getBlockState(new BlockPos(cx, cy - 1, cz)).isAir()) {
+                            cy--;
+                        };
                         ichorPools.add(new IchorPool(new Vec3(cx + 0.5, cy + 0.05, cz + 0.5),
                                 System.currentTimeMillis() + ICHOR_DURATION_MS));
                     } catch (NumberFormatException ignored) {}
@@ -132,10 +139,7 @@ public final class KuudraP4Features {
 
             // Expire ichor pools
             long now = System.currentTimeMillis();
-            Iterator<IchorPool> it = ichorPools.iterator();
-            while (it.hasNext()) {
-                if (it.next().expiresAt <= now) it.remove();
-            }
+            ichorPools.removeIf(ichorPool -> ichorPool.expiresAt <= now);
         });
 
         // Kuudra distance HUD
@@ -157,10 +161,19 @@ public final class KuudraP4Features {
         RenderPhaseRegister.register(ctx -> {
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             for (var pool : ichorPools) {
+                long remaining = pool.expiresAt - System.currentTimeMillis();
+                int passed = Math.toIntExact(ICHOR_DURATION_MS - remaining);
+
+                // 地面层范围圈
                 WorldRenderUtils.drawCircle(ctx, pool.center.x, pool.center.y, pool.center.z,
                         ICHOR_RADIUS, 0, 1, 1, 0.5f, true, 5f);
+                // 空中动态范围圈
+                for (int i = 0; i < 10 && i * 1000 < passed; i += 2) {
+                    WorldRenderUtils.drawCircle(ctx, pool.center.x, pool.center.y + (passed - i * 1000.0) / 1000.0, pool.center.z,
+                            ICHOR_RADIUS, 0, 1, 1, 0.5f, true, 5f);
+                }
+
                 // 中心悬浮字：名称 + 剩余时间倒计时
-                long remaining = pool.expiresAt - System.currentTimeMillis();
                 if (remaining <= 0) continue;
                 WorldTextRenderer.renderString(ctx, "§bIchor Pool",
                         pool.center.x, pool.center.y + 1.2, pool.center.z, 0xFF55FFFF, 0.08f, true);
