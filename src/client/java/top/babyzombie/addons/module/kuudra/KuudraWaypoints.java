@@ -193,7 +193,7 @@ public final class KuudraWaypoints {
             int chuckColor = cfg.phase3.chuckBeaconColor.getEffectiveColour().getRGB();
             for (var v : chucks) {
                 BeamRenderer.drawBeam(ctx, v.x, v.y, v.z, 20f, 0.15f, chuckColor);
-                WorldRenderUtils.drawCircle(ctx, v.x, v.y, v.z, 20, 1, 0, 0, 1, true, 3);
+                WorldRenderUtils.drawCircle(ctx, v.x, v.y + 0.01, v.z, 20, 1, 0, 0, 1, true, 3);
             }
 
             // Unclassified beams (dropoff markers, ballista, etc.)
@@ -283,7 +283,7 @@ public final class KuudraWaypoints {
                         } else if (wantChuck && (SkullTextures.YELLOWCHUCK.isHoldingThis(g) || SkullTextures.REDCHUCK.isHoldingThis(g) || SkullTextures.PURPLECHUCK.isHoldingThis(g))) {
                             double angleRad = Math.toRadians(g.getYRot() + 130.0f);
                             chucks.add(new Vec3(g.getX() + (SUPPLY_CRATE_OFFSET * Math.cos(angleRad)),
-                                    75.0,
+                                    inP4 ? 6 : 78.0,
                                     g.getZ() + (SUPPLY_CRATE_OFFSET * Math.sin(angleRad))));
                         }
                     }

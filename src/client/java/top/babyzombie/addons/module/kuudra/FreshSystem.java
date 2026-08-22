@@ -310,7 +310,7 @@ public final class FreshSystem {
         var world = Minecraft.getInstance().level;
         if (world == null) return null;
         for (var p : world.players()) {
-            if (!ChatUtils.stripColor(p.getName().getString()).equalsIgnoreCase(plainName)) continue;
+            if (!ChatUtils.removeEmoji(ChatUtils.stripColor(p.getName().getString())).equalsIgnoreCase(plainName)) continue;
             String colored = ChatUtils.removeEmoji(ChatUtils.toLegacyString(p.getDisplayName()))
                     .replaceAll("^((?:§.)*)\\[[^]]*]\\s*", "$1").trim();
             return colored.isEmpty() ? null : colored;

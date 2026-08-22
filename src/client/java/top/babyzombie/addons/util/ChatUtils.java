@@ -58,8 +58,19 @@ public final class ChatUtils {
     }
 
     /**
-     * Remove emoji (U+1F000–U+1FFFF) and Private Use Area characters
-     * (U+E000–U+F8FF, U+F0000–U+FFFFD, U+100000–U+10FFFD) from text.
+     * Remove emoji, decorative symbol blocks and Private Use Area characters
+     * from text.
+     * <p>
+     * Covers:
+     * <ul>
+     *   <li>Emoji &amp; pictographs (U+1F000–U+1FFFF, incl. U+1F600–U+1F64F, U+1F900–U+1F9FF)</li>
+     *   <li>Decorative symbol blocks servers map icons into:
+     *       arrows (U+2190–U+21FF), misc technical (U+2300–U+23FF),
+     *       geometric shapes (U+25A0–U+25FF), misc symbols (U+2600–U+26FF, e.g. ♔),
+     *       dingbats (U+2700–U+27BF), misc symbols &amp; arrows (U+2B00–U+2BFF),
+     *       variation selectors (U+FE00–U+FE0F)</li>
+     *   <li>Private Use Area (U+E000–U+F8FF, U+F0000–U+FFFFD, U+100000–U+10FFFD)</li>
+     * </ul>
      * Hypixel Skyblock server resource packs map custom icons into PUA code points;
      * stripping them lets us compare the remaining plain text.
      */
@@ -77,7 +88,21 @@ public final class ChatUtils {
     }
 
     private static boolean isEmojiOrPua(int cp) {
-        // Emoji range
+        // Arrows (U+2190–U+21FF)
+        if (cp >= 0x2190 && cp <= 0x21FF) return true;
+        // Miscellaneous Technical (U+2300–U+23FF)
+        if (cp >= 0x2300 && cp <= 0x23FF) return true;
+        // Geometric Shapes (U+25A0–U+25FF)
+        if (cp >= 0x25A0 && cp <= 0x25FF) return true;
+        // Miscellaneous Symbols (U+2600–U+26FF) — includes ♔ (U+2654)
+        if (cp >= 0x2600 && cp <= 0x26FF) return true;
+        // Dingbats (U+2700–U+27BF)
+        if (cp >= 0x2700 && cp <= 0x27BF) return true;
+        // Miscellaneous Symbols and Arrows (U+2B00–U+2BFF)
+        if (cp >= 0x2B00 && cp <= 0x2BFF) return true;
+        // Variation Selectors (U+FE00–U+FE0F)
+        if (cp >= 0xFE00 && cp <= 0xFE0F) return true;
+        // Emoji range (U+1F000–U+1FFFF)
         if (cp >= 0x1F000 && cp <= 0x1FFFF) return true;
         // BMP Private Use Area (U+E000–U+F8FF)
         if (cp >= 0xE000 && cp <= 0xF8FF) return true;

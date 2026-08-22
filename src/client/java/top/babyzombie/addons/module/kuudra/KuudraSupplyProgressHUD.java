@@ -50,8 +50,7 @@ public final class KuudraSupplyProgressHUD {
 
         Matcher m = TITLE_PROGRESS.matcher(ChatUtils.stripColor(text));
         if (m.matches()) {
-            int pct = Integer.parseInt(m.group(1));
-            currentProgress = pct;
+            currentProgress = Integer.parseInt(m.group(1));
             lastTitleMs = System.currentTimeMillis();
 
             // Cancel vanilla title if either HUD is active
