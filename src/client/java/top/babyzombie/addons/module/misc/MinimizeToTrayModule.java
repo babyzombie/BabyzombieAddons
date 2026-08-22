@@ -146,7 +146,7 @@ public final class MinimizeToTrayModule {
         }
         // 延迟准备托盘:等翻译表加载完(主菜单/世界)且托盘线程就绪,但不在挂托盘前显示图标
         if (!trayIconReady && traySupported && !trayCreatePending && ++trayDelayTicks >= 40
-            && client.getOverlay() == null && (client.screen != null || client.level != null)) {
+            && client.gui.overlay() == null && (client.gui.screen() != null || client.level != null)) {
             trayCreatePending = true;
             EventQueue.invokeLater(MinimizeToTrayModule::prepareTrayIcon);
         } else if (!trayIconReady && traySupported && trayDelayTicks >= MAX_TRAY_DELAY) {
