@@ -27,6 +27,7 @@ import top.babyzombie.addons.util.PlaySoundHelper;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.ServerTick;
+import top.babyzombie.addons.module.misc.SystemNotifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -204,6 +205,7 @@ public final class PopupEventsModule {
         totalTime = 10000;
         expireTime = ServerTick.getTime() + totalTime;
         playSound();
+        sendSystemNotify();
     }
 
     /** 猎手交易弹窗：npc 要 cost 换 shard，同意后执行 tradeCommand（可为空） */
@@ -216,6 +218,13 @@ public final class PopupEventsModule {
         totalTime = 10000;
         expireTime = ServerTick.getTime() + totalTime;
         playSound();
+    }
+
+    /** 弹出事件同时转发系统通知(Windows Toast;时机由 SystemNotifier 按 toastNotifyWhen 配置判断)。 */
+    private static void sendSystemNotify() {
+        SystemNotifier.sendPopupNotify(
+            ChatUtils.stripColor(title.getString()),
+            ChatUtils.stripColor(body.getString()));
     }
 
     private static void playSound() {

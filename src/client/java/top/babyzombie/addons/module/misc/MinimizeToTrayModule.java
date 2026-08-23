@@ -7,12 +7,14 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.babyzombie.addons.config.GeneralConfig.Tray;
+import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.EntityRenderEvents;
 import top.babyzombie.addons.event.ParticleRenderEvents;
 import top.babyzombie.addons.event.PlaySoundEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.win32.Win32Api;
+import top.babyzombie.addons.util.win32.WinToast;
 import top.babyzombie.addons.util.win32.Win32Api.Kernel32;
 import top.babyzombie.addons.util.win32.Win32Api.Shell32;
 import top.babyzombie.addons.util.win32.Win32Api.User32;
@@ -134,9 +136,18 @@ public final class MinimizeToTrayModule {
             tryInit(client);
             return;
         }
+        // 启动自动最小化/挂托盘:窗口挂钩完成后即执行一次(主菜单阶段即可,与 AutoIS 同节奏)
+        if (!startupBehaviorApplied) {
+            applyStartupBehavior();
+        }
         if (restoreRequested && trayActive) {
             restoreRequested = false;
             restoreFromTray();
+        }
+        // 启动自动挂托盘:等托盘图标就绪后再隐藏,避免隐藏后无法恢复
+        if (startupHidePending && trayIconReady) {
+            startupHidePending = false;
+            hideToTray();
         }
         if (exitRequested) {
             exitRequested = false;
@@ -192,6 +203,7 @@ public final class MinimizeToTrayModule {
 
     private static void onClientStopping(Minecraft client) {
         cleanup();
+        WinToast.shutdown();
     }
 
     /** 还原窗口过程、停止托盘消息线程并移除托盘图标(幂等)。静音/限帧/隐藏实体走事件与 mixin,无需还原。 */
@@ -279,6 +291,61 @@ public final class MinimizeToTrayModule {
         // 恢复后移除托盘图标,再次挂托盘时重现
         EventQueue.invokeLater(MinimizeToTrayModule::hideTrayIcon);
         LOGGER.info("Restored from tray");
+    }
+
+    /**
+     * 外部触发恢复窗口(点击系统通知 / 快捷方式):挂托盘时置位恢复请求,由主线程 tick 走完整恢复流程
+     * (含移除托盘图标、解除静音等);未挂托盘时直接恢复并置前。可跨线程调用。
+     */
+    public static void requestRestoreFromSystem() {
+        if (trayActive) {
+            restoreRequested = true;
+        } else if (hwnd != null && Pointer.nativeValue(hwnd) != 0) {
+            User32.INSTANCE.ShowWindow(hwnd, Win32Api.SW_RESTORE);
+            User32.INSTANCE.SetForegroundWindow(hwnd);
+        }
+    }
+
+    /** 当前是否挂在托盘(供系统通知时机判断)。 */
+    public static boolean isTrayActive() {
+        return trayActive;
+    }
+
+    /** 启动自动行为是否已执行(每 JVM 会话至多一次)。 */
+    private static volatile boolean startupBehaviorApplied;
+    /** 启动自动挂托盘等待标志:等托盘图标就绪后由 onTick 执行隐藏。 */
+    private static volatile boolean startupHidePending;
+
+    /**
+     * 启动自动最小化/挂托盘(窗口挂钩完成后由 onTick 调用一次,主菜单阶段即生效):
+     * MINIMIZE = 最小化窗口;TRAY = 隐藏到托盘(等托盘图标就绪后执行,避免隐藏后无法恢复)。
+     */
+    public static void applyStartupBehavior() {
+        if (!IS_WINDOWS || startupBehaviorApplied) {
+            return;
+        }
+        startupBehaviorApplied = true;
+        ModConfig.StartupMinimizeMode mode = ModConfigManager.get().general.tray.startupMinimizeMode;
+        if (mode == ModConfig.StartupMinimizeMode.MINIMIZE && hwnd != null && Pointer.nativeValue(hwnd) != 0) {
+            User32.INSTANCE.ShowWindow(hwnd, Win32Api.SW_MINIMIZE);
+            LOGGER.info("Window minimized on startup");
+        } else if (mode == ModConfig.StartupMinimizeMode.TRAY) {
+            startupHidePending = true;
+        }
+    }
+
+    /** 窗口当前是否最小化(含挂托盘时隐藏);供系统通知时机判断。 */
+    public static boolean isWindowMinimized() {
+        return hwnd != null && Pointer.nativeValue(hwnd) != 0 && User32.INSTANCE.IsIconic(hwnd);
+    }
+
+    /** 窗口当前是否拥有焦点;供系统通知时机判断。 */
+    public static boolean isWindowFocused() {
+        if (hwnd == null || Pointer.nativeValue(hwnd) == 0) {
+            return false;
+        }
+        Pointer fg = User32.INSTANCE.GetForegroundWindow();
+        return fg != null && Pointer.nativeValue(fg) == Pointer.nativeValue(hwnd);
     }
 
     /** 进入托盘时一次性处理:停止当前声音 / 清空现有粒子。之后的新声音/粒子由事件持续拦截。 */

@@ -47,6 +47,14 @@ public class ModConfig extends Config {
         OFF, HUD, BOSSBAR;
         @Override public String toString() { return t("config.babyzombieaddons.option.hpDisplay." + name()); }
     }
+    public enum ToastNotifyWhen {
+        OFF, TRAY_ONLY, TRAY_OR_MINIMIZED, NOT_FOCUSED, ALWAYS;
+        @Override public String toString() { return t("config.babyzombieaddons.option.toastNotifyWhen." + name()); }
+    }
+    public enum StartupMinimizeMode {
+        OFF, MINIMIZE, TRAY;
+        @Override public String toString() { return t("config.babyzombieaddons.option.startupMinimizeMode." + name()); }
+    }
     public enum ChestCounterMode {
         KUUDRA_ONLY, INCLUDE_CRIMSON_DUNGEON, EVERYWHERE;
         @Override public String toString() { return t("config.babyzombieaddons.option.chestCounterMode." + name()); }
