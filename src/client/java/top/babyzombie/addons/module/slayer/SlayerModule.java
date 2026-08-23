@@ -24,6 +24,7 @@ public final class SlayerModule {
         SlayerBossRespawnAlert.init();
         SlayerBossDetector.init();
         SlayerBossBox.init();
+        VoidgloomBeaconEffects.init();
         SlayerHUD.init();
 
         // ---- Wire sound events ----

@@ -340,7 +340,7 @@ public final class WinToast {
         boolean spawned;
         if (!isProcessElevated()) {
             spawned = Win32Api.createProcessHidden(psCmd);
-            LOGGER.info("WinToast: not elevated, direct path spawned={}", spawned);
+            LOGGER.debug("WinToast: not elevated, direct path spawned={}", spawned);
         } else {
             try {
                 Files.writeString(Path.of(CMD_FILE), psCmd, StandardCharsets.UTF_8);
@@ -354,7 +354,7 @@ public final class WinToast {
             boolean runOk = Win32Api.createProcessHidden("\"" + SCHTASKS + "\" /run /tn " + TASK_NAME);
             Win32Api.createProcessHidden("\"" + SCHTASKS + "\" /delete /tn " + TASK_NAME + " /f");
             spawned = createOk && runOk;
-            LOGGER.info("WinToast: elevated, task path createOk={} runOk={}", createOk, runOk);
+            LOGGER.debug("WinToast: elevated, task path createOk={} runOk={}", createOk, runOk);
         }
         if (!spawned || !waitDone) {
             return spawned;
