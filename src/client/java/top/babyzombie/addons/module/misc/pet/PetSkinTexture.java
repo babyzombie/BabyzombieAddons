@@ -110,7 +110,7 @@ public final class PetSkinTexture {
             parseNbtNames(obj);
             buildUrlIndex();
             loaded = true;
-            LOGGER.info("[PetSkinTexture] Loaded {} skins, {} variant families",
+            LOGGER.debug("[PetSkinTexture] Loaded {} skins, {} variant families",
                 skins.size(), skinVariants.size());
         } catch (IOException e) {
             LOGGER.error("[PetSkinTexture] Failed to load animatedskulls.json", e);

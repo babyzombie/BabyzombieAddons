@@ -151,7 +151,7 @@ public final class MinimizeToTrayModule {
         }
         if (exitRequested) {
             exitRequested = false;
-            LOGGER.info("Exit requested from tray menu");
+            LOGGER.debug("Exit requested from tray menu");
             client.stop();
             return;
         }
@@ -182,7 +182,7 @@ public final class MinimizeToTrayModule {
             return; // 窗口未就绪,下个 tick 重试
         }
         if (!SystemTray.isSupported()) {
-            LOGGER.info("System tray not supported, tray features disabled");
+            LOGGER.debug("System tray not supported, tray features disabled");
             windowHooked = true; // 不再重试,整体禁用
             return;
         }
@@ -198,7 +198,7 @@ public final class MinimizeToTrayModule {
         }
         windowHooked = true;
         traySupported = true;
-        LOGGER.info("Window hooked for tray features");
+        LOGGER.debug("Window hooked for tray features");
     }
 
     private static void onClientStopping(Minecraft client) {
@@ -278,7 +278,7 @@ public final class MinimizeToTrayModule {
         if (trayIconReady && !trayIconShown) {
             EventQueue.invokeLater(MinimizeToTrayModule::createTrayIcon);
         }
-        LOGGER.info("Minimized to tray");
+        LOGGER.debug("Minimized to tray");
     }
 
     private static void restoreFromTray() {
@@ -290,7 +290,7 @@ public final class MinimizeToTrayModule {
         User32.INSTANCE.SetForegroundWindow(hwnd);
         // 恢复后移除托盘图标,再次挂托盘时重现
         EventQueue.invokeLater(MinimizeToTrayModule::hideTrayIcon);
-        LOGGER.info("Restored from tray");
+        LOGGER.debug("Restored from tray");
     }
 
     /**
@@ -328,7 +328,7 @@ public final class MinimizeToTrayModule {
         ModConfig.StartupMinimizeMode mode = ModConfigManager.get().general.tray.startupMinimizeMode;
         if (mode == ModConfig.StartupMinimizeMode.MINIMIZE && hwnd != null && Pointer.nativeValue(hwnd) != 0) {
             User32.INSTANCE.ShowWindow(hwnd, Win32Api.SW_MINIMIZE);
-            LOGGER.info("Window minimized on startup");
+            LOGGER.debug("Window minimized on startup");
         } else if (mode == ModConfig.StartupMinimizeMode.TRAY) {
             startupHidePending = true;
         }
@@ -518,7 +518,7 @@ public final class MinimizeToTrayModule {
     private static void trayWndAdd() {
         if (Shell32.INSTANCE.Shell_NotifyIconW(Win32Api.NIM_ADD, buildNid(true))) {
             trayIconShown = true;
-            LOGGER.info("Tray icon shown");
+            LOGGER.debug("Tray icon shown");
         } else {
             LOGGER.error("Shell_NotifyIcon NIM_ADD failed");
             traySupported = false;

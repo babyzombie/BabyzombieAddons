@@ -399,15 +399,17 @@ public final class SlayerBossDetector {
                     && !voidgloom.beaconEntity.isAlive()) {
                 BlockPos standPos = voidgloom.beaconEntity.blockPosition();
                 boolean foundBeacon = false;
-                for (int dx = -3; dx <= 3 && !foundBeacon; dx++) {
-                    for (int dz = -3; dz <= 3 && !foundBeacon; dz++) {
-                        var be = level.getBlockEntity(standPos.offset(dx, 0, dz));
-                        if (be instanceof BeaconBlockEntity) {
-                            voidgloom.beaconStatus = "onTheGround";
-                            voidgloom.beaconLoc = be.getBlockPos();
-                            voidgloom.beaconEntity = null;
-                            voidgloom.beaconTime = ServerTick.getTime() + 4800;
-                            foundBeacon = true;
+                for (int dy = -3; dy <= 3 && !foundBeacon; dy++) {
+                    for (int dx = -3; dx <= 3 && !foundBeacon; dx++) {
+                        for (int dz = -3; dz <= 3 && !foundBeacon; dz++) {
+                            var be = level.getBlockEntity(standPos.offset(dx, dy, dz));
+                            if (be instanceof BeaconBlockEntity) {
+                                voidgloom.beaconStatus = "onTheGround";
+                                voidgloom.beaconLoc = be.getBlockPos();
+                                voidgloom.beaconEntity = null;
+                                voidgloom.beaconTime = ServerTick.getTime() + 4800;
+                                foundBeacon = true;
+                            }
                         }
                     }
                 }

@@ -49,16 +49,34 @@ public class SlayerConfig {
     public static class SlayerBossInfo {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.zombieSlayerInfo", desc = "config.babyzombieaddons.option.zombieSlayerInfo.desc") @ConfigEditorDropdown @SearchTag("zombie")
         public SlayerBossInfoMode zombieSlayerInfo = SlayerBossInfoMode.OFF;
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.spiderSlayerInfo", desc = "config.babyzombieaddons.option.spiderSlayerInfo.desc") @ConfigEditorDropdown @SearchTag("spider")
         public SlayerBossInfoMode spiderSlayerInfo = SlayerBossInfoMode.OFF;
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.wolfSlayerInfo", desc = "config.babyzombieaddons.option.wolfSlayerInfo.desc") @ConfigEditorDropdown @SearchTag("wolf")
         public SlayerBossInfoMode wolfSlayerInfo = SlayerBossInfoMode.OFF;
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.endermanSlayerInfo", desc = "config.babyzombieaddons.option.endermanSlayerInfo.desc") @ConfigEditorDropdown @SearchTag("enderman")
         public SlayerBossInfoMode endermanSlayerInfo = SlayerBossInfoMode.OFF;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.group.slayerVoidgloom", desc = "") @Accordion @SearchTag("voidgloom")
+        public Voidgloom voidgloom = new Voidgloom();
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.blazeSlayerInfo", desc = "config.babyzombieaddons.option.blazeSlayerInfo.desc") @ConfigEditorDropdown @SearchTag("blaze")
         public SlayerBossInfoMode blazeSlayerInfo = SlayerBossInfoMode.OFF;
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.vampireSlayerInfo", desc = "config.babyzombieaddons.option.vampireSlayerInfo.desc") @ConfigEditorDropdown @SearchTag("vampire")
         public SlayerBossInfoMode vampireSlayerInfo = SlayerBossInfoMode.OFF;
+    }
+
+    public static class Voidgloom {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.voidgloomBeaconGlow", desc = "config.babyzombieaddons.option.voidgloomBeaconGlow.desc") @ConfigEditorBoolean @SearchTag("voidgloom") @SearchTag("beacon") @SearchTag("glow")
+        public boolean beaconGlow = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.voidgloomBeaconGlowColor", desc = "config.babyzombieaddons.option.voidgloomBeaconGlowColor.desc") @ConfigEditorColour @SearchTag("voidgloom") @SearchTag("beacon") @SearchTag("glow") @SearchTag("color")
+        public ChromaColour beaconGlowColor = ChromaColour.fromStaticRGB(255, 255, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.voidgloomBeaconBeam", desc = "config.babyzombieaddons.option.voidgloomBeaconBeam.desc") @ConfigEditorBoolean @SearchTag("voidgloom") @SearchTag("beacon") @SearchTag("beam")
+        public boolean beaconBeam = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.voidgloomBeaconBeamColor", desc = "config.babyzombieaddons.option.voidgloomBeaconBeamColor.desc") @ConfigEditorColour @SearchTag("voidgloom") @SearchTag("beacon") @SearchTag("beam") @SearchTag("color")
+        public ChromaColour beaconBeamColor = ChromaColour.fromStaticRGB(255, 255, 255, 255);
     }
 
     public static class SlayerBossBox {

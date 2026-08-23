@@ -350,7 +350,7 @@ public final class LoadoutItemResolver {
             }
             reverseIndex = index;
             building = false;
-            LOGGER.info("Built reverse index via Skyblocker: {} entries", index.size());
+            LOGGER.debug("Built reverse index via Skyblocker: {} entries", index.size());
         } catch (Throwable t) {
             LOGGER.warn("Failed to build index from Skyblocker", t);
             building = false;
