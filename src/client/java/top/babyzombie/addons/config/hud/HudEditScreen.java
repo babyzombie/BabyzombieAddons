@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.KeyEvent;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import top.babyzombie.addons.config.ModConfigManager;
@@ -12,7 +13,9 @@ import top.babyzombie.addons.util.ChatUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public final class HudEditScreen extends Screen {
@@ -22,6 +25,7 @@ public final class HudEditScreen extends Screen {
     private static final float ARROW_HALF_ANGLE = 0.5f; // chevron 半开角(弧度,约 28.6°)
     private static final int ARROW_HIT = 12;      // 箭头命中框边长(悬停/点击)
     private static final int ARROW_HOP = 12;      // 同侧多箭头沿边缘错开间距
+    private static final int CTX_PAD = 4;         // 右键菜单左右内边距
     private static final String CHS_NAME = "CategoryHudSwitcher";
 
     private static final long CHS_LONG_PRESS_MS = 250L;
@@ -34,6 +38,12 @@ public final class HudEditScreen extends Screen {
     private int dragOffsetX, dragOffsetY;
     private int snapLineX = -1; // -1 = 无吸附指示线
     private int snapLineY = -1;
+
+    // 右键上下文菜单状态
+    private boolean ctxOpen;
+    private HudManager.HudElement ctxTarget;
+    private int ctxX, ctxY, ctxW, ctxH, ctxTitleH, ctxItemH;
+    private final Set<String> ctxHidden = new HashSet<>(); // 本会话临时隐藏的元素
 
     // 分类 HUD 切换器（CHS）状态，原 CategoryHudSwitcher 静态字段迁回实例
     private boolean chsDropdownOpen;
@@ -126,15 +136,43 @@ public final class HudEditScreen extends Screen {
 
         // 分类 HUD 切换器（原 CategoryHudSwitcher.renderOnScreen，就地渲染）
         renderCategorySwitcher(gui, mouseX, mouseY);
+
+        // 右键上下文菜单（最顶层）
+        renderContextMenu(gui, mouseX, mouseY);
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        // 右键菜单打开时：任何点击只处理菜单（命中项执行 / 菜单外仅关闭）
+        if (ctxOpen) {
+            int mx = (int) event.x(), my = (int) event.y();
+            int item = ctxHitItem(mx, my);
+            ctxOpen = false;
+            if (item >= 0) runContextAction(item); // 内部用 ctxTarget
+            ctxTarget = null;
+            return true;
+        }
+
         // CHS 鼠标点击拦截优先（本屏内联，避免与全局 Fabric 注册双重触发）
         if (categorySwitcherMouseClicked(event)) return true;
-        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return super.mouseClicked(event, doubleClick);
 
         int mx = (int) event.x(), my = (int) event.y();
+
+        // 右键：命中元素则打开上下文菜单，空白处仅消费事件
+        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
+            for (var e : (Iterable<HudManager.HudElement>) visibleElements()::iterator) {
+                if (!showElement(e)) continue;
+                int w = demoWidth(e) + 8;
+                int h = demoHeight(e) + 8;
+                if (mx >= e.x && mx <= e.x + w && my >= e.y && my <= e.y + h) {
+                    openContextMenu(e, mx, my);
+                    return true;
+                }
+            }
+            return true;
+        }
+
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return super.mouseClicked(event, doubleClick);
 
         // 屏幕边缘箭头：点击把完全在屏幕外的元素拉到鼠标位置并衔接拖拽
         // (多个箭头同位置重叠时取最后一个命中的，与悬停 tooltip 显示一致)
@@ -164,6 +202,8 @@ public final class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
+        // 上下文菜单打开时不拖拽
+        if (ctxOpen) return true;
         // CHS 鼠标拖拽拦截优先
         if (categorySwitcherMouseDragged(event, deltaX, deltaY)) return true;
         if (selected == null || event.button() != InputConstants.MOUSE_BUTTON_LEFT)
@@ -177,13 +217,28 @@ public final class HudEditScreen extends Screen {
         int rawX = mx - dragOffsetX;
         int rawY = my - dragOffsetY;
 
-        // 应用吸附
-        int snappedX = applySnapX(rawX, w);
-        int snappedY = applySnapY(rawY, h);
+        // 按住 Shift 临时关闭吸附对齐(实时查询键盘状态,拖拽中可随时切换)
+        int finalX, finalY;
+        if (shiftHeld()) {
+            finalX = rawX;
+            finalY = rawY;
+            snapLineX = -1;
+            snapLineY = -1;
+        } else {
+            finalX = applySnapX(rawX, w);
+            finalY = applySnapY(rawY, h);
+        }
 
-        selected.x = (int) Math.max(0, Math.min(snappedX, sw - w));
-        selected.y = (int) Math.max(0, Math.min(snappedY, sh - h));
+        selected.x = (int) Math.max(0, Math.min(finalX, sw - w));
+        selected.y = (int) Math.max(0, Math.min(finalY, sh - h));
         return true;
+    }
+
+    /** 实时查询左右 Shift 是否按下(事件携带的 modifiers 是按下时刻的快照,拖拽中途会失真)。 */
+    private boolean shiftHeld() {
+        var win = minecraft.getWindow();
+        return InputConstants.isKeyDown(win, InputConstants.KEY_LSHIFT)
+                || InputConstants.isKeyDown(win, InputConstants.KEY_RSHIFT);
     }
 
     /**
@@ -273,6 +328,7 @@ public final class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
+        if (ctxOpen) return true;
         for (var e : (Iterable<HudManager.HudElement>) visibleElements()::iterator) {
             if (!showElement(e)) continue;
             int w = demoWidth(e) + 8;
@@ -397,10 +453,108 @@ public final class HudEditScreen extends Screen {
         dragOffsetY = my - ny;
     }
 
+    // ==================== 右键上下文菜单 ====================
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (ctxOpen && event.key() == InputConstants.KEY_ESCAPE) {
+            ctxOpen = false;
+            ctxTarget = null;
+            return true;
+        }
+        return super.keyPressed(event);
+    }
+
+    private void openContextMenu(HudManager.HudElement e, int mx, int my) {
+        ctxTarget = e;
+        ctxOpen = true;
+        chsDropdownOpen = false; // 菜单与 CHS 下拉互斥
+        Font font = minecraft.font;
+        int w = font.width(ChatUtils.stripColor(menuTitle(e)));
+        for (String s : ctxItemTexts()) w = Math.max(w, font.width(s));
+        ctxW = w + CTX_PAD * 2;
+        ctxTitleH = font.lineHeight + 6;
+        ctxItemH = font.lineHeight + 4;
+        ctxH = ctxTitleH + 3 * ctxItemH;
+        int sw = minecraft.getWindow().getGuiScaledWidth();
+        int sh = minecraft.getWindow().getGuiScaledHeight();
+        ctxX = Math.clamp(mx + 4, 0, Math.max(0, sw - ctxW));
+        ctxY = Math.clamp(my + 4, 0, Math.max(0, sh - ctxH));
+    }
+
+    private void renderContextMenu(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        if (!ctxOpen || ctxTarget == null) return;
+        Font font = minecraft.font;
+        // 标题行
+        g.fill(ctxX, ctxY, ctxX + ctxW, ctxY + ctxTitleH, 0xFF303030);
+        g.text(font, menuTitle(ctxTarget), ctxX + CTX_PAD, ctxY + 3, 0xFFAAAAAA, true);
+        g.fill(ctxX, ctxY + ctxTitleH, ctxX + ctxW, ctxY + ctxTitleH + 1, 0xFF555555);
+        // 菜单项
+        String[] items = ctxItemTexts();
+        for (int i = 0; i < items.length; i++) {
+            int y0 = ctxY + ctxTitleH + i * ctxItemH;
+            boolean hover = ctxHitItem(mouseX, mouseY) == i;
+            g.fill(ctxX, y0, ctxX + ctxW, y0 + ctxItemH, hover ? 0xFF404040 : 0xFF202020);
+            if (i > 0) g.fill(ctxX, y0, ctxX + ctxW, y0 + 1, 0xFF555555);
+            g.text(font, items[i], ctxX + CTX_PAD, y0 + 2, ctxOptionEnabled(i) ? 0xFFFFFFFF : 0xFF808080, true);
+        }
+    }
+
+    private int ctxHitItem(int mx, int my) {
+        if (!ctxOpen || mx < ctxX || mx > ctxX + ctxW || my < ctxY || my > ctxY + ctxH) return -1;
+        if (my < ctxY + ctxTitleH) return -1;
+        int i = (my - ctxY - ctxTitleH) / ctxItemH;
+        return i >= 0 && i < 3 ? i : -1;
+    }
+
+    private void runContextAction(int item) {
+        if (ctxTarget == null) return;
+        HudManager.HudElement e = ctxTarget;
+        switch (item) {
+            case 0 -> openConfigFor(e);
+            case 1 -> {
+                ctxHidden.add(e.name);
+                if (selected == e) selected = null; // 隐藏后不能再处于选中态
+            }
+            case 2 -> {
+                HudManager.activeTag = e.mainTag; // 与 CHS 选择分类一致,持久化
+                HudManager.save();
+            }
+            default -> {}
+        }
+    }
+
+    private boolean ctxOptionEnabled(int item) {
+        if (ctxTarget == null) return false;
+        if (item == 0) return HudManager.getLabelKey(ctxTarget.name).startsWith("config.babyzombieaddons.option.");
+        return true;
+    }
+
+    private String menuTitle(HudManager.HudElement e) {
+        String key = HudManager.getLabelKey(e.name);
+        return key.isEmpty() ? e.name : ChatUtils.translate(key);
+    }
+
+    private String[] ctxItemTexts() {
+        return new String[]{
+                ChatUtils.translate("config.babyzombieaddons.hud.edit.ctxOpen"),
+                ChatUtils.translate("config.babyzombieaddons.hud.edit.ctxHide"),
+                ChatUtils.translate("config.babyzombieaddons.hud.edit.ctxFilter"),
+        };
+    }
+
+    /** 打开设置页并定位到该元素对应的选项(搜索词用翻译后的显示文本)。 */
+    private void openConfigFor(HudManager.HudElement e) {
+        String key = HudManager.getLabelKey(e.name);
+        if (!key.startsWith("config.babyzombieaddons.option.")) return;
+        String display = ChatUtils.stripColor(ChatUtils.translate(key));
+        ModConfigManager.createGUI(this, display);
+    }
+
     private boolean showElement(HudManager.HudElement e) {
         boolean cond = e.showCondition.getAsBoolean() || ModConfigManager.get().misc.debugMode;
         boolean tagMatch = (HudManager.activeTag == HudTag.ALL || e.mainTag == HudManager.activeTag);
-        return cond && tagMatch;
+        return cond && tagMatch && !ctxHidden.contains(e.name); // 临时隐藏仅本会话,不落盘
     }
 
     private int demoWidth(HudManager.HudElement e) {

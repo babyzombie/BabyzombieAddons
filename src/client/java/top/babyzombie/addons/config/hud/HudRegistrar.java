@@ -160,14 +160,14 @@ public final class HudRegistrar {
                 "§aGC     §7OC     PC     CC     AC",
                 "config.babyzombieaddons.option.chatChannelSwitcher",
                 () -> get().general.chat.channelSwitcher,
-                HudTag.CHAT);
+                HudTag.MISC);
 
         // --- Pet Display ---
         HudManager.register("PetDisplay", 10, 200, 1.0f,
                 "§7Lv.100 §fRabbit\n§b95.5%",
                 "config.babyzombieaddons.option.petDisplay",
                 () -> get().skyblock.pet.enabled,
-                HudTag.PET);
+                HudTag.MISC);
 
         // --- AutoIS ---
         HudManager.register("AutoIS", 10, 10, 1.0f,
@@ -232,7 +232,7 @@ public final class HudRegistrar {
                         || get().popup.popupFriendRequest || get().popup.popupDuelsRequest
                         || get().popup.popupSkyblockTrade || get().popup.popupDungeonRestart
                         || get().fishing.popupBaitLow > 0,
-                HudTag.POPUP);
+                HudTag.MISC);
 
         // --- Category HUD Switcher (永远显示，不走 activeTag 过滤) ---
         HudManager.register("CategoryHudSwitcher", 1600, 10, 1.0f,
