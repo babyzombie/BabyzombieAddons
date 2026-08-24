@@ -3,7 +3,6 @@ import com.google.gson.annotations.Expose;
 
 import io.github.notenoughupdates.moulconfig.annotations.*;
 import io.github.notenoughupdates.moulconfig.observer.Property;
-import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.module.misc.NEURepoLinker;
 
 public class MiscConfig {
@@ -57,9 +56,9 @@ public class MiscConfig {
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.copyItemInfo", desc = "config.babyzombieaddons.option.copyItemInfo.desc")
-    @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN)
+    @ConfigEditorKeybind(defaultKey = -1)
     @SearchTag("copy") @SearchTag("key")
-    public int copyItemInfo = GLFW.GLFW_KEY_UNKNOWN;
+    public int copyItemInfo = -1;
 
     @Expose
     @ConfigOption(name = "config.babyzombieaddons.option.maxDebugEntities", desc = "config.babyzombieaddons.option.maxDebugEntities.desc")

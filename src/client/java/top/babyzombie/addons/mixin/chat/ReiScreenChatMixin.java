@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,7 +33,7 @@ public abstract class ReiScreenChatMixin {
         var screen = (Screen) (Object) this;
 
         // ESC：走 onClose → setScreen(null) → ChatOverlaySetScreenMixin 路径（与发送消息相同）
-        if (event.key() == GLFW.GLFW_KEY_ESCAPE && ContainerChatHelper.isActive()) {
+        if (event.key() == InputConstants.KEY_ESCAPE && ContainerChatHelper.isActive()) {
             ContainerChatHelper.getOverlay().onClose();
             cir.setReturnValue(true);
             return;
@@ -87,7 +87,7 @@ public abstract class ReiScreenChatMixin {
         if (ContainerChatHelper.isActive()) {
             ContainerChatHelper.getOverlay().extractRenderState(g, mouseX, mouseY, a);
         }
-        if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS) {
+        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_LALT)) {
             boolean sharing = ContainerChatHelper.isActive() && ModConfigManager.get().general.chat.chatInContainer;
             StarIndicator.draw(g, mouseX, mouseY, sharing);
         }

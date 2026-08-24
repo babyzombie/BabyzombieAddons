@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -91,8 +91,8 @@ public final class PopupEventsModule {
     private PopupEventsModule() {}
 
     public static void init() {
-        keyYes = KeyBindingUtil.register("key.babyzombieaddons.popup_yes", GLFW.GLFW_KEY_Y);
-        keyNo  = KeyBindingUtil.register("key.babyzombieaddons.popup_no",  GLFW.GLFW_KEY_N);
+        keyYes = KeyBindingUtil.register("key.babyzombieaddons.popup_yes", InputConstants.KEY_Y);
+        keyNo  = KeyBindingUtil.register("key.babyzombieaddons.popup_no",  InputConstants.KEY_N);
 
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             if (overlay) return;

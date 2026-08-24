@@ -11,7 +11,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -36,7 +36,7 @@ public abstract class ContainerChatMixin extends Screen {
 
         if (ContainerChatHelper.isActive()) {
             // ESC 关 overlay，走 onClose → setScreen(null) → ChatOverlaySetScreenMixin 路径
-            if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
+            if (event.key() == InputConstants.KEY_ESCAPE) {
                 ContainerChatHelper.getOverlay().onClose();
                 cir.setReturnValue(true);
                 return;
@@ -68,7 +68,7 @@ public abstract class ContainerChatMixin extends Screen {
             ContainerChatHelper.getOverlay().extractRenderState(g, mouseX, mouseY, a);
         }
         // ALT 按住时：保护→⭐ 常显；分享→箭头 仅开关打开时
-        if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS) {
+        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_LALT)) {
             boolean sharing = ContainerChatHelper.isActive() && ModConfigManager.get().general.chat.chatInContainer;
             StarIndicator.draw(g, mouseX, mouseY, sharing);
         }

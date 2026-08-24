@@ -12,7 +12,6 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfig.*;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.util.ChatUtils;
@@ -30,14 +29,14 @@ public class GeneralConfig {
     public boolean replaceReportWithServerList = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.serverResourcePackAutoAccept", desc = "config.babyzombieaddons.option.serverResourcePackAutoAccept.desc") @ConfigEditorBoolean @SearchTag("resourcepack")
     public boolean serverResourcePackAutoAccept = false;
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.cancelKeyRelease", desc = "config.babyzombieaddons.option.cancelKeyRelease.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("key")
-    public int cancelKeyRelease = GLFW.GLFW_KEY_UNKNOWN;
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.cancelKeyRelease", desc = "config.babyzombieaddons.option.cancelKeyRelease.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("key")
+    public int cancelKeyRelease = -1;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.playCmd", desc = "config.babyzombieaddons.option.playCmd.desc") @ConfigEditorBoolean @SearchTag("play")
     public boolean playCmd = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.skipSecondPerson", desc = "config.babyzombieaddons.option.skipSecondPerson.desc") @ConfigEditorSlider(minValue = 0, maxValue = 30, minStep = 1) @SearchTag("camera")
     public int skipSecondPerson = 0;
-    @Expose @ConfigOption(name = "config.babyzombieaddons.option.secondPerson", desc = "config.babyzombieaddons.option.secondPerson.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("camera") @SearchTag("key")
-    public int secondPerson = GLFW.GLFW_KEY_UNKNOWN;
+    @Expose @ConfigOption(name = "config.babyzombieaddons.option.secondPerson", desc = "config.babyzombieaddons.option.secondPerson.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("camera") @SearchTag("key")
+    public int secondPerson = -1;
     @Expose @ConfigOption(name = "config.babyzombieaddons.option.useTpsAdjustedTime", desc = "config.babyzombieaddons.option.useTpsAdjustedTime.desc") @ConfigEditorBoolean @SearchTag("tps")
     public boolean useTpsAdjustedTime = false;
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.pauseScreen", desc = "") @Accordion
@@ -64,8 +63,8 @@ public class GeneralConfig {
     public EntityHider entityHider = new EntityHider();
 
     public static class WaypointMarker {
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerKey", desc = "config.babyzombieaddons.option.markerKey.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("marker") @SearchTag("key")
-        public int markerKey = GLFW.GLFW_KEY_UNKNOWN;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerKey", desc = "config.babyzombieaddons.option.markerKey.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("marker") @SearchTag("key")
+        public int markerKey = -1;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerChannel", desc = "config.babyzombieaddons.option.markerChannel.desc") @ConfigEditorDropdown @SearchTag("marker") @SearchTag("channel")
         public MarkerChannel markerChannel = MarkerChannel.PC;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.markerSuffix", desc = "config.babyzombieaddons.option.markerSuffix.desc") @ConfigEditorText @SearchTag("marker") @SearchTag("suffix")
@@ -75,8 +74,8 @@ public class GeneralConfig {
     public static class EntityHider {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderEnabled", desc = "config.babyzombieaddons.option.entityHiderEnabled.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("entity")
         public boolean enabled = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderToggleKey", desc = "config.babyzombieaddons.option.entityHiderToggleKey.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("hide") @SearchTag("key")
-        public int toggleKey = GLFW.GLFW_KEY_UNKNOWN;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderToggleKey", desc = "config.babyzombieaddons.option.entityHiderToggleKey.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("hide") @SearchTag("key")
+        public int toggleKey = -1;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderSkyblockOnly", desc = "config.babyzombieaddons.option.entityHiderSkyblockOnly.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("skyblock")
         public boolean skyblockOnly = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.entityHiderHideOwnBobber", desc = "config.babyzombieaddons.option.entityHiderHideOwnBobber.desc") @ConfigEditorBoolean @SearchTag("hide") @SearchTag("bobber") @SearchTag("fishing")
@@ -135,8 +134,8 @@ public class GeneralConfig {
         public boolean disableAll = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.swapHands", desc = "config.babyzombieaddons.option.swapHands.desc") @ConfigEditorBoolean @SearchTag("hand") @SearchTag("swap")
         public boolean swapHands = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.toggleHandRenderKey", desc = "config.babyzombieaddons.option.toggleHandRenderKey.desc") @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN) @SearchTag("hand") @SearchTag("key")
-        public int toggleHandRenderKey = GLFW.GLFW_KEY_UNKNOWN;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.toggleHandRenderKey", desc = "config.babyzombieaddons.option.toggleHandRenderKey.desc") @ConfigEditorKeybind(defaultKey = -1) @SearchTag("hand") @SearchTag("key")
+        public int toggleHandRenderKey = -1;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.customSwingDuration", desc = "config.babyzombieaddons.option.customSwingDuration.desc") @ConfigEditorBoolean @SearchTag("hand") @SearchTag("swing")
         public boolean customSwingDuration = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.swingDurationTicks", desc = "config.babyzombieaddons.option.swingDurationTicks.desc") @ConfigEditorSlider(minValue = 0, maxValue = 1200, minStep = 1) @SearchTag("hand") @SearchTag("swing") @SearchTag("duration")

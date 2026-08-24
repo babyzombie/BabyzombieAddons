@@ -21,7 +21,7 @@ import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import top.babyzombie.addons.util.DataPersistence;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -436,15 +436,15 @@ public class AbiphoneContactScreen extends Screen {
         double mx = event.x(), my = event.y();
         int btn = event.buttonInfo().button();
 
-        if (btn == GLFW.GLFW_MOUSE_BUTTON_LEFT && mx < panelWidth) {
+        if (btn == InputConstants.MOUSE_BUTTON_LEFT && mx < panelWidth) {
             return panelClick(mx, my);
         }
 
-        if (btn == GLFW.GLFW_MOUSE_BUTTON_LEFT && mx >= panelWidth) {
+        if (btn == InputConstants.MOUSE_BUTTON_LEFT && mx >= panelWidth) {
             searchFocused = false;
         }
 
-        if (btn == GLFW.GLFW_MOUSE_BUTTON_RIGHT && hoveredIndex >= 0 && dragIndex < 0) {
+        if (btn == InputConstants.MOUSE_BUTTON_RIGHT && hoveredIndex >= 0 && dragIndex < 0) {
             String name = stripColor(contacts.get(hoveredIndex).name());
             if (autoAnswer.contains(name)) {
                 autoAnswer.remove(name);
@@ -455,7 +455,7 @@ public class AbiphoneContactScreen extends Screen {
             return true;
         }
 
-        if (btn == GLFW.GLFW_MOUSE_BUTTON_LEFT && shiftDown && hoveredIndex >= 0 && dragIndex < 0) {
+        if (btn == InputConstants.MOUSE_BUTTON_LEFT && shiftDown && hoveredIndex >= 0 && dragIndex < 0) {
             String name = stripColor(contacts.get(hoveredIndex).name());
             if (favorites.contains(name)) {
                 favorites.remove(name);
@@ -466,7 +466,7 @@ public class AbiphoneContactScreen extends Screen {
             return true;
         }
 
-        if (btn == GLFW.GLFW_MOUSE_BUTTON_LEFT && hoveredIndex >= 0 && dragIndex < 0) {
+        if (btn == InputConstants.MOUSE_BUTTON_LEFT && hoveredIndex >= 0 && dragIndex < 0) {
             dragIndex = hoveredIndex;
             dragStarted = false;
             dragStartX = mx;
@@ -546,16 +546,16 @@ public class AbiphoneContactScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        if (event.key() == GLFW.GLFW_KEY_LEFT_SHIFT || event.key() == GLFW.GLFW_KEY_RIGHT_SHIFT) {
+        if (event.key() == InputConstants.KEY_LSHIFT || event.key() == InputConstants.KEY_RSHIFT) {
             shiftDown = true;
         }
 
         if (searchFocused) {
-            if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
+            if (event.key() == InputConstants.KEY_ESCAPE) {
                 searchFocused = false;
                 return true;
             }
-            if (event.key() == GLFW.GLFW_KEY_BACKSPACE) {
+            if (event.key() == InputConstants.KEY_BACKSPACE) {
                 if (!searchText.isEmpty()) {
                     searchText = searchText.substring(0, searchText.length() - 1);
                 }
@@ -564,7 +564,7 @@ public class AbiphoneContactScreen extends Screen {
             return true;
         }
 
-        if (event.key() == GLFW.GLFW_KEY_ESCAPE
+        if (event.key() == InputConstants.KEY_ESCAPE
             || Minecraft.getInstance().options.keyInventory.matches(event)) {
             if (dragIndex >= 0) { dragIndex = -1; dragTargetIndex = -1; return true; }
             onClose();
@@ -575,7 +575,7 @@ public class AbiphoneContactScreen extends Screen {
 
     @Override
     public boolean keyReleased(KeyEvent event) {
-        if (event.key() == GLFW.GLFW_KEY_LEFT_SHIFT || event.key() == GLFW.GLFW_KEY_RIGHT_SHIFT) {
+        if (event.key() == InputConstants.KEY_LSHIFT || event.key() == InputConstants.KEY_RSHIFT) {
             shiftDown = false;
         }
         return super.keyReleased(event);

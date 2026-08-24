@@ -4,7 +4,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
-import org.lwjgl.glfw.GLFW;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
@@ -69,13 +68,13 @@ public class BabyzombieAddonsClient implements ClientModInitializer {
         GuiOverlayManager.init();
 
         cancelKeyBindingRelease = KeyBindingUtil.register(
-                "key.babyzombieaddons.cancel_key_release", GLFW.GLFW_KEY_UNKNOWN);
+                "key.babyzombieaddons.cancel_key_release", -1);
 
         toggleHandRenderKey = KeyBindingUtil.register(
-                "key.babyzombieaddons.toggle_hand_render", GLFW.GLFW_KEY_UNKNOWN);
+                "key.babyzombieaddons.toggle_hand_render", -1);
 
         entityHiderToggleKey = KeyBindingUtil.register(
-                "key.babyzombieaddons.toggle_entity_hider", GLFW.GLFW_KEY_UNKNOWN);
+                "key.babyzombieaddons.toggle_entity_hider", -1);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;

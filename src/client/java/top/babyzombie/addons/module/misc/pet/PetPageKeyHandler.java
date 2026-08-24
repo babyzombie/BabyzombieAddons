@@ -3,7 +3,6 @@ package top.babyzombie.addons.module.misc.pet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.ContainerInput;
-import org.lwjgl.glfw.GLFW;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 
@@ -53,11 +52,11 @@ public final class PetPageKeyHandler {
         var kb = ModConfigManager.get().skyblock.pet.petPageKeyBindings;
 
         // 翻页键
-        if (keyCode == kb.prevPage && kb.prevPage != GLFW.GLFW_KEY_UNKNOWN) {
+        if (keyCode == kb.prevPage && kb.prevPage != -1) {
             clickSlot(screen, PREV_PAGE_SLOT);
             return true;
         }
-        if (keyCode == kb.nextPage && kb.nextPage != GLFW.GLFW_KEY_UNKNOWN) {
+        if (keyCode == kb.nextPage && kb.nextPage != -1) {
             clickSlot(screen, NEXT_PAGE_SLOT);
             return true;
         }
@@ -65,7 +64,7 @@ public final class PetPageKeyHandler {
         // 宠物槽位键
         int[] slotKeys = kb.slotKeys();
         for (int i = 0; i < slotKeys.length; i++) {
-            if (keyCode == slotKeys[i] && slotKeys[i] != GLFW.GLFW_KEY_UNKNOWN) {
+            if (keyCode == slotKeys[i] && slotKeys[i] != -1) {
                 clickSlot(screen, PET_SLOTS[i]);
                 return true;
             }

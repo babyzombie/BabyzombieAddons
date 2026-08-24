@@ -1,6 +1,6 @@
 package top.babyzombie.addons.module.chat;
 
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.mixin.chat.ChatScreenAccessor;
@@ -13,7 +13,7 @@ public final class ContainerChatModule {
         ContainerClickEvents.BEFORE_MOUSE_CLICK.register((screen, slot, event) -> {
             if (!ModConfigManager.get().general.chat.chatInContainer) return false;
             if (ContainerChatHelper.isBlocklistedContainer(screen)) return false;
-            if ((event.modifiers() & GLFW.GLFW_MOD_ALT) == 0) return false;
+            if ((event.modifiers() & InputConstants.MOD_ALT) == 0) return false;
             if (slot == null || !slot.hasItem()) return false;
 
             var stack = slot.getItem();

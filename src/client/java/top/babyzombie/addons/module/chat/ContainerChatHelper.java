@@ -5,6 +5,7 @@ import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.CharacterEvent;
+import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
@@ -76,8 +77,8 @@ public final class ContainerChatHelper {
         });
         // ALT+左键 REI / RRV 物品：GLFW 层拦截，mods 参数直接给到，无需查询
         previousMouseButtonCallback = GLFW.glfwSetMouseButtonCallback(window, (w, button, action, mods) -> {
-            if (action == GLFW.GLFW_PRESS && button == GLFW.GLFW_MOUSE_BUTTON_LEFT
-                    && (mods & GLFW.GLFW_MOD_ALT) != 0) {
+            if (action == InputConstants.PRESS && button == InputConstants.MOUSE_BUTTON_LEFT
+                    && (mods & InputConstants.MOD_ALT) != 0) {
                 String itemName = ReiHelper.getHoveredEntryName();
                 if (itemName == null) itemName = RrvHelper.getHoveredEntryName();
                 if (itemName != null) {
