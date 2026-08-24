@@ -33,9 +33,6 @@ public final class HudManager {
 
     public static void init() {
         loadedRaw = loadRaw();
-        if (loadedRaw != null && loadedRaw.get("__activeTag") instanceof String s) {
-            try { activeTag = HudTag.valueOf(s); } catch (Exception ignored) { activeTag = HudTag.ALL; }
-        }
     }
 
     public static Stream<HudElement> filteredElements() {
@@ -129,7 +126,7 @@ public final class HudManager {
             HudElement e = entry.getValue();
             data.put(entry.getKey(), new float[]{e.x, e.y, e.scale});
         }
-        data.put("__activeTag", activeTag.name());
+        // activeTag 是编辑页的临时筛选视图,不参与持久化
         try {
             Files.createDirectories(SAVE_FILE.getParent());
             Files.writeString(SAVE_FILE, GSON.toJson(data));

@@ -1,22 +1,31 @@
 package top.babyzombie.addons.config.hud;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.KeyEvent;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public final class HudEditScreen extends Screen {
     private static final int SNAP_THRESHOLD = 6;
+    // 屏幕外元素指示箭头
+    private static final int ARROW_LEN = 7;       // 箭头线条半长
+    private static final float ARROW_HALF_ANGLE = 0.5f; // chevron 半开角(弧度,约 28.6°)
+    private static final int ARROW_HIT = 12;      // 箭头命中框边长(悬停/点击)
+    private static final int ARROW_HOP = 12;      // 同侧多箭头沿边缘错开间距
+    private static final int CTX_PAD = 4;         // 右键菜单左右内边距
     private static final String CHS_NAME = "CategoryHudSwitcher";
 
     private static final long CHS_LONG_PRESS_MS = 250L;
@@ -29,6 +38,12 @@ public final class HudEditScreen extends Screen {
     private int dragOffsetX, dragOffsetY;
     private int snapLineX = -1; // -1 = 无吸附指示线
     private int snapLineY = -1;
+
+    // 右键上下文菜单状态
+    private boolean ctxOpen;
+    private HudManager.HudElement ctxTarget;
+    private int ctxX, ctxY, ctxW, ctxH, ctxTitleH, ctxItemH;
+    private final Set<String> ctxHidden = new HashSet<>(); // 本会话临时隐藏的元素
 
     // 分类 HUD 切换器（CHS）状态，原 CategoryHudSwitcher 静态字段迁回实例
     private boolean chsDropdownOpen;
@@ -113,21 +128,64 @@ public final class HudEditScreen extends Screen {
             }
         }
 
+        // 屏幕外元素指示箭头:悬停显示元素 tooltip,点击拉回
+        renderOffscreenArrows(gui, mouseX, mouseY);
+
         // External HUD source tooltip - skip when hovering over our own element to avoid overlap
         top.babyzombie.addons.util.HudSourceTracker.renderTooltipFromScreen(gui, font, mouseX, mouseY, hovered != null);
 
         // 分类 HUD 切换器（原 CategoryHudSwitcher.renderOnScreen，就地渲染）
         renderCategorySwitcher(gui, mouseX, mouseY);
+
+        // 右键上下文菜单（最顶层）
+        renderContextMenu(gui, mouseX, mouseY);
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        // 右键菜单打开时：任何点击只处理菜单（命中项执行 / 菜单外仅关闭）
+        if (ctxOpen) {
+            int mx = (int) event.x(), my = (int) event.y();
+            int item = ctxHitItem(mx, my);
+            ctxOpen = false;
+            if (item >= 0) runContextAction(item); // 内部用 ctxTarget
+            ctxTarget = null;
+            return true;
+        }
+
         // CHS 鼠标点击拦截优先（本屏内联，避免与全局 Fabric 注册双重触发）
         if (categorySwitcherMouseClicked(event)) return true;
+
+        int mx = (int) event.x(), my = (int) event.y();
+
+        // 右键：命中元素则打开上下文菜单，空白处仅消费事件
+        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
+            for (var e : (Iterable<HudManager.HudElement>) visibleElements()::iterator) {
+                if (!showElement(e)) continue;
+                int w = demoWidth(e) + 8;
+                int h = demoHeight(e) + 8;
+                if (mx >= e.x && mx <= e.x + w && my >= e.y && my <= e.y + h) {
+                    openContextMenu(e, mx, my);
+                    return true;
+                }
+            }
+            return true;
+        }
+
         if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return super.mouseClicked(event, doubleClick);
 
+        // 屏幕边缘箭头：点击把完全在屏幕外的元素拉到鼠标位置并衔接拖拽
+        // (多个箭头同位置重叠时取最后一个命中的，与悬停 tooltip 显示一致)
+        OffscreenArrow hitArrow = null;
+        for (OffscreenArrow a : computeOffscreenArrows()) {
+            if (arrowHit(a, mx, my)) hitArrow = a;
+        }
+        if (hitArrow != null) {
+            pullToMouse(hitArrow, mx, my);
+            return true;
+        }
+
         selected = null;
-        int mx = (int) event.x(), my = (int) event.y();
         for (var e : (Iterable<HudManager.HudElement>) visibleElements()::iterator) {
             if (!showElement(e)) continue;
             int w = demoWidth(e) + 8;
@@ -144,6 +202,8 @@ public final class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
+        // 上下文菜单打开时不拖拽
+        if (ctxOpen) return true;
         // CHS 鼠标拖拽拦截优先
         if (categorySwitcherMouseDragged(event, deltaX, deltaY)) return true;
         if (selected == null || event.button() != InputConstants.MOUSE_BUTTON_LEFT)
@@ -157,13 +217,28 @@ public final class HudEditScreen extends Screen {
         int rawX = mx - dragOffsetX;
         int rawY = my - dragOffsetY;
 
-        // 应用吸附
-        int snappedX = applySnapX(rawX, w);
-        int snappedY = applySnapY(rawY, h);
+        // 按住 Shift 临时关闭吸附对齐(实时查询键盘状态,拖拽中可随时切换)
+        int finalX, finalY;
+        if (shiftHeld()) {
+            finalX = rawX;
+            finalY = rawY;
+            snapLineX = -1;
+            snapLineY = -1;
+        } else {
+            finalX = applySnapX(rawX, w);
+            finalY = applySnapY(rawY, h);
+        }
 
-        selected.x = (int) Math.max(0, Math.min(snappedX, sw - w));
-        selected.y = (int) Math.max(0, Math.min(snappedY, sh - h));
+        selected.x = (int) Math.max(0, Math.min(finalX, sw - w));
+        selected.y = (int) Math.max(0, Math.min(finalY, sh - h));
         return true;
+    }
+
+    /** 实时查询左右 Shift 是否按下(事件携带的 modifiers 是按下时刻的快照,拖拽中途会失真)。 */
+    private boolean shiftHeld() {
+        var win = minecraft.getWindow();
+        return InputConstants.isKeyDown(win, InputConstants.KEY_LSHIFT)
+                || InputConstants.isKeyDown(win, InputConstants.KEY_RSHIFT);
     }
 
     /**
@@ -253,6 +328,7 @@ public final class HudEditScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
+        if (ctxOpen) return true;
         for (var e : (Iterable<HudManager.HudElement>) visibleElements()::iterator) {
             if (!showElement(e)) continue;
             int w = demoWidth(e) + 8;
@@ -265,10 +341,220 @@ public final class HudEditScreen extends Screen {
         return false;
     }
 
+    // ==================== 屏幕外元素指示箭头 ====================
+
+    /**
+     * 完全在屏幕外的元素：在屏幕边缘画 chevron 箭头指向其方位。
+     * 悬停箭头显示与悬停元素一致的 tooltip；点击（mouseClicked）把元素拉回屏内。
+     */
+    private void renderOffscreenArrows(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        HudManager.HudElement arrowHovered = null;
+        for (OffscreenArrow a : computeOffscreenArrows()) {
+            boolean hit = arrowHit(a, mouseX, mouseY);
+            drawOffscreenArrow(g, a, hit);
+            if (hit) {
+                arrowHovered = a.element;
+                hovered = a.element; // 压制外部 HUD 源 tooltip 与箭头重叠
+            }
+        }
+        if (arrowHovered != null && selected == null) {
+            String key = HudManager.getLabelKey(arrowHovered.name);
+            String tag = arrowHovered.mainTag.toString();
+            if (!key.isEmpty()) {
+                g.setComponentTooltipForNextFrame(minecraft.font,
+                        java.util.List.of(Component.translatable(key),
+                                Component.translatable("babyzombieaddons.hud.mainTagSource",
+                                        Component.translatable(tag))),
+                        mouseX, mouseY);
+            }
+        }
+    }
+
+    private record OffscreenArrow(HudManager.HudElement element, int tipX, int tipY, double angle) {}
+
+    /**
+     * 计算所有完全在屏幕外元素的指示箭头。尖端 = 屏幕中心到元素中心射线与屏幕边缘的交点(内缩),
+     * angle 为线条展开方向(指向屏幕中心的反向,弧度)。
+     */
+    private List<OffscreenArrow> computeOffscreenArrows() {
+        List<OffscreenArrow> result = new ArrayList<>();
+        if (selected != null) return result; // 拖动中不显示，避免干扰
+        int sw = minecraft.getWindow().getGuiScaledWidth();
+        int sh = minecraft.getWindow().getGuiScaledHeight();
+        double cx = sw / 2.0, cy = sh / 2.0;
+        for (var e : (Iterable<HudManager.HudElement>) visibleElements()::iterator) {
+            if (!showElement(e)) continue;
+            int w = demoWidth(e) + 8;
+            int h = demoHeight(e) + 8;
+            // 与屏幕有交集 = 至少部分可见，可直接点选拖回，不需要箭头
+            if (e.x + w > 0 && e.x < sw && e.y + h > 0 && e.y < sh) continue;
+            double vx = e.x + w / 2.0 - cx, vy = e.y + h / 2.0 - cy;
+            double len = Math.sqrt(vx * vx + vy * vy);
+            if (len < 1e-6) continue; // 元素中心与屏幕中心重合(不会发生，防御)
+            double ux = vx / len, uy = vy / len;
+            // 从屏幕中心沿方向射线与屏幕矩形求交(以半轴归一化)，尖端内缩 3px 保证 chevron 在屏内
+            double tH = Math.abs(ux) < 1e-9 ? Double.POSITIVE_INFINITY : (sw / 2.0) / Math.abs(ux);
+            double tV = Math.abs(uy) < 1e-9 ? Double.POSITIVE_INFINITY : (sh / 2.0) / Math.abs(uy);
+            double t = Math.min(tH, tV) - 3.0;
+            int tipX = (int) Math.round(cx + ux * t);
+            int tipY = (int) Math.round(cy + uy * t);
+            tipX = Math.clamp(tipX, 1, Math.max(1, sw - 2));
+            tipY = Math.clamp(tipY, 1, Math.max(1, sh - 2));
+            // 线条从尖端向屏内展开(指向屏幕中心的方向)，chevron 开口朝屏内、尖端指向元素
+            double angle = Math.atan2(-uy, -ux);
+            result.add(new OffscreenArrow(e, tipX, tipY, angle));
+        }
+        return result;
+    }
+
+    /** 两根淡蓝色线条组成 chevron，沿真实方位角指向屏幕外元素。 */
+    private static void drawOffscreenArrow(GuiGraphicsExtractor g, OffscreenArrow a, boolean hit) {
+        int color = hit ? 0xFFFFFFFF : 0xCC00FFFF;
+        int x1 = a.tipX + (int) Math.round(Math.cos(a.angle + ARROW_HALF_ANGLE) * ARROW_LEN);
+        int y1 = a.tipY + (int) Math.round(Math.sin(a.angle + ARROW_HALF_ANGLE) * ARROW_LEN);
+        int x2 = a.tipX + (int) Math.round(Math.cos(a.angle - ARROW_HALF_ANGLE) * ARROW_LEN);
+        int y2 = a.tipY + (int) Math.round(Math.sin(a.angle - ARROW_HALF_ANGLE) * ARROW_LEN);
+        line(g, a.tipX, a.tipY, x1, y1, color);
+        line(g, a.tipX, a.tipY, x2, y2, color);
+    }
+
+    /** Bresenham 直线，逐像素 1x1 fill。 */
+    private static void line(GuiGraphicsExtractor g, int x0, int y0, int x1, int y1, int color) {
+        int dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0);
+        int sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+        int err = dx - dy;
+        for (;;) {
+            g.fill(x0, y0, x0 + 1, y0 + 1, color);
+            if (x0 == x1 && y0 == y1) break;
+            int e2 = 2 * err;
+            if (e2 > -dy) { err -= dy; x0 += sx; }
+            if (e2 < dx) { err += dx; y0 += sy; }
+        }
+    }
+
+    private static boolean arrowHit(OffscreenArrow a, int mx, int my) {
+        return Math.abs(mx - a.tipX) <= ARROW_HIT / 2 && Math.abs(my - a.tipY) <= ARROW_HIT / 2;
+    }
+
+    /** 点击箭头：把元素拉到鼠标位置并立即衔接拖拽（后续 mouseDragged 正常接管）。 */
+    private void pullToMouse(OffscreenArrow a, int mx, int my) {
+        int sw = minecraft.getWindow().getGuiScaledWidth();
+        int sh = minecraft.getWindow().getGuiScaledHeight();
+        HudManager.HudElement e = a.element;
+        int w = demoWidth(e) + 8;
+        int h = demoHeight(e) + 8;
+        // 元素中心对齐鼠标，钳制保证完全可见
+        int nx = Math.clamp(mx - w / 2, 0, Math.max(0, sw - w));
+        int ny = Math.clamp(my - h / 2, 0, Math.max(0, sh - h));
+        e.x = nx;
+        e.y = ny;
+        selected = e; // 直接进入拖拽状态
+        dragOffsetX = mx - nx; // 以本帧鼠标为锚，后续 mouseDragged 保持抓取点
+        dragOffsetY = my - ny;
+    }
+
+    // ==================== 右键上下文菜单 ====================
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (ctxOpen && event.key() == InputConstants.KEY_ESCAPE) {
+            ctxOpen = false;
+            ctxTarget = null;
+            return true;
+        }
+        return super.keyPressed(event);
+    }
+
+    private void openContextMenu(HudManager.HudElement e, int mx, int my) {
+        ctxTarget = e;
+        ctxOpen = true;
+        chsDropdownOpen = false; // 菜单与 CHS 下拉互斥
+        Font font = minecraft.font;
+        int w = font.width(ChatUtils.stripColor(menuTitle(e)));
+        for (String s : ctxItemTexts()) w = Math.max(w, font.width(s));
+        ctxW = w + CTX_PAD * 2;
+        ctxTitleH = font.lineHeight + 6;
+        ctxItemH = font.lineHeight + 4;
+        ctxH = ctxTitleH + 3 * ctxItemH;
+        int sw = minecraft.getWindow().getGuiScaledWidth();
+        int sh = minecraft.getWindow().getGuiScaledHeight();
+        ctxX = Math.clamp(mx + 4, 0, Math.max(0, sw - ctxW));
+        ctxY = Math.clamp(my + 4, 0, Math.max(0, sh - ctxH));
+    }
+
+    private void renderContextMenu(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        if (!ctxOpen || ctxTarget == null) return;
+        Font font = minecraft.font;
+        // 标题行
+        g.fill(ctxX, ctxY, ctxX + ctxW, ctxY + ctxTitleH, 0xFF303030);
+        g.text(font, menuTitle(ctxTarget), ctxX + CTX_PAD, ctxY + 3, 0xFFAAAAAA, true);
+        g.fill(ctxX, ctxY + ctxTitleH, ctxX + ctxW, ctxY + ctxTitleH + 1, 0xFF555555);
+        // 菜单项
+        String[] items = ctxItemTexts();
+        for (int i = 0; i < items.length; i++) {
+            int y0 = ctxY + ctxTitleH + i * ctxItemH;
+            boolean hover = ctxHitItem(mouseX, mouseY) == i;
+            g.fill(ctxX, y0, ctxX + ctxW, y0 + ctxItemH, hover ? 0xFF404040 : 0xFF202020);
+            if (i > 0) g.fill(ctxX, y0, ctxX + ctxW, y0 + 1, 0xFF555555);
+            g.text(font, items[i], ctxX + CTX_PAD, y0 + 2, ctxOptionEnabled(i) ? 0xFFFFFFFF : 0xFF808080, true);
+        }
+    }
+
+    private int ctxHitItem(int mx, int my) {
+        if (!ctxOpen || mx < ctxX || mx > ctxX + ctxW || my < ctxY || my > ctxY + ctxH) return -1;
+        if (my < ctxY + ctxTitleH) return -1;
+        int i = (my - ctxY - ctxTitleH) / ctxItemH;
+        return i >= 0 && i < 3 ? i : -1;
+    }
+
+    private void runContextAction(int item) {
+        if (ctxTarget == null) return;
+        HudManager.HudElement e = ctxTarget;
+        switch (item) {
+            case 0 -> openConfigFor(e);
+            case 1 -> {
+                ctxHidden.add(e.name);
+                if (selected == e) selected = null; // 隐藏后不能再处于选中态
+            }
+            case 2 -> {
+                HudManager.activeTag = e.mainTag; // 与 CHS 选择分类一致,持久化
+                HudManager.save();
+            }
+            default -> {}
+        }
+    }
+
+    private boolean ctxOptionEnabled(int item) {
+        if (ctxTarget == null) return false;
+        if (item == 0) return HudManager.getLabelKey(ctxTarget.name).startsWith("config.babyzombieaddons.option.");
+        return true;
+    }
+
+    private String menuTitle(HudManager.HudElement e) {
+        String key = HudManager.getLabelKey(e.name);
+        return key.isEmpty() ? e.name : ChatUtils.translate(key);
+    }
+
+    private String[] ctxItemTexts() {
+        return new String[]{
+                ChatUtils.translate("config.babyzombieaddons.hud.edit.ctxOpen"),
+                ChatUtils.translate("config.babyzombieaddons.hud.edit.ctxHide"),
+                ChatUtils.translate("config.babyzombieaddons.hud.edit.ctxFilter"),
+        };
+    }
+
+    /** 打开设置页并定位到该元素对应的选项(搜索词用翻译后的显示文本)。 */
+    private void openConfigFor(HudManager.HudElement e) {
+        String key = HudManager.getLabelKey(e.name);
+        if (!key.startsWith("config.babyzombieaddons.option.")) return;
+        String display = ChatUtils.stripColor(ChatUtils.translate(key));
+        ModConfigManager.createGUI(this, display);
+    }
+
     private boolean showElement(HudManager.HudElement e) {
         boolean cond = e.showCondition.getAsBoolean() || ModConfigManager.get().misc.debugMode;
         boolean tagMatch = (HudManager.activeTag == HudTag.ALL || e.mainTag == HudManager.activeTag);
-        return cond && tagMatch;
+        return cond && tagMatch && !ctxHidden.contains(e.name); // 临时隐藏仅本会话,不落盘
     }
 
     private int demoWidth(HudManager.HudElement e) {
@@ -501,7 +787,7 @@ public final class HudEditScreen extends Screen {
     @Override
     public void onClose() {
         HudManager.save();
-        minecraft.gui.setScreen(parent);
+        minecraft.setScreen(parent);
     }
 
     @Override

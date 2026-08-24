@@ -9,11 +9,8 @@ public enum HudTag {
     SLAYER,
     MINING,
     HUNTING,
-    PET,
-    CHAT,
     MISC,
     EVENTS,
-    POPUP,
     BAZAAR,
     FISHING;
 
