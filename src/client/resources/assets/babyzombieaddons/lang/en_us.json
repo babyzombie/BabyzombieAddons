@@ -1216,6 +1216,8 @@
   "config.babyzombieaddons.option.hideEntitiesInTray.desc": "Stop rendering all entities while the window is hidden to the tray to reduce GPU usage; restored automatically on restore.",
   "config.babyzombieaddons.option.hideParticlesInTray": "Hide Particles While in Tray",
   "config.babyzombieaddons.option.hideParticlesInTray.desc": "Clear existing particles and block new ones while the window is hidden to the tray to reduce GPU usage; restored automatically on restore.",
+  "config.babyzombieaddons.option.toastShortcut": "System Notification Registration (Shortcut)",
+  "config.babyzombieaddons.option.toastShortcut.desc": "When enabled, registers the system notification Start Menu shortcut (AUMID; required for toasts on Win10), and removes it when disabled. Takes effect immediately on toggle; the two timing switches below depend on this. Windows only.",
   "config.babyzombieaddons.option.toastNotifyWhen": "Popup Events System Notification",
   "config.babyzombieaddons.option.toastNotifyWhen.desc": "When popup events occur (party invite / friend request / trade / duel / dungeon restart / low bait, etc.), also send a Windows system notification (bottom-right popup) depending on the window state. Windows only.",
   "config.babyzombieaddons.option.toastMentionWhen": "Name Mention System Notification",

@@ -209,6 +209,8 @@ public class GeneralConfig {
         public boolean hideEntitiesInTray = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.hideParticlesInTray", desc = "config.babyzombieaddons.option.hideParticlesInTray.desc") @ConfigEditorBoolean @SearchTag("tray") @SearchTag("particle") @SearchTag("hide")
         public boolean hideParticlesInTray = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.toastShortcut", desc = "config.babyzombieaddons.option.toastShortcut.desc") @ConfigEditorBoolean @SearchTag("tray") @SearchTag("toast") @SearchTag("notification") @SearchTag("shortcut")
+        public boolean toastShortcut = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.toastNotifyWhen", desc = "config.babyzombieaddons.option.toastNotifyWhen.desc") @ConfigEditorDropdown @SearchTag("tray") @SearchTag("toast") @SearchTag("notification") @SearchTag("popup")
         public ToastNotifyWhen toastNotifyWhen = ToastNotifyWhen.OFF;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.toastMentionWhen", desc = "config.babyzombieaddons.option.toastMentionWhen.desc") @ConfigEditorDropdown @SearchTag("tray") @SearchTag("toast") @SearchTag("notification") @SearchTag("mention")

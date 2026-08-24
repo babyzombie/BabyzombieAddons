@@ -1216,6 +1216,8 @@
   "config.babyzombieaddons.option.hideEntitiesInTray.desc": "窗口隐藏到托盘后停止渲染所有实体，进一步降低 GPU 占用，恢复窗口时自动恢复正常。",
   "config.babyzombieaddons.option.hideParticlesInTray": "挂托盘时隐藏粒子",
   "config.babyzombieaddons.option.hideParticlesInTray.desc": "窗口隐藏到托盘后清空并停止生成粒子，进一步降低 GPU 占用，恢复窗口时自动恢复正常。",
+  "config.babyzombieaddons.option.toastShortcut": "系统通知注册（快捷方式）",
+  "config.babyzombieaddons.option.toastShortcut.desc": "开启后在开始菜单注册系统通知快捷方式（AUMID，Win10 显示通知必需），关闭则删除。切换开关时实时生效，下方两个通知时机开关依赖此项。仅 Windows 生效。",
   "config.babyzombieaddons.option.toastNotifyWhen": "弹出事件系统通知",
   "config.babyzombieaddons.option.toastNotifyWhen.desc": "弹出事件（队伍邀请/好友请求/交易/决斗/地牢重开/鱼饵不足等）发生时，在什么窗口状态下额外发送 Windows 系统通知（右下角弹出）。仅 Windows 生效。",
   "config.babyzombieaddons.option.toastMentionWhen": "提到名字系统通知",
