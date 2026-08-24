@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 /**
  * 宠物页面按键处理 —— 在 Pets 容器界面中按配置的按键模拟点击对应槽位。
  * 仅在设置页面配置，不注册到原版按键系统。
+ * 支持键盘与鼠标按键（0-7 为鼠标按键，含侧键）：键盘事件走 keyPressed、
+ * 鼠标事件走 mouseClicked，统一由 handleKeyPress 匹配。
  *
  * 槽位布局（6 行 × 9 列容器）：
  *   Row 2-5, Cols 2-8 → 28 个宠物槽位 (slots 10-16, 19-25, 28-34, 37-43)
@@ -36,9 +38,10 @@ public final class PetPageKeyHandler {
     private PetPageKeyHandler() {}
 
     /**
-     * 处理按键事件。
+     * 处理按键事件（键盘或绑定的鼠标按键）。
      *
-     * @param keyCode GLFW 键码（来自 KeyEvent.key()）
+     * @param keyCode 键码：键盘为 GLFW 键码（来自 KeyEvent.key()），
+     *                鼠标按键为 0-7（来自 MouseButtonEvent.button()，约定同 KeyBindingUtil.toKey）
      * @return true 如果按键被消费（应阻止传递给原版逻辑）
      */
     public static boolean handleKeyPress(int keyCode) {
