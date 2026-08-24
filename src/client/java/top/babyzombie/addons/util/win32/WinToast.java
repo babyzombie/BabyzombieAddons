@@ -64,9 +64,6 @@ public final class WinToast {
     private static final int TOKEN_QUERY = 0x0008;
     private static final int TOKEN_ELEVATION_CLASS = 20;
 
-    /** 注册是否尝试过(每 JVM 会话至多一次) */
-    private static final AtomicBoolean REGISTER_ATTEMPTED = new AtomicBoolean();
-
     private static final AtomicBoolean NOT_SUPPORTED_LOGGED = new AtomicBoolean();
 
     /** 图标文件 URI;null=未计算,""=提取失败(均只在执行器线程读写) */
@@ -190,13 +187,12 @@ public final class WinToast {
         return IS_WINDOWS;
     }
 
-    /** 游戏启动时调用:后台异步完成 AUMID 注册,避免首次发送时注册未完成导致弹窗被丢;并启动通知点击信号监听。非 Windows 直接跳过。 */
+    /** 游戏启动时调用:启动通知点击信号监听。注册由配置开关驱动(见 {@link #syncRegistration})。非 Windows 直接跳过。 */
     public static void init() {
         if (!IS_WINDOWS) {
             return;
         }
         ToastActionListener.start();
-        EXECUTOR.execute(WinToast::ensureRegistered);
     }
 
     /**
@@ -211,6 +207,31 @@ public final class WinToast {
             Files.deleteIfExists(Path.of(LNK_PATH));
         } catch (Exception e) {
             LOGGER.debug("Failed to remove toast shortcut", e);
+        }
+        lnkRegistered = false;
+    }
+
+    /** 当前是否已注册快捷方式(本会话是否已确保注册,执行器线程访问)。 */
+    private static volatile boolean lnkRegistered;
+
+    /**
+     * 按配置开关同步快捷方式注册状态(由主线程每 tick 调用),以磁盘真实状态为准:
+     * 开关开 → 本会话未注册过则后台注册(注册脚本幂等,崩溃残留的残缺快捷方式会被刷新修复);
+     * 开关关 → 磁盘上存在快捷方式则删除(含上次崩溃残留的)。状态一致时不做任何事。
+     */
+    public static void syncRegistration(boolean enabled) {
+        if (enabled) {
+            if (lnkRegistered) {
+                return;
+            }
+            LOGGER.info("WinToast: shortcut registration enabled by config");
+            EXECUTOR.execute(WinToast::ensureRegistered);
+        } else {
+            if (lnkRegistered || Files.exists(Path.of(LNK_PATH))) {
+                lnkRegistered = false;
+                LOGGER.info("WinToast: shortcut registration disabled by config");
+                EXECUTOR.execute(WinToast::unregister);
+            }
         }
     }
 
@@ -257,73 +278,32 @@ public final class WinToast {
     private static String lastToastKey;
     private static long lastToastTime;
 
-    /**
-     * 修复系统通知(异步):通知服务状态损坏时(弹窗只记录不显示),重置 wpndatabase 通知数据库并重启服务,
-     * 完成后自动发一条测试通知。会清空通知中心历史。修复期间服务不可用约 10 秒。
-     */
-    public static void repair() {
-        if (!IS_WINDOWS) {
-            return;
-        }
-        EXECUTOR.execute(() -> {
-            try {
-                String script = buildRepairScript();
-                if (!executePowerShell(script, true, 60000)) {
-                    LOGGER.warn("Failed to start powershell for notification repair, lastError={}",
-                        Kernel32.INSTANCE.GetLastError());
-                }
-                send("BabyzombieAddons", "System notification repair complete");
-            } catch (Exception e) {
-                LOGGER.warn("Failed to repair system notification", e);
-            }
-        });
-    }
-
-    /** 生成修复脚本:停 WpnUserService(轮询到完全停止,避免半停止状态移库) → 备份并移除 wpndatabase* → 启动服务并检查结果 → 写完成标记。 */
-    private static String buildRepairScript() {
-        return """
-            $ErrorActionPreference = 'Continue'
-            try {
-                $svc = Get-Service -Name 'WpnUserService*' | Select-Object -First 1
-                if ($svc) {
-                    Stop-Service -Name $svc.Name -Force -ErrorAction SilentlyContinue
-                    $deadline = (Get-Date).AddSeconds(15)
-                    do { Start-Sleep -Milliseconds 500; $svc.Refresh() } while ($svc.Status -ne 'Stopped' -and (Get-Date) -lt $deadline)
-                    Start-Sleep -Seconds 2
-                    $dbDir = Join-Path $env:LOCALAPPDATA 'Microsoft\\Windows\\Notifications'
-                    $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-                    Get-ChildItem $dbDir -Filter 'wpndatabase*' -File -ErrorAction SilentlyContinue | Where-Object {
-                        $_.Name -notlike '*.bak-*'
-                    } | ForEach-Object {
-                        Move-Item $_.FullName ($_.FullName + '.bak-' + $stamp) -Force -ErrorAction SilentlyContinue
-                    }
-                    Start-Service -Name $svc.Name -ErrorAction SilentlyContinue
-                    $deadline = (Get-Date).AddSeconds(20)
-                    do { Start-Sleep -Milliseconds 500; $svc.Refresh() } while ($svc.Status -ne 'Running' -and (Get-Date) -lt $deadline)
-                    if ($svc.Status -ne 'Running') {
-                        ('Repair: WpnUserService failed to start, status=' + $svc.Status) | Out-File -Append -FilePath (Join-Path $env:TEMP 'babyzombieaddons-toast.log') -Encoding utf8
-                    }
-                    Start-Sleep -Seconds 5
-                }
-            } catch { }
-            [System.IO.File]::WriteAllText((Join-Path $env:TEMP 'babyzombieaddons-done'), 'done')
-            """;
-    }
-
-    /** AUMID 注册:建开始菜单快捷方式并写入 AppUserModelID;等待注册完成后再发通知。失败不阻断发送(Win11 无需注册)。 */
+    /** AUMID 注册:建开始菜单快捷方式并写入 AppUserModelID(由配置开关驱动);幂等,注册成功(或已注册)后置位。 */
     private static void ensureRegistered() {
-        if (!REGISTER_ATTEMPTED.compareAndSet(false, true)) {
+        if (lnkRegistered) {
             return;
         }
         try {
             String script = buildRegisterScript();
-            if (!executePowerShell(script, true, 30000)) {
+            if (executePowerShell(script, true, 30000)) {
+                lnkRegistered = true;
+            } else {
                 LOGGER.warn("Failed to start powershell for AUMID registration, lastError={}",
                     Kernel32.INSTANCE.GetLastError());
             }
         } catch (Exception e) {
             LOGGER.warn("Failed to register AUMID for system notification", e);
         }
+    }
+
+    /** 注销快捷方式(配置开关关闭时):删除开始菜单快捷方式。 */
+    private static void unregister() {
+        try {
+            Files.deleteIfExists(Path.of(LNK_PATH));
+        } catch (Exception e) {
+            LOGGER.debug("Failed to remove toast shortcut", e);
+        }
+        lnkRegistered = false;
     }
 
     /**
@@ -416,7 +396,6 @@ public final class WinToast {
      *  (实测:隐藏 lnk → Get-StartApps 无此项 → toast 只记录不显示)。
      *  从开始菜单"隐藏"改用 System.AppUserModel.Hidden 属性(pid 9):开始菜单不显示,但注册仍然有效
      *  (19045 实测该属性不生效,保留以兼容其他版本)。
-     *  注册完成后重启 WpnUserService:系统对开始菜单快捷方式的枚举有缓存,新建/变更 lnk 后需重启服务才会重新枚举投递。
      */
     private static String buildRegisterScript() {
         String script = """
@@ -442,15 +421,6 @@ public final class WinToast {
                 if ($hr2 -ne 0) { throw ('SetAppUserModelHidden hr=0x' + $hr2.ToString('X8')) }
                 $attrs = [System.IO.File]::GetAttributes($lnkPath)
                 [System.IO.File]::SetAttributes($lnkPath, $attrs -band (-bnot [System.IO.FileAttributes]::Hidden))
-                $svc = Get-Service -Name 'WpnUserService*' | Select-Object -First 1
-                if ($svc) {
-                    Stop-Service -Name $svc.Name -Force -ErrorAction SilentlyContinue
-                    $deadline = (Get-Date).AddSeconds(15)
-                    do { Start-Sleep -Milliseconds 500; $svc.Refresh() } while ($svc.Status -ne 'Stopped' -and (Get-Date) -lt $deadline)
-                    Start-Service -Name $svc.Name -ErrorAction SilentlyContinue
-                    $deadline = (Get-Date).AddSeconds(20)
-                    do { Start-Sleep -Milliseconds 500; $svc.Refresh() } while ($svc.Status -ne 'Running' -and (Get-Date) -lt $deadline)
-                }
             } catch {
                 $_ | Out-File -Append -FilePath (Join-Path $env:TEMP 'babyzombieaddons-toast.log') -Encoding utf8
             }
