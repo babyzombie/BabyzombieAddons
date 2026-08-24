@@ -787,7 +787,7 @@ public final class HudEditScreen extends Screen {
     @Override
     public void onClose() {
         HudManager.save();
-        minecraft.setScreen(parent);
+        minecraft.gui.setScreen(parent);
     }
 
     @Override
