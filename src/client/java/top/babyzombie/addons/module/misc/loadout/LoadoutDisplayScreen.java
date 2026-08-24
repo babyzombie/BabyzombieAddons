@@ -497,6 +497,11 @@ public class LoadoutDisplayScreen extends Screen {
     @Override
     public boolean mouseClicked(MouseButtonEvent e, boolean dbl) {
         int btn = e.buttonInfo().button();
+        // 用户把快捷键绑到鼠标按键时 keyPressed 收不到鼠标事件，必须在此分发。
+        // MouseButtonEvent.button() 天然为 0-7（GLFW_MOUSE_BUTTON），配置里的鼠标键码
+        // 也只占 0-7（约定同 KeyBindingUtil.toKey），键盘键码（≥32 或 -1）不会误匹配，
+        // 命中即消费本次点击，避免同时触发槽位点击。
+        if (handleMouseKey(btn)) return true;
         if (hp >= 0) {
             int sid = PRESET_SLOTS[hp];
             ItemStack ps = slots[sid];
@@ -539,23 +544,38 @@ public class LoadoutDisplayScreen extends Screen {
             }
         }
 
-        if (e.key() == kb.prevPage) {
-            if (!isEmpty(slots[PREV]) && !isGlassPane(slots[PREV])) {
-                sendClick(PREV, 0);
-                minecraft.execute(() -> minecraft.execute(this::refreshSlots));
-            }
-            return true;
-        }
+        if (e.key() == kb.prevPage) { doPrevPage(); return true; }
 
-        if (e.key() == kb.nextPage) {
-            if (!isEmpty(slots[NEXT]) && !isGlassPane(slots[NEXT])) {
-                sendClick(NEXT, 0);
-                minecraft.execute(() -> minecraft.execute(this::refreshSlots));
-            }
-            return true;
-        }
+        if (e.key() == kb.nextPage) { doNextPage(); return true; }
 
         return super.keyPressed(e);
+    }
+
+    /** 处理绑定到鼠标按键（0-7，含左/右/中键与侧键）的快捷键；命中返回 true */
+    private boolean handleMouseKey(int btn) {
+        var kb = ModConfigManager.get().skyblock.loadout.keyBindings;
+        if (btn == kb.closeKey) { doClose(); return true; }
+        int[] presetKeys = kb.presetKeys();
+        for (int i = 0; i < presetKeys.length; i++) {
+            if (btn == presetKeys[i]) { clickPreset(i); return true; }
+        }
+        if (btn == kb.prevPage) { doPrevPage(); return true; }
+        if (btn == kb.nextPage) { doNextPage(); return true; }
+        return false;
+    }
+
+    private void doPrevPage() {
+        if (!isEmpty(slots[PREV]) && !isGlassPane(slots[PREV])) {
+            sendClick(PREV, 0);
+            minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+        }
+    }
+
+    private void doNextPage() {
+        if (!isEmpty(slots[NEXT]) && !isGlassPane(slots[NEXT])) {
+            sendClick(NEXT, 0);
+            minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+        }
     }
 
     private void clickPreset(int idx) {

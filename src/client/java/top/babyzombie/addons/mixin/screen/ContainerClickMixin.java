@@ -52,6 +52,13 @@ public abstract class ContainerClickMixin {
             cir.setReturnValue(false);
             return;
         }
+        // 宠物页面鼠标按键：用户把按键绑到鼠标（侧键等）时 keyPressed 收不到鼠标事件，
+        // 必须在点击入口同样匹配；命中后取消本次点击（键码 0-7 = 鼠标按键，
+        // 与键盘键码无交集，键盘绑定不会误触发）。
+        if (PetPageKeyHandler.handleKeyPress(event.button())) {
+            cir.setReturnValue(false);
+            return;
+        }
         if (ContainerClickEvents.BEFORE_MOUSE_CLICK.invoker()
                 .beforeMouseClick((AbstractContainerScreen<?>) (Object) this, hoveredSlot, event)) {
             cir.setReturnValue(false);
