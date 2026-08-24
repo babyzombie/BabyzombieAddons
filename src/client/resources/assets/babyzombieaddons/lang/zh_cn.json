@@ -929,7 +929,7 @@
   "config.babyzombieaddons.option.wideMoulConfig.desc": "将 MoulConfig 设置页面的宽度扩展到 1.5 倍，适合高分辨率屏幕。",
   "config.babyzombieaddons.prompt.open": "打开",
   "config.babyzombieaddons.option.hudEdit": "编辑 HUD 位置",
-  "config.babyzombieaddons.option.hudEdit.desc": "进入 HUD 编辑模式以拖拽和缩放 HUD 元素。",
+  "config.babyzombieaddons.option.hudEdit.desc": "进入 HUD 编辑模式以拖拽和缩放 HUD 元素。\n使用指令 /bza hud <Tag> 可以更快捷的打开编辑页面",
   "playcmd.cat.Main": "主分类",
   "playcmd.cat.BedWars": "起床战争",
   "playcmd.cat.SkyWars": "空岛战争",

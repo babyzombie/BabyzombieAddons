@@ -65,6 +65,8 @@ public final class Win32Api {
     public static final int WS_POPUP = 0x80000000;
     public static final int IDI_APPLICATION = 32512;
     public static final int WM_QUIT = 0x0012;
+    /** 空消息:托盘右键菜单收起后向回调窗口投递,使菜单能被点击别处关闭(托盘菜单模式要求,见 showTrayMenu) */
+    public static final int WM_NULL = 0x0000;
 
     // ── CreateProcessW(静默拉起外部进程,如 PowerShell 弹系统通知) ──
 
@@ -325,6 +327,8 @@ public final class Win32Api {
         Pointer GetForegroundWindow();
 
         long SendMessageW(Pointer hWnd, int uMsg, long wParam, long lParam);
+
+        boolean PostMessageW(Pointer hWnd, int uMsg, long wParam, long lParam);
 
         int GetWindowTextW(Pointer hWnd, char[] lpString, int nMaxCount);
 

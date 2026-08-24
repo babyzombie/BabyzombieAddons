@@ -568,9 +568,13 @@ public final class MinimizeToTrayModule {
                     new WString(ChatUtils.translate("babyzombieaddons.tray.exit")));
                 Win32Api.POINT pt = new Win32Api.POINT();
                 User32.INSTANCE.GetCursorPos(pt);
+                // 托盘菜单模式(MSDN 要求):弹菜单前先把自己置为前台,菜单返回后向回调窗口投递
+                // WM_NULL——否则菜单收不到"点击别处"的取消,必须点中菜单项才会收起。
+                User32.INSTANCE.SetForegroundWindow(trayWnd);
                 long cmd = User32.INSTANCE.TrackPopupMenu(menu,
                     Win32Api.TPM_RIGHTBUTTON | Win32Api.TPM_RETURNCMD | Win32Api.TPM_NONOTIFY,
                     pt.x, pt.y, 0, trayWnd, null);
+                User32.INSTANCE.PostMessageW(trayWnd, Win32Api.WM_NULL, 0, 0);
                 if (cmd == MENU_RESTORE) {
                     restoreRequested = true;
                 } else if (cmd == MENU_EXIT) {

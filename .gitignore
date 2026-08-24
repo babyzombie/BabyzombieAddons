@@ -22,6 +22,7 @@ logs/
 .claude/
 .proxyai/
 
+AGENTS.md
 CLAUDE.md
 .mcp.json
 docs/
