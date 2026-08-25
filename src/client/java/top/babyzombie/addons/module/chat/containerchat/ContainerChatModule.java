@@ -1,4 +1,4 @@
-package top.babyzombie.addons.module.chat;
+package top.babyzombie.addons.module.chat.containerchat;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import top.babyzombie.addons.config.ModConfigManager;

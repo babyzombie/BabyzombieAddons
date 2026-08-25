@@ -1,4 +1,4 @@
-package top.babyzombie.addons.module.chat;
+package top.babyzombie.addons.module.chat.containerchat;
 
 import com.google.gson.reflect.TypeToken;
 import net.fabricmc.loader.api.FabricLoader;

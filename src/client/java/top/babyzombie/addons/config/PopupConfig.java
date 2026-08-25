@@ -7,7 +7,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import com.mojang.blaze3d.platform.InputConstants;
-import top.babyzombie.addons.module.chat.popup.PopupEventsModule.PopupSound;
+import top.babyzombie.addons.module.chat.PopupEventsModule.PopupSound;
 
 public class PopupConfig {
 

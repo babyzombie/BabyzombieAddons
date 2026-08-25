@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.babyzombie.addons.module.chat.ContainerChatHelper;
+import top.babyzombie.addons.module.chat.containerchat.ContainerChatHelper;
 import top.babyzombie.addons.module.kuudra.ChestCounter;
 import top.babyzombie.addons.util.StarIndicator;
 import top.babyzombie.addons.util.gui.overlay.GuiOverlayManager;

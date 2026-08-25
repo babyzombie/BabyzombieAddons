@@ -1,4 +1,4 @@
-package top.babyzombie.addons.module.chat;
+package top.babyzombie.addons.module.chat.containerchat;
 
 import de.hysky.skyblocker.skyblock.item.ItemProtection;
 import net.fabricmc.loader.api.FabricLoader;

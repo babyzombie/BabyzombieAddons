@@ -12,7 +12,6 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import top.babyzombie.addons.config.ModConfig;
-import top.babyzombie.addons.module.chat.popup.PopupEventsModule;
 import top.babyzombie.addons.util.*;
 import top.babyzombie.addons.util.render.*;
 import net.minecraft.client.Minecraft;

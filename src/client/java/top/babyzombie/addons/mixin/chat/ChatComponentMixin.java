@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import top.babyzombie.addons.module.chat.ContainerChatHelper;
+import top.babyzombie.addons.module.chat.containerchat.ContainerChatHelper;
 
 /**
  * 聊天组件通过 isChatFocused() 判断 ChatScreen 是否为主屏幕来决定显示多少行。

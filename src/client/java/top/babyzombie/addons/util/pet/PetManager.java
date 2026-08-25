@@ -629,7 +629,7 @@ public final class PetManager {
         }
     }
 
-    /** Write equipment from Loadouts container column 1 to Skyblocker's static array. */
+    /** Write equipment from Loadouts containerchat column 1 to Skyblocker's static array. */
     private static void syncEquipmentToSkyblocker(java.util.List<net.minecraft.world.inventory.Slot> slots) {
         if (!FabricLoader.getInstance().isModLoaded("skyblocker")) return;
         // v6.9.1 起字段改名 EQUIPMENT(区分主视角/rift/safari 三数组);
@@ -699,7 +699,7 @@ public final class PetManager {
         return null;
     }
 
-    /** Scan the Pets container for summoned pet items and add them to the list. */
+    /** Scan the Pets containerchat for summoned pet items and add them to the list. */
     private void scanPetsContainer(AbstractContainerScreen<?> screen) {
         var slots = screen.getMenu().slots;
         beginBatch();

@@ -3,6 +3,7 @@ package top.babyzombie.addons.module.misc.abiphone;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import com.mojang.blaze3d.platform.InputConstants;
+import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -37,13 +39,17 @@ public class AbiphoneContactScreen extends Screen {
     private boolean colorBarVisible = true;
     private final Set<String> favorites = new HashSet<>();
     private final Set<String> autoAnswer = new HashSet<>();
+    /** 联系人备注(显示名覆盖):key = 去色码的原名,value = 含 § 色码的备注。 */
+    private final Map<String, String> notes = new LinkedHashMap<>();
 
     // search
-    private String searchText = "";
-    private boolean searchFocused;
-    private int searchCursorTicks;
+    private final EditBox searchBox;
     private boolean shiftDown;
     private boolean searchFilterMode = true;
+
+    // note inline edit (就地重命名,类似系统文件重命名)
+    private int noteEditIndex = -1;
+    private EditBox noteEditBox;
 
     private final List<AbiphoneTracker.ItemEntry> contacts;
     private final String uuid;
@@ -84,6 +90,8 @@ public class AbiphoneContactScreen extends Screen {
         var tracker = HypixelLocationTracker.getInstance();
         this.uuid = tracker.getUuid();
         this.profileId = tracker.getProfileId();
+        searchBox = new EditBox(font, 0, 0, 0, 14, Component.empty());
+        searchBox.setMaxLength(64);
         loadSettings();
     }
 
@@ -94,12 +102,13 @@ public class AbiphoneContactScreen extends Screen {
             colorBarVisible = json.colorBarVisible;
             if (json.favorites != null) favorites.addAll(json.favorites);
             if (json.autoAnswer != null) autoAnswer.addAll(json.autoAnswer);
+            if (json.notes != null) notes.putAll(json.notes);
         }
     }
 
     private void saveSettings() {
         DataPersistence.save(SETTINGS_FILE, new UiSettings(textColor, colorBarVisible,
-                new ArrayList<>(favorites), new ArrayList<>(autoAnswer)));
+                new ArrayList<>(favorites), new ArrayList<>(autoAnswer), new LinkedHashMap<>(notes)));
     }
 
     public static Set<String> getAutoAnswerNames() {
@@ -112,11 +121,94 @@ public class AbiphoneContactScreen extends Screen {
     private static class UiSettings {
         int textColor;
         boolean colorBarVisible = true;
-        List<String> favorites = new ArrayList<>();
-        List<String> autoAnswer = new ArrayList<>();
-        UiSettings(int c, boolean v, List<String> f, List<String> a) {
-            this.textColor = c; this.colorBarVisible = v; this.favorites = f; this.autoAnswer = a;
+        List<String> favorites;
+        List<String> autoAnswer;
+        Map<String, String> notes;
+        UiSettings(int c, boolean v, List<String> f, List<String> a, Map<String, String> n) {
+            this.textColor = c; this.colorBarVisible = v; this.favorites = f; this.autoAnswer = a; this.notes = n;
         }
+    }
+
+    /** 联系人的显示名:有备注用备注(含 § 色码),否则用去色码的原名。 */
+    private String displayNameOf(AbiphoneTracker.ItemEntry entry) {
+        String key = stripColor(entry.name());
+        String note = notes.get(key);
+        return note != null && !note.isEmpty() ? note : key;
+    }
+
+    /** 按"可见字符"下标从可能含 § 码的字符串中截取子串,§ 码随所属字符段保留(可安全跨行换色)。 */
+    private static String coloredPart(String colored, int startPlain, int endPlain) {
+        StringBuilder sb = new StringBuilder();
+        int plain = 0;
+        for (int i = 0; i < colored.length(); i++) {
+            char c = colored.charAt(i);
+            if (c == '§' && i + 1 < colored.length()) {
+                sb.append(c).append(colored.charAt(i + 1));
+                i++;
+                continue;
+            }
+            if (plain >= startPlain && plain < endPlain) sb.append(c);
+            plain++;
+        }
+        return sb.toString();
+    }
+
+    /** 进入就地编辑:在目标卡片创建输入框,预填现有备注(& 形式回显)。 */
+    private void startNoteEdit(int index) {
+        if (index < 0 || index >= contacts.size()) return;
+        noteEditIndex = index;
+        String key = stripColor(contacts.get(index).name());
+        noteEditBox = new EditBox(font, 0, 0, cachedEffectiveSlot, 14, Component.empty());
+        noteEditBox.setMaxLength(48);
+        noteEditBox.setHint(Component.translatable("babyzombieaddons.contact.note.hint"));
+        noteEditBox.setValue(ChatUtils.sectionToAmp(notes.getOrDefault(key, "")));
+        searchBox.setFocused(false);
+        setFocused(noteEditBox);
+    }
+
+    /** 保存就地编辑的备注,空串/空白则删除备注;完成后退出编辑模式。 */
+    private void saveNoteEdit() {
+        if (noteEditIndex >= 0 && noteEditIndex < contacts.size() && noteEditBox != null) {
+            String key = stripColor(contacts.get(noteEditIndex).name());
+            String note = ChatUtils.ampToSection(noteEditBox.getValue().trim());
+            if (note.isEmpty()) {
+                notes.remove(key);
+            } else {
+                notes.put(key, note);
+            }
+            saveSettings();
+        }
+        cancelNoteEdit();
+    }
+
+    /** 取消就地编辑,不保存。 */
+    private void cancelNoteEdit() {
+        noteEditIndex = -1;
+        noteEditBox = null;
+        setFocused(null);
+    }
+
+    /** 判断鼠标是否落在正在就地编辑的卡片上(点击卡片保持编辑,点击其他位置取消)。
+     *  与渲染循环一致:按搜索过滤后的可见顺序定位行列。 */
+    private boolean clickOnNoteEditCard(double mx, double my) {
+        if (noteEditIndex < 0) return false;
+        String searchLower = searchBox.getValue().toLowerCase(Locale.ROOT);
+        int vi = -1;
+        for (int i = 0; i <= noteEditIndex && i < contacts.size(); i++) {
+            String name = stripColor(displayNameOf(contacts.get(i)));
+            if (searchFilterMode && !searchLower.isEmpty()
+                && !name.toLowerCase(Locale.ROOT).contains(searchLower)) {
+                continue;
+            }
+            vi++;
+        }
+        if (vi < 0) return false;
+        int row = vi / cols;
+        int col = vi % cols;
+        int itemX = cachedGridStartX + col * (cachedEffectiveSlot + cachedColGap);
+        int itemY = gridTop + row * rowHeight - (int)scrollOffset;
+        return mx >= itemX && mx < itemX + cachedEffectiveSlot
+            && my >= itemY && my < itemY + rowHeight;
     }
 
     @Override
@@ -143,7 +235,7 @@ public class AbiphoneContactScreen extends Screen {
         rowHeight = 68;
         int availWidth = gridRight - gridLeft;
         cols = Math.max(3, availWidth / slotSize);
-        if (cols > contacts.size() && contacts.size() > 0) cols = contacts.size();
+        if (cols > contacts.size() && !contacts.isEmpty()) cols = contacts.size();
         layoutDirty = false;
     }
 
@@ -177,12 +269,11 @@ public class AbiphoneContactScreen extends Screen {
             gui.fill(0, 0, width, height, 0xC0101010);
         }
         if (layoutDirty) recalcLayout();
-        searchCursorTicks++;
 
         int availWidth = gridRight - gridLeft;
         int colGap = 10;
         int actualCols = Math.max(3, (availWidth + colGap) / (slotSize + colGap));
-        if (actualCols > contacts.size() && contacts.size() > 0) actualCols = Math.max(3, contacts.size());
+        if (actualCols > contacts.size() && !contacts.isEmpty()) actualCols = Math.max(3, contacts.size());
         int effectiveSlot = (availWidth - colGap * (actualCols - 1)) / actualCols;
         int gridContentWidth = actualCols * effectiveSlot + colGap * (actualCols - 1);
         int gridStartX = gridLeft + (availWidth - gridContentWidth) / 2;
@@ -197,11 +288,11 @@ public class AbiphoneContactScreen extends Screen {
         if (dragIndex < 0) dragTargetIndex = -1;
 
         List<Integer> visibleIndices = new ArrayList<>();
-        String searchLower = searchText.toLowerCase(Locale.ROOT);
+        String searchLower = searchBox.getValue().toLowerCase(Locale.ROOT);
 
         for (int i = 0; i < contacts.size(); i++) {
             AbiphoneTracker.ItemEntry entry = contacts.get(i);
-            String name = stripColor(entry.name());
+            String name = stripColor(displayNameOf(entry));
             if (searchFilterMode && !searchLower.isEmpty()
                 && !name.toLowerCase(Locale.ROOT).contains(searchLower)) {
                 continue;
@@ -236,9 +327,10 @@ public class AbiphoneContactScreen extends Screen {
             boolean isHovered = (i == hoveredIndex);
             boolean isDropTarget = (dragIndex >= 0 && dragTargetIndex == i);
             String entryName = stripColor(entry.name());
+            String displayName = displayNameOf(entry);
             boolean isFavorite = favorites.contains(entryName);
             boolean isSearchMatch = !searchFilterMode && !searchLower.isEmpty()
-                && entryName.toLowerCase(Locale.ROOT).contains(searchLower);
+                && stripColor(displayName).toLowerCase(Locale.ROOT).contains(searchLower);
 
             if (isFavorite) {
                 gui.fill(itemX - 1, itemY - 1, itemX + effectiveSlot + 1, itemY + rowHeight + 1, 0x60FF69B4);
@@ -266,17 +358,27 @@ public class AbiphoneContactScreen extends Screen {
             gui.itemDecorations(font, stack, (int)(iconX / iconScale), (int)(iconY / iconScale));
             pose.popMatrix();
 
-            String name = entryName;
+            String name = displayName;
             if (name.isEmpty()) name = entry.name().replaceAll("§.", "");
+            String plainName = stripColor(name);
             float maxWidth = effectiveSlot + 10;
             int nameX = itemX + effectiveSlot / 2;
             int textY = itemY + 2 + (int)(16 * iconScale) + 2;
 
-            if (font.width(name) > maxWidth) {
-                String line1 = font.plainSubstrByWidth(name, (int)maxWidth);
-                String remainder = name.substring(line1.length());
-                String line2 = font.plainSubstrByWidth(remainder, (int)maxWidth);
-                if (!line2.equals(remainder)) line2 = line2 + "..";
+            if (i == noteEditIndex && noteEditBox != null) {
+                noteEditBox.setRectangle(effectiveSlot, 14, itemX, textY);
+                noteEditBox.extractRenderState(gui, mouseX, mouseY, delta);
+                gui.text(font, ChatUtils.ampToSection(noteEditBox.getValue()),
+                    itemX + 3, textY + 15, 0xFFBBBBBB, false);
+            } else if (font.width(plainName) > maxWidth) {
+                String line1Plain = font.plainSubstrByWidth(plainName, (int)maxWidth);
+                String remainderPlain = plainName.substring(line1Plain.length());
+                String line2Plain = font.plainSubstrByWidth(remainderPlain, (int)maxWidth);
+                boolean ellipsized = !line2Plain.equals(remainderPlain);
+                if (ellipsized) line2Plain = line2Plain + "..";
+                String line1 = coloredPart(name, 0, line1Plain.length());
+                String line2 = coloredPart(name, line1Plain.length(), plainName.length());
+                if (ellipsized) line2 = line2 + "..";
                 gui.centeredText(font, line1, nameX, textY, textColor);
                 gui.centeredText(font, line2, nameX, textY + font.lineHeight, textColor);
             } else {
@@ -289,11 +391,18 @@ public class AbiphoneContactScreen extends Screen {
                 int pyIconBottom = itemY + 2 + (int)(16 * iconScale);
                 gui.text(font, phone, px, pyIconBottom - font.lineHeight, 0xFF55AAFF, false);
             }
+
+            if (notes.containsKey(entryName)) {
+                String pen = "✎";
+                int px = itemX + effectiveSlot - font.width(pen) - 3;
+                int pyIconBottom = itemY + 2 + (int)(16 * iconScale);
+                gui.text(font, pen, px, pyIconBottom - font.lineHeight, 0xFF55FFAA, false);
+            }
         }
 
         if (dragStarted && dragIndex >= 0 && dragIndex < contacts.size()) {
             AbiphoneTracker.ItemEntry entry = contacts.get(dragIndex);
-            ItemStack dragStack = createItemStack(entry);
+            ItemStack dragStack = createItemStack(entry, displayNameOf(entry));
             if (dummyEnchantment != null) dragStack.enchant(dummyEnchantment, 1);
             int sx = (int)(dragMouseX - dragPickOffsetX * 1.5);
             int sy = (int)(dragMouseY - dragPickOffsetY * 1.5);
@@ -313,18 +422,24 @@ public class AbiphoneContactScreen extends Screen {
             gui.fill(barX, barY, barX + barW, barY + barH, 0xFFCCCCCC);
         }
 
-        if (dragIndex < 0 && hoveredIndex >= 0 && hoveredIndex < contacts.size()) {
-            gui.setTooltipForNextFrame(font, createItemStack(contacts.get(hoveredIndex)), mouseX, mouseY);
+        if (dragIndex < 0 && hoveredIndex >= 0 && hoveredIndex < contacts.size() && noteEditIndex < 0) {
+            AbiphoneTracker.ItemEntry hovered = contacts.get(hoveredIndex);
+            gui.setTooltipForNextFrame(font, createItemStack(hovered, displayNameOf(hovered)), mouseX, mouseY);
         }
 
-        renderPanel(gui, mouseX, mouseY);
+        renderPanel(gui, mouseX, mouseY, delta);
 
         gui.centeredText(font, "Abiphone Contacts (" + contacts.size() + ")", width / 2, 8, 0xFFFFFF);
+
+        if (noteEditIndex >= 0) {
+            gui.centeredText(font, Component.translatable("babyzombieaddons.contact.note.help").getString(),
+                width / 2, 20, 0x666666);
+        }
     }
 
     // ---- left panel ----
 
-    private void renderPanel(GuiGraphicsExtractor gui, int mouseX, int mouseY) {
+    private void renderPanel(GuiGraphicsExtractor gui, int mouseX, int mouseY, float delta) {
         int px = 4, py = 70;
         int pw = panelWidth - 2;
 
@@ -359,29 +474,12 @@ public class AbiphoneContactScreen extends Screen {
         gui.text(font, Component.translatable("babyzombieaddons.panel.search"), px + 4 + toggleW + 4, py, 0xFFAAAAAA, false);
         py += 14;
         int sbX = px + 4, sbY = py, sbW = pw - 10, sbH = 14;
-        int sbColor = searchFocused ? 0xFFAAAAAA : 0xFF666666;
-        gui.fill(sbX, sbY, sbX + sbW, sbY + sbH, 0x80000000);
-        gui.fill(sbX, sbY, sbX + sbW, sbY + 1, sbColor);
-        gui.fill(sbX, sbY + sbH - 1, sbX + sbW, sbY + sbH, sbColor);
-        gui.fill(sbX, sbY, sbX + 1, sbY + sbH, sbColor);
-        gui.fill(sbX + sbW - 1, sbY, sbX + sbW, sbY + sbH, sbColor);
-        String displayText = searchText;
-        int cursorX = sbX + 4;
-        if (!displayText.isEmpty()) {
-            String trimmed = font.plainSubstrByWidth(displayText, sbW - 8);
-            if (!trimmed.equals(displayText)) {
-                while (!trimmed.isEmpty() && font.width(trimmed) > sbW - 8)
-                    trimmed = trimmed.substring(1);
-            }
-            gui.text(font, trimmed, sbX + 4, sbY + 3, 0xFFFFFFFF, false);
-            cursorX = sbX + 4 + font.width(trimmed);
-        }
-        if (searchFocused && (searchCursorTicks / 20) % 2 == 0) {
-            gui.fill(cursorX, sbY + 2, cursorX + 1, sbY + sbH - 2, 0xFFFFFFFF);
-        }
+        searchBox.setRectangle(sbW, sbH, sbX, sbY);
+        searchBox.extractRenderState(gui, mouseX, mouseY, delta);
     }
 
-    private boolean panelClick(double mouseX, double mouseY) {
+    private boolean panelClick(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x(), mouseY = event.y();
         int px = 4, py = 70;
         int pw = panelWidth - 2;
 
@@ -413,10 +511,12 @@ public class AbiphoneContactScreen extends Screen {
         int searchBaseY = sToggleBaseY + 14;
         int sbX = px + 4, sbW = pw - 10, sbH = 14;
         if (mouseX >= sbX && mouseX <= sbX + sbW && mouseY >= searchBaseY && mouseY <= searchBaseY + sbH) {
-            searchFocused = true;
+            searchBox.setFocused(true);
+            setFocused(searchBox);
+            searchBox.mouseClicked(event, doubleClick);
             return true;
         } else {
-            searchFocused = false;
+            searchBox.setFocused(false);
         }
 
         return false;
@@ -436,12 +536,29 @@ public class AbiphoneContactScreen extends Screen {
         double mx = event.x(), my = event.y();
         int btn = event.buttonInfo().button();
 
+        if (noteEditIndex >= 0) {
+            // 就地编辑模式:左键点击卡片保持编辑(可定位光标),点击其他位置取消;右键忽略
+            if (btn == InputConstants.MOUSE_BUTTON_LEFT) {
+                if (clickOnNoteEditCard(mx, my)) {
+                    noteEditBox.mouseClicked(event, doubleClick);
+                } else {
+                    cancelNoteEdit();
+                }
+            }
+            return true;
+        }
+
         if (btn == InputConstants.MOUSE_BUTTON_LEFT && mx < panelWidth) {
-            return panelClick(mx, my);
+            return panelClick(event, doubleClick);
         }
 
         if (btn == InputConstants.MOUSE_BUTTON_LEFT && mx >= panelWidth) {
-            searchFocused = false;
+            searchBox.setFocused(false);
+        }
+
+        if (btn == InputConstants.MOUSE_BUTTON_RIGHT && shiftDown && hoveredIndex >= 0 && dragIndex < 0) {
+            startNoteEdit(hoveredIndex);
+            return true;
         }
 
         if (btn == InputConstants.MOUSE_BUTTON_RIGHT && hoveredIndex >= 0 && dragIndex < 0) {
@@ -534,13 +651,7 @@ public class AbiphoneContactScreen extends Screen {
 
     @Override
     public boolean charTyped(CharacterEvent event) {
-        if (searchFocused) {
-            char c = (char) event.codepoint();
-            if (c >= 32 && c != 127) {
-                searchText += c;
-                return true;
-            }
-        }
+        // 键盘/字符事件由容器焦点路由到当前 EditBox(noteEditBox 或 searchBox)
         return super.charTyped(event);
     }
 
@@ -550,18 +661,26 @@ public class AbiphoneContactScreen extends Screen {
             shiftDown = true;
         }
 
-        if (searchFocused) {
+        if (noteEditIndex >= 0) {
             if (event.key() == InputConstants.KEY_ESCAPE) {
-                searchFocused = false;
+                cancelNoteEdit();
                 return true;
             }
-            if (event.key() == InputConstants.KEY_BACKSPACE) {
-                if (!searchText.isEmpty()) {
-                    searchText = searchText.substring(0, searchText.length() - 1);
-                }
+            if (event.key() == InputConstants.KEY_RETURN || event.key() == InputConstants.KEY_NUMPADENTER) {
+                saveNoteEdit();
                 return true;
             }
-            return true;
+            if (Minecraft.getInstance().options.keyInventory.matches(event)) return true;
+            return super.keyPressed(event);
+        }
+
+        if (searchBox.isFocused()) {
+            if (event.key() == InputConstants.KEY_ESCAPE) {
+                searchBox.setFocused(false);
+                return true;
+            }
+            if (Minecraft.getInstance().options.keyInventory.matches(event)) return true;
+            return super.keyPressed(event);
         }
 
         if (event.key() == InputConstants.KEY_ESCAPE
@@ -601,13 +720,18 @@ public class AbiphoneContactScreen extends Screen {
             .withStyle(ChatFormatting.DARK_GRAY).withStyle(style -> style.withItalic(false)));
         lore.add(Component.translatable("babyzombieaddons.contact.lore.favorite")
             .withStyle(ChatFormatting.DARK_GRAY).withStyle(style -> style.withItalic(false)));
+        lore.add(Component.translatable("babyzombieaddons.contact.lore.note")
+            .withStyle(ChatFormatting.DARK_GRAY).withStyle(style -> style.withItalic(false)));
         lore.add(Component.translatable("babyzombieaddons.contact.lore.drag")
             .withStyle(ChatFormatting.DARK_GRAY).withStyle(style -> style.withItalic(false)));
         return lore;
     }
 
     private static ItemStack createItemStack(AbiphoneTracker.ItemEntry entry) {
-        String displayName = stripColor(entry.name());
+        return createItemStack(entry, stripColor(entry.name()));
+    }
+
+    private static ItemStack createItemStack(AbiphoneTracker.ItemEntry entry, String displayName) {
         Component nameComponent = Component.literal(displayName).withStyle(ChatFormatting.YELLOW)
             .withStyle(style -> style.withItalic(false));
 

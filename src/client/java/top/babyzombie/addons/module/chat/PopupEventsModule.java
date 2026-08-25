@@ -1,4 +1,4 @@
-package top.babyzombie.addons.module.chat.popup;
+package top.babyzombie.addons.module.chat;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -29,7 +29,6 @@ import top.babyzombie.addons.util.KeyBindingUtil;
 import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.module.misc.SystemNotifier;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
