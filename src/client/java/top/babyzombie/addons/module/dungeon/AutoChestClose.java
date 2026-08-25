@@ -20,7 +20,7 @@ public final class AutoChestClose {
             if (!HypixelLocationTracker.getInstance().isInDungeon()) return;
             if (screen instanceof AbstractContainerScreen<?> cs) {
                 if (cs.getTitle().getContents() instanceof TranslatableContents tc
-                        && ("container.chest".equals(tc.getKey()) || "container.chestDouble".equals(tc.getKey()))) {
+                        && ("containerchat.chest".equals(tc.getKey()) || "containerchat.chestDouble".equals(tc.getKey()))) {
                     Scheduler.schedule(4, () -> {
                         if (client.screen == screen && HypixelLocationTracker.getInstance().isInDungeon())
                             client.execute(() -> { if (client.player != null) client.player.closeContainer(); });

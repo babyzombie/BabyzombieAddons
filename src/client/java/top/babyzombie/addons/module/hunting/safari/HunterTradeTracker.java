@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.module.chat.PartyModule;
-import top.babyzombie.addons.module.chat.popup.PopupEventsModule;
+import top.babyzombie.addons.module.chat.PopupEventsModule;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.render.RenderPhaseRegister;

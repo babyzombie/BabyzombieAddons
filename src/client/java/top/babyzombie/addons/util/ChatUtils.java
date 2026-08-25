@@ -7,6 +7,8 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import top.babyzombie.addons.util.toast.ItemToast;
 
 public final class ChatUtils {
@@ -19,6 +21,30 @@ public final class ChatUtils {
         return text
                 .replaceAll("§x(?:§[0-9a-fA-F]){6}|§[0-9a-fk-orlnm]", "")
                 .replaceAll("&x(?:&[0-9a-fA-F]){6}|&[0-9a-fk-orlnm]", "");
+    }
+
+    /** 把输入的 & 颜色码转换为 § 形式（含 &x 六位 hex），用于"用 & 代替 §"的文本输入。 */
+    public static String ampToSection(String text) {
+        if (text == null) return "";
+        Matcher hex = Pattern.compile("&x((?:&[0-9a-fA-F]){6})").matcher(text);
+        StringBuilder sb = new StringBuilder();
+        while (hex.find()) {
+            hex.appendReplacement(sb, "§x" + hex.group(1).replace("&", "§"));
+        }
+        hex.appendTail(sb);
+        return sb.toString().replaceAll("&([0-9a-fk-orlnm])", "§$1");
+    }
+
+    /** 把 § 颜色码转换为 & 形式（含 §x 六位 hex），用于编辑框回显。 */
+    public static String sectionToAmp(String text) {
+        if (text == null) return "";
+        Matcher hex = Pattern.compile("§x((?:§[0-9a-fA-F]){6})").matcher(text);
+        StringBuilder sb = new StringBuilder();
+        while (hex.find()) {
+            hex.appendReplacement(sb, "&x" + hex.group(1).replace("§", "&"));
+        }
+        hex.appendTail(sb);
+        return sb.toString().replaceAll("§([0-9a-fk-orlnm])", "&$1");
     }
 
     public static void sendCommand(String command) {

@@ -21,7 +21,7 @@ import top.babyzombie.addons.config.gui.WideSliderEditor;
 import top.babyzombie.addons.module.misc.CopyItemInfoKey;
 import top.babyzombie.addons.module.misc.SecondPersonKey;
 import top.babyzombie.addons.module.chat.WaypointMarkerModule;
-import top.babyzombie.addons.module.chat.popup.PopupEventsModule;
+import top.babyzombie.addons.module.chat.PopupEventsModule;
 import top.babyzombie.addons.util.KeyBindingUtil;
 
 import java.io.File;

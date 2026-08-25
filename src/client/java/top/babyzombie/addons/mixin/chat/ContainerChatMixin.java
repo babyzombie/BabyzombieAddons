@@ -3,7 +3,7 @@ package top.babyzombie.addons.mixin.chat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.inventory.Slot;
-import top.babyzombie.addons.module.chat.ItemProtectBridge;
+import top.babyzombie.addons.module.chat.containerchat.ItemProtectBridge;
 import top.babyzombie.addons.util.StarIndicator;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.module.chat.ContainerChatHelper;
+import top.babyzombie.addons.module.chat.containerchat.ContainerChatHelper;
 
 @Mixin(AbstractContainerScreen.class)
 public abstract class ContainerChatMixin extends Screen {

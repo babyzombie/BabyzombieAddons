@@ -1,4 +1,4 @@
-package top.babyzombie.addons.module.chat;
+package top.babyzombie.addons.module.chat.containerchat;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;

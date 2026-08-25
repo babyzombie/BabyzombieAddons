@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.babyzombie.addons.event.ContainerClickEvents;
-import top.babyzombie.addons.module.chat.ItemProtectBridge;
+import top.babyzombie.addons.module.chat.containerchat.ItemProtectBridge;
 import top.babyzombie.addons.module.kuudra.ChestCounter;
 import top.babyzombie.addons.module.misc.CopyItemInfoKey;
 import top.babyzombie.addons.module.misc.pet.PetPageKeyHandler;

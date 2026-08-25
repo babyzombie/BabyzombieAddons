@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * Utility for waiting until a container screen's specific slot becomes
+ * Utility for waiting until a containerchat screen's specific slot becomes
  * non-empty (meaning the server has sent all items for that row), then
  * executing an action exactly once.
  * <p>
@@ -29,7 +29,7 @@ public final class ScreenLoadWaiter {
     // ── Public API ──
 
     /**
-     * Registers a persistent AFTER_INIT listener. Every time a container
+     * Registers a persistent AFTER_INIT listener. Every time a containerchat
      * screen whose raw title matches {@code titlePredicate} opens, waits
      * for the given slot to become non-empty, then calls {@code action}
      * with the screen reference.
@@ -58,7 +58,7 @@ public final class ScreenLoadWaiter {
      * before the trigger fires (e.g. loadout switch via chat command
      * while the Loadouts menu is already showing).
      *
-     * @param screen       the container screen to watch
+     * @param screen       the containerchat screen to watch
      * @param loadedSlot   slot index that signals the page is fully loaded
      * @param timeoutTicks maximum ticks to wait, 0 = wait indefinitely
      * @param action       code to run once the page is loaded

@@ -13,9 +13,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.module.chat.ContainerChatHelper;
-import top.babyzombie.addons.module.chat.ReiHelper;
-import top.babyzombie.addons.module.chat.RrvHelper;
+import top.babyzombie.addons.module.chat.containerchat.ContainerChatHelper;
+import top.babyzombie.addons.module.chat.containerchat.ReiHelper;
+import top.babyzombie.addons.module.chat.containerchat.RrvHelper;
 import top.babyzombie.addons.util.StarIndicator;
 
 /**
