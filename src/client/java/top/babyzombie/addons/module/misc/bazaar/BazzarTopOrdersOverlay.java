@@ -639,7 +639,7 @@ Screen s = Minecraft.getInstance().gui.screen();
 
     /** 打开 Mod 设置页并搜索"求购历史最大显示行数" */
     private static void openBuyHistoryLineCountSearch() {
-        Minecraft.getInstance().setScreen(ModConfigManager.createGUI(Minecraft.getInstance().screen,
+        Minecraft.getInstance().gui.setScreen(ModConfigManager.createGUI(Minecraft.getInstance().gui.screen(),
                 Component.translatable("config.babyzombieaddons.option.bazzarBuyOrderHistoryMaxLines").getString()));
     }
 
