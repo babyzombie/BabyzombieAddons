@@ -10,6 +10,7 @@ import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.module.chat.PartyModule;
 import top.babyzombie.addons.module.dungeon.withercloak.WitherCloakModule;
+import top.babyzombie.addons.module.kuudra.ChestCounter;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.PartyTracker;
@@ -63,6 +64,7 @@ public final class DungeonModule {
                 if (win && HypixelLocationTracker.getInstance().isInDungeon()) {
                     DailyRunsCounter.incrementAndShow();
                 }
+                ChestCounter.onRunEnd();
                 AutoRequeue.schedule(win);
                 DungeonJukeboxModule.onInstanceEnd();
             }

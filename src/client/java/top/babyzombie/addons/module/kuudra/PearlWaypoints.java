@@ -146,7 +146,7 @@ public final class PearlWaypoints {
             }
             if (cfg.showOutline) {
                 for (var o : outlines) {
-                    // 站位方块完整线框（与 IQ 一致），正常深度测试
+                    // 站位方块完整线框，正常深度测试
                     WorldRenderUtils.drawWireframeBox(ctx,
                             o.x, o.y, o.z,
                             o.x + 1, o.y + 1, o.z + 1,
@@ -155,7 +155,7 @@ public final class PearlWaypoints {
             }
             if (cfg.showTimer) {
                 for (var t : texts) {
-                    // 与 IQ 一致：固定 0.15 缩放，不做距离缩放
+                    // 固定 0.15 缩放，不做距离缩放
                     WorldTextRenderer.renderString(ctx, t.text, t.x, t.y, t.z, t.color, 0.15f, true);
                 }
             }
@@ -273,7 +273,7 @@ public final class PearlWaypoints {
                     if (remainingTicks <= 0) {
                         label = "§aREADY";
                         color = 0xFF00FF00;
-                        // 就绪提示音（独立开关，与 IQ 的 pearlThrowAlert 一致）
+                        // 就绪提示音（独立开关）
                         String alertKey = area.name + "_" + w.text;
                         if (alertedWaypoints.add(alertKey) && w.alert
                                 && ModConfigManager.get().kuudra.phase1.pearlWaypoints.throwAlert) {

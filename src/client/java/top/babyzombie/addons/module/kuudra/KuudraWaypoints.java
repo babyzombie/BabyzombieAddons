@@ -69,7 +69,7 @@ public final class KuudraWaypoints {
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             var cfg = ModConfigManager.get().kuudra;
 
-            // Supply beams (crate 渲染中心与 IQ 一致：x+0.5, z+1.5)
+            // Supply beams (crate 渲染中心：x+0.5, z+1.5)
             var supplyCol = cfg.phase1.supplyBeaconColor.getEffectiveColour();
             int supplyColor = supplyCol.getRGB();
             for (var v : supplies)
@@ -193,7 +193,7 @@ public final class KuudraWaypoints {
             int chuckColor = cfg.phase3.chuckBeaconColor.getEffectiveColour().getRGB();
             for (var v : chucks) {
                 BeamRenderer.drawBeam(ctx, v.x, v.y, v.z, 20f, 0.15f, chuckColor);
-                WorldRenderUtils.drawCircle(ctx, v.x, v.y + 0.01, v.z, 20, 1, 0, 0, 1, true, 3);
+                WorldRenderUtils.drawCircle(ctx, v.x, v.y + 0.01, v.z, KuudraLocationTracker.p4 || "p4".equals(KuudraLocationTracker.area) ? 10 : 20, 1, 0, 0, 1, true, 3);
             }
 
             // Unclassified beams (dropoff markers, ballista, etc.)
@@ -216,7 +216,7 @@ public final class KuudraWaypoints {
                     || cfg.phase1.supplyGiantHitbox;
             if (!anyOn) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
-            if (client.player == null || client.player.tickCount % 2 != 0) return; // 与 IQ 一致：2 tick 扫描，补给一出水就显示
+            if (client.player == null || client.player.tickCount % 2 != 0) return; // 2 tick 扫描，补给一出水就显示
 
             String newPhase = getScoreboardPhase(client);
 
@@ -235,7 +235,7 @@ public final class KuudraWaypoints {
                 if (cfg.phase1.supplyBeacons || needZombies || cfg.phase1.supplyGiantHitbox) {
                     for (var g : client.player.level().getEntitiesOfClass(Giant.class,
                             new AABB(client.player.blockPosition()).inflate(64), SkullTextures.SUPPLIES::isHoldingThis)) {
-                        // IQ formula: crate offset 3.7 at angle (yaw + 130°), Y=75
+                        // crate offset 3.7 at angle (yaw + 130°), Y=75
                         double angleRad = Math.toRadians(g.getYRot() + 130.0f);
                         double cx = g.getX() + (SUPPLY_CRATE_OFFSET * Math.cos(angleRad));
                         double cz = g.getZ() + (SUPPLY_CRATE_OFFSET * Math.sin(angleRad));

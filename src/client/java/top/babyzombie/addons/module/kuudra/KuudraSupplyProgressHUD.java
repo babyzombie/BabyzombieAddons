@@ -119,7 +119,7 @@ public final class KuudraSupplyProgressHUD {
                     boolean showFuel = cfg.phase3.fuelProgressHud && !inSuppliesPhase && fuelCount > 0;
                     if (!showSupply && !showFuel) return;
                     if (currentProgress <= 0) return;
-                    // title 消失（补给/燃料拿完）后 900ms 内隐藏 HUD（与 IQ 的超时一致）
+                    // title 消失（补给/燃料拿完）后 900ms 内隐藏 HUD
                     if (System.currentTimeMillis() - lastTitleMs > 900) return;
 
                     var font = Minecraft.getInstance().font;
