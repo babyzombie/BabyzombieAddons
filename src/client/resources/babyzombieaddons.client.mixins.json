@@ -85,6 +85,7 @@
     "window.FramerateLimitTrackerMixin",
 
     "screen.CommandSuggestionsMixin",
+    "screen.AbstractSignEditScreenAccessor",
     "screen.ContainerClickMixin",
     "screen.HandleContainerInputMixin",
     "screen.InventoryScreenMixin",

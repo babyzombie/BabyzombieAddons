@@ -13,7 +13,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.hud.HudTag;
@@ -79,7 +78,6 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
             var cfg = getCfg();
             if (cfg == null || !cfg.flipEnabled) return;
             String text = ChatUtils.removeEmoji(ChatUtils.stripColor(msg.getString()));
-            if (text == null) return;
             boolean buy = text.startsWith(PREFIX_BUY);
             boolean sell = !buy && text.startsWith(PREFIX_SELL);
             if (!buy && !sell) return;
@@ -368,10 +366,8 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
     /** 是否为 Bazaar 订单页（容器标题精确匹配；订单列表页无法从 GUI 解析订单数据） */
     private static boolean isOrdersPage(Screen screen) {
         if (!(screen instanceof AbstractContainerScreen<?>)) return false;
-        String title = ChatUtils.stripColor(screen.getTitle().getString());
-        if (title == null) return false;
-        String t = title.trim();
-        return "Bazaar Orders".equals(t) || "Co-op Bazaar Orders".equals(t);
+        String title = ChatUtils.stripColor(screen.getTitle().getString()).trim();
+        return "Bazaar Orders".equals(title) || "Co-op Bazaar Orders".equals(title);
     }
 
     /**
@@ -388,8 +384,7 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         int top = (rect.height() - (114 + rows * 18)) / 2;
         var player = Minecraft.getInstance().player;
         for (Slot slot : menu.slots) {
-            if (slot == null || !slot.isActive() || !slot.hasItem()) continue;
-            if (slot.container == null) continue;
+            if (!slot.isActive() || !slot.hasItem()) continue;
             if (player != null && slot.container == player.getInventory()) continue;
             if (mx >= left + slot.x && mx < left + slot.x + 16
                     && my >= top + slot.y && my < top + slot.y + 16) {
@@ -414,34 +409,27 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
     }
 
     /** 订单页显示名（保留原色） "[§6§lSELL §aVampiric Vitality V§b]" → "§aVampiric Vitality V§b"；无包装原样返回 */
-    @Nullable
     private static String unwrapOrdersDisplayNameColored(Component displayName) {
-        String legacy = ChatUtils.toLegacyString(displayName);
-        if (legacy == null) return null;
-        String s = legacy.trim();
-        int open = s.indexOf('[');
-        int close = s.lastIndexOf(']');
+        String legacy = ChatUtils.toLegacyString(displayName).trim();
+        int open = legacy.indexOf('[');
+        int close = legacy.lastIndexOf(']');
         if (open >= 0 && close > open) {
-            String inner = s.substring(open + 1, close).trim();
+            String inner = legacy.substring(open + 1, close).trim();
             int sp = inner.indexOf(' ');
             if (sp > 0) {
-                String tag = ChatUtils.stripColor(inner.substring(0, sp));
-                if (tag != null) {
-                    String t = tag.trim().toUpperCase(Locale.ROOT);
-                    if ("SELL".equals(t) || "BUY".equals(t)) {
-                        String c = inner.substring(sp + 1).trim();
-                        if (!c.isEmpty()) return c;
-                    }
+                String tag = ChatUtils.stripColor(inner.substring(0, sp)).trim().toUpperCase(Locale.ROOT);
+                if ("SELL".equals(tag) || "BUY".equals(tag)) {
+                    String c = inner.substring(sp + 1).trim();
+                    if (!c.isEmpty()) return c;
                 }
             }
         }
-        return s;
+        return legacy;
     }
 
     /** 订单页显示名 "[SELL xxx]"（SELL/BUY 忽略大小写）→ "xxx"；无包装原样返回（已 trim） */
     private static String unwrapOrdersDisplayName(Component displayName) {
         String stripped = ChatUtils.stripColor(ChatUtils.toLegacyString(displayName));
-        if (stripped == null) return null;
         return unwrapBracketWrapper(stripped);
     }
 
@@ -471,7 +459,6 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
      */
     private static String cleanCommandName(String itemName) {
         String plain = ChatUtils.stripColor(itemName);
-        if (plain == null) return "";
         String s = unwrapBracketWrapper(plain);
         if (s.length() >= 2 && s.charAt(0) == '[' && s.charAt(s.length() - 1) == ']') {
             String inner = s.substring(1, s.length() - 1).trim();
