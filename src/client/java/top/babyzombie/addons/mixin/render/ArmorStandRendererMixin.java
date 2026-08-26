@@ -10,7 +10,7 @@ import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
-/** 隐藏 Kuudra 小怪的等级名称标签（与 IQ 一致：名字含 [Lv 的盔甲架）。
+/** 隐藏 Kuudra 小怪的等级名称标签（名字含 [Lv 的盔甲架）。
  *  26.2 起 ArmorStandRenderer 重写了 shouldShowName 且不调用 super，
  *  基类 LivingEntityRenderer 上的注入对盔甲架不再生效，需直接注入此处。 */
 @Mixin(ArmorStandRenderer.class)
