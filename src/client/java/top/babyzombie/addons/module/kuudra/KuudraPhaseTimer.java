@@ -86,7 +86,7 @@ public final class KuudraPhaseTimer {
             if (currentPhase == null) return;
 
             // KUUDRA DOWN — ends any tier
-            if (text.equals("                               KUUDRA DOWN!")) {
+            if (KuudraChatLines.isKuudraDown(text)) {
                 endRun();
                 return;
             }

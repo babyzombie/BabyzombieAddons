@@ -587,7 +587,7 @@
   "kuudra.stun.down": "§4§lKuudra down! %s",
   "kuudra.stun.p4": "§4§lPHASE 4 - TRUE LAIR",
   "kuudra.energy": "§fEnergy Charge: §a%s%%",
-  "kuudra.rend": "Someone pulled for §c%s §fdamage at §a%.2fs§f.",
+  "kuudra.rend": "§aSomeone pulled for §c§l%s§a damage at §b%.2fs§a.",
   "kuudra.follower_helmet": "§a%s today's §cKuudra Follower §ahelmet price §7: §b%s §e(Day %d)  §7(copied to clipboard)",
   "config.babyzombieaddons.option.followerHelmetPrice": "Follower Helmet Price",
   "config.babyzombieaddons.option.followerHelmetPrice.desc": "Calculate today's Kuudra Follower Helmet price.",

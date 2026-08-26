@@ -587,7 +587,7 @@
   "kuudra.stun.down": "§4§lKuudra 击倒! %s",
   "kuudra.stun.p4": "§4§l第四阶段 - 巢穴",
   "kuudra.energy": "§f弩炮充能: §a%s%%",
-  "kuudra.rend": "有人在 §c%s §f时造成了 §a%.2fs§f 伤害。",
+  "kuudra.rend": "§a有人在 §b%.2fs§a 时造成了 §c§l%s§a 伤害。",
   "kuudra.follower_helmet": "§a%s 今天的 §cKuudra Follower §a帽子价格为 §7: §b%s §e(Day %d)  §7(已复制到剪贴板)",
   "config.babyzombieaddons.option.followerHelmetPrice": "追随者头盔价格",
   "config.babyzombieaddons.option.followerHelmetPrice.desc": "计算当天的 Kuudra Follower 头盔价格。",

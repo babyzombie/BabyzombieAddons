@@ -24,8 +24,7 @@ public final class AlreadyPickingAlert {
             if (text.contains("Someone else is currently trying to pick up these supplies")) {
                 var player = Minecraft.getInstance().player;
                 if (player != null) {
-                    player.sendSystemMessage(
-                            Component.literal("§c§lALREADY PICKING"));
+                    ChatUtils.showTitle("", "§c§lALREADY PICKING", 0, 30, 10);
                     player.level().playSound(player, player.blockPosition(),
                             SoundEvents.VILLAGER_NO, SoundSource.PLAYERS, 1f, 1f);
                 }
