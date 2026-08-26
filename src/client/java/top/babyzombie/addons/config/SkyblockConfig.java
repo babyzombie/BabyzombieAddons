@@ -349,5 +349,8 @@ public class SkyblockConfig {
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarBuyOrderHistoryMaxLines", desc = "config.babyzombieaddons.option.bazzarBuyOrderHistoryMaxLines.desc") @ConfigEditorSlider(minValue = 1, maxValue = 30, minStep = 1) @SearchTag("bazaar") @SearchTag("行数")
         public int buyOrderHistoryMaxLines = 7;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarSignPasteAmount", desc = "config.babyzombieaddons.option.bazzarSignPasteAmount.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("告示牌") @SearchTag("剪贴板") @SearchTag("数量")
+        public boolean signPasteAmount = false;
     }
 }

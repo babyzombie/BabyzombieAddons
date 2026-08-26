@@ -75,6 +75,7 @@
     "render.ThirdPersonCrosshairMixin",
     "render.ViewAreaInvoker",
     "resource.PackRepositoryMixin",
+    "screen.AbstractSignEditScreenAccessor",
     "screen.CommandSuggestionsMixin",
     "screen.ContainerClickMixin",
     "screen.GuiOptionEditorDropdownMixin",
@@ -93,17 +94,15 @@
     "sound.PlaySoundMixin",
     "sound.SoundEngineAccessor",
     "sound.SoundManagerAccessor",
-    "window.WindowTitleMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "mixins": [
+    "window.WindowTitleMixin",
     "entity.LavaBobberFixMixin",
     "network.ClientPacketListenerMixin",
     "screen.DisconnectConfirmMixin",
     "window.FramerateLimitTrackerAccessor",
     "window.FramerateLimitTrackerMixin",
     "window.WindowCloseConfirmMixin"
-  ]
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

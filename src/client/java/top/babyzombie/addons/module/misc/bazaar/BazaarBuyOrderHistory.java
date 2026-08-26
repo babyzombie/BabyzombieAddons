@@ -1,10 +1,12 @@
 package top.babyzombie.addons.module.misc.bazaar;
 
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.SignEditScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.component.ItemLore;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
+import top.babyzombie.addons.mixin.screen.AbstractSignEditScreenAccessor;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
 import top.babyzombie.addons.util.Scheduler;
@@ -46,6 +49,13 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
     private static final Pattern BUY_PREFIX_INTERLEAVED = Pattern.compile(
             "(?i)(?:§[0-9a-fk-orx])*B(?:§[0-9a-fk-orx])*U(?:§[0-9a-fk-orx])*Y(?:§[0-9a-fk-orx])*\\s+");
 
+    /** 告示牌箭头行(全字匹配) */
+    private static final String SIGN_CARET_LINE = "^^^^^^^^^^^^^^^";
+
+    /** 剪贴板数量白名单:只允许数字、括号、运算符(含 x)、k/m/b、点、逗号、空格,且至少含一个数字 */
+    private static final Pattern AMOUNT_EXPRESSION = Pattern.compile(
+            "(?i)^(?=.*\\d)[0-9(),.kmb+\\-*/x\\s]+$");
+
     private static final List<HistoryEntry> history = new CopyOnWriteArrayList<>();
     @Nullable
     private static String loadedProfileKey;
@@ -64,6 +74,8 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
     public static void init() {
         GuiOverlayManager.register(INSTANCE);
         ContainerClickEvents.BEFORE_MOUSE_CLICK.register(INSTANCE::onSlotClick);
+        // 告示牌数量自动填入:打开 SignEditScreen 时按内容匹配 Bazaar 输入数量布局
+        ScreenEvents.AFTER_INIT.register((client, screen, sw, sh) -> tryPasteClipboardAmount(screen));
     }
 
     // ========== 配置 ==========
@@ -112,7 +124,7 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         String key = profileKey();
         if (key == null) return;
         loadedProfileKey = key;
-        while (history.size() > HARD_MAX_ENTRIES) history.remove(history.size() - 1);
+        while (history.size() > HARD_MAX_ENTRIES) history.removeLast();
         DataPersistence.save(key, "bazaar_buy_history.json", new PersistedHistory(new ArrayList<>(history)));
     }
 
@@ -127,9 +139,7 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
 
     private static boolean isOrdersOrOptionsScreen(Screen screen) {
         if (screen == null) return false;
-        String title = ChatUtils.stripColor(screen.getTitle().getString());
-        if (title == null) return false;
-        String t = title.trim();
+        String t = ChatUtils.stripColor(screen.getTitle().getString()).trim();
         return "Bazaar Orders".equals(t) || "Co-op Bazaar Orders".equals(t) || "Order options".equals(t);
     }
 
@@ -175,9 +185,7 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         if (slot == null || !slot.hasItem()) return false;
         ItemStack stack = slot.getItem();
 
-        String title = ChatUtils.stripColor(screen.getTitle().getString());
-        if (title == null) return false;
-        title = title.trim();
+        String title = ChatUtils.stripColor(screen.getTitle().getString()).trim();
 
         // ---- 订单页：BUY 物品点击 ----
         if (isOrdersPageTitle(title)) {
@@ -204,7 +212,6 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
 
     private static void handleOrdersPageBuy(ItemStack stack) {
         String nameRaw = ChatUtils.stripColor(stack.getHoverName().getString());
-        if (nameRaw == null) return;
         String name = nameRaw.trim();
         if (!name.toUpperCase(Locale.ROOT).startsWith("BUY ")) return;
         String plain = name.substring(4).trim();
@@ -218,7 +225,7 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         if (!hasClickHint) return;
 
         String legacy = ChatUtils.toLegacyString(stack.getDisplayName());
-        String colored = BUY_PREFIX_INTERLEAVED.matcher(legacy == null ? "" : legacy).replaceFirst("");
+        String colored = BUY_PREFIX_INTERLEAVED.matcher(legacy).replaceFirst("");
         if (colored.isEmpty()) colored = plain; // 兜底
 
         pendingPlain = plain;
@@ -228,7 +235,6 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
 
     private static void handleOrderOptionsCancel(ItemStack stack) {
         String nameRaw = ChatUtils.stripColor(stack.getHoverName().getString());
-        if (nameRaw == null) return;
         if (!"Cancel Order".equals(nameRaw.trim())) return;
 
         if (pendingPlain == null || pendingColored == null) return;
@@ -252,8 +258,8 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
             entries = loaded != null ? new ArrayList<>(loaded) : new ArrayList<>();
         }
         // 2) 头插 + 100 条上限裁剪
-        entries.add(0, new HistoryEntry(pendingColored, pendingPlain, amount));
-        while (entries.size() > HARD_MAX_ENTRIES) entries.remove(entries.size() - 1);
+        entries.addFirst(new HistoryEntry(pendingColored, pendingPlain, amount));
+        while (entries.size() > HARD_MAX_ENTRIES) entries.removeLast();
         // 3) 写磁盘（DataPersistence.save 原子写，参考 loadout）
         if (key != null) DataPersistence.save(key, "bazaar_buy_history.json", new PersistedHistory(entries));
         // 4) 标记需在下一次 shouldRender 时从磁盘重载（强制 reload，使 reload 只走 json）
@@ -289,11 +295,8 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         ItemLore itemLore = stack.get(DataComponents.LORE);
         if (itemLore != null) {
             for (Component c : itemLore.lines()) {
-                String s = ChatUtils.stripColor(ChatUtils.removeEmoji(ChatUtils.toLegacyString(c)));
-                if (s != null) {
-                    String t = s.trim();
-                    if (!t.isEmpty()) out.add(t);
-                }
+                String s = ChatUtils.stripColor(ChatUtils.removeEmoji(ChatUtils.toLegacyString(c))).trim();
+                if (!s.isEmpty()) out.add(s);
             }
         }
         if (out.isEmpty()) {
@@ -304,11 +307,8 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
                         : net.minecraft.world.item.Item.TooltipContext.EMPTY;
                 List<Component> lines = stack.getTooltipLines(ctx, mc.player, TooltipFlag.Default.NORMAL);
                 for (Component c : lines) {
-                    String s = ChatUtils.stripColor(ChatUtils.removeEmoji(ChatUtils.toLegacyString(c)));
-                    if (s != null) {
-                        String t = s.trim();
-                        if (!t.isEmpty()) out.add(t);
-                    }
+                    String s = ChatUtils.stripColor(ChatUtils.removeEmoji(ChatUtils.toLegacyString(c))).trim();
+                    if (!s.isEmpty()) out.add(s);
                 }
             } catch (Exception ignored) {}
         }
@@ -345,8 +345,7 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
             String qtyText = "§a" + amtStr;
             String fullLine = prefix + e.coloredItemName + suffixLabel + qtyText;
 
-            int prefixW = ClickableText.measureWidth(font, prefix);
-            int itemRelX = prefixW;
+            int itemRelX = ClickableText.measureWidth(font, prefix);
 
             // 可见底行
             out.add(new ClickableText(0, curY, fullLine, 0xFFFFFFFF, List.of(), null));
@@ -373,6 +372,75 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         } catch (Exception ignored) {}
         playClickSound();
         Scheduler.schedule(2, () -> ChatUtils.sendCommand("bz " + plainItem));
+    }
+
+    // ========== 告示牌自动填入剪贴板数量 ==========
+
+    private static void tryPasteClipboardAmount(Screen screen) {
+        if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
+        var cfg = getCfg();
+        if (cfg == null || !cfg.signPasteAmount) return;
+        if (!(screen instanceof SignEditScreen signScreen)) return;
+        String amount = readClipboardAmount();
+        if (amount == null) return;
+        // 告示牌行内容可能比屏幕打开晚到(服务端先开屏再同步 NBT),延迟重试几次等待数据
+        Scheduler.schedule(0, new SignPasteTask(signScreen, amount));
+    }
+
+    /** 读取剪贴板并校验:只含数字、括号、运算符(含 x)、k/m/b、点、逗号等数量相关字符 */
+    @Nullable
+    private static String readClipboardAmount() {
+        String clip;
+        try {
+            clip = Minecraft.getInstance().keyboardHandler.getClipboard();
+        } catch (Exception e) {
+            return null;
+        }
+        String amount = ChatUtils.stripColor(clip).trim();
+        if (amount.isEmpty() || amount.length() > 32) return null;
+        return AMOUNT_EXPRESSION.matcher(amount).matches() ? amount : null;
+    }
+
+    /** 布局匹配(只看告示牌内容)+ 写入第一行;写入成功返回 true */
+    private static boolean pasteAmountIntoSign(SignEditScreen screen, String amount) {
+        String[] messages = ((AbstractSignEditScreenAccessor) screen).messages();
+        if (!isAmountSignLayout(messages)) return false;
+        messages[0] = amount; // 空行变成文字即为可见反馈,无需 toast
+        return true;
+    }
+
+    /** 匹配 Bazaar 输入数量的告示牌布局:第一行空 / ^^^ 箭头行 / Enter amount / to order 或 to sell(三行全字匹配) */
+    private static boolean isAmountSignLayout(String[] messages) {
+        if (messages.length < 4) return false;
+        if (!lineOf(messages[0]).isEmpty()) return false;
+        if (!SIGN_CARET_LINE.equals(lineOf(messages[1]))) return false;
+        if (!"Enter amount".equals(lineOf(messages[2]))) return false;
+        String last = lineOf(messages[3]);
+        return "to order".equals(last) || "to sell".equals(last);
+    }
+
+    private static String lineOf(String s) {
+        return s == null ? "" : ChatUtils.stripColor(s).trim();
+    }
+
+    /** 告示牌行内容比屏幕打开晚到时,带最大尝试次数的重试粘贴任务 */
+    private static final class SignPasteTask implements Runnable {
+        private static final int MAX_ATTEMPTS = 5;
+        private final SignEditScreen screen;
+        private final String amount;
+        private int attempts;
+
+        SignPasteTask(SignEditScreen screen, String amount) {
+            this.screen = screen;
+            this.amount = amount;
+        }
+
+        @Override
+        public void run() {
+            if (Minecraft.getInstance().screen != screen) return; // 屏幕已关闭/切换,放弃
+            if (pasteAmountIntoSign(screen, amount)) return;      // 已填入,结束
+            if (++attempts < MAX_ATTEMPTS) Scheduler.schedule(3, this); // 行内容未到,稍后重试
+        }
     }
 
     // ========== 音效 ==========
