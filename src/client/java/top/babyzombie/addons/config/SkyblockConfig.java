@@ -343,5 +343,11 @@ public class SkyblockConfig {
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarMaxLines", desc = "config.babyzombieaddons.option.bazzarMaxLines.desc") @ConfigEditorSlider(minValue = 1, maxValue = 30, minStep = 1) @SearchTag("bazaar") @SearchTag("行数") @SearchTag("lines")
         public int maxLines = 7;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarBuyOrderHistory", desc = "config.babyzombieaddons.option.bazzarBuyOrderHistory.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("求购历史")
+        public boolean buyOrderHistoryEnabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarBuyOrderHistoryMaxLines", desc = "config.babyzombieaddons.option.bazzarBuyOrderHistoryMaxLines.desc") @ConfigEditorSlider(minValue = 1, maxValue = 30, minStep = 1) @SearchTag("bazaar") @SearchTag("行数")
+        public int buyOrderHistoryMaxLines = 7;
     }
 }

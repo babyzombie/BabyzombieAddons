@@ -269,7 +269,7 @@ public final class HudRegistrar {
 
         // --- Bazaar ---
         HudManager.register("BazzarBuyOrder", 10, 50, 1.0f,
-                "§6§lBuy Orders  §fEnchanted Ruby\n§71. §6180,019.7 coins §7x §a14 §7in §f1 order\n§72. §6180,019.6 coins §7x §a32 §7in §f1 order",
+                "§6§lBuy Orders  Enchanted Ruby\n§71. §6180,019.7 coins §7x §a14 §7in §a1 order\n§72. §6180,019.6 coins §7x §a32 §7in §a1 order",
                 "config.babyzombieaddons.option.hudBazzarBuy",
                 () -> {
                     var cfg = ModConfigManager.get().skyblock;
@@ -279,7 +279,7 @@ public final class HudRegistrar {
                 },
                 HudTag.BAZAAR);
         HudManager.register("BazzarSellOrder", 260, 50, 1.0f,
-                "§6§lSell Offers  §fEnchanted Ruby\n§71. §6203,238.8 coins §7x §a76 §7from §f1 offer\n§72. §6203,238.9 coins §7x §a77 §7from §f2 offers",
+                "§6§lSell Offers  Enchanted Ruby\n§71. §6203,238.8 coins §7x §a76 §7from §a1 offer\n§72. §6203,238.9 coins §7x §a77 §7from §a2 offers",
                 "config.babyzombieaddons.option.hudBazzarSell",
                 () -> {
                     var cfg = ModConfigManager.get().skyblock;
@@ -296,6 +296,15 @@ public final class HudRegistrar {
                     return cfg != null && cfg.bazzarTopOrders != null
                             && cfg.bazzarTopOrders.overlayEnabled
                             && cfg.bazzarTopOrders.showActionBar;
+                },
+                HudTag.BAZAAR);
+        HudManager.register("BazzarBuyOrderHistory", 520, 50, 1.0f,
+                "§e§lBuy History\n§71. §dEccentric Painting §7x §a128\n§72. §5Crop Fever V §7x §a64",
+                "config.babyzombieaddons.option.hudBazzarBuyHistory",
+                () -> {
+                    var cfg = ModConfigManager.get().skyblock;
+                    return cfg != null && cfg.bazzarTopOrders != null
+                            && cfg.bazzarTopOrders.buyOrderHistoryEnabled;
                 },
                 HudTag.BAZAAR);
     }

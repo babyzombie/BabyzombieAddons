@@ -16,7 +16,7 @@ public final class KuudraStunTimer {
 
     private static long stunEnd;
     private static long downEnd;
-    private static long p4End;
+    public static long p4End;
 
     public static void init() {
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
@@ -36,7 +36,7 @@ public final class KuudraStunTimer {
                 KuudraLocationTracker.p4 = true;
                 var loc = HypixelLocationTracker.getInstance().getLocation();
                 if (loc != null && loc.contains("T5")) {
-                    p4End = ServerTick.getTime() + 3000;
+                    p4End = ServerTick.getTime() + 15300;
                 } else {
                     downEnd = ServerTick.getTime() + 15300;
                 }
@@ -56,7 +56,7 @@ public final class KuudraStunTimer {
             } else if (downEnd > now) {
                 text = ChatUtils.translate("kuudra.stun.down", formatTime(downEnd - now));
             } else if (p4End > now) {
-                text = ChatUtils.translate("kuudra.stun.p4");
+                text = ChatUtils.translate("kuudra.stun.p4",  formatTime(p4End - now));
             }
 
             if (text != null) {
