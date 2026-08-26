@@ -53,6 +53,9 @@ public final class KuudraChatLines {
     private static final Pattern GOOD_JOB = Pattern.compile(
             "^\\[NPC] Elle: Good job everyone\\..*$");
 
+    /** 击杀播报（P4 boss 死亡，行首有大量空格前缀，如 "                               KUUDRA DOWN!"） */
+    private static final Pattern KUUDRA_DOWN = Pattern.compile("^\\s*KUUDRA DOWN!\\s*$");
+
     public static boolean isFishUpKuudra(String text) {
         return FISH_UP_KUUDRA.matcher(text).matches();
     }
@@ -87,6 +90,10 @@ public final class KuudraChatLines {
 
     public static boolean isGoodJob(String text) {
         return GOOD_JOB.matcher(text).matches();
+    }
+
+    public static boolean isKuudraDown(String text) {
+        return KUUDRA_DOWN.matcher(text).matches();
     }
 
     // ── 系统行动播报（非 Elle 台词，Kuudra 副本通用触发消息） ──

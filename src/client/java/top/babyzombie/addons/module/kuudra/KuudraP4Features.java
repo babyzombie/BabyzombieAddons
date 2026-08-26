@@ -33,8 +33,15 @@ public final class KuudraP4Features {
     // ── Rend ──
     private static final float MIN_REND_RAW = 1666f;
     private static final float REND_MULTIPLIER = 9600f;
+    /** 同一笔血量落差（高点/低点）视为同一次掉血事件，只上报一次：防止击杀前后
+     *  双形态实体交替被选中时同一数值反复刷屏；多人轮流造成的真实伤害各自不同，不受影响 */
+    private static final float REND_DROP_EPSILON = 1f;
+    /** bossStartMs 超过该时长视为失效计时（漏匹配 P4 开始消息等），重新锚定 */
+    private static final long REND_MAX_BOSS_MS = 600_000;
     private static float lastHP = -1;
     private static long bossStartMs;
+    private static float lastDropHigh = -1;
+    private static float lastDropLow = -1;
 
     // ── Ichor Pool ──
     // Party messages: "Ichor Pool at (x, y, z)" or "[IQ] Ichor Pool Casted at x, y, z!"
@@ -58,13 +65,17 @@ public final class KuudraP4Features {
             String text = ChatUtils.stripColor(msg.getString());
             // Reset rend tracking on boss start
             if (KuudraChatLines.isFishUpKuudra(text)) {
-                lastHP = -1;
+                resetRendState();
                 ichorPools.clear();
                 return;
             }
             // Start boss timer
             if (KuudraChatLines.isP4Start(text)) {
                 bossStartMs = System.currentTimeMillis();
+            }
+            // Boss killed — 清理 Rend 临时状态，避免结束后继续触发
+            if (KuudraChatLines.isKuudraDown(text)) {
+                resetRendState();
             }
 
             // Ichor Pool
@@ -122,10 +133,16 @@ public final class KuudraP4Features {
                 if (cfg.rendTracker) {
                     float hp = kuudra.getHealth();
                     if (lastHP > 0 && hp > 0 && lastHP - hp > MIN_REND_RAW) {
-                        float scaled = (lastHP - hp) * REND_MULTIPLIER;
-                        double sec = (System.currentTimeMillis() - bossStartMs) / 1000.0;
-                        if (sec > 1.2) {
-                            ChatUtils.showTranslatable("kuudra.rend", formatRendDamage(scaled), sec);
+                        boolean sameDrop = Math.abs(lastDropHigh - lastHP) < REND_DROP_EPSILON
+                                && Math.abs(lastDropLow - hp) < REND_DROP_EPSILON;
+                        if (!sameDrop) {
+                            float scaled = (lastHP - hp) * REND_MULTIPLIER;
+                            double sec = rendSeconds();
+                            if (sec > 1.2) {
+                                ChatUtils.showTranslatable("kuudra.rend", formatRendDamage(scaled), sec);
+                                lastDropHigh = lastHP;
+                                lastDropLow = hp;
+                            }
                         }
                     }
                     lastHP = hp;
@@ -135,6 +152,9 @@ public final class KuudraP4Features {
                 if (cfg.kuudraDistance) {
                     kuudraDist = (float) kuudra.distanceTo(client.player);
                 }
+            } else {
+                // Kuudra 死亡/消失 — 清理 Rend 临时状态
+                resetRendState();
             }
 
             // Expire ichor pools
@@ -173,6 +193,8 @@ public final class KuudraP4Features {
                     WorldRenderUtils.drawCircle(ctx, pool.center.x, pool.center.y + (passed - i * 1000.0) / 1000.0, pool.center.z,
                             ICHOR_RADIUS, 0, 1, 1, 0.5f, true, 5f);
                 }
+                if (passed >= 100000) WorldRenderUtils.drawCircle(ctx, pool.center.x, pool.center.y + 10, pool.center.z,
+                        ICHOR_RADIUS, 0, 1, 1, 0.5f, true, 5f);
 
                 // 中心悬浮字：名称 + 剩余时间倒计时
                 if (remaining <= 0) continue;
@@ -186,6 +208,27 @@ public final class KuudraP4Features {
 
     // Public for HUD
     public static float getKuudraDistance() { return kuudraDist; }
+
+    /**
+     * 返回距 P4 开始的秒数；计时无效（未收到 P4 开始消息 / 超过上限）时重新锚定到当前时间，
+     * 返回 0 让本次掉血不触发，避免出现 epoch 巨数或跨越多场战斗的时间。
+     */
+    private static double rendSeconds() {
+        long now = System.currentTimeMillis();
+        if (bossStartMs == 0 || now - bossStartMs > REND_MAX_BOSS_MS) {
+            bossStartMs = now;
+            return 0;
+        }
+        return (now - bossStartMs) / 1000.0;
+    }
+
+    /** 清理 Rend 追踪临时状态（击杀、实体死亡/消失时调用） */
+    private static void resetRendState() {
+        lastHP = -1;
+        bossStartMs = 0;
+        lastDropHigh = -1;
+        lastDropLow = -1;
+    }
 
     private static String formatRendDamage(float d) {
         if (d >= 1_000_000) return String.format("%.2fM", d / 1_000_000);
