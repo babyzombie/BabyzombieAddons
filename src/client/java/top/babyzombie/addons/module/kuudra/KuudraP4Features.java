@@ -168,7 +168,8 @@ public final class KuudraP4Features {
                 WorldRenderUtils.drawCircle(ctx, pool.center.x, pool.center.y, pool.center.z,
                         ICHOR_RADIUS, 0, 1, 1, 0.5f, true, 5f);
                 // 空中动态范围圈
-                for (int i = 0; i < 10 && i * 1000 < passed; i += 2) {
+                for (int i = 0; i * 1000 < passed; i += 2) {
+                    if (passed - i * 1000 > 10000) continue;
                     WorldRenderUtils.drawCircle(ctx, pool.center.x, pool.center.y + (passed - i * 1000.0) / 1000.0, pool.center.z,
                             ICHOR_RADIUS, 0, 1, 1, 0.5f, true, 5f);
                 }

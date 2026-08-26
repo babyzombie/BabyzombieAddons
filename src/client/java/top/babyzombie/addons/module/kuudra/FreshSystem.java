@@ -79,7 +79,7 @@ public final class FreshSystem {
                 return;
             }
 
-            // 补给 6/6 放完 → 建造阶段开始倒计时（与 IQ 的 buildStartCountdown 一致）
+            // 补给 6/6 放完 → 建造阶段开始倒计时
             Matcher sm = SUPPLY_PLACE_PATTERN.matcher(text);
             if (sm.find() && sm.group(1).equals("6")) {
                 buildCountdownEndMs = ServerTick.getTime() + BUILD_START_COUNTDOWN_MS;
@@ -101,7 +101,9 @@ public final class FreshSystem {
                     "Party > (?:\\[[^]]+] )?([^:]+?): (?:\\[IQ] )?FRESH\\b",
                     Pattern.CASE_INSENSITIVE).matcher(text);
             if (fm.find() && inBuildPhase) {
-                String plainName = fm.group(1).trim();
+                // 聊天名与 Tab 名形态不同（聊天含 rank、Tab 含 [等级]+图标），
+                // 统一归一化后再进查找，否则 findColoredName / findPlayerByName 都匹配不上
+                String plainName = normalizePlayerName(fm.group(1));
                 String coloredName = findColoredName(plainName);
                 trackFresh(0, coloredName != null ? coloredName : plainName);
             }
@@ -133,7 +135,7 @@ public final class FreshSystem {
                 buildCountdownEndMs = ServerTick.getTime() + BUILD_START_COUNTDOWN_MS;
             }
 
-            // 卡顿补偿（与 IQ 一致）：掉帧导致实际经过时间超过 50ms/tick 时，把倒计时终点往后推
+            // 卡顿补偿：掉帧导致实际经过时间超过 50ms/tick 时，把倒计时终点往后推
             if (buildCountdownEndMs > 0 && lastCountdownTickMs > 0) {
                 buildCountdownEndMs = compensateLag(buildCountdownEndMs, lastCountdownTickMs, now);
             }
@@ -240,6 +242,10 @@ public final class FreshSystem {
         }
         if (player == null) return;
 
+        // 自己按 fresh 由 onSelfFresh 记录；这里只记队友（Hypixel 会把我们自己的 pc 消息回显，
+        // 不跳过会重复记录自己）
+        if (player == Minecraft.getInstance().player) return;
+
         FreshEntry entry = new FreshEntry(ServerTick.getTime(), playerName);
         freshPlayers.put(player.getId(), entry);
         freshHistory.add(entry);
@@ -295,24 +301,46 @@ public final class FreshSystem {
         return null;
     }
 
+    /** 归一化玩家名：去色码 → 删所有 [..] 组（等级/rank/带方括号的图标）→ 只保留名字字符。
+     *  MC 玩家名只含 [A-Za-z0-9_]，名字里不可能有空格、方括号或装饰字符，因此这一步对
+     *  聊天侧（「[MVP++] 名字」）和 Tab 侧（「[4483] 名字 Ӄ/✌」等任意图标形态）都安全，
+     *  且是严格相等比较（不会像子串匹配那样误配「Secriforts2」）。 */
+    private static String normalizePlayerName(String s) {
+        return ChatUtils.stripColor(s)
+                .replaceAll("\\[[^]]*\\]", "")
+                .replaceAll("[^A-Za-z0-9_]", "");
+    }
+
     private static AbstractClientPlayer findPlayerByName(String name) {
         var world = Minecraft.getInstance().level;
         if (world == null) return null;
-        String plain = ChatUtils.stripColor(name);
+        String plain = normalizePlayerName(name);
         for (var p : world.players()) {
-            if (ChatUtils.stripColor(p.getName().getString()).equalsIgnoreCase(plain)) return p;
+            if (normalizePlayerName(p.getName().getString()).equalsIgnoreCase(plain)) return p;
+            // Tab 显示名兜底：与 getName() 一致时也能命中（显示名可能含 [等级] 与图标）
+            var display = p.getDisplayName();
+            if (display != null
+                    && normalizePlayerName(ChatUtils.toLegacyString(display)).equalsIgnoreCase(plain)) return p;
         }
         return null;
     }
 
-    /** 按纯名字从 tab 找玩家，返回带颜色的名字（去 rank、去 emoji），找不到返回 null。 */
+    /** 按纯名字从 tab 找玩家，返回带颜色的名字（去 rank/等级、去 emoji），找不到返回 null。 */
     private static String findColoredName(String plainName) {
         var world = Minecraft.getInstance().level;
         if (world == null) return null;
+        String target = normalizePlayerName(plainName);
         for (var p : world.players()) {
-            if (!p.getName().getString().contains(plainName)) continue;
-            String colored = ChatUtils.removeEmoji(ChatUtils.toLegacyString(p.getDisplayName()))
-                    .replaceAll("^((?:§.)*)\\[[^]]*]\\s*", "$1").trim();
+            var display = p.getDisplayName();
+            boolean nameHit = normalizePlayerName(p.getName().getString()).equalsIgnoreCase(target);
+            boolean displayHit = display != null
+                    && normalizePlayerName(ChatUtils.toLegacyString(display)).equalsIgnoreCase(target);
+            if (!nameHit && !displayHit) continue;
+            String raw = display != null ? ChatUtils.toLegacyString(display) : p.getName().getString();
+            String colored = ChatUtils.removeEmoji(raw)
+                    .replaceAll("^((?:§.)*)\\[[^]]*]\\s*", "$1") // 去 [等级]/[rank] 前缀
+                    .replaceAll("\\s+.*$", "")                    // 名字不含空格：截掉图标后缀（含其色码与 Ӄ 等字形）
+                    .trim();
             return colored.isEmpty() ? null : colored;
         }
         return null;

@@ -60,8 +60,10 @@ public final class ChestCounter {
         save();
     }
 
-    /** 一场 Kuudra 结束（无论输赢）+1，并处理里程碑提醒（与 IQ 一致：打完时发队伍消息）。 */
-    private static void onRunEnd() {
+    /** 一场 Kuudra 结束（无论输赢）+1，并处理里程碑提醒（打完时发队伍消息）。 */
+    public static void onRunEnd() {
+        if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
+        if (!ModConfigManager.get().kuudra.chestCounterCfg.enabled) return;
         if (count >= MAX_CHESTS) return;
         count++;
         save();
@@ -114,20 +116,6 @@ public final class ChestCounter {
         ClientReceiveMessageEvents.GAME.register((msg, overlay) -> {
             if (overlay) return;
             updateKey();
-        });
-
-        // Run end (win or lose) → +1, 与 AutoRequeue/DungeonModule 的结束判定一致
-        ClientReceiveMessageEvents.GAME.register((msg, overlay) -> {
-            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
-            if (!ModConfigManager.get().kuudra.chestCounterCfg.enabled) return;
-
-            String text = ChatUtils.stripColor(msg.getString());
-            boolean win = text.equals("                               KUUDRA DOWN!") || KuudraChatLines.isGoodJob(text);
-            boolean fail = text.equals("                                   DEFEAT")
-                    || text.equals("                             > EXTRA STATS <");
-            if (win || fail) {
-                onRunEnd();
-            }
         });
 
         // Chest open → -1: two-step detection

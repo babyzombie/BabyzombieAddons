@@ -16,7 +16,7 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 public final class KuudraDirectionHUD {
     private KuudraDirectionHUD() {}
 
-    // Absolute direction by Kuudra position (IQ thresholds)
+    // Absolute direction by Kuudra position
     private record Dir(String name, String color) {}
     private static final Dir UNKNOWN = new Dir("?", "§7");
 

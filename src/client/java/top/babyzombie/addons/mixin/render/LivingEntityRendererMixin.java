@@ -1,5 +1,6 @@
 package top.babyzombie.addons.mixin.render;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,6 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+
+import java.util.Objects;
 
 /**
  * 1. 在 SkyBlock 中强制显示因药水效果而隐身的玩家名称标签。
@@ -28,6 +31,7 @@ public class LivingEntityRendererMixin {
     private boolean forceVisibleForInvisiblePlayers(boolean isVisibleToPlayer, LivingEntity entity) {
         if (!isVisibleToPlayer
                 && entity instanceof Player
+                && !Objects.equals(entity,Minecraft.getInstance().player)
                 && !entity.getName().getString().contains(" ")
                 && entity.hasEffect(MobEffects.INVISIBILITY)
                 && HypixelLocationTracker.getInstance().isInSkyblock()
@@ -37,7 +41,7 @@ public class LivingEntityRendererMixin {
         return isVisibleToPlayer;
     }
 
-    /** 隐藏 Kuudra 小怪的等级名称标签（与 IQ 一致：名字含 [Lv 的盔甲架）。 */
+    /** 隐藏 Kuudra 小怪的等级名称标签（名字含 [Lv 的盔甲架）。 */
     @Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;D)Z",
             at = @At("HEAD"), cancellable = true)
     private void hideKuudraMobNametags(LivingEntity entity, double distance, CallbackInfoReturnable<Boolean> cir) {

@@ -23,9 +23,9 @@ public final class NoPreAlert {
     private NoPreAlert() {}
 
     private static final int SCAN_INTERVAL_TICKS = 4;
-    private static final long EARLY_DELAY_MS = 10_000; // 与 IQ 一致：P1 开始后 10 秒才考虑提示
-    private static final long FALLBACK_CONFIRM_DELAY_MS = 350; // 与 IQ 一致：延迟到达后再确认 350ms
-    private static final int MIN_EMPTY_SCANS_FOR_FALLBACK = 3; // 与 IQ 一致：连续 3 次空扫描
+    private static final long EARLY_DELAY_MS = 10_000; // P1 开始后 10 秒才考虑提示
+    private static final long FALLBACK_CONFIRM_DELAY_MS = 350; // 延迟到达后再确认 350ms
+    private static final int MIN_EMPTY_SCANS_FOR_FALLBACK = 3; // 连续 3 次空扫描
 
     // Detect "No Triangle!", "No X!", etc. in party chat (from IQ or our own)
     private static final Pattern NO_PRE_INCOMING = Pattern.compile(
@@ -143,14 +143,14 @@ public final class NoPreAlert {
                 fallbackPending = false;
                 // Try to detect pre spot once we see supplies
                 if (detectedPre == null) detectPreSpot();
-                // 检测到箱子后只检查一次（对齐 IQ 的 carrier check），避免反复误报
+                // 检测到箱子后只检查一次，避免反复误报
                 if (elapsed >= adaptiveDelay && detectedPre != null && !carrierCheckAttempted) {
                     carrierCheckAttempted = true;
                     checkAndAlert();
                 }
             } else {
                 emptyScans++;
-                // IQ 机制：延迟到达后标记 pending，再确认 350ms 且连续 3 次空扫描才发，避免误报
+                // 延迟到达后标记 pending，再确认 350ms 且连续 3 次空扫描才发，避免误报
                 if (elapsed >= adaptiveDelay) {
                     if (!fallbackPending) {
                         fallbackPending = true;
@@ -194,7 +194,7 @@ public final class NoPreAlert {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        // 对齐 IQ：用 crate 位置判断 pre spot 18 格内有没有补给
+        // 用 crate 位置判断 pre spot 18 格内有没有补给
         // （之前用巨人实体 AABB 检测，y 范围写错导致永远误报）
         List<Giant> carriers = player.level().getEntitiesOfClass(Giant.class,
                 new AABB(player.blockPosition()).inflate(64), g -> g.getY() < 67);
@@ -212,14 +212,14 @@ public final class NoPreAlert {
         }
     }
 
-    /** 自己点位没箱子时，按 pre spot 引导到固定目标（对齐 IQ：Triangle→Shop、X→X Cannon、Slash→Square），
+    /** 自己点位没箱子时，按 pre spot 引导到固定目标（Triangle→Shop、X→X Cannon、Slash→Square），
      *  不引导到最近的补给——最近的点位大概率有人在拿。 */
     private static void sendSecondSupplyHint() {
         if (detectedPre == null) return;
         var player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        // 目标区域判断（IQ 的区域阈值）；Equals 也引导到 Shop
+        // 目标区域判断
         boolean wantShop = "Triangle".equals(detectedPre.name) || "Equals".equals(detectedPre.name);
         boolean wantXCannon = "X".equals(detectedPre.name);
         boolean wantSquare = "Slash".equals(detectedPre.name);

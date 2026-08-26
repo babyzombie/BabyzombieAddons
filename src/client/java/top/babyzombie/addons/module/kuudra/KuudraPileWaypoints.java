@@ -57,7 +57,7 @@ public final class KuudraPileWaypoints {
             if (client.player == null || client.player.tickCount % 20 != 0) return;
             inSuppliesPhase = "Rescue supplies".equals(getScoreboardPhase(client));
 
-            // 检测已放置补给的 pile（与 IQ 一致：放置完成后出现 "SUPPLIES RECEIVED" 盔甲架）
+            // 检测已放置补给的 pile（放置完成后出现 "SUPPLIES RECEIVED" 盔甲架）
             completedPiles.clear();
             for (var s : client.player.level().getEntitiesOfClass(ArmorStand.class,
                     new AABB(client.player.blockPosition()).inflate(64),
