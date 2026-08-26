@@ -150,7 +150,7 @@ public final class KuudraP4Features {
 
                 // Distance
                 if (cfg.kuudraDistance) {
-                    kuudraDist = (float) kuudra.distanceTo(client.player);
+                    kuudraDist = kuudra.distanceTo(client.player);
                 }
             } else {
                 // Kuudra 死亡/消失 — 清理 Rend 临时状态

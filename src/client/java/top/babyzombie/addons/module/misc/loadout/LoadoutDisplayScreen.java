@@ -381,7 +381,7 @@ public class LoadoutDisplayScreen extends Screen {
             }
 
             if (lk) g.centeredText(this.font, "§c§l🔒", cx + cell / 2, cy + 2, 0xFFFF5555);
-            else if (em) g.centeredText(this.font, "§7空", cx + cell / 2, cy + 2, 0xFF888888);
+            else if (em) g.centeredText(this.font, Component.translatable("babyzombieaddons.loadout.empty").getString(), cx + cell / 2, cy + 2, 0xFF888888);
 
             String nm = ChatUtils.stripColor(ps.getHoverName().getString());
             float nameScale = 1.3f;

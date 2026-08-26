@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 import top.babyzombie.addons.mixin.render.ClientLevelAccessor;
 
 import java.util.Map;
@@ -88,7 +89,7 @@ public final class GlowController {
      * 选择性发光：只高亮指定 EquipmentSlot 对应的渲染部位。
      * slots 传 null 或空数组时等价于全实体发光。
      */
-    public static void setGlowSlots(Entity entity, boolean glow, int color, EquipmentSlot[] slots, boolean depthTest) {
+    public static void setGlowSlots(Entity entity, boolean glow, int color, @Nullable EquipmentSlot[] slots, boolean depthTest) {
         UUID uuid = entity.getUUID();
         if (glow && slots != null && slots.length > 0) {
             SELECTIVE_SLOT_DATA.put(uuid, java.util.EnumSet.copyOf(java.util.Arrays.asList(slots)));

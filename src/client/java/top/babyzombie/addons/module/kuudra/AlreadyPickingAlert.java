@@ -21,7 +21,7 @@ public final class AlreadyPickingAlert {
             if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
 
             String text = ChatUtils.stripColor(message.getString());
-            if (text.contains("Someone else is currently trying to pick up these supplies")) {
+            if (text.startsWith("Someone else is currently trying to pick up these supplies")) {
                 var player = Minecraft.getInstance().player;
                 if (player != null) {
                     ChatUtils.showTitle("", "§c§lALREADY PICKING", 0, 30, 10);

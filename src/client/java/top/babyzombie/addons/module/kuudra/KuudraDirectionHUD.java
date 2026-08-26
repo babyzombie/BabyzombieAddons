@@ -1,5 +1,6 @@
 package top.babyzombie.addons.module.kuudra;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -8,6 +9,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 /**
@@ -21,6 +23,7 @@ public final class KuudraDirectionHUD {
     private static final Dir UNKNOWN = new Dir("?", "§7");
 
     private static Dir lastDir = UNKNOWN;
+    private static boolean p4 = false;
 
     public static void init() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -28,6 +31,7 @@ public final class KuudraDirectionHUD {
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (!KuudraLocationTracker.p4 && !"p4".equals(KuudraLocationTracker.area)) {
                 lastDir = UNKNOWN;
+                p4 = false;
                 return;
             }
             if (client.player == null) return;
@@ -48,8 +52,12 @@ public final class KuudraDirectionHUD {
                 return;
             }
 
-            Dir abs = getAbsoluteDir(e);
-            lastDir = abs;
+            lastDir = getAbsoluteDir(e);
+            
+            if (!p4 && lastDir != UNKNOWN && KuudraStunTimer.p4End - ServerTick.getTime() > 12000) {
+                KuudraStunTimer.p4End = ServerTick.getTime() + 5500;
+                p4 = true;
+            }
         });
 
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
@@ -71,6 +79,10 @@ public final class KuudraDirectionHUD {
                             : lastDir.color + "§l" + lastDir.name; // 地面时只显示绝对方向
                     HudManager.drawScaled(context, font, text, x, y, s);
                 });
+
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> {
+            p4 = false; lastDir = UNKNOWN;
+        });
     }
 
     private static Dir getAbsoluteDir(LivingEntity e) {

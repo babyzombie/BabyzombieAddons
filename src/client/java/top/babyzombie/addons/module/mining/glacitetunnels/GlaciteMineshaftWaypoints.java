@@ -326,7 +326,7 @@ public final class GlaciteMineshaftWaypoints {
                             visitedCorpses.add(pos);
                         }
                         if (visitedCorpses.contains(pos)) {
-                            if (mode == MineshaftCorpseRenderMode.GLOW) GlowController.setGlow(stand, false);
+                            if (mode == MineshaftCorpseRenderMode.GLOW) GlowController.setGlowSlots(stand, false, Color.WHITE.getRGB(), null, false);
                             continue;
                         };
                         String name = corpse.type.displayName;
@@ -346,7 +346,7 @@ public final class GlaciteMineshaftWaypoints {
                                             x - 0.4, y - 2.0, z - 0.4,
                                             x + 0.4, y + 0.2, z + 0.4,
                                             r, g, b, 0.6f, false, 4.0f);
-                            case GLOW -> GlowController.setGlow(stand, true, color.getRGB());
+                            case GLOW -> GlowController.setGlowSlots(stand, true, color.getRGB(), false, EquipmentSlot.HEAD, EquipmentSlot.BODY, EquipmentSlot.LEGS, EquipmentSlot.BODY);
                         }
                         WorldTextRenderer.renderString(ctx, name, x, y, z, 0xFFFFFF55, 0.05f, true);
                     }
