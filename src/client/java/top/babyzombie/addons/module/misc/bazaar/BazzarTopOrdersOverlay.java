@@ -7,8 +7,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
@@ -42,6 +45,9 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
     private static List<ClickableText> actionTexts = List.of();
     private static long lastRebuildMs = 0L;
     private static String lastParsedItemName = "";
+    /** 订单页悬浮列表缓存：productId + 快照时间，命中时不逐帧重建 */
+    private static String lastOrdersHoverKey = "";
+    private static long lastOrdersHoverTs = -1L;
 
     private BazzarTopOrdersOverlay() {}
 
@@ -52,9 +58,12 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         ClientTickEvents.END_CLIENT_TICK.register(c -> {
             var cfg = getCfg();
             if (cfg == null || !cfg.overlayEnabled) return;
-            Screen s = Minecraft.getInstance().gui.screen();
-            // Bazaar 界面（含列表页）就刷新数据，操作栏常显；订单数据仅详情页解析
-            if (!BazzarInventoryMatcher.isBazzarScreen(s)) return;
+Screen s = Minecraft.getInstance().gui.screen();
+            // Bazaar 界面（含列表页）就刷新数据，操作栏常显；订单数据仅详情页解析。
+            // 订单页（单独开关）同样刷新数据（悬浮订单信息依赖 API）
+            boolean bazaar = BazzarInventoryMatcher.isBazzarScreen(s);
+            boolean orders = cfg.ordersPageEnabled && isOrdersPage(s);
+            if (!bazaar && !orders) return;
             // API 模式下刷新数据（60s 节流由 tracker 保证）
             if (cfg.apiEnabled) BazaarItemInfo.ensureFresh();
             long now = System.currentTimeMillis();
@@ -91,7 +100,9 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         var cfg = getCfg();
         if (cfg == null || !cfg.overlayEnabled) return false;
         if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
-        return BazzarInventoryMatcher.isBazzarScreen(screen);
+        if (BazzarInventoryMatcher.isBazzarScreen(screen)) return true;
+        // 订单页：单独开关控制（悬浮订单信息 + 操作栏）
+        return cfg.ordersPageEnabled && isOrdersPage(screen);
     }
 
     @Override public void onInventoryUpdated() { rebuildTexts(); }
@@ -100,6 +111,16 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
     public void render(GuiGraphicsExtractor g, int mx, int my, float delta) {
         if (!(Minecraft.getInstance().gui.screen() instanceof AbstractContainerScreen<?> cs)) return;
         Font font = Minecraft.getInstance().font;
+
+        if (isOrdersPage(cs)) {
+            // 订单页：悬浮物品时用 API 数据填充两个订单 HUD（同详情页）；未悬浮保持空
+            refreshOrdersPageLists(cs, mx, my);
+            renderGroup(g, font, HUD_BUY, buyTexts, mx, my);
+            renderGroup(g, font, HUD_SELL, sellTexts, mx, my);
+            renderGroup(g, font, HUD_ACTION, actionTexts, mx, my);
+            return;
+        }
+
         if (buyTexts.isEmpty() && sellTexts.isEmpty() && actionTexts.isEmpty()) rebuildTexts();
 
         // Buy Order 组
@@ -152,13 +173,17 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         // ===== 数据来源：API 优先（开关开启且数据就绪），否则 GUI 解析 =====
         List<TopOrderData.TopOrderEntry> buys = List.of();
         List<TopOrderData.TopOrderEntry> sells = List.of();
-        // 真实物品名：优先中间槽 ItemStack 显示名（游戏内权威名），数据源无关
-        ItemStack center = BazzarInventoryMatcher.getCenterItem(cs);
         String itemName = "";
-        if (center != null) {
-            // 显示用名保留原色（如 §d§lCrop Fever V）
-            String n = ChatUtils.toLegacyString(center.getDisplayName());
-            if (!n.trim().isEmpty()) itemName = n.trim();
+        // 订单页的中间槽是普通订单物品，不是当前查看物品：不读中间槽，避免污染 flip 物品名
+        ItemStack center = null;
+        if (!isOrdersPage(cs)) {
+            // 真实物品名：优先中间槽 ItemStack 显示名（游戏内权威名），数据源无关
+            center = BazzarInventoryMatcher.getCenterItem(cs);
+            if (center != null) {
+                // 显示用名保留原色（如 §d§lCrop Fever V）
+                String n = ChatUtils.toLegacyString(center.getDisplayName());
+                if (!n.trim().isEmpty()) itemName = n.trim();
+            }
         }
         // 订单数据只在详情页（两个订单按钮都在）解析；其他 Bazaar 页面仅显示操作栏
         if (BazzarInventoryMatcher.isItemDetailPage(cs)) {
@@ -182,13 +207,11 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
             }
         }
         if (!itemName.isEmpty()) {
-            // flip 的 /bz 命令需要纯文本名，不能带颜色码
-            lastParsedItemName = ChatUtils.stripColor(itemName);
+            // flip 的 /bz 命令需要纯文本名：去色码 + 剥 "[SELL/BUY xxx]" 包装与整名括号（终极附魔书）
+            lastParsedItemName = cleanCommandName(itemName);
         }
         final String plainName = ChatUtils.stripColor(itemName);
 
-        String copyTipKey = "config.babyzombieaddons.overlay.bazzar.tooltip.copyPrice";
-        String copyNameTipKey = "config.babyzombieaddons.overlay.bazzar.tooltip.copyName";
         String onText = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.flipOn");
         String offText = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.flipOff");
         String title = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.title");
@@ -202,55 +225,27 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         Font font = Minecraft.getInstance().font;
         int lineH = font.lineHeight + 2;
 
-        // ===== Buy Texts =====
-        List<ClickableText> bt = new ArrayList<>();
-        int curY = 0;
-        if (cfg.showBuyOrders && !buys.isEmpty()) {
-            bt.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.buyOrders", itemName), 0xFFFFFFFF,
-                    List.of(copyNameTipKey), () -> copyNameAndToast(plainName)));
-            curY += lineH;
-            int idx = 1;
-            for (var e : buys) {
-                String prefix = "§7" + idx + ". ";
-                String price = "§6" + e.priceRaw();
-                String rest = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.buyLineRest", e.amount(), e.orderCount());
-                int pw = font.width(ChatUtils.stripColor(prefix));
-                bt.add(new ClickableText(0, curY, prefix + price + rest, 0xFFFFFFFF, List.of(), null));
-                final String priceNumOnly = e.priceNumberOnly();
-                bt.add(new ClickableText(pw, curY, price, 0x00FFFFFF, List.of(copyTipKey),
-                        () -> copyPriceAndToast(priceNumOnly)));
-                idx++;
-                curY += lineH;
-            }
+        // ===== Buy / Sell 组（详情页 + 订单页悬浮共用同一渲染） =====
+        if (cfg.showBuyOrders) {
+            buyTexts = buildOrderLines(buys,
+                    "config.babyzombieaddons.overlay.bazzar.text.buyOrders",
+                    "config.babyzombieaddons.overlay.bazzar.text.buyLineRest",
+                    itemName, plainName, font);
+        } else {
+            buyTexts = List.of();
         }
-        buyTexts = bt;
-
-        // ===== Sell Texts =====
-        List<ClickableText> st = new ArrayList<>();
-        curY = 0;
-        if (cfg.showSellOffers && !sells.isEmpty()) {
-            st.add(new ClickableText(0, curY, ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.sellOffers", itemName), 0xFFFFFFFF,
-                    List.of(copyNameTipKey), () -> copyNameAndToast(plainName)));
-            curY += lineH;
-            int idx = 1;
-            for (var e : sells) {
-                String prefix = "§7" + idx + ". ";
-                String price = "§6" + e.priceRaw();
-                String rest = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.sellLineRest", e.amount(), e.orderCount());
-                int pw = font.width(ChatUtils.stripColor(prefix));
-                st.add(new ClickableText(0, curY, prefix + price + rest, 0xFFFFFFFF, List.of(), null));
-                final String priceNumOnly = e.priceNumberOnly();
-                st.add(new ClickableText(pw, curY, price, 0x00FFFFFF, List.of(copyTipKey),
-                        () -> copyPriceAndToast(priceNumOnly)));
-                idx++;
-                curY += lineH;
-            }
+        if (cfg.showSellOffers) {
+            sellTexts = buildOrderLines(sells,
+                    "config.babyzombieaddons.overlay.bazzar.text.sellOffers",
+                    "config.babyzombieaddons.overlay.bazzar.text.sellLineRest",
+                    itemName, plainName, font);
+        } else {
+            sellTexts = List.of();
         }
-        sellTexts = st;
 
         // ===== Action Texts =====
         List<ClickableText> at = new ArrayList<>();
-        curY = 0;
+        int curY = 0;
         if (cfg.showActionBar) {
             // 操作栏自身开关（第一行，关闭后从设置页恢复）
             String showActionBarLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.showActionBar")
@@ -326,13 +321,18 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         return null;
     }
 
+    /** 价格格式化：千分位 + 一位小数（与 GUI 解析/HUD 行格式一致） */
+    private static String formatPrice(double v) {
+        return String.format(Locale.ROOT, "%,.1f", v);
+    }
+
     /** API 聚合桶 → 现有 TopOrderEntry 行格式（价格千分位一位小数，与 GUI 解析一致） */
     private static List<TopOrderData.TopOrderEntry> toEntries(
             List<BazaarItemInfo.SummaryTier> tiers, TopOrderData.OrderType type, int max) {
         List<TopOrderData.TopOrderEntry> out = new ArrayList<>();
         for (BazaarItemInfo.SummaryTier t : tiers) {
             if (out.size() >= max) break;
-            String price = String.format(Locale.ROOT, "%,.1f", t.pricePerUnit());
+            String price = formatPrice(t.pricePerUnit());
             out.add(new TopOrderData.TopOrderEntry(price + " coins", price, (int) t.amount(), t.orders(), type));
         }
         return out;
@@ -342,6 +342,182 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
     private static List<TopOrderData.TopOrderEntry> limit(
             List<TopOrderData.TopOrderEntry> list, int max) {
         return list.size() > max ? list.subList(0, max) : list;
+    }
+
+    // ========== 订单页：悬浮订单信息（仅 API） ==========
+
+    /** 是否为 Bazaar 订单页（容器标题精确匹配；订单列表页无法从 GUI 解析订单数据） */
+    private static boolean isOrdersPage(Screen screen) {
+        if (!(screen instanceof AbstractContainerScreen<?>)) return false;
+        String title = ChatUtils.stripColor(screen.getTitle().getString());
+        if (title == null) return false;
+        String t = title.trim();
+        return "Bazaar Orders".equals(t) || "Co-op Bazaar Orders".equals(t);
+    }
+
+    /**
+     * 定位鼠标下的物品槽（仅容器槽，跳过玩家背包；坐标算法与原版 hover 判定一致）。
+     * Bazaar 订单页是原版箱子页（ContainerScreen, 176 宽, 114 + 行数*18 高，居中）：
+     * leftPos/topPos 无法跨包读取，按同一公式计算。
+     */
+    private static Slot findHoveredSlot(AbstractContainerScreen<?> cs, int mx, int my) {
+        if (!(cs instanceof ContainerScreen container)) return null;
+        ChestMenu menu = container.getMenu();
+        int rows = menu.getRowCount();
+        var rect = container.getRectangle();
+        int left = (rect.width() - 176) / 2;
+        int top = (rect.height() - (114 + rows * 18)) / 2;
+        var player = Minecraft.getInstance().player;
+        for (Slot slot : menu.slots) {
+            if (slot == null || !slot.isActive() || !slot.hasItem()) continue;
+            if (slot.container == null) continue;
+            if (player != null && slot.container == player.getInventory()) continue;
+            if (mx >= left + slot.x && mx < left + slot.x + 16
+                    && my >= top + slot.y && my < top + slot.y + 16) {
+                return slot;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 订单页物品 → API 数据。
+     * 优先 NBT skyblock id（普通物品，附魔书含 enchantments 标签时也走 NBT 路径）；
+     * 拿不到 id（订单页附魔书、属性碎片等）剥掉 "[SELL xxx]" / "[BUY xxx]" 包装按显示名识别。
+     */
+    private static BazaarItemInfo.Info fetchOrdersItemInfo(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return null;
+        BazaarItemInfo.Info info = BazaarItemInfo.get(stack);
+        if (info != null) return info;
+        String name = unwrapOrdersDisplayName(stack.getDisplayName());
+        if (name == null || name.isEmpty()) return null;
+        return BazaarItemInfo.get(name);
+    }
+
+    /** 订单页显示名 "[§6§lSELL §aVampiric Vitality V§b]" → "Vampiric Vitality V"；无包装原样返回 */
+    private static String unwrapOrdersDisplayName(Component displayName) {
+        String stripped = ChatUtils.stripColor(ChatUtils.toLegacyString(displayName));
+        if (stripped == null) return null;
+        return unwrapBracketWrapper(stripped);
+    }
+
+    /** "[SELL xxx]" / "[BUY xxx]"（SELL/BUY 忽略大小写）→ "xxx"；无包装原样返回（已 trim） */
+    private static String unwrapBracketWrapper(String text) {
+        if (text == null) return null;
+        String t = text.trim();
+        int open = t.indexOf('[');
+        int close = t.lastIndexOf(']');
+        if (open >= 0 && close > open) {
+            String core = t.substring(open + 1, close).trim();
+            int sp = core.indexOf(' ');
+            if (sp > 0) {
+                String tag = core.substring(0, sp).toUpperCase(Locale.ROOT);
+                if ("SELL".equals(tag) || "BUY".equals(tag)) {
+                    String inner = core.substring(sp + 1).trim();
+                    if (!inner.isEmpty()) return inner;
+                }
+            }
+        }
+        return t;
+    }
+
+    /**
+     * 命令用干净物品名：剥 "[SELL/BUY xxx]" 包装，再剥整名成对括号
+     * （终极附魔书显示名 "[Crop Fever V]"）。无括号时原样返回纯文本名。
+     */
+    private static String cleanCommandName(String itemName) {
+        String plain = ChatUtils.stripColor(itemName);
+        if (plain == null) return "";
+        String s = unwrapBracketWrapper(plain);
+        if (s.length() >= 2 && s.charAt(0) == '[' && s.charAt(s.length() - 1) == ']') {
+            String inner = s.substring(1, s.length() - 1).trim();
+            if (!inner.isEmpty()) s = inner;
+        }
+        return s;
+    }
+
+    /**
+     * 订单页悬浮：指到容器物品时用 API 数据填充 Buy/Sell 两个订单 HUD 列表
+     * （与详情页同一渲染/同一 HUD 位置）。开关未开、API 未开、数据未就绪或
+     * 未悬浮时列表保持为空；productId+快照时间命中时跳过重建。
+     */
+    private static void refreshOrdersPageLists(AbstractContainerScreen<?> cs, int mx, int my) {
+        var cfg = getCfg();
+        if (cfg == null || !cfg.ordersPageEnabled || !cfg.apiEnabled) {
+            buyTexts = List.of(); sellTexts = List.of(); lastOrdersHoverKey = "";
+            return;
+        }
+        boolean showBuy = cfg.showBuyOrders;
+        boolean showSell = cfg.showSellOffers;
+        if (!showBuy && !showSell) {
+            buyTexts = List.of(); sellTexts = List.of(); lastOrdersHoverKey = "";
+            return;
+        }
+        Slot slot = findHoveredSlot(cs, mx, my);
+        ItemStack stack = (slot != null) ? slot.getItem() : null;
+        if (stack == null || stack.isEmpty()) {
+            buyTexts = List.of(); sellTexts = List.of(); lastOrdersHoverKey = "";
+            return;
+        }
+        BazaarItemInfo.Info info = fetchOrdersItemInfo(stack);
+        if (info == null) {
+            // 数据未就绪/未识别：保持原版提示，等数据到位后自动出现
+            buyTexts = List.of(); sellTexts = List.of(); lastOrdersHoverKey = "";
+            return;
+        }
+        String key = info.productId();
+        long ts = BazaarItemInfo.getSnapshotTs();
+        if (key.equals(lastOrdersHoverKey) && ts == lastOrdersHoverTs
+                && (!buyTexts.isEmpty() || !sellTexts.isEmpty())) {
+            return; // 已是该物品的当前快照数据
+        }
+        // 标题行用剥掉 "[SELL x]" 包装的显示名；拿不到就退回 API 产品名
+        String headerName = unwrapOrdersDisplayName(stack.getDisplayName());
+        String plain = (headerName == null || headerName.isEmpty()) ? info.displayName() : headerName;
+        Font font = Minecraft.getInstance().font;
+        int max = Math.max(1, cfg.maxLines);
+        buyTexts = showBuy ? buildOrderLines(toEntries(info.sellSummary(), TopOrderData.OrderType.BUY, max),
+                "config.babyzombieaddons.overlay.bazzar.text.buyOrders",
+                "config.babyzombieaddons.overlay.bazzar.text.buyLineRest",
+                plain, plain, font) : List.of();
+        sellTexts = showSell ? buildOrderLines(toEntries(info.buySummary(), TopOrderData.OrderType.SELL, max),
+                "config.babyzombieaddons.overlay.bazzar.text.sellOffers",
+                "config.babyzombieaddons.overlay.bazzar.text.sellLineRest",
+                plain, plain, font) : List.of();
+        lastOrdersHoverKey = key;
+        lastOrdersHoverTs = ts;
+    }
+
+    /**
+     * 订单 HUD 行列表：标题行（可点击复制物品名）+ 价格列（可点击复制纯数字）。
+     * 详情页与订单页悬浮共用。
+     */
+    private static List<ClickableText> buildOrderLines(List<TopOrderData.TopOrderEntry> entries,
+                                                       String headerKey, String restKey,
+                                                       String itemName, String plainName, Font font) {
+        List<ClickableText> out = new ArrayList<>();
+        if (entries.isEmpty()) return out;
+        int lineH = font.lineHeight + 2;
+        int curY = 0;
+        out.add(new ClickableText(0, curY, ChatUtils.translate(headerKey, itemName), 0xFFFFFFFF,
+                List.of("config.babyzombieaddons.overlay.bazzar.tooltip.copyName"),
+                () -> copyNameAndToast(plainName)));
+        curY += lineH;
+        int idx = 1;
+        for (var e : entries) {
+            String prefix = "§7" + idx + ". ";
+            String price = "§6" + e.priceRaw();
+            String rest = ChatUtils.translate(restKey, e.amount(), e.orderCount());
+            int pw = font.width(ChatUtils.stripColor(prefix));
+            out.add(new ClickableText(0, curY, prefix + price + rest, 0xFFFFFFFF, List.of(), null));
+            final String priceNumOnly = e.priceNumberOnly();
+            out.add(new ClickableText(pw, curY, price, 0x00FFFFFF,
+                    List.of("config.babyzombieaddons.overlay.bazzar.tooltip.copyPrice"),
+                    () -> copyPriceAndToast(priceNumOnly)));
+            idx++;
+            curY += lineH;
+        }
+        return out;
     }
 
     /** 播放 MC 自带按钮点击音效（UI_BUTTON_CLICK） */

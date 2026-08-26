@@ -338,6 +338,9 @@ public class SkyblockConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarShowSellOffers", desc = "config.babyzombieaddons.option.bazzarShowSellOffers.desc") @ConfigEditorBoolean @SearchTag("bazaar")
         public boolean showSellOffers = true;
 
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarOrdersPageEnabled", desc = "config.babyzombieaddons.option.bazzarOrdersPageEnabled.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("bazzar") @SearchTag("orders") @SearchTag("订单页")
+        public boolean ordersPageEnabled = false;
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarMaxLines", desc = "config.babyzombieaddons.option.bazzarMaxLines.desc") @ConfigEditorSlider(minValue = 1, maxValue = 30, minStep = 1) @SearchTag("bazaar") @SearchTag("行数") @SearchTag("lines")
         public int maxLines = 7;
     }

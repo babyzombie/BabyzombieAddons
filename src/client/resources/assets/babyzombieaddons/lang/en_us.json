@@ -1862,6 +1862,8 @@
   "config.babyzombieaddons.option.bazzarShowBuyOrders.desc": "Show the buy order list on the Bazaar item page. Quick toggle available in the action bar.",
   "config.babyzombieaddons.option.bazzarShowSellOffers": "Show sell offers",
   "config.babyzombieaddons.option.bazzarShowSellOffers.desc": "Show the sell offer list on the Bazaar item page. Quick toggle available in the action bar.",
+  "config.babyzombieaddons.option.bazzarOrdersPageEnabled": "Orders page hover info",
+  "config.babyzombieaddons.option.bazzarOrdersPageEnabled.desc": "Enable on Bazaar orders pages (Bazaar Orders / Co-op Bazaar Orders): hovering an item fills the two order HUD lists with that item's Bazaar order data (requires API mode), and shows the BZ HUD action bar.",
   "config.babyzombieaddons.overlay.bazzar.text.showBuy": "> Show Buy Orders: ",
   "config.babyzombieaddons.overlay.bazzar.text.showSell": "> Show Sell Offers: ",
   "config.babyzombieaddons.overlay.bazzar.text.lineCount": "> Lines shown: %s",

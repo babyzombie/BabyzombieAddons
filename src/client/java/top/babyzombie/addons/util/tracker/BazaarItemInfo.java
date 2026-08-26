@@ -110,6 +110,7 @@ public final class BazaarItemInfo {
     // "Mist Shard" → "SHARD_MIST"（规则）；特例（18 个）走 NEU displayname 反查
     // "[Crop Fever V]"（加粗）→ "ULTIMATE_CROP_FEVER;5"；"Scavenger IV" → "SCAVENGER;4"
     // "Stock of Stonks" → "STOCK_OF_STONKS"
+    // "Vampiric Vitality V"（游戏名 ≠ 内部名 MANA_VAMPIRE;5）→ 书页 lore 反查表兜底
     @Nullable
     private static String tryNameToId(String raw) {
         boolean bold = raw.contains("§l");
@@ -156,7 +157,12 @@ public final class BazaarItemInfo {
                 if (BazaarStockMapper.getInstance().lookupProductId(direct) != null) return direct;
                 // ultimate 系显示名缺前缀（如 "[Crop Fever V]" → ULTIMATE_CROP_FEVER;5）：
                 // 核心名结尾匹配兜底，唯一命中才用
-                return BazaarStockMapper.getInstance().lookupEnchantByCore(core, lvl);
+                String endMatch = BazaarStockMapper.getInstance().lookupEnchantByCore(core, lvl);
+                if (endMatch != null) return endMatch;
+                // 显示名与内部名不一致的附魔（如 "Vampiric Vitality V" → MANA_VAMPIRE;5）：
+                // 书页 lore 反查表兜底（skyblocker 同款方案）
+                String byDisplay = BazaarStockMapper.getInstance().lookupByEnchantDisplay(s);
+                if (byDisplay != null) return byDisplay;
             }
         }
         // 4) 普通物品：大写 + 空格/连字符 → 下划线
