@@ -34,7 +34,33 @@ public final class ClickableText {
         this.onClickLeft = onClickLeft;
     }
 
-    public int getWidth(Font f) { return f.width(ChatUtils.stripColor(displayText)); }
+    public int getWidth(Font f) { return measureWidth(f, displayText); }
+
+    /**
+     * Measure legacy-formatted text width, including bold extra pixels.
+     * This keeps hit-test bounds aligned with what GuiGraphicsExtractor.text actually renders.
+     */
+    public static int measureWidth(Font f, String text) {
+        if (text == null || text.isEmpty()) return 0;
+        int width = 0;
+        boolean bold = false;
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            if (ch == '§' && i + 1 < text.length()) {
+                char code = Character.toLowerCase(text.charAt(++i));
+                // Minecraft color codes reset formatting, including bold.
+                if ((code >= '0' && code <= '9') || (code >= 'a' && code <= 'f') || code == 'x' || code == 'r') {
+                    bold = false;
+                } else if (code == 'l') {
+                    bold = true;
+                }
+                continue;
+            }
+            width += f.width(String.valueOf(ch));
+            if (bold && ch != ' ') width += 1;
+        }
+        return width;
+    }
 
     public int getHeight(Font f) { return f.lineHeight; }
 
@@ -67,7 +93,7 @@ public final class ClickableText {
         int w = Math.max(1, Math.round(getWidth(font) * scale));
         int h = Math.max(1, Math.round(getHeight(font) * scale));
         int ax = screenX + relX; int ay = screenY + relY;
-        return mx >= ax && mx <= ax + w && my >= ay && my <= ay + h;
+        return mx >= ax && mx < ax + w && my >= ay && my < ay + h;
     }
 
     public void click() {

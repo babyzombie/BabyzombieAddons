@@ -1,0 +1,397 @@
+package top.babyzombie.addons.module.misc.bazaar;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemLore;
+import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.event.ContainerClickEvents;
+import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.DataPersistence;
+import top.babyzombie.addons.util.Scheduler;
+import top.babyzombie.addons.util.gui.overlay.ClickableText;
+import top.babyzombie.addons.util.gui.overlay.GuiOverlayManager;
+import top.babyzombie.addons.util.gui.overlay.IGuiOverlay;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
+
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public final class BazaarBuyOrderHistory implements IGuiOverlay {
+
+    public static final String HUD_NAME = "BazzarBuyOrderHistory";
+
+    private static final BazaarBuyOrderHistory INSTANCE = new BazaarBuyOrderHistory();
+    private static final Pattern REFUND_NUM = Pattern.compile(
+            "You will be refunded .*? coins from ([\\d,]+)x missing items\\.?",
+            Pattern.CASE_INSENSITIVE);
+    private static final Pattern REFUND_NUM_LOOSE = Pattern.compile(
+            "([\\d,]+)x missing", Pattern.CASE_INSENSITIVE);
+    private static final Pattern BUY_PREFIX_INTERLEAVED = Pattern.compile(
+            "(?i)(?:§[0-9a-fk-orx])*B(?:§[0-9a-fk-orx])*U(?:§[0-9a-fk-orx])*Y(?:§[0-9a-fk-orx])*\\s+");
+
+    private static final List<HistoryEntry> history = new CopyOnWriteArrayList<>();
+    @Nullable
+    private static String loadedProfileKey;
+    private static String pendingColored = null;
+    private static String pendingPlain = null;
+    private static long pendingTs = 0L;
+
+    private static List<ClickableText> texts = List.of();
+    private static long lastBuildMs = 0L;
+    private static int lastSize = -1;
+    private static int lastMaxLines = -1;
+    private static final int HARD_MAX_ENTRIES = 100;
+
+    private BazaarBuyOrderHistory() {}
+
+    public static void init() {
+        GuiOverlayManager.register(INSTANCE);
+        ContainerClickEvents.BEFORE_MOUSE_CLICK.register(INSTANCE::onSlotClick);
+    }
+
+    // ========== 配置 ==========
+
+    private static top.babyzombie.addons.config.SkyblockConfig.BazzarTopOrders getCfg() {
+        try { return ModConfigManager.get().skyblock.bazzarTopOrders; } catch (Exception e) { return null; }
+    }
+
+    private static boolean enabled() {
+        var c = getCfg();
+        return c != null && c.buyOrderHistoryEnabled;
+    }
+
+    // ========== UUID+档案 持久化（参考 loadout 缓存） ==========
+
+    private record PersistedHistory(List<HistoryEntry> entries) {}
+
+    @Nullable
+    private static String profileKey() {
+        var t = HypixelLocationTracker.getInstance();
+        String uuid = t.getUuid();
+        String profileId = t.getProfileId();
+        if (uuid == null || profileId == null) return null;
+        return uuid + "/" + profileId;
+    }
+
+    /** 从磁盘按 uuid/profileId 加载历史，同档案不重复读 */
+    public static void loadFromDiskIfNeeded() {
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
+        String key = profileKey();
+        if (key == null) return;
+        if (key.equals(loadedProfileKey)) return;
+        loadedProfileKey = key;
+        PersistedHistory data = DataPersistence.load(key, "bazaar_buy_history.json", PersistedHistory.class);
+        history.clear();
+        if (data != null && data.entries != null) {
+            int cap = Math.min(data.entries.size(), HARD_MAX_ENTRIES);
+            for (int i = 0; i < cap; i++) history.add(data.entries.get(i));
+        }
+        rebuildTexts();
+    }
+
+    /** 立即按当前 uuid/profileId 将 history 写入磁盘（按 100 条硬上限裁掉尾部） */
+    private static void saveToDisk() {
+        if (HypixelLocationTracker.getInstance().isInAlpha()) return;
+        String key = profileKey();
+        if (key == null) return;
+        loadedProfileKey = key;
+        while (history.size() > HARD_MAX_ENTRIES) history.remove(history.size() - 1);
+        DataPersistence.save(key, "bazaar_buy_history.json", new PersistedHistory(new ArrayList<>(history)));
+    }
+
+    // ========== IGuiOverlay ==========
+
+    @Override public boolean shouldRender(Screen screen) {
+        if (!enabled()) return false;
+        loadFromDiskIfNeeded();
+        if (history.isEmpty()) return false;
+        return isOrdersOrOptionsScreen(screen);
+    }
+
+    private static boolean isOrdersOrOptionsScreen(Screen screen) {
+        if (screen == null) return false;
+        String title = ChatUtils.stripColor(screen.getTitle().getString());
+        if (title == null) return false;
+        String t = title.trim();
+        return "Bazaar Orders".equals(t) || "Co-op Bazaar Orders".equals(t) || "Order options".equals(t);
+    }
+
+    @Override public void onInventoryUpdated() { rebuildTexts(); }
+
+    @Override
+    public void render(GuiGraphicsExtractor g, int mx, int my, float delta) {
+        var cfg = getCfg();
+        if (cfg == null) return;
+        long now = System.currentTimeMillis();
+        int curSize = history.size();
+        if (curSize != lastSize || lastMaxLines != cfg.buyOrderHistoryMaxLines
+                || now - lastBuildMs > 500L) {
+            lastSize = curSize; lastMaxLines = cfg.buyOrderHistoryMaxLines; lastBuildMs = now;
+            rebuildTexts();
+        }
+        Font font = Minecraft.getInstance().font;
+        int x = HudManager.x(HUD_NAME);
+        int y = HudManager.y(HUD_NAME);
+        float s = HudManager.scale(HUD_NAME);
+        for (ClickableText t : texts) t.render(g, font, x, y, s, mx, my);
+    }
+
+    @Override
+    public boolean mouseClicked(double mx, double my, int button) {
+        if (button != 0) return false;
+        Font font = Minecraft.getInstance().font;
+        int x = HudManager.x(HUD_NAME); int y = HudManager.y(HUD_NAME);
+        float s = HudManager.scale(HUD_NAME);
+        for (ClickableText t : texts) {
+            if (t.hitTest((int)mx, (int)my, x, y, s, font)) {
+                if (t.onClickLeft != null) { t.click(); return true; }
+            }
+        }
+        return false;
+    }
+
+    // ========== GUI 点击监听 ==========
+
+    private boolean onSlotClick(AbstractContainerScreen<?> screen, Slot slot, MouseButtonEvent event) {
+        if (!enabled()) return false;
+        if (event.button() != 0) return false;
+        if (slot == null || !slot.hasItem()) return false;
+        ItemStack stack = slot.getItem();
+
+        String title = ChatUtils.stripColor(screen.getTitle().getString());
+        if (title == null) return false;
+        title = title.trim();
+
+        // ---- 订单页：BUY 物品点击 ----
+        if (isOrdersPageTitle(title)) {
+            // 每次进入订单页，超过 60s 的 pending 自动丢弃（防残留）
+            if (pendingTs > 0 && System.currentTimeMillis() - pendingTs > 60_000L) {
+                pendingColored = null; pendingPlain = null; pendingTs = 0L;
+            }
+            handleOrdersPageBuy(stack);
+            return false;
+        }
+
+        // ---- Order options 二级页：Cancel Order 点击 ----
+        if ("Order options".equals(title)) {
+            handleOrderOptionsCancel(stack);
+            return false;
+        }
+
+        return false;
+    }
+
+    private static boolean isOrdersPageTitle(String t) {
+        return "Bazaar Orders".equals(t) || "Co-op Bazaar Orders".equals(t);
+    }
+
+    private static void handleOrdersPageBuy(ItemStack stack) {
+        String nameRaw = ChatUtils.stripColor(stack.getHoverName().getString());
+        if (nameRaw == null) return;
+        String name = nameRaw.trim();
+        if (!name.toUpperCase(Locale.ROOT).startsWith("BUY ")) return;
+        String plain = name.substring(4).trim();
+        if (plain.isEmpty()) return;
+
+        List<String> lore = getCleanedLore(stack);
+        boolean hasClickHint = false;
+        for (String l : lore) {
+            if ("Click to view options!".equals(l)) { hasClickHint = true; break; }
+        }
+        if (!hasClickHint) return;
+
+        String legacy = ChatUtils.toLegacyString(stack.getDisplayName());
+        String colored = BUY_PREFIX_INTERLEAVED.matcher(legacy == null ? "" : legacy).replaceFirst("");
+        if (colored.isEmpty()) colored = plain; // 兜底
+
+        pendingPlain = plain;
+        pendingColored = colored;
+        pendingTs = System.currentTimeMillis();
+    }
+
+    private static void handleOrderOptionsCancel(ItemStack stack) {
+        String nameRaw = ChatUtils.stripColor(stack.getHoverName().getString());
+        if (nameRaw == null) return;
+        if (!"Cancel Order".equals(nameRaw.trim())) return;
+
+        if (pendingPlain == null || pendingColored == null) return;
+
+        List<String> lore = getCleanedLore(stack);
+        Integer amount = parseRefundAmount(lore);
+        if (amount == null || amount <= 0) return;
+
+        // 改成 loadout 同款"仅从缓存 json 读"：不直接往内存 history 插入
+        // 1) 先从磁盘读出旧数据（若 profile key 同内存 loadedProfileKey 则直接复用内存）
+        String key = profileKey();
+        List<HistoryEntry> entries;
+        if (key != null && key.equals(loadedProfileKey)) {
+            entries = new ArrayList<>(history);
+        } else {
+            List<HistoryEntry> loaded = null;
+            if (key != null) {
+                PersistedHistory data = DataPersistence.load(key, "bazaar_buy_history.json", PersistedHistory.class);
+                if (data != null && data.entries != null) loaded = data.entries;
+            }
+            entries = loaded != null ? new ArrayList<>(loaded) : new ArrayList<>();
+        }
+        // 2) 头插 + 100 条上限裁剪
+        entries.add(0, new HistoryEntry(pendingColored, pendingPlain, amount));
+        while (entries.size() > HARD_MAX_ENTRIES) entries.remove(entries.size() - 1);
+        // 3) 写磁盘（DataPersistence.save 原子写，参考 loadout）
+        if (key != null) DataPersistence.save(key, "bazaar_buy_history.json", new PersistedHistory(entries));
+        // 4) 标记需在下一次 shouldRender 时从磁盘重载（强制 reload，使 reload 只走 json）
+        loadedProfileKey = null;
+        pendingColored = null; pendingPlain = null; pendingTs = 0L;
+        rebuildTexts();
+    }
+
+    private static Integer parseRefundAmount(List<String> lore) {
+        for (String line : lore) {
+            if (line == null) continue;
+            Matcher m = REFUND_NUM.matcher(line);
+            if (m.find()) return parseInt(m.group(1));
+        }
+        for (String line : lore) {
+            if (line == null) continue;
+            Matcher m = REFUND_NUM_LOOSE.matcher(line);
+            if (m.find()) return parseInt(m.group(1));
+        }
+        ChatUtils.showMessage("§c[BZA] 解析 Cancel Order 数量失败，请反馈 Lore 内容。");
+        return null;
+    }
+
+    private static int parseInt(String s) {
+        try { return Integer.parseInt(s.replace(",", "")); }
+        catch (NumberFormatException e) { return -1; }
+    }
+
+    /** 获得 PUA/Emoji 清洗 + stripColor + trim 的纯文本 Lore 列表（含 DisplayName 后的所有行） */
+    private static List<String> getCleanedLore(ItemStack stack) {
+        List<String> out = new ArrayList<>();
+        if (stack == null) return out;
+        ItemLore itemLore = stack.get(DataComponents.LORE);
+        if (itemLore != null) {
+            for (Component c : itemLore.lines()) {
+                String s = ChatUtils.stripColor(ChatUtils.removeEmoji(ChatUtils.toLegacyString(c)));
+                if (s != null) {
+                    String t = s.trim();
+                    if (!t.isEmpty()) out.add(t);
+                }
+            }
+        }
+        if (out.isEmpty()) {
+            try {
+                var mc = Minecraft.getInstance();
+                var ctx = mc.level != null
+                        ? net.minecraft.world.item.Item.TooltipContext.of(mc.level)
+                        : net.minecraft.world.item.Item.TooltipContext.EMPTY;
+                List<Component> lines = stack.getTooltipLines(ctx, mc.player, TooltipFlag.Default.NORMAL);
+                for (Component c : lines) {
+                    String s = ChatUtils.stripColor(ChatUtils.removeEmoji(ChatUtils.toLegacyString(c)));
+                    if (s != null) {
+                        String t = s.trim();
+                        if (!t.isEmpty()) out.add(t);
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+        return out;
+    }
+
+    // ========== HUD 渲染构建 ==========
+
+    private static void rebuildTexts() {
+        var cfg = getCfg();
+        if (cfg == null) { texts = List.of(); return; }
+        List<ClickableText> out = new ArrayList<>();
+        if (history.isEmpty()) { texts = out; return; }
+
+        Font font = Minecraft.getInstance().font;
+        int lineH = font.lineHeight + 2;
+        int curY = 0;
+        int maxLines = Math.max(1, cfg.buyOrderHistoryMaxLines);
+        int limit = Math.min(maxLines, history.size());
+
+        String titleText = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.buyOrderHistoryTitle");
+        out.add(new ClickableText(0, curY, titleText, 0xFFFFFFFF, List.of(), null));
+        curY += lineH;
+
+        // 历史 HUD 改为单入口交互：点击物品名时同时复制数量并跳转 Bazaar。
+        // 因此数字不再拥有独立热点，只保留可见文本。
+        for (int i = 0; i < limit; i++) {
+            HistoryEntry e = history.get(i);
+            int idx = i + 1;
+
+            String prefix = "§7" + idx + ". ";
+            String amtStr = String.valueOf(e.amount);
+            String suffixLabel = " §7x ";
+            String qtyText = "§a" + amtStr;
+            String fullLine = prefix + e.coloredItemName + suffixLabel + qtyText;
+
+            int prefixW = ClickableText.measureWidth(font, prefix);
+            int itemRelX = prefixW;
+
+            // 可见底行
+            out.add(new ClickableText(0, curY, fullLine, 0xFFFFFFFF, List.of(), null));
+
+            // 物品名热点：复制数量 + 跳转 Bazaar
+            final String plainItem = e.plainItemName;
+            final int amount = e.amount;
+            out.add(new ClickableText(itemRelX, curY, e.coloredItemName, 0x00FFFFFF,
+                    List.of("config.babyzombieaddons.overlay.bazzar.tooltip.buyHistoryJump"),
+                    () -> jumpToItem(plainItem, amount)));
+
+            curY += lineH;
+        }
+        texts = out;
+    }
+
+    private static void jumpToItem(String plainItem, int amount) {
+        ChatUtils.copyToClipboard(String.valueOf(amount));
+        ChatUtils.showToast("config.babyzombieaddons.overlay.bazzar.toast.copiedTitle",
+                "config.babyzombieaddons.overlay.bazzar.toast.buyHistoryJumpBody", amount);
+        var mc = Minecraft.getInstance();
+        try {
+            if (mc.player != null) mc.player.closeContainer();
+        } catch (Exception ignored) {}
+        playClickSound();
+        Scheduler.schedule(2, () -> ChatUtils.sendCommand("bz " + plainItem));
+    }
+
+    // ========== 音效 ==========
+    private static void playClickSound() {
+        try {
+            var p = Minecraft.getInstance().player;
+            if (p != null) p.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.3f, 1.0f);
+        } catch (Exception ignored) {}
+    }
+    // ========== 内部数据结构 ==========
+    private static final class HistoryEntry {
+        final String coloredItemName;
+        final String plainItemName;
+        final int amount;
+
+        HistoryEntry(String colored, String plain, int amount) {
+            this.coloredItemName = colored == null ? "" : colored;
+            this.plainItemName = plain == null ? "" : plain;
+            this.amount = amount;
+        }
+    }
+}

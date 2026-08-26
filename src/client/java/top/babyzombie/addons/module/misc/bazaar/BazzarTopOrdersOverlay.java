@@ -13,6 +13,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.hud.HudTag;
@@ -271,6 +272,12 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
             at.add(new ClickableText(6, curY, "§7" + subSell + (cfg.flipSellEnabled ? onText : offText),
                     0xFFFFFFFF, List.of(flipTipSell), () -> { playClickSound(); toggleFlipSell(); }));
             curY += lineH;
+            String showOrdersPageLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.showOrdersPage")
+                    + (cfg.ordersPageEnabled ? onText : offText);
+            at.add(new ClickableText(6, curY, "§7" + showOrdersPageLine, 0xFFFFFFFF,
+                    List.of("config.babyzombieaddons.overlay.bazzar.tooltip.showOrdersPage"),
+                    () -> { playClickSound(); toggleOrdersPageEnabled(); }));
+            curY += lineH;
             String showBuyLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.showBuy")
                     + (cfg.showBuyOrders ? onText : offText);
             at.add(new ClickableText(6, curY, "§7" + showBuyLine, 0xFFFFFFFF,
@@ -293,6 +300,18 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
             at.add(new ClickableText(6, curY, "§7" + lineCountLine, 0xFFFFFFFF,
                     List.of("config.babyzombieaddons.overlay.bazzar.tooltip.lineCount"),
                     () -> { playClickSound(); openConfigSearch(); }));
+            curY += lineH;
+            String buyHistoryLine = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.buyHistory")
+                    + (cfg.buyOrderHistoryEnabled ? onText : offText);
+            at.add(new ClickableText(0, curY, "§f" + buyHistoryLine, 0xFFFFFFFF,
+                    List.of("config.babyzombieaddons.overlay.bazzar.tooltip.buyHistory"),
+                    () -> { playClickSound(); toggleBuyOrderHistory(); }));
+            curY += lineH;
+            String buyHistoryLines = ChatUtils.translate(
+                    "config.babyzombieaddons.overlay.bazzar.text.buyHistoryLineCount", cfg.buyOrderHistoryMaxLines);
+            at.add(new ClickableText(6, curY, "§7" + buyHistoryLines, 0xFFFFFFFF,
+                    List.of("config.babyzombieaddons.overlay.bazzar.tooltip.buyHistoryLineCount"),
+                    () -> { playClickSound(); openBuyHistoryLineCountSearch(); }));
             curY += lineH;
             // 数据时间戳（API 模式）：展示数据新鲜度，点击复制时间
             if (cfg.apiEnabled) {
@@ -394,7 +413,32 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         return BazaarItemInfo.get(name);
     }
 
-    /** 订单页显示名 "[§6§lSELL §aVampiric Vitality V§b]" → "Vampiric Vitality V"；无包装原样返回 */
+    /** 订单页显示名（保留原色） "[§6§lSELL §aVampiric Vitality V§b]" → "§aVampiric Vitality V§b"；无包装原样返回 */
+    @Nullable
+    private static String unwrapOrdersDisplayNameColored(Component displayName) {
+        String legacy = ChatUtils.toLegacyString(displayName);
+        if (legacy == null) return null;
+        String s = legacy.trim();
+        int open = s.indexOf('[');
+        int close = s.lastIndexOf(']');
+        if (open >= 0 && close > open) {
+            String inner = s.substring(open + 1, close).trim();
+            int sp = inner.indexOf(' ');
+            if (sp > 0) {
+                String tag = ChatUtils.stripColor(inner.substring(0, sp));
+                if (tag != null) {
+                    String t = tag.trim().toUpperCase(Locale.ROOT);
+                    if ("SELL".equals(t) || "BUY".equals(t)) {
+                        String c = inner.substring(sp + 1).trim();
+                        if (!c.isEmpty()) return c;
+                    }
+                }
+            }
+        }
+        return s;
+    }
+
+    /** 订单页显示名 "[SELL xxx]"（SELL/BUY 忽略大小写）→ "xxx"；无包装原样返回（已 trim） */
     private static String unwrapOrdersDisplayName(Component displayName) {
         String stripped = ChatUtils.stripColor(ChatUtils.toLegacyString(displayName));
         if (stripped == null) return null;
@@ -461,7 +505,6 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         }
         BazaarItemInfo.Info info = fetchOrdersItemInfo(stack);
         if (info == null) {
-            // 数据未就绪/未识别：保持原版提示，等数据到位后自动出现
             buyTexts = List.of(); sellTexts = List.of(); lastOrdersHoverKey = "";
             return;
         }
@@ -469,21 +512,27 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         long ts = BazaarItemInfo.getSnapshotTs();
         if (key.equals(lastOrdersHoverKey) && ts == lastOrdersHoverTs
                 && (!buyTexts.isEmpty() || !sellTexts.isEmpty())) {
-            return; // 已是该物品的当前快照数据
+            return;
         }
-        // 标题行用剥掉 "[SELL x]" 包装的显示名；拿不到就退回 API 产品名
-        String headerName = unwrapOrdersDisplayName(stack.getDisplayName());
-        String plain = (headerName == null || headerName.isEmpty()) ? info.displayName() : headerName;
+        // 标题物品名：保留原来的颜色码（从订单按钮的 ItemStack DisplayName 提取），不再沿用标题的 §6
+        String coloredName = unwrapOrdersDisplayNameColored(stack.getDisplayName());
+        String plainName = unwrapOrdersDisplayName(stack.getDisplayName());
+        String headerItem = (coloredName == null || coloredName.isEmpty())
+                ? info.displayName()
+                : coloredName;
+        String commandName = (plainName == null || plainName.isEmpty())
+                ? info.displayName()
+                : plainName;
         Font font = Minecraft.getInstance().font;
         int max = Math.max(1, cfg.maxLines);
         buyTexts = showBuy ? buildOrderLines(toEntries(info.sellSummary(), TopOrderData.OrderType.BUY, max),
                 "config.babyzombieaddons.overlay.bazzar.text.buyOrders",
                 "config.babyzombieaddons.overlay.bazzar.text.buyLineRest",
-                plain, plain, font) : List.of();
+                headerItem, commandName, font) : List.of();
         sellTexts = showSell ? buildOrderLines(toEntries(info.buySummary(), TopOrderData.OrderType.SELL, max),
                 "config.babyzombieaddons.overlay.bazzar.text.sellOffers",
                 "config.babyzombieaddons.overlay.bazzar.text.sellLineRest",
-                plain, plain, font) : List.of();
+                headerItem, commandName, font) : List.of();
         lastOrdersHoverKey = key;
         lastOrdersHoverTs = ts;
     }
@@ -573,9 +622,25 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
         cfg.apiEnabled = !cfg.apiEnabled; saveCfg(); rebuildTexts();
     }
 
+    private static void toggleOrdersPageEnabled() {
+        var cfg = getCfg(); if (cfg == null) return;
+        cfg.ordersPageEnabled = !cfg.ordersPageEnabled; saveCfg(); rebuildTexts();
+    }
+
+    private static void toggleBuyOrderHistory() {
+        var cfg = getCfg(); if (cfg == null) return;
+        cfg.buyOrderHistoryEnabled = !cfg.buyOrderHistoryEnabled; saveCfg(); rebuildTexts();
+    }
+
     /** 打开 Mod 设置页并搜索"行数"（定位 maxLines 配置） */
     private static void openConfigSearch() {
         Minecraft.getInstance().setScreen(ModConfigManager.createGUI(Minecraft.getInstance().screen, Component.translatable("config.babyzombieaddons.option.bazzarMaxLines").getString()));
+    }
+
+    /** 打开 Mod 设置页并搜索"求购历史最大显示行数" */
+    private static void openBuyHistoryLineCountSearch() {
+        Minecraft.getInstance().setScreen(ModConfigManager.createGUI(Minecraft.getInstance().screen,
+                Component.translatable("config.babyzombieaddons.option.bazzarBuyOrderHistoryMaxLines").getString()));
     }
 
     private static void copyPriceAndToast(String priceNumberOnly) {
