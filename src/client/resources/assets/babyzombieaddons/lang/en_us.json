@@ -1842,6 +1842,8 @@
   "config.babyzombieaddons.option.bazzarBuyOrderHistory.desc": "Record `<item> x<qty>` into a new HUD when you click a BUY order item then Cancel Order. Clicking the item name now copies the quantity and jumps back to that Bazaar page.",
   "config.babyzombieaddons.option.bazzarBuyOrderHistoryMaxLines": "History max lines",
   "config.babyzombieaddons.option.bazzarBuyOrderHistoryMaxLines.desc": "Maximum records shown in the Buy Order History HUD. Capped at 30.",
+  "config.babyzombieaddons.option.bazzarSignPasteAmount": "Paste Clipboard Amount into Bazaar Orders",
+  "config.babyzombieaddons.option.bazzarSignPasteAmount.desc": "When the Bazaar amount-entry sign opens (empty first line, a ^^^ line below, then Enter amount / to order or to sell), if the clipboard contains only digits, parentheses, math operators (incl. x), k/m/b suffixes, dots and commas, paste it into the first line automatically.",
   "config.babyzombieaddons.option.hudBazzarBuyHistory": "Bazaar Buy Order History HUD",
   "config.babyzombieaddons.overlay.bazzar.text.buyOrderHistoryTitle": "§e§lBuy Order History",
   "config.babyzombieaddons.overlay.bazzar.tooltip.buyHistoryJump": "Click to copy this quantity and jump to this item's Bazaar page",

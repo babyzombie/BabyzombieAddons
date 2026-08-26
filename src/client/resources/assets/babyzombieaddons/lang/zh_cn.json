@@ -1842,6 +1842,8 @@
   "config.babyzombieaddons.option.bazzarBuyOrderHistory.desc": "在 Bazaar 订单页点击 BUY 物品再取消订单时，将「物品×数量」记录到新 HUD；点击物品名时会同时复制数量并跳回对应商品页面。",
   "config.babyzombieaddons.option.bazzarBuyOrderHistoryMaxLines": "求购历史最大显示行数",
   "config.babyzombieaddons.option.bazzarBuyOrderHistoryMaxLines.desc": "求购历史订单 HUD 中最多显示的记录条数，上限 30 条。",
+  "config.babyzombieaddons.option.bazzarSignPasteAmount": "从剪贴板贴入集市订单数量",
+  "config.babyzombieaddons.option.bazzarSignPasteAmount.desc": "打开输入数量的告示牌（第一行空、第二行 ^^^、下方为 Enter amount / to order 或 to sell）时，若剪贴板只含数字、括号、运算符（含 x）、k/m/b、点、逗号等字符，自动贴入第一行。",
   "config.babyzombieaddons.option.hudBazzarBuyHistory": "Bazzar 求购历史 HUD",
   "config.babyzombieaddons.overlay.bazzar.text.buyOrderHistoryTitle": "§e§l购买订单历史",
   "config.babyzombieaddons.overlay.bazzar.tooltip.buyHistoryJump": "点击复制该记录数量并跳转到该物品 Bazaar 页面",

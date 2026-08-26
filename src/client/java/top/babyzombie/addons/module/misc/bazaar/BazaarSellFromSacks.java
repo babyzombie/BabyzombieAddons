@@ -49,7 +49,7 @@ public final class BazaarSellFromSacks {
                 i++;
             }
 
-            if (!noneInInv || itemName == null) return false;
+            if (!noneInInv) return false;
 
             ChatUtils.sendCommand("getfromsacks " + itemName + " 2304");
             cooldown = ServerTick.getTime() + 2000;
