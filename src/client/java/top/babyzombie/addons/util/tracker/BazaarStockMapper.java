@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import top.babyzombie.addons.util.pet.RomanNumeral;
 
 /**
  * 游戏内物品 id → Bazaar 产品 id 的映射（三路回退读 NEU 物品库）。
@@ -28,6 +29,11 @@ import java.util.Map;
  *
  * <p>三路回退顺序与 {@link top.babyzombie.addons.util.pet.PetConstants} 一致：
  * skyblocker → firmament → NEU。
+ *
+ * <p>附魔书显示名反查：书页 lore 里的附魔名可能与内部 id 不一致
+ * （如 "Vampiric Vitality V" ↔ {@code MANA_VAMPIRE;5} ↔ {@code ENCHANTMENT_MANA_VAMPIRE_5}），
+ * 惰性扫描 {@code items/*;*.json} 的 lore 建 "显示名(归一) → bazaar 产品 id" 反查表
+ * （与 skyblocker EnchantedBookUtils.getApiIdByName 同款方案）。
  */
 final class BazaarStockMapper {
     private static final Logger LOGGER = LoggerFactory.getLogger("BabyzombieAddons/BazaarStockMapper");
@@ -40,6 +46,9 @@ final class BazaarStockMapper {
     /** 属性碎片显示名（strip 颜色码后）→ bazaar 产品 id；惰性加载 */
     private volatile Map<String, String> shardNameToStock = Map.of();
     private boolean shardIndexLoaded;
+    /** 附魔书显示名（归一后，如 VAMPIRIC_VITALITY_5）→ bazaar 产品 id；惰性加载 */
+    private volatile Map<String, String> enchantDisplayToStock = Map.of();
+    private boolean enchantDisplayIndexLoaded;
 
     private BazaarStockMapper() {}
 
@@ -185,6 +194,92 @@ final class BazaarStockMapper {
         if (Files.isDirectory(p)) return p;
         p = gameDir.resolve("config").resolve("notenoughupdates").resolve("repo");
         if (Files.isDirectory(p)) return p;
+        return null;
+    }
+
+    // ===== 附魔书显示名反查（lore 名 ≠ 内部 id 的附魔，如 "Vampiric Vitality V" ↔ MANA_VAMPIRE;5） =====
+
+    /**
+     * 附魔书显示名（如 "Vampiric Vitality V" / "Crop Fever V"）→ bazaar 产品 id。
+     * 归一后查由书页 lore 惰性构建的反查表；查不到返回 null。
+     */
+    @Nullable
+    public String lookupByEnchantDisplay(String displayName) {
+        if (displayName == null || displayName.isBlank()) return null;
+        if (!ensureEnchantDisplayIndex()) return null;
+        return enchantDisplayToStock.get(normalizeEnchantDisplayName(displayName));
+    }
+
+    /** 附魔显示名归一（skyblocker 同款算法）：去色码/括号、大写、空格连字符→下划线、末位罗马数字→十进制 */
+    @Nullable
+    static String normalizeEnchantDisplayName(String name) {
+        if (name == null) return null;
+        String s = ChatUtils.stripColor(name);
+        if (s == null) return null;
+        s = s.trim().toUpperCase(Locale.ROOT);
+        s = s.replace("[", "").replace("]", "").replace("(", "").replace(")", "");
+        s = s.replaceAll("[\\s-]+", "_");
+        int last = s.lastIndexOf('_');
+        if (last > 0) {
+            int lvl = RomanNumeral.parse(s.substring(last + 1));
+            if (lvl >= 1 && lvl <= 10) {
+                s = s.substring(0, last) + "_" + lvl;
+            }
+        }
+        return s.isEmpty() ? null : s;
+    }
+
+    /**
+     * 惰性构建附魔书显示名 → 产品 id 反查表：遍历 items 目录里带分号的文件，
+     * 取书页 lore 的附魔名行（首个非空且不含 "Combinable in Anvil" 的行），
+     * 归一后映射到该 id 对应的 bazaar 产品。同一 key 多个产品时保留首个。
+     */
+    private boolean ensureEnchantDisplayIndex() {
+        if (enchantDisplayIndexLoaded) return true;
+        if (!ensureLoaded()) return false; // 需要 idToStock（id → 产品）已加载
+        Path root = resolveItemRepo();
+        if (root == null) return false;
+        Path itemsDir = root.resolve("items");
+        if (!Files.isDirectory(itemsDir)) return false;
+        Map<String, String> map = new HashMap<>();
+        try (var stream = Files.list(itemsDir)) {
+            for (Path f : stream.filter(p -> p.getFileName().toString().contains(";")).toList()) {
+                String fileName = f.getFileName().toString();
+                if (!fileName.endsWith(".json")) continue;
+                String id = fileName.substring(0, fileName.length() - ".json".length());
+                String stock = idToStock.get(id.toUpperCase(Locale.ROOT));
+                if (stock == null || !stock.startsWith("ENCHANTMENT_")) continue;
+                try {
+                    JsonObject o = JsonParser.parseString(Files.readString(f)).getAsJsonObject();
+                    String enchantName = extractEnchantDisplayName(o);
+                    if (enchantName == null) continue;
+                    String key = normalizeEnchantDisplayName(enchantName);
+                    if (key == null || map.containsKey(key)) continue;
+                    map.put(key, stock);
+                } catch (IOException | RuntimeException ignored) {
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.warn("[BazaarStockMapper] Failed to list items dir for enchant display index", e);
+            return false;
+        }
+        enchantDisplayToStock = Map.copyOf(map);
+        enchantDisplayIndexLoaded = true;
+        return true;
+    }
+
+    /** 书页 lore 中的附魔显示名行：首个非空且不含 "Combinable in Anvil" 的行 */
+    @Nullable
+    private static String extractEnchantDisplayName(JsonObject item) {
+        if (!item.has("lore") || !item.get("lore").isJsonArray()) return null;
+        for (JsonElement el : item.getAsJsonArray("lore")) {
+            String s = ChatUtils.stripColor(el.getAsString());
+            if (s == null) continue;
+            String t = s.trim();
+            if (t.isEmpty()) continue;
+            if (t.contains("Combinable in Anvil")) continue;
+            return t;
+        }
         return null;
     }
 }

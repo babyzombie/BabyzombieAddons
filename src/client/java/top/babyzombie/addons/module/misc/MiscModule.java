@@ -7,6 +7,7 @@ import top.babyzombie.addons.module.misc.abiphone.CustomRingtoneModule;
 import top.babyzombie.addons.module.misc.abiphone.IncomingCallHandler;
 import top.babyzombie.addons.module.misc.autois.AutoISModule;
 import top.babyzombie.addons.module.misc.autois.KickRecoveryModule;
+import top.babyzombie.addons.module.misc.bazaar.BazaarSellFromSacks;
 import top.babyzombie.addons.module.misc.bazaar.BazzarTopOrdersOverlay;
 import top.babyzombie.addons.module.misc.loadout.LoadoutModule;
 import top.babyzombie.addons.module.misc.pet.PetDisplayHud;

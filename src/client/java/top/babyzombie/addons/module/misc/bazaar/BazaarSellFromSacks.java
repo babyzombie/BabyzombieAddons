@@ -1,4 +1,4 @@
-package top.babyzombie.addons.module.misc;
+package top.babyzombie.addons.module.misc.bazaar;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;

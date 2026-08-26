@@ -89,12 +89,13 @@ public final class EnderPearlCamera {
         }
         landingTimeSeconds = prediction.ticks() / 20.0f;
 
-        // 懒创建输出目标(宽高按配置的画面比例)
-        var ratio = cfg.pearlCameraAspectRatio == null ? CameraAspectRatio.R2_1 : cfg.pearlCameraAspectRatio;
-        int feedWidth = Math.max(1, FEED_HEIGHT * ratio.w / ratio.h);
-        if (feedTarget == null || feedTarget.width != feedWidth || feedTarget.height != FEED_HEIGHT) {
+        // 懒创建输出目标:窗口尺寸(与 mod 发光纹理按窗口尺寸缓存一致,避免深度附件/
+        // 拷贝尺寸冲突;HUD 显示时缩小)
+        int feedWidth = mc.getWindow().getWidth();
+        int feedHeight = mc.getWindow().getHeight();
+        if (feedTarget == null || feedTarget.width != feedWidth || feedTarget.height != feedHeight) {
             if (feedTarget != null) feedTarget.destroyBuffers();
-            feedTarget = new TextureTarget("bza_pearl_feed", feedWidth, FEED_HEIGHT, true);
+            feedTarget = new TextureTarget("bza_pearl_feed", feedWidth, feedHeight, true);
         }
 
         // 相机参数:跟随珍珠时锚点 = 珍珠实时位置,朝向由珍珠速度接管;否则特写预测落点(朝向按配置)

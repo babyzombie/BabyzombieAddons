@@ -192,17 +192,29 @@ public final class SecondCameraRenderer {
             // texel 渗漏出白线(草方块土/草交界最明显);NEAREST mag 取单 texel,
             // mipLevels=1 禁用 mipmap,min 保持 LINEAR 缩小平滑
             lrAccessor.setChunkLayerSampler(feedSampler());
-            gameRenderer.renderLevel(DeltaTracker.ONE);
-            // 手动把第二遍 outline(含 entity_outline.json sobel 描边后处理的结果)
-            // 合成进子相机画面:原版 outline chain 的合成 pass 在第二遍 frame
-            // 不输出到 main,直接 blit 子相机 outline target 到 feedTarget 等效且可靠
-            if (secondOutlineTarget != null) {
-                secondOutlineTarget.blitAndBlendToTexture(params.target.getColorTextureView());
+            try {
+                gameRenderer.renderLevel(DeltaTracker.ONE);
+                // 手动把第二遍 outline(含 entity_outline.json sobel 描边后处理的结果)
+                // 合成进子相机画面:原版 outline chain 的合成 pass 在第二遍 frame
+                // 不输出到 main,直接 blit 子相机 outline target 到 feedTarget 等效且可靠
+                if (secondOutlineTarget != null) {
+                    secondOutlineTarget.blitAndBlendToTexture(params.target.getColorTextureView());
+                }
+                return true;
+            } catch (Throwable t) {
+                // 第二相机渲染异常不影响主画面(状态已在 finally 恢复),吞掉避免刷屏;
+                // 记录日志便于定位(如其他 mod 的深度发光附件尺寸不匹配等渲染状态异常)
+                org.slf4j.LoggerFactory.getLogger("BabyzombieAddons")
+                        .warn("second camera render failed", t);
+                return false;
+            } finally {
+                // 恢复子视角期间改动的共享 state:第二遍渲染无论成败都恢复,
+                // 否则异常残留会让主画面云关闭(cloudStatus)/下一帧 resize 检查
+                // 误触发(windowRenderState 尺寸残留)
+                optionsState.cloudStatus = oldCloudStatus;
+                grs.windowRenderState.width = oldWinW;
+                grs.windowRenderState.height = oldWinH;
             }
-            optionsState.cloudStatus = oldCloudStatus;
-            grs.windowRenderState.width = oldWinW;
-            grs.windowRenderState.height = oldWinH;
-            return true;
         } finally {
             ((MainRenderTargetAccessor) mc).setMainRenderTarget(oldTarget);
             ((LevelRendererAccessor) mc.levelRenderer).setEntityOutlineTarget(oldOutlineTarget);

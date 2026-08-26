@@ -80,12 +80,13 @@ public final class SafariCapsuleCamera {
             feedReady = false;
             return;
         }
-        // 懒创建输出目标(宽高按配置的画面比例)
-        var ratio = cfg.aspectRatio == null ? CameraAspectRatio.R2_1 : cfg.aspectRatio;
-        int feedWidth = Math.max(1, FEED_HEIGHT * ratio.w / ratio.h);
-        if (feedTarget == null || feedTarget.width != feedWidth || feedTarget.height != FEED_HEIGHT) {
+        // 懒创建输出目标:窗口尺寸(与 mod 发光纹理按窗口尺寸缓存一致,避免深度附件/
+        // 拷贝尺寸冲突;HUD 显示时缩小)
+        int feedWidth = mc.getWindow().getWidth();
+        int feedHeight = mc.getWindow().getHeight();
+        if (feedTarget == null || feedTarget.width != feedWidth || feedTarget.height != feedHeight) {
             if (feedTarget != null) feedTarget.destroyBuffers();
-            feedTarget = new TextureTarget("bza_safari_capsule_feed", feedWidth, FEED_HEIGHT, true);
+            feedTarget = new TextureTarget("bza_safari_capsule_feed", feedWidth, feedHeight, true);
         }
         // 相机朝向按配置(yawMode),俯视配置的 pitch
         var yawMode = cfg.yawMode == null ? CameraYawMode.FIXED : cfg.yawMode;

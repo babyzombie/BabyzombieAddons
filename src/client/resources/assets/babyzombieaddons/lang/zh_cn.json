@@ -1812,6 +1812,8 @@
   "config.babyzombieaddons.option.bazzarShowBuyOrders.desc": "在 Bazzar 详情页显示购买订单列表。可在操作栏点击快速开关。",
   "config.babyzombieaddons.option.bazzarShowSellOffers": "显示出售报价",
   "config.babyzombieaddons.option.bazzarShowSellOffers.desc": "在 Bazzar 详情页显示出售报价列表。可在操作栏点击快速开关。",
+  "config.babyzombieaddons.option.bazzarOrdersPageEnabled": "订单页悬浮订单信息",
+  "config.babyzombieaddons.option.bazzarOrdersPageEnabled.desc": "在 Bazaar 订单页（Bazaar Orders / Co-op Bazaar Orders）启用：鼠标指到物品时，用该物品的 Bazaar 订单数据填充两个订单 HUD 列表（需要开启 API 模式），并显示 BZ HUD 操作栏。",
   "config.babyzombieaddons.overlay.bazzar.text.showBuy": "> 显示购买订单: ",
   "config.babyzombieaddons.overlay.bazzar.text.showSell": "> 显示出售报价: ",
   "config.babyzombieaddons.overlay.bazzar.text.lineCount": "> 显示行数: %s",
