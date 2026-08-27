@@ -15,36 +15,45 @@ public final class ChatUtils {
 
     private ChatUtils() {}
 
+    // §x/&x 六位 hex 染色（如 §x§F§F§C§E§4§7）需整段剥离，优先级高于单字符染色码。
+    // 全部 static final：stripColor 等被每帧/每 tick 高频调用（如 bazaar 界面逐槽位调用），
+    // 若用 String.replaceAll 会在每次调用时重新 Pattern.compile，产生大量瞬时对象。
+    private static final Pattern COLOR_SECTION_PATTERN =
+            Pattern.compile("§x(?:§[0-9a-fA-F]){6}|§[0-9a-fk-orlnm]");
+    private static final Pattern COLOR_AMP_PATTERN =
+            Pattern.compile("&x(?:&[0-9a-fA-F]){6}|&[0-9a-fk-orlnm]");
+    private static final Pattern AMP_HEX_PATTERN = Pattern.compile("&x((?:&[0-9a-fA-F]){6})");
+    private static final Pattern AMP_SINGLE_PATTERN = Pattern.compile("&([0-9a-fk-orlnm])");
+    private static final Pattern SECTION_HEX_PATTERN = Pattern.compile("§x((?:§[0-9a-fA-F]){6})");
+    private static final Pattern SECTION_SINGLE_PATTERN = Pattern.compile("§([0-9a-fk-orlnm])");
+
     public static String stripColor(String text) {
         if (text == null) return "";
-        // §x/&x 六位 hex 染色（如 §x§F§F§C§E§4§7）需整段剥离，优先级高于单字符染色码
-        return text
-                .replaceAll("§x(?:§[0-9a-fA-F]){6}|§[0-9a-fk-orlnm]", "")
-                .replaceAll("&x(?:&[0-9a-fA-F]){6}|&[0-9a-fk-orlnm]", "");
+        return COLOR_AMP_PATTERN.matcher(COLOR_SECTION_PATTERN.matcher(text).replaceAll("")).replaceAll("");
     }
 
     /** 把输入的 & 颜色码转换为 § 形式（含 &x 六位 hex），用于"用 & 代替 §"的文本输入。 */
     public static String ampToSection(String text) {
         if (text == null) return "";
-        Matcher hex = Pattern.compile("&x((?:&[0-9a-fA-F]){6})").matcher(text);
+        Matcher hex = AMP_HEX_PATTERN.matcher(text);
         StringBuilder sb = new StringBuilder();
         while (hex.find()) {
             hex.appendReplacement(sb, "§x" + hex.group(1).replace("&", "§"));
         }
         hex.appendTail(sb);
-        return sb.toString().replaceAll("&([0-9a-fk-orlnm])", "§$1");
+        return AMP_SINGLE_PATTERN.matcher(sb.toString()).replaceAll("§$1");
     }
 
     /** 把 § 颜色码转换为 & 形式（含 §x 六位 hex），用于编辑框回显。 */
     public static String sectionToAmp(String text) {
         if (text == null) return "";
-        Matcher hex = Pattern.compile("§x((?:§[0-9a-fA-F]){6})").matcher(text);
+        Matcher hex = SECTION_HEX_PATTERN.matcher(text);
         StringBuilder sb = new StringBuilder();
         while (hex.find()) {
             hex.appendReplacement(sb, "&x" + hex.group(1).replace("§", "&"));
         }
         hex.appendTail(sb);
-        return sb.toString().replaceAll("§([0-9a-fk-orlnm])", "&$1");
+        return SECTION_SINGLE_PATTERN.matcher(sb.toString()).replaceAll("&$1");
     }
 
     public static void sendCommand(String command) {

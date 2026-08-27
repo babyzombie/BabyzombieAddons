@@ -23,6 +23,7 @@ import top.babyzombie.addons.util.render.WorldTextRenderer;
 import java.awt.Color;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 public final class KuudraWaypoints {
     private KuudraWaypoints() {}
@@ -44,6 +45,9 @@ public final class KuudraWaypoints {
     private static final double SUPPLY_PULL_RADIUS = 5.0;
     private static final double SUPPLY_CRATE_OFFSET = 3.7;
     private static final double SUPPLY_VERTICAL_MARGIN = 4.0;
+
+    /** 榜行文本后缀名归一：去 " (...)" 后缀。每 tick 扫描高频调用，静态复用避免内联 replaceAll 重复编译正则 */
+    private static final Pattern SUFFIX_PAREN_PATTERN = Pattern.compile(" \\(.+\\)");
 
 
     private enum SkullTextures {
@@ -329,9 +333,9 @@ public final class KuudraWaypoints {
             if (!client.player.level().getScoreboard().listPlayerScores(holder).containsKey(obj)) continue;
             var team = client.player.level().getScoreboard().getPlayersTeam(holder.getScoreboardName());
             if (team == null) continue;
-            String text = ChatUtils.stripColor(ChatUtils.removeEmoji(
-                    team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString()))
-                    .replaceAll(" \\(.+\\)", "");
+            String text = SUFFIX_PAREN_PATTERN.matcher(ChatUtils.stripColor(ChatUtils.removeEmoji(
+                    team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString())))
+                    .replaceAll("");
             if (text.equals("Rescue supplies") || text.equals("Protect Elle")) return text;
         }
         return "";

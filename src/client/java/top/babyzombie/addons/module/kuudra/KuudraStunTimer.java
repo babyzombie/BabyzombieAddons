@@ -19,14 +19,14 @@ public final class KuudraStunTimer {
     public static long p4End;
 
     public static void init() {
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!ModConfigManager.get().kuudra.phase3.stunTimer) return;
-            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (!ModConfigManager.get().kuudra.phase3.stunTimer) return true;
+            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return true;
 
             String text = ChatUtils.stripColor(message.getString());
             if (KuudraChatLines.isDestroyedPod(text)) {
                 var loc = HypixelLocationTracker.getInstance().getLocation();
-                if (loc == null) return;
+                if (loc == null) return true;
                 int duration = loc.contains("T5") ? 8000 : (loc.contains("T3") ? 12000 : 10000);
                 stunEnd = ServerTick.getTime() + duration;
             }
@@ -41,6 +41,8 @@ public final class KuudraStunTimer {
                     downEnd = ServerTick.getTime() + 15300;
                 }
             }
+
+            return true;
         });
 
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,

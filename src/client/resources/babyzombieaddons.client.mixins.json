@@ -86,6 +86,7 @@
 
     "screen.CommandSuggestionsMixin",
     "screen.AbstractSignEditScreenAccessor",
+    "screen.ScreenInvoker",
     "screen.ContainerClickMixin",
     "screen.HandleContainerInputMixin",
     "screen.InventoryScreenMixin",

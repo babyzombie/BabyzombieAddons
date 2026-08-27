@@ -11,6 +11,8 @@ import top.babyzombie.addons.util.PlayerUtils;
 import top.babyzombie.addons.util.render.GlowController;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
+import java.util.regex.Pattern;
+
 /**
  * Elle 高亮 — P2 阶段给 Elle 发光（关闭深度测试），通过皮肤 hash 识别。
  */
@@ -19,6 +21,8 @@ public final class ElleHighlight {
 
     private static final String ELLE_SKIN_HASH = "2333aa2414bcf1c291fddf6a9b0f805f996546ec4150ff3cef10bd529cc98261";
     private static Entity elleEntity;
+    /** 榜行文本后缀名归一：去 " (...)" 后缀。每 tick 扫描高频调用，静态复用避免内联 replaceAll 重复编译正则 */
+    private static final Pattern SUFFIX_PAREN_PATTERN = Pattern.compile(" \\(.+\\)");
 
     public static void init() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -59,9 +63,9 @@ public final class ElleHighlight {
             if (!player.level().getScoreboard().listPlayerScores(holder).containsKey(obj)) continue;
             var team = player.level().getScoreboard().getPlayersTeam(holder.getScoreboardName());
             if (team == null) continue;
-            String text = ChatUtils.stripColor(ChatUtils.removeEmoji(
-                    team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString()))
-                    .replaceAll(" \\(.+\\)", "");
+            String text = SUFFIX_PAREN_PATTERN.matcher(ChatUtils.stripColor(ChatUtils.removeEmoji(
+                    team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString())))
+                    .replaceAll("");
             if (text.equals("Protect Elle")) return text;
         }
         return "";

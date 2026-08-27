@@ -57,17 +57,20 @@ final class BazaarApiTracker {
 
     /**
      * 节流 + 异步拉取。任何消费方在需要数据时调用即可：60s 内最多一次真实请求，
-     * 已有新鲜缓存时直接返回。
+     * 已有新鲜缓存时直接返回。磁盘缓存读取也放在虚拟线程里，避免在渲染线程
+     * 同步解析多 MB JSON 造成卡顿。
      */
     public void ensureFresh() {
         if (fetching) return;
         if (System.currentTimeMillis() - lastFetchMs < REFRESH_INTERVAL_MS) return;
-        // 首次查询：先落盘旧快照顶上（同步读，~几十 ms 一次性），异步拉取覆盖
-        if (products.isEmpty() && !cacheLoaded) {
-            cacheLoaded = loadCache();
-        }
         fetching = true;
-        Thread.startVirtualThread(this::fetchOnce);
+        Thread.startVirtualThread(() -> {
+            // 首次查询：先落盘旧快照顶上（异步读，~几十 ms 一次性），异步拉取覆盖
+            if (products.isEmpty() && !cacheLoaded) {
+                cacheLoaded = loadCache();
+            }
+            fetchOnce();
+        });
     }
 
     private void fetchOnce() {

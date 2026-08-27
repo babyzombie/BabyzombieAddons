@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.SignEditScreen;
@@ -16,9 +17,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemLore;
 import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.config.SkyblockConfig.BazzarTopOrders.SignQuickAmount;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.event.ContainerClickEvents;
 import top.babyzombie.addons.mixin.screen.AbstractSignEditScreenAccessor;
+import top.babyzombie.addons.mixin.screen.ScreenInvoker;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.DataPersistence;
 import top.babyzombie.addons.util.Scheduler;
@@ -32,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,7 +71,11 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
     private static long lastBuildMs = 0L;
     private static int lastSize = -1;
     private static int lastMaxLines = -1;
-    private static final int HARD_MAX_ENTRIES = 100;
+    private static String lastProfileKey = "";
+    /** 历史内容只会在"新增/换档加载"时变化，渲染重建由签名驱动，不用无条件定时器 */
+    private static final long REBUILD_FALLBACK_MS = 2000L;
+    /** 历史硬上限：与 buyOrderHistoryMaxLines 滑块上限（1-30）一致，超过显示上限的条目不会有用 */
+    private static final int HARD_MAX_ENTRIES = 30;
 
     private BazaarBuyOrderHistory() {}
 
@@ -75,7 +83,10 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         GuiOverlayManager.register(INSTANCE);
         ContainerClickEvents.BEFORE_MOUSE_CLICK.register(INSTANCE::onSlotClick);
         // 告示牌数量自动填入:打开 SignEditScreen 时按内容匹配 Bazaar 输入数量布局
-        ScreenEvents.AFTER_INIT.register((client, screen, sw, sh) -> tryPasteClipboardAmount(screen));
+        ScreenEvents.AFTER_INIT.register((client, screen, sw, sh) -> {
+            tryPasteClipboardAmount(screen);
+            tryAddQuickAmountButtons(screen);
+        });
     }
 
     // ========== 配置 ==========
@@ -118,7 +129,7 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         rebuildTexts();
     }
 
-    /** 立即按当前 uuid/profileId 将 history 写入磁盘（按 100 条硬上限裁掉尾部） */
+    /** 立即按当前 uuid/profileId 将 history 写入磁盘（按硬上限裁掉尾部） */
     private static void saveToDisk() {
         if (HypixelLocationTracker.getInstance().isInAlpha()) return;
         String key = profileKey();
@@ -151,9 +162,13 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         if (cfg == null) return;
         long now = System.currentTimeMillis();
         int curSize = history.size();
+        // 签名驱动：大小/行数上限/档案 key 变化或 2s 兜底时才重建（替换原无条件 500ms 定时重建）
         if (curSize != lastSize || lastMaxLines != cfg.buyOrderHistoryMaxLines
-                || now - lastBuildMs > 500L) {
-            lastSize = curSize; lastMaxLines = cfg.buyOrderHistoryMaxLines; lastBuildMs = now;
+                || !Objects.equals(loadedProfileKey, lastProfileKey)
+                || now - lastBuildMs > REBUILD_FALLBACK_MS) {
+            lastSize = curSize; lastMaxLines = cfg.buyOrderHistoryMaxLines;
+            lastProfileKey = loadedProfileKey == null ? "" : loadedProfileKey;
+            lastBuildMs = now;
             rebuildTexts();
         }
         Font font = Minecraft.getInstance().font;
@@ -439,6 +454,110 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         public void run() {
             if (Minecraft.getInstance().screen != screen) return; // 屏幕已关闭/切换,放弃
             if (pasteAmountIntoSign(screen, amount)) return;      // 已填入,结束
+            if (++attempts < MAX_ATTEMPTS) Scheduler.schedule(3, this); // 行内容未到,稍后重试
+        }
+    }
+
+    // ========== 告示牌快捷数量按钮 ==========
+
+    /** 已安装到当前屏幕的按钮引用,用于移除残留(窗口 resize 重 init 等场景) */
+    private static final List<Button> quickButtons = new ArrayList<>();
+
+    /** 26.1 起 Screen 的 children(事件)/renderables(渲染)/narratables 是三个独立列表,
+     *  只改 children 会"点得动但看不见",必须走 ScreenInvoker 同步加入三个列表 */
+    private static void addButtonToScreen(Screen screen, Button button) {
+        ((ScreenInvoker) screen).bzaAddRenderableWidget(button);
+    }
+
+    private static void removeButtonFromScreen(Screen screen, Button button) {
+        ((ScreenInvoker) screen).bzaRemoveWidget(button);
+    }
+
+    private static void tryAddQuickAmountButtons(Screen screen) {
+        var cfg = getCfg();
+        if (cfg == null || !cfg.signQuickAmountsEnabled) return;
+        if (!(screen instanceof SignEditScreen signScreen)) return;
+        if (cfg.signQuickAmounts == null || cfg.signQuickAmounts.isEmpty()) return;
+        // 与剪贴板贴入同节奏:告示牌行内容可能比屏幕打开晚到,延迟重试等待布局可判
+        Scheduler.schedule(0, new QuickButtonsTask(signScreen, new ArrayList<>(cfg.signQuickAmounts)));
+    }
+
+    /** 布局匹配后在告示牌下方安装一排快捷按钮(最多两行,每行居中);成功返回 true */
+    private static boolean installQuickButtons(SignEditScreen screen, List<SignQuickAmount> amounts) {
+        String[] messages = ((AbstractSignEditScreenAccessor) screen).messages();
+        if (!isAmountSignLayout(messages)) return false;
+
+        // 移除上次可能残留的按钮,保证始终只有一排
+        for (Button old : new ArrayList<>(quickButtons)) removeButtonFromScreen(screen, old);
+        quickButtons.clear();
+
+        Font font = Minecraft.getInstance().font;
+        int btnH = 20;
+        int gap = 4;
+        int baseY = 174; // 告示牌(66~168)正下方
+        int maxRows = 2;
+        // 一排最大宽度限制在屏宽与 320 的较小值,按钮集中在画面中部,不会横贯整个屏幕
+        int maxRowWidth = Math.min(screen.width - 16, 320);
+        int row = 0;
+        int yPos = baseY;
+        List<Button> fresh = new ArrayList<>();
+        int i = 0;
+        while (i < amounts.size() && row < maxRows) {
+            // 逐行填装:统计这一行能放下的按钮
+            int rowW = -gap;
+            int count = 0;
+            int start = i;
+            while (i < amounts.size()) {
+                int w = buttonWidth(font, amounts.get(i));
+                if (count > 0 && rowW + gap + w > maxRowWidth) break;
+                rowW += gap + w;
+                count++;
+                i++;
+            }
+            int startX = screen.width / 2 - rowW / 2;
+            for (int j = start; j < i; j++) {
+                final int amount = amounts.get(j).amount();
+                int w = buttonWidth(font, amounts.get(j));
+                Button b = Button.builder(Component.literal(amounts.get(j).toString()),
+                        _ -> onQuickAmountClick(screen, amount))
+                        .bounds(startX, yPos, w, btnH)
+                        .build();
+                fresh.add(b);
+                startX += w + gap;
+            }
+            row++;
+            yPos = baseY + row * (btnH + gap);
+        }
+        fresh.forEach(b -> addButtonToScreen(screen, b));
+        quickButtons.addAll(fresh);
+        return true;
+    }
+
+    private static int buttonWidth(Font font, SignQuickAmount o) {
+        return Math.max(36, font.width(o.toString()) + 14);
+    }
+
+    private static void onQuickAmountClick(SignEditScreen screen, int amount) {
+        ((AbstractSignEditScreenAccessor) screen).messages()[0] = String.valueOf(amount);
+        playClickSound();
+    }
+
+    /** 告示牌行内容晚到时,带最大尝试次数的按钮安装重试任务 */
+    private static final class QuickButtonsTask implements Runnable {
+        private static final int MAX_ATTEMPTS = 5;
+        private final SignEditScreen screen;
+        private final List<SignQuickAmount> amounts;
+        private int attempts;
+
+        QuickButtonsTask(SignEditScreen screen, List<SignQuickAmount> amounts) {
+            this.screen = screen;
+            this.amounts = amounts;
+        }
+
+        @Override
+        public void run() {
+            if (Minecraft.getInstance().screen != screen) return; // 屏幕已关闭/切换,放弃
+            if (installQuickButtons(screen, amounts)) return;     // 已安装,结束
             if (++attempts < MAX_ATTEMPTS) Scheduler.schedule(3, this); // 行内容未到,稍后重试
         }
     }

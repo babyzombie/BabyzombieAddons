@@ -55,7 +55,7 @@ public final class KuudraDirectionHUD {
             lastDir = getAbsoluteDir(e);
             
             if (!p4 && lastDir != UNKNOWN && KuudraStunTimer.p4End - ServerTick.getTime() > 12000) {
-                KuudraStunTimer.p4End = ServerTick.getTime() + 5500;
+                KuudraStunTimer.p4End = ServerTick.getTime() + 4500 + ServerTick.getPing();
                 p4 = true;
             }
         });
