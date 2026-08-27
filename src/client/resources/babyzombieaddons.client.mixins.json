@@ -76,6 +76,7 @@
     "render.ViewAreaInvoker",
     "resource.PackRepositoryMixin",
     "screen.AbstractSignEditScreenAccessor",
+    "screen.ScreenInvoker",
     "screen.CommandSuggestionsMixin",
     "screen.ContainerClickMixin",
     "screen.GuiOptionEditorDropdownMixin",

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * 补给放置点（Pile）路径点 — 每个放置点显示对应的 pre spot 名称（X / Triangle / Equals / Slash…），
@@ -39,6 +40,9 @@ public final class KuudraPileWaypoints {
     private static final Logger LOGGER = LoggerFactory.getLogger("BabyzombieAddons");
 
     private static final int PILE_BEACON_HEIGHT = 40;
+
+    /** 榜行文本后缀名归一：去 " (...)" 后缀。每 tick 扫描高频调用，静态复用避免内联 replaceAll 重复编译正则 */
+    private static final Pattern SUFFIX_PAREN_PATTERN = Pattern.compile(" \\(.+\\)");
 
     private record Pile(String name, double x, double y, double z) {}
 
@@ -134,9 +138,9 @@ public final class KuudraPileWaypoints {
             if (!client.player.level().getScoreboard().listPlayerScores(holder).containsKey(obj)) continue;
             var team = client.player.level().getScoreboard().getPlayersTeam(holder.getScoreboardName());
             if (team == null) continue;
-            String text = ChatUtils.stripColor(ChatUtils.removeEmoji(
-                    team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString()))
-                    .replaceAll(" \\(.+\\)", "");
+            String text = SUFFIX_PAREN_PATTERN.matcher(ChatUtils.stripColor(ChatUtils.removeEmoji(
+                    team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString())))
+                    .replaceAll("");
             if (text.equals("Rescue supplies") || text.equals("Protect Elle")) return text;
         }
         return "";

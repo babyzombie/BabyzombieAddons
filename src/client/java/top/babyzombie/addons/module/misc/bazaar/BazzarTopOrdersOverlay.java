@@ -49,19 +49,34 @@ public final class BazzarTopOrdersOverlay implements IGuiOverlay {
     private static String lastOrdersHoverKey = "";
     private static long lastOrdersHoverTs = -1L;
 
+    /** Bazaar 界面判定缓存：同 screen 实例 1s 内不重复做槽位扫描（isBazzarScreen 每帧/每 tick 都会走） */
+    private static Screen lastCheckedScreen;
+    private static long lastCheckedMs = -1L;
+    private static boolean lastCheckedIsBazaar;
+
+    /** 重建内容签名缓存：屏幕标题/中间物品/API 快照/相关配置都没变时跳过全量重建 */
+    private static String lastRebuildSig = "";
+    private static long lastSigMs = 0L;
+    /** GUI 模式订单行无签名依据，5s 强制刷新兜底（原 200ms 无条件重建） */
+    private static final long SIG_FORCE_MS = 5000L;
+
+    /** 数据时间格式化器：static final，避免每次重建重新解析 pattern */
+    private static final java.time.format.DateTimeFormatter TIME_FORMATTER =
+            java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss");
+
     private BazzarTopOrdersOverlay() {}
 
     public static void init() {
         GuiOverlayManager.register(INSTANCE);
 
-        // Tick 节流重建（无缓存承诺：每次都完整重新 parse）
+        // Tick 节流重建（无缓存承诺：每次都完整重新 parse，但用内容签名跳过无条件重建）
         ClientTickEvents.END_CLIENT_TICK.register(c -> {
             var cfg = getCfg();
             if (cfg == null || !cfg.overlayEnabled) return;
 Screen s = Minecraft.getInstance().gui.screen();
             // Bazaar 界面（含列表页）就刷新数据，操作栏常显；订单数据仅详情页解析。
             // 订单页（单独开关）同样刷新数据（悬浮订单信息依赖 API）
-            boolean bazaar = BazzarInventoryMatcher.isBazzarScreen(s);
+            boolean bazaar = isBazaarScreenCached(s);
             boolean orders = cfg.ordersPageEnabled && isOrdersPage(s);
             if (!bazaar && !orders) return;
             // API 模式下刷新数据（60s 节流由 tracker 保证）
@@ -69,6 +84,11 @@ Screen s = Minecraft.getInstance().gui.screen();
             long now = System.currentTimeMillis();
             if (now - lastRebuildMs < REBUILD_INTERVAL_MS) return;
             lastRebuildMs = now;
+            // 内容签名没变（同一物品同一快照）且未到强制刷新时间 → 跳过全量重建
+            String sig = rebuildSignature(s);
+            if (sig.equals(lastRebuildSig) && now - lastSigMs < SIG_FORCE_MS) return;
+            lastRebuildSig = sig;
+            lastSigMs = now;
             rebuildTexts();
         });
 
@@ -99,9 +119,27 @@ Screen s = Minecraft.getInstance().gui.screen();
         var cfg = getCfg();
         if (cfg == null || !cfg.overlayEnabled) return false;
         if (!HypixelLocationTracker.getInstance().isInSkyblock()) return false;
-        if (BazzarInventoryMatcher.isBazzarScreen(screen)) return true;
+        if (isBazaarScreenCached(screen)) return true;
         // 订单页：单独开关控制（悬浮订单信息 + 操作栏）
         return cfg.ordersPageEnabled && isOrdersPage(screen);
+    }
+
+    /**
+     * isBazzarScreen 判定缓存：完整判定（isBazzarScreen → findButtons 遍历全部槽位
+     * 并对每个槽位 getDisplayName/stripColor）每帧 shouldRender + 每 tick 都会跑，
+     * 是 Bazaar 界面打开时最大的瞬时分配源。同 screen 实例 1s 内直接复用上次结果；
+     * Bazaar 页面切换都会创建新 screen 实例，不影响判定准确性。
+     */
+    private static boolean isBazaarScreenCached(Screen s) {
+        if (s == null) return false;
+        long now = System.currentTimeMillis();
+        if (s == lastCheckedScreen && now - lastCheckedMs < 1000L) {
+            return lastCheckedIsBazaar;
+        }
+        lastCheckedScreen = s;
+        lastCheckedMs = now;
+        lastCheckedIsBazaar = BazzarInventoryMatcher.isBazzarScreen(s);
+        return lastCheckedIsBazaar;
     }
 
     @Override public void onInventoryUpdated() { rebuildTexts(); }
@@ -321,6 +359,33 @@ Screen s = Minecraft.getInstance().gui.screen();
             }
         }
         actionTexts = at;
+    }
+
+    // ========== 重建签名 ==========
+
+    /**
+     * 重建内容签名：屏幕标题 + 中间物品显示名 + API 快照时间 + 相关配置。
+     * 相等说明 HUD 内容不会变（GUI 模式订单行由 5s 强制刷新兜底），可跳过
+     * 全量重建（重建包含两次 ItemStack.getTooltipLines 全量 tooltip 解析）。
+     */
+    private static String rebuildSignature(Screen s) {
+        StringBuilder sb = new StringBuilder(96);
+        try {
+            if (s != null) sb.append(ChatUtils.stripColor(s.getTitle().getString()));
+        } catch (Exception ignored) {}
+        if (s instanceof AbstractContainerScreen<?> cs) {
+            try {
+                ItemStack center = BazzarInventoryMatcher.getCenterItem(cs);
+                if (center != null) sb.append('|').append(center.getDisplayName().getString());
+            } catch (Exception ignored) {}
+        }
+        sb.append('|').append(BazaarItemInfo.getSnapshotTs());
+        var cfg = getCfg();
+        if (cfg != null) {
+            sb.append('|').append(cfg.maxLines).append('|').append(cfg.apiEnabled)
+                    .append('|').append(cfg.ordersPageEnabled);
+        }
+        return sb.toString();
     }
 
     private static void saveCfg() { ModConfigManager.save(); }
@@ -651,7 +716,7 @@ Screen s = Minecraft.getInstance().gui.screen();
         if (ts <= 0) return "--:--";
         return java.time.Instant.ofEpochMilli(ts)
                 .atZone(java.time.ZoneId.systemDefault())
-                .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
+                .format(TIME_FORMATTER);
     }
 
     /** 复制数据时间 */

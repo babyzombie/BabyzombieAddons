@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * 珍珠投掷路径点 — 根据玩家所在区域显示最优投掷位置和时机。
@@ -47,6 +48,9 @@ public final class PearlWaypoints {
     private static final double Y_MULT = 0.81;
     private static final double Z_ADJUST = 0.31;
     private static final double X_ADJUST = 0.63;
+
+    /** 榜行文本后缀名归一：去 " (...)" 后缀。每 tick 扫描高频调用，静态复用避免内联 replaceAll 重复编译正则 */
+    private static final Pattern SUFFIX_PAREN_PATTERN = Pattern.compile(" \\(.+\\)");
 
     // ── Gson model ──
     @SuppressWarnings("unused")
@@ -170,9 +174,9 @@ public final class PearlWaypoints {
             if (!client.player.level().getScoreboard().listPlayerScores(holder).containsKey(obj)) continue;
             var team = client.player.level().getScoreboard().getPlayersTeam(holder.getScoreboardName());
             if (team == null) continue;
-            String text = ChatUtils.stripColor(ChatUtils.removeEmoji(
-                    team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString()))
-                    .replaceAll(" \\(.+\\)", "");
+            String text = SUFFIX_PAREN_PATTERN.matcher(ChatUtils.stripColor(ChatUtils.removeEmoji(
+                    team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString())))
+                    .replaceAll("");
             if (text.equals("Rescue supplies") || text.equals("Protect Elle")) return text;
         }
         return "";
