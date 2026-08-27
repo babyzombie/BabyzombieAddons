@@ -556,7 +556,7 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
 
         @Override
         public void run() {
-            if (Minecraft.getInstance().screen != screen) return; // 屏幕已关闭/切换,放弃
+            if (Minecraft.getInstance().gui.screen() != screen) return; // 屏幕已关闭/切换,放弃
             if (installQuickButtons(screen, amounts)) return;     // 已安装,结束
             if (++attempts < MAX_ATTEMPTS) Scheduler.schedule(3, this); // 行内容未到,稍后重试
         }
