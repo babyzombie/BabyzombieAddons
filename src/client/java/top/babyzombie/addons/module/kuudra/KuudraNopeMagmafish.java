@@ -13,14 +13,15 @@ public final class KuudraNopeMagmafish {
     private static final String SUBTITLE = "               §7--§e[NPC] §cElle";
 
     public static void init() {
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!ModConfigManager.get().kuudra.nopeMagmafish) return;
-            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (!ModConfigManager.get().kuudra.nopeMagmafish) return true;
+            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return true;
 
             String text = ChatUtils.stripColor(message.getString());
             if (text.equals(TARGET_MSG)) {
                 ChatUtils.showTitle(TITLE, SUBTITLE, 0, 60, 40);
             }
+            return true;
         });
     }
 }

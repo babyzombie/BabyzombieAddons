@@ -88,9 +88,9 @@ public final class NoPreAlert {
             carrierCheckAttempted = false;
         });
 
-        ClientReceiveMessageEvents.GAME.register((msg, overlay) -> {
-            if (!ModConfigManager.get().kuudra.phase1.noPreAlert) return;
-            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((msg, overlay) -> {
+            if (!ModConfigManager.get().kuudra.phase1.noPreAlert) return true;
+            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return true;
             String text = ChatUtils.stripColor(msg.getString());
 
             if (KuudraChatLines.isFishUpKuudra(text)) {
@@ -100,11 +100,11 @@ public final class NoPreAlert {
                 supplyStartMs = System.currentTimeMillis();
                 emptyScans = 0;
                 carrierCheckAttempted = false;
-                return;
+                return true;
             }
             if (KuudraChatLines.isSuppliesCollected(text)) {
                 checked = true; // supplies phase over, stop checking
-                return;
+                return true;
             }
             // Detect "No X!" from party chat (IQ or our own) → 更新缺失 pre（动态标记）
             Matcher nm = NO_PRE_INCOMING.matcher(text);
@@ -121,6 +121,7 @@ public final class NoPreAlert {
             if (KuudraChatLines.isNotAgain(text) && !checked) {
                 checkAndAlert();
             }
+            return true;
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {

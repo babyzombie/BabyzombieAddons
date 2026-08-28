@@ -62,6 +62,9 @@ public final class KuudraPhaseTimer {
     public static Phase currentPhase() { return currentPhase; }
     public static boolean isInRun() { return kuudraTier > 0 && currentPhase != null; }
 
+    /** 当前阶段开始时刻（ServerTick.getTime() 时钟源），供其他功能对齐阶段计时 */
+    public static long getPhaseStartTick() { return phaseStartTick; }
+
     public static void reset() {
         kuudraTier = 0;
         currentPhase = null;
@@ -74,26 +77,26 @@ public final class KuudraPhaseTimer {
         for (Phase p : Phase.values()) splits.put(p, 0.0);
 
         // ── Chat-based phase detection ──
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!ModConfigManager.get().kuudra.phaseTimer) return;
-            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (!ModConfigManager.get().kuudra.phaseTimer) return true;
+            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return true;
             String text = ChatUtils.stripColor(message.getString());
 
             if (KuudraChatLines.isFishUpKuudra(text)) {
                 startRun();
-                return;
+                return true;
             }
-            if (currentPhase == null) return;
+            if (currentPhase == null) return true;
 
             // KUUDRA DOWN — ends any tier
             if (KuudraChatLines.isKuudraDown(text)) {
                 endRun();
-                return;
+                return true;
             }
 
             if (!text.startsWith("[NPC] Elle:") && !KuudraChatLines.isDestroyedPod(text)
                     && !KuudraChatLines.isEatenByKuudra(text))
-                return;
+                return true;
 
             if (KuudraChatLines.isSuppliesCollected(text)) {
                 endPhase(Phase.SUPPLIES);
@@ -120,6 +123,7 @@ public final class KuudraPhaseTimer {
             } else if (KuudraChatLines.isGoodJob(text)) {
                 endRun();
             }
+            return true;
         });
 
         // ── Tick-based BOSS detection (Y < 10, T5 only) ──
@@ -185,6 +189,8 @@ public final class KuudraPhaseTimer {
         if (idx >= 0 && idx + 1 < phases.length) {
             currentPhase = phases[idx + 1];
             phaseStartTick = now;
+            // T5 Skip → Boss:进入最终阶段后 stun HUD 的 "P4" 倒计时已无意义,清除
+            if (currentPhase == Phase.BOSS) KuudraStunTimer.clearP4Timer();
         } else {
             currentPhase = null;
         }

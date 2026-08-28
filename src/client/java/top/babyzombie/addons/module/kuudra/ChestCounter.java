@@ -113,9 +113,10 @@ public final class ChestCounter {
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> save());
 
         // Update key when profile changes
-        ClientReceiveMessageEvents.GAME.register((msg, overlay) -> {
-            if (overlay) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((msg, overlay) -> {
+            if (overlay) return true;
             updateKey();
+            return true;
         });
 
         // Chest open → -1: two-step detection
@@ -141,13 +142,13 @@ public final class ChestCounter {
         });
 
         // Step 2: chat message confirms the chest opened
-        ClientReceiveMessageEvents.GAME.register((msg, overlay) -> {
-            if (overlay || !pendingChestOpen) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((msg, overlay) -> {
+            if (overlay || !pendingChestOpen) return true;
             String text = ChatUtils.stripColor(msg.getString());
             // Expire pending if too old
             if (System.currentTimeMillis() - pendingSinceMs > PENDING_TIMEOUT_MS) {
                 pendingChestOpen = false;
-                return;
+                return true;
             }
             if (text.contains("PAID CHEST REWARDS") || text.contains("FREE CHEST REWARDS")) {
                 pendingChestOpen = false;
@@ -156,6 +157,7 @@ public final class ChestCounter {
                     save();
                 }
             }
+            return true;
         });
 
         // HUD（世界内）

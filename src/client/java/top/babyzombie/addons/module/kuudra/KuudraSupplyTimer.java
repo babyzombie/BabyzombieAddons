@@ -76,14 +76,15 @@ public final class KuudraSupplyTimer {
         });
 
         // Reset on Kuudra start
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!ModConfigManager.get().kuudra.phase1.supplyPlaceTimerHud) return;
-            if (overlay) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (!ModConfigManager.get().kuudra.phase1.supplyPlaceTimerHud) return true;
+            if (overlay) return true;
             String text = ChatUtils.stripColor(message.getString());
             if (KuudraChatLines.isFishUpKuudra(text)) {
                 entries.clear();
                 suppliesStartMs = ServerTick.getTime();
             }
+            return true;
         });
 
         // HUD

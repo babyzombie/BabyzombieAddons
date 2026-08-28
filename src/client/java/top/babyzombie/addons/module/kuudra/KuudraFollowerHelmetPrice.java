@@ -14,18 +14,18 @@ public final class KuudraFollowerHelmetPrice {
     private KuudraFollowerHelmetPrice() {}
 
     public static void init() {
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!ModConfigManager.get().kuudra.followerHelmetPrice) return;
-            if (overlay) return;
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (!ModConfigManager.get().kuudra.followerHelmetPrice) return true;
+            if (overlay) return true;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return true;
             if (!HypixelLocationTracker.getInstance().isIn("Crimson Isle")
-                    || !Objects.equals(HypixelLocationTracker.getInstance().getLocation(), "Plhlegblast Pool")) return;
+                    || !Objects.equals(HypixelLocationTracker.getInstance().getLocation(), "Plhlegblast Pool")) return true;
 
             String text = ChatUtils.stripColor(message.getString());
-            if (!text.equals("[NPC] Kuudra Believer: Maybe Kuudra will show favor upon you.")) return;
+            if (!text.equals("[NPC] Kuudra Believer: Maybe Kuudra will show favor upon you.")) return true;
 
             var player = Minecraft.getInstance().player;
-            if (player == null) return;
+            if (player == null) return true;
             String name = player.getName().getString();
             int price = calculatePrice(name);
             int day = getDayOfYear();
@@ -33,6 +33,7 @@ public final class KuudraFollowerHelmetPrice {
             String msg = ChatUtils.translate("kuudra.follower_helmet", name, price, day);
             ChatUtils.showMessage(msg);
             ChatUtils.copyToClipboard(msg);
+            return true;
         });
     }
 

@@ -245,10 +245,16 @@ public class SkyblockConfig {
         public boolean enabled = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutEntityRenderMode", desc = "config.babyzombieaddons.option.loadoutEntityRenderMode.desc") @ConfigEditorDropdown @SearchTag("loadout") @SearchTag("entity") @SearchTag("render")
         public EntityRenderMode entityRenderMode = EntityRenderMode.ARMOR_STAND;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutAutoClose", desc = "config.babyzombieaddons.option.loadoutAutoClose.desc") @ConfigEditorBoolean @SearchTag("loadout") @SearchTag("autoclose")
-        public boolean autoClose = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutItemCache", desc = "config.babyzombieaddons.option.loadoutItemCache.desc") @ConfigEditorBoolean @SearchTag("loadout") @SearchTag("cache")
         public boolean cacheItemsFromCurrent = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutAutoClose", desc = "config.babyzombieaddons.option.loadoutAutoClose.desc") @ConfigEditorBoolean @SearchTag("loadout") @SearchTag("autoclose")
+        public boolean autoClose = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutCloseOnNonSwitchClick", desc = "config.babyzombieaddons.option.loadoutCloseOnNonSwitchClick.desc") @ConfigEditorBoolean @SearchTag("loadout") @SearchTag("autoclose") @SearchTag("click")
+        public boolean closeOnNonSwitchClick = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutKuudraFastClose", desc = "config.babyzombieaddons.option.loadoutKuudraFastClose.desc") @ConfigEditorBoolean @SearchTag("loadout") @SearchTag("autoclose") @SearchTag("kuudra")
+        public boolean kuudraFastClose = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.loadoutDungeonFastClose", desc = "config.babyzombieaddons.option.loadoutDungeonFastClose.desc") @ConfigEditorBoolean @SearchTag("loadout") @SearchTag("autoclose") @SearchTag("dungeon")
+        public boolean dungeonFastClose = false;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.group.loadoutKeyBindings", desc = "config.babyzombieaddons.group.loadoutKeyBindings.desc") @Accordion
         public KeyBindings keyBindings = new KeyBindings();

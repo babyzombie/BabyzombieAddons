@@ -37,14 +37,15 @@ public final class KuudraEnergyDisplay {
             }
         });
 
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!ModConfigManager.get().kuudra.phase3.energyDisplay) return;
-            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (!ModConfigManager.get().kuudra.phase3.energyDisplay) return true;
+            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return true;
             String text = message.getString();
             if (text.contains("recovered a Fuel Cell and charged the Ballista")) {
                 Matcher m = FUEL_PATTERN.matcher(text);
                 if (m.find()) fuel = Integer.parseInt(m.group(1));
             }
+            return true;
         });
 
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,

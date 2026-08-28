@@ -13,6 +13,7 @@ import net.minecraft.world.phys.Vec3;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.render.RenderPhaseRegister;
 import top.babyzombie.addons.util.render.WorldRenderUtils;
 import top.babyzombie.addons.util.render.WorldTextRenderer;
@@ -59,19 +60,20 @@ public final class KuudraP4Features {
     private static float kuudraDist = -1;
 
     public static void init() {
-        ClientReceiveMessageEvents.GAME.register((msg, overlay) -> {
-            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((msg, overlay) -> {
+            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return true;
 
             String text = ChatUtils.stripColor(msg.getString());
             // Reset rend tracking on boss start
             if (KuudraChatLines.isFishUpKuudra(text)) {
                 resetRendState();
                 ichorPools.clear();
-                return;
+                return true;
             }
-            // Start boss timer
+            // Start boss timer — T3/T4 及 phaseTimer 关闭时的 fallback 锚点；
+            // T5 进入 BOSS 阶段时会在 tick 中覆盖为与 KuudraPhaseTimer 同一起点
             if (KuudraChatLines.isP4Start(text)) {
-                bossStartMs = System.currentTimeMillis();
+                bossStartMs = ServerTick.getTime();
             }
             // Boss killed — 清理 Rend 临时状态，避免结束后继续触发
             if (KuudraChatLines.isKuudraDown(text)) {
@@ -99,7 +101,7 @@ public final class KuudraP4Features {
                         int cy = Integer.parseInt(im.group(2));
                         int cz = Integer.parseInt(im.group(3));
                         var level = Minecraft.getInstance().level;
-                        if (level == null) return;
+                        if (level == null) return true;
                         while (cy >= -64 && level.getBlockState(new BlockPos(cx, cy - 1, cz)).isAir()) {
                             cy--;
                         };
@@ -108,6 +110,7 @@ public final class KuudraP4Features {
                     } catch (NumberFormatException ignored) {}
                 }
             }
+            return true;
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -118,6 +121,14 @@ public final class KuudraP4Features {
             boolean inP4 = KuudraLocationTracker.p4 || "p4".equals(KuudraLocationTracker.area);
             if (!inP4) return;
 
+            // T5 BOSS 阶段锚定：与 KuudraPhaseTimer 的 boss 计时同源同起点（ServerTick 时钟），
+            // 让 rend 秒数与 splits 的 BOSS 行一致；phaseTimer 关闭时 currentPhase 恒为 null，
+            // 自然回退到 P4_START 消息锚点
+            if (KuudraPhaseTimer.currentPhase() == KuudraPhaseTimer.Phase.BOSS
+                    && bossStartMs != KuudraPhaseTimer.getPhaseStartTick()) {
+                bossStartMs = KuudraPhaseTimer.getPhaseStartTick();
+            }
+
             LivingEntity kuudra = KuudraLocationTracker.kuudraEntity;
             if (kuudra == null || kuudra.isDeadOrDying()) {
                 // Fallback: find wither named Kuudra
@@ -127,34 +138,39 @@ public final class KuudraP4Features {
                         w -> ChatUtils.stripColor(w.getName().getString()).contains("Kuudra"));
                 if (!withers.isEmpty()) kuudra = withers.getFirst();
             }
+            boolean alive = kuudra != null && !kuudra.isDeadOrDying();
 
-            if (kuudra != null && !kuudra.isDeadOrDying()) {
-                // Rend tracking
-                if (cfg.rendTracker) {
-                    float hp = kuudra.getHealth();
-                    if (lastHP > 0 && hp > 0 && lastHP - hp > MIN_REND_RAW) {
-                        boolean sameDrop = Math.abs(lastDropHigh - lastHP) < REND_DROP_EPSILON
-                                && Math.abs(lastDropLow - hp) < REND_DROP_EPSILON;
-                        if (!sameDrop) {
-                            float scaled = (lastHP - hp) * REND_MULTIPLIER;
-                            double sec = rendSeconds();
-                            if (sec > 1.2) {
-                                ChatUtils.showTranslatable("kuudra.rend", formatRendDamage(scaled), sec);
-                                lastDropHigh = lastHP;
-                                lastDropLow = hp;
-                            }
+            // Rend tracking — 去掉 hp>0 限制：实体死亡/消失时 hp 视为 0，
+            // 打死 Kuudra 那一击（落差 → 0）也要记上
+            if (cfg.rendTracker) {
+                float hp = alive ? kuudra.getHealth() : 0f;
+                if (lastHP > 0 && lastHP - hp > MIN_REND_RAW) {
+                    boolean sameDrop = Math.abs(lastDropHigh - lastHP) < REND_DROP_EPSILON
+                            && Math.abs(lastDropLow - hp) < REND_DROP_EPSILON;
+                    if (!sameDrop) {
+                        float scaled = (lastHP - hp) * REND_MULTIPLIER;
+                        double sec = rendSeconds();
+                        if (sec > 1.2) {
+                            // Component.translatable 不支持 %.2f 修饰(所有 % 指令按 %s toString 替换),
+                            // 因此时间/伤害必须先格式化好,再作为纯 %s 参数传入
+                            ChatUtils.showTranslatable("kuudra.rend",
+                                    formatRendSeconds(sec), formatRendDamage(scaled));
+                            lastDropHigh = lastHP;
+                            lastDropLow = hp;
                         }
                     }
+                }
+                if (alive) {
                     lastHP = hp;
+                } else {
+                    // Kuudra 死亡/消失 — 击杀击已在上方记录，清理 Rend 临时状态
+                    resetRendState();
                 }
+            }
 
-                // Distance
-                if (cfg.kuudraDistance) {
-                    kuudraDist = kuudra.distanceTo(client.player);
-                }
-            } else {
-                // Kuudra 死亡/消失 — 清理 Rend 临时状态
-                resetRendState();
+            // Distance
+            if (cfg.kuudraDistance && alive) {
+                kuudraDist = kuudra.distanceTo(client.player);
             }
 
             // Expire ichor pools
@@ -210,11 +226,12 @@ public final class KuudraP4Features {
     public static float getKuudraDistance() { return kuudraDist; }
 
     /**
-     * 返回距 P4 开始的秒数；计时无效（未收到 P4 开始消息 / 超过上限）时重新锚定到当前时间，
+     * 返回距 BOSS 阶段开始的秒数（与 KuudraPhaseTimer 的 boss 计时同源）；计时无效
+     * （未收到 P4 开始消息 / 未进入 BOSS 阶段 / 超过上限）时重新锚定到当前时间，
      * 返回 0 让本次掉血不触发，避免出现 epoch 巨数或跨越多场战斗的时间。
      */
     private static double rendSeconds() {
-        long now = System.currentTimeMillis();
+        long now = ServerTick.getTime();
         if (bossStartMs == 0 || now - bossStartMs > REND_MAX_BOSS_MS) {
             bossStartMs = now;
             return 0;
@@ -228,6 +245,10 @@ public final class KuudraP4Features {
         bossStartMs = 0;
         lastDropHigh = -1;
         lastDropLow = -1;
+    }
+
+    private static String formatRendSeconds(double sec) {
+        return String.format("%.2fs", sec);
     }
 
     private static String formatRendDamage(float d) {

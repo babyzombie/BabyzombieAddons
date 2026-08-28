@@ -1,6 +1,8 @@
 package top.babyzombie.addons.module.kuudra;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -45,6 +47,10 @@ public final class KuudraWaypoints {
     private static final double SUPPLY_PULL_RADIUS = 5.0;
     private static final double SUPPLY_CRATE_OFFSET = 3.7;
     private static final double SUPPLY_VERTICAL_MARGIN = 4.0;
+
+    /** P1 补给阶段活跃标志：fish up 聊天即置位（不等计分板切换），收集完毕/P2 计分板/换图清除。
+     *  解决"箱子刚浮出、计分板还显示旧阶段"时无标记的问题。 */
+    private static boolean p1SupplyPhaseActive;
 
     /** 榜行文本后缀名归一：去 " (...)" 后缀。每 tick 扫描高频调用，静态复用避免内联 replaceAll 重复编译正则 */
     private static final Pattern SUFFIX_PAREN_PATTERN = Pattern.compile(" \\(.+\\)");
@@ -209,6 +215,25 @@ public final class KuudraWaypoints {
                 WorldTextRenderer.renderString(ctx, t.text, t.x, t.y, t.z, t.color, 0.08f, true);
         });
 
+        // fish up 即进入 P1 补给阶段（无需等计分板切换）；收集完毕（P2 开始）后退出
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay) return true;
+            if (!ModConfigManager.get().kuudra.phase1.supplyBeacons
+                    && !ModConfigManager.get().kuudra.phase1.supplyInteractionZone
+                    && !ModConfigManager.get().kuudra.phase1.supplyGiantHitbox
+                    && !ModConfigManager.get().kuudra.phase1.supplyPullCircle) return true;
+            if (!HypixelLocationTracker.getInstance().isInKuudra()) return true;
+            String text = ChatUtils.stripColor(message.getString());
+            if (KuudraChatLines.isFishUpKuudra(text)) {
+                p1SupplyPhaseActive = true;
+            } else if (KuudraChatLines.isSuppliesCollected(text)) {
+                p1SupplyPhaseActive = false;
+            }
+            return true;
+        });
+        // 换图/离开副本兜底清理
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> p1SupplyPhaseActive = false);
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var cfg = ModConfigManager.get().kuudra;
             boolean anyOn = cfg.phase1.supplyBeacons
@@ -224,6 +249,9 @@ public final class KuudraWaypoints {
 
             String newPhase = getScoreboardPhase(client);
 
+            // P2 计分板兜底清除（中途进房没收到收集消息时也能停）
+            if ("Protect Elle".equals(newPhase)) p1SupplyPhaseActive = false;
+
             beams.clear();
             supplies.clear();
             ballistaPiles.clear();
@@ -234,7 +262,9 @@ public final class KuudraWaypoints {
             fuelZombies.clear();
             seenKeys.clear();
 
-            if ("Rescue supplies".equals(newPhase)) {
+            // P1 补给：fish up 后即开始标记（不等计分板切换），P2 (Protect Elle) 前一直有效；
+            // 计分板 "Rescue supplies" 作为中途进房/消息漏收的兜底
+            if (p1SupplyPhaseActive || "Rescue supplies".equals(newPhase)) {
                 boolean needZombies = cfg.phase1.supplyInteractionZone;
                 if (cfg.phase1.supplyBeacons || needZombies || cfg.phase1.supplyGiantHitbox) {
                     for (var g : client.player.level().getEntitiesOfClass(Giant.class,

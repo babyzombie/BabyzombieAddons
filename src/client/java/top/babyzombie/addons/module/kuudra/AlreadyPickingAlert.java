@@ -16,9 +16,9 @@ public final class AlreadyPickingAlert {
     private AlreadyPickingAlert() {}
 
     public static void init() {
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!ModConfigManager.get().kuudra.phase1.alreadyPickingAlert) return;
-            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (!ModConfigManager.get().kuudra.phase1.alreadyPickingAlert) return true;
+            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return true;
 
             String text = ChatUtils.stripColor(message.getString());
             if (text.startsWith("Someone else is currently trying to pick up these supplies")) {
@@ -29,6 +29,7 @@ public final class AlreadyPickingAlert {
                             SoundEvents.VILLAGER_NO, SoundSource.PLAYERS, 1f, 1f);
                 }
             }
+            return true;
         });
     }
 }

@@ -506,10 +506,20 @@ public class LoadoutDisplayScreen extends Screen {
             int sid = PRESET_SLOTS[hp];
             ItemStack ps = slots[sid];
             boolean isRightClick = btn == 1;
+            boolean isSwitch = !isRightClick && !isEmptyPreset(ps) && !isCurrentPreset(ps);
+            // 上锁/空白/已装备的预设无法左键切换：自动关闭+本开关同时开启时左键直接关页
+            if (!isSwitch && !isRightClick && (isLocked(ps) || isEmptyPreset(ps) || isCurrentPreset(ps))) {
+                if (closeOnNoSwitchEnabled()) doClose();
+                return true;
+            }
             // 锁不响应任何点击；空/当前预设只响应右键
-            if (!isLocked(ps) && (isRightClick || (!isEmptyPreset(ps) && !isCurrentPreset(ps)))) {
+            if (!isLocked(ps) && (isRightClick || isSwitch)) {
                 sendClick(sid, btn);
-                minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+                if (isSwitch) {
+                    afterPresetSwitch();
+                } else {
+                    minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+                }
             }
             return true;
         }
@@ -582,9 +592,29 @@ public class LoadoutDisplayScreen extends Screen {
         if (idx < 0 || idx >= PRESET_SLOTS.length) return;
         int sid = PRESET_SLOTS[idx];
         ItemStack ps = slots[sid];
-        if (isEmpty(ps) || isGlassPane(ps) || isLocked(ps) || isEmptyPreset(ps) || isCurrentPreset(ps)) return;
+        if (isEmpty(ps) || isGlassPane(ps)) return;
+        // 上锁/空白/已装备的预设无法切换：自动关闭+本开关同时开启时直接关页
+        if (isLocked(ps) || isEmptyPreset(ps) || isCurrentPreset(ps)) {
+            if (closeOnNoSwitchEnabled()) doClose();
+            return;
+        }
         sendClick(sid, 0);
-        minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+        afterPresetSwitch();
+    }
+
+    /** 点击不可切换的预设也关页：需要「切换预设后自动关闭」同时开启才生效 */
+    private boolean closeOnNoSwitchEnabled() {
+        return ModConfigManager.get().skyblock.loadout.autoClose
+            && ModConfigManager.get().skyblock.loadout.closeOnNonSwitchClick;
+    }
+
+    /** 预设切换后的处理：地牢/Kuudra 快速关闭开关开启时立刻关页，否则延迟刷新等新页面加载 */
+    private void afterPresetSwitch() {
+        if (LoadoutModule.fastCloseEnabled()) {
+            doClose();
+        } else {
+            minecraft.execute(() -> minecraft.execute(this::refreshSlots));
+        }
     }
 
     private void sendClick(int slot, int btn) {

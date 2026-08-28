@@ -20,21 +20,22 @@ public final class EnderPearlRefill {
         if (initialized) return;
         initialized = true;
 
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay) return true;
             var loc = HypixelLocationTracker.getInstance();
             var cfg = ModConfigManager.get();
             boolean dungeonOn = cfg.dungeon.enderPearlRefill && loc.isInDungeon();
             boolean kuudraOn = cfg.kuudra.enderPearlRefill && loc.isInKuudra();
-            if (!dungeonOn && !kuudraOn) return;
+            if (!dungeonOn && !kuudraOn) return true;
 
             String text = ChatUtils.stripColor(message.getString());
             if (!text.equals("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")
-                && !text.equals("Starting in 1 second.")) return;
+                && !text.equals("Starting in 1 second.")) return true;
             var player = Minecraft.getInstance().player;
-            if (player == null) return;
+            if (player == null) return true;
             int total = countEnderPearls(player);
             if (total < 16) refill(16 - total);
+            return true;
         });
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
