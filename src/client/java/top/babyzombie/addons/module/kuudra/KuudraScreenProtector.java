@@ -22,8 +22,8 @@ public final class KuudraScreenProtector {
     private static long startMs;
 
     public static void init() {
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay) return true;
             String text = ChatUtils.stripColor(message.getString());
             if (text.equals("Starting in 1 second.")
                     && HypixelLocationTracker.getInstance().isInKuudra()) {
@@ -32,6 +32,7 @@ public final class KuudraScreenProtector {
             } else if (KuudraChatLines.isHeadToPlatform(text)) {
                 active = false;
             }
+            return true;
         });
 
         // 兜底：结束消息一直没出现时自动解除，避免保护残留到下一局

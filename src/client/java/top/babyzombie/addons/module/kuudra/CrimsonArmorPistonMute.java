@@ -15,13 +15,14 @@ public final class CrimsonArmorPistonMute {
     private CrimsonArmorPistonMute() {}
 
     public static void init() {
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (!ModConfigManager.get().kuudra.muteCrimsonArmor) return;
-            if (!overlay) return;
-            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (!ModConfigManager.get().kuudra.muteCrimsonArmor) return true;
+            if (!overlay) return true;
+            if (!HypixelLocationTracker.getInstance().isInSkyblock()) return true;
 
             String text = message.getString();
             muted = text.contains("10⁑") || text.contains("10ᝐ") || text.contains("10Ѫ");
+            return true;
         });
 
         PlaySoundEvents.BEFORE_PLAY.register(sound -> {

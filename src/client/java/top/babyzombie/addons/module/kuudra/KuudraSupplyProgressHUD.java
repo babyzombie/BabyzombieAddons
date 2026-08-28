@@ -78,22 +78,22 @@ public final class KuudraSupplyProgressHUD {
     public static void init() {
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> reset());
 
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return true;
             String text = ChatUtils.stripColor(message.getString());
 
             if (KuudraChatLines.isFishUpKuudra(text)) {
                 reset();
-                return;
+                return true;
             }
             if (KuudraChatLines.isSuppliesCollected(text)) {
                 inSuppliesPhase = false;
-                return;
+                return true;
             }
             if (KuudraChatLines.isBallistaReady(text)) {
                 fuelCount = 0;
                 currentProgress = 0;
-                return;
+                return true;
             }
 
             Matcher sm = SUPPLY_PLACE_PATTERN.matcher(text);
@@ -101,7 +101,7 @@ public final class KuudraSupplyProgressHUD {
                 supplyCount = Integer.parseInt(sm.group(1));
                 // 放置完成 = 上一个 crate 拾取结束、title 消失 → 立即隐藏 HUD
                 lastTitleMs = 0;
-                return;
+                return true;
             }
 
             Matcher fm = FUEL_CELL_PATTERN.matcher(text);
@@ -109,6 +109,7 @@ public final class KuudraSupplyProgressHUD {
                 int pct = Integer.parseInt(fm.group(1));
                 fuelCount = pct / 25;
             }
+            return true;
         });
 
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,

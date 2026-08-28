@@ -1,5 +1,7 @@
 package top.babyzombie.addons.module.kuudra;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -16,7 +18,14 @@ public final class KuudraStunTimer {
 
     private static long stunEnd;
     private static long downEnd;
-    public static long p4End;
+    private static long p4End;
+    private static boolean kuudraInp4;
+
+    /** 清除 P4 倒计时（T5 进入 Boss 阶段时由 KuudraPhaseTimer 调用，
+     *  避免 stun HUD 仍显示已无意义的 "P4" 剩余时间）。 */
+    public static void clearP4Timer() {
+        p4End = 0;
+    }
 
     public static void init() {
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
@@ -36,9 +45,9 @@ public final class KuudraStunTimer {
                 KuudraLocationTracker.p4 = true;
                 var loc = HypixelLocationTracker.getInstance().getLocation();
                 if (loc != null && loc.contains("T5")) {
-                    p4End = ServerTick.getTime() + 15300;
+                    p4End = ServerTick.getTime() + 15000;
                 } else {
-                    downEnd = ServerTick.getTime() + 15300;
+                    downEnd = ServerTick.getTime() + 15000;
                 }
             }
 
@@ -66,6 +75,21 @@ public final class KuudraStunTimer {
                 float s = HudManager.scale("KuudraStun");
                 HudManager.drawScaled(context, font, text, x, y, s);
             }
+        });
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
+            if (!ModConfigManager.get().kuudra.phase3.stunTimer) return;
+            // 实体尚未扫描到（null）时视为未到触发条件，与 Y > 60 同语义
+            var kuudra = KuudraLocationTracker.kuudraEntity;
+            if (kuudraInp4 || (kuudra != null && !(kuudra.getY() < 60 || kuudra.getY() > 110))) return;
+            if (p4End < ServerTick.getTime() + 12000) return;
+            p4End = ServerTick.getTime() + 3500;
+            kuudraInp4 = true;
+        });
+
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> {
+            kuudraInp4 = false; stunEnd = -1; downEnd = -1; p4End = -1;
         });
     }
 

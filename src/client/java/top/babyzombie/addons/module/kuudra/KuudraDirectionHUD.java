@@ -2,6 +2,7 @@ package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
@@ -9,6 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -23,27 +25,46 @@ public final class KuudraDirectionHUD {
     private static final Dir UNKNOWN = new Dir("?", "§7");
 
     private static Dir lastDir = UNKNOWN;
-    private static boolean p4 = false;
+    /** 战斗已结束（KUUDRA DOWN! 已触发）。Kuudra 本体（岩浆怪）击杀后不会真的消失，
+     *  会剩最后一点血残留，死亡判定不可靠 — 该标志阻止 tick 用残留实体重新喂方向 */
+    private static boolean runEnded = false;
 
     public static void init() {
+        // Kuudra 被击杀后实体"剩最后一点血爆炸"，死亡判定不可靠 —
+        // 以 KUUDRA DOWN! 消息为准立即清空方向并标记战斗结束，避免结束后残留显示
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return true;
+            String text = ChatUtils.stripColor(message.getString());
+            if (KuudraChatLines.isKuudraDown(text)) {
+                lastDir = UNKNOWN;
+                runEnded = true;
+            } else if (KuudraChatLines.isFishUpKuudra(text)) {
+                runEnded = false; // 新一场开始，重新允许追踪
+            }
+            return true;
+        });
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfigManager.get().kuudra.phase4.directionHud) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
+            if (runEnded) {
+                lastDir = UNKNOWN;
+                return;
+            }
             if (!KuudraLocationTracker.p4 && !"p4".equals(KuudraLocationTracker.area)) {
                 lastDir = UNKNOWN;
-                p4 = false;
                 return;
             }
             if (client.player == null) return;
 
             // Find Kuudra entity (reuse location tracker or scan ourselves)
             var e = KuudraLocationTracker.kuudraEntity;
-            if (e == null || e.isDeadOrDying()) {
-                // Fallback: scan withers
+            if (e == null || e.isDeadOrDying() || e.getY() > 69) {
+                // Fallback: scan withers（排除死亡残留，爆炸动画中的死体不喂方向）
                 var withers = client.player.level().getEntitiesOfClass(
                         net.minecraft.world.entity.boss.wither.WitherBoss.class,
                         new net.minecraft.world.phys.AABB(client.player.blockPosition()).inflate(128),
-                        w -> top.babyzombie.addons.util.ChatUtils.stripColor(
+                        w -> !w.isDeadOrDying() && top.babyzombie.addons.util.ChatUtils.stripColor(
                                 w.getName().getString()).contains("Kuudra"));
                 if (!withers.isEmpty()) e = withers.getFirst();
             }
@@ -53,11 +74,6 @@ public final class KuudraDirectionHUD {
             }
 
             lastDir = getAbsoluteDir(e);
-            
-            if (!p4 && lastDir != UNKNOWN && KuudraStunTimer.p4End - ServerTick.getTime() > 12000) {
-                KuudraStunTimer.p4End = ServerTick.getTime() + 4500 + ServerTick.getPing();
-                p4 = true;
-            }
         });
 
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
@@ -81,7 +97,8 @@ public final class KuudraDirectionHUD {
                 });
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> {
-            p4 = false; lastDir = UNKNOWN;
+                lastDir = UNKNOWN;
+                runEnded = false;
         });
     }
 

@@ -22,13 +22,13 @@ public final class ArrowPoisonRefill {
     private ArrowPoisonRefill() {}
 
     public static void init() {
-        ClientReceiveMessageEvents.GAME.register((msg, overlay) -> {
-            if (overlay) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((msg, overlay) -> {
+            if (overlay) return true;
             String text = ChatUtils.stripColor(msg.getString());
 
             var cfg = ModConfigManager.get().kuudra;
             var tracker = HypixelLocationTracker.getInstance();
-            if (!tracker.isInKuudra()) return;
+            if (!tracker.isInKuudra()) return true;
 
             String loc = tracker.getLocation();
             boolean inT5 = loc != null && loc.contains("T5");
@@ -41,7 +41,7 @@ public final class ArrowPoisonRefill {
                     && inT5
                     && matchesTwilightTiming(text, cfg.phase3.arrowPoison.twilightArrowTiming);
 
-            if (!toxicMatches && !twilightMatches) return;
+            if (!toxicMatches && !twilightMatches) return true;
 
             long now = System.currentTimeMillis();
 
@@ -77,6 +77,7 @@ public final class ArrowPoisonRefill {
                     twilightCooldown = now + 2000;
                 }
             }
+            return true;
         });
     }
 

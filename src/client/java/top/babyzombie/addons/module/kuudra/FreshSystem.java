@@ -60,23 +60,23 @@ public final class FreshSystem {
         });
 
         // ── Chat detection ──
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return;
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            if (overlay || !HypixelLocationTracker.getInstance().isInKuudra()) return true;
             String text = ChatUtils.stripColor(message.getString());
 
             // P2 start（不清倒计时：让它自然走完，避免提前变进度条）
             if (KuudraChatLines.isSuppliesCollected(text)) {
                 inBuildPhase = true;
                 buildProgress = 0;
-                freshHistory.clear();
                 buildStartMs = ServerTick.getTime();
-                return;
+                return true;
             }
             // P2 end（清除建造开始倒计时，避免结束后仍显示 0.00s）
             if (KuudraChatLines.isBallistaReady(text)) {
                 inBuildPhase = false;
                 buildCountdownEndMs = -1;
-                return;
+                clearAll();
+                return true;
             }
 
             // 补给 6/6 放完 → 建造阶段开始倒计时
@@ -89,7 +89,7 @@ public final class FreshSystem {
             // 消息无前缀，startsWith 防止玩家在聊天栏复制这句造成误判
             if (text.startsWith("Your Fresh Tools Perk bonus doubles your building speed")) {
                 onSelfFresh();
-                return;
+                return true;
             }
 
             // Party fresh: detect both our own and IQ's "FRESH!" messages
@@ -107,6 +107,7 @@ public final class FreshSystem {
                 String coloredName = findColoredName(plainName);
                 trackFresh(0, coloredName != null ? coloredName : plainName);
             }
+            return true;
         });
 
         // ── Tick: cleanup expired, update build progress ──
@@ -179,7 +180,7 @@ public final class FreshSystem {
                     if (cfg.buildStartCountdown && buildCountdownEndMs > 0) {
                         long remainingMs = Math.max(0, buildCountdownEndMs - ServerTick.getTime());
                         if (remainingMs > 0 || !inBuildPhase) {
-                            double ratio = Math.min(1.0, Math.max(0.0, (double) remainingMs / BUILD_START_COUNTDOWN_MS));
+                            double ratio = Math.clamp((double) remainingMs / BUILD_START_COUNTDOWN_MS, 0.0, 1.0);
                             String color = ratio > 0.75 ? "§a" : ratio > 0.50 ? "§e" : ratio > 0.25 ? "§6" : "§c";
                             String text = String.format("%s%.2fs", color, remainingMs / 1000.0);
                             HudManager.drawScaled(context, font, text, x, y, s);
@@ -319,8 +320,7 @@ public final class FreshSystem {
             if (normalizePlayerName(p.getName().getString()).equalsIgnoreCase(plain)) return p;
             // Tab 显示名兜底：与 getName() 一致时也能命中（显示名可能含 [等级] 与图标）
             var display = p.getDisplayName();
-            if (display != null
-                    && normalizePlayerName(ChatUtils.toLegacyString(display)).equalsIgnoreCase(plain)) return p;
+            if (normalizePlayerName(ChatUtils.toLegacyString(display)).equalsIgnoreCase(plain)) return p;
         }
         return null;
     }
@@ -333,10 +333,9 @@ public final class FreshSystem {
         for (var p : world.players()) {
             var display = p.getDisplayName();
             boolean nameHit = normalizePlayerName(p.getName().getString()).equalsIgnoreCase(target);
-            boolean displayHit = display != null
-                    && normalizePlayerName(ChatUtils.toLegacyString(display)).equalsIgnoreCase(target);
+            boolean displayHit = normalizePlayerName(ChatUtils.toLegacyString(display)).equalsIgnoreCase(target);
             if (!nameHit && !displayHit) continue;
-            String raw = display != null ? ChatUtils.toLegacyString(display) : p.getName().getString();
+            String raw = ChatUtils.toLegacyString(display);
             String colored = ChatUtils.removeEmoji(raw)
                     .replaceAll("^((?:§.)*)\\[[^]]*]\\s*", "$1") // 去 [等级]/[rank] 前缀
                     .replaceAll("\\s+.*$", "")                    // 名字不含空格：截掉图标后缀（含其色码与 Ӄ 等字形）

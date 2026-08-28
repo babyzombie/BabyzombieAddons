@@ -32,9 +32,10 @@ public final class LoadoutModule {
             if (!ModConfigManager.get().skyblock.loadout.enabled) return;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return;
             if (closingGuard > 0) return;
-            // autoClose 开启 + pending 时不替换页面（PetManager 会关掉它）
+            // autoClose 开启 + pending 时不替换页面（PetManager 会关掉它）；
+            // 快速关闭（地牢/Kuudra 开关）同理，新页面注册时直接关，不等加载
             if (top.babyzombie.addons.util.pet.PetManager.getInstance().isRecentLoadoutSwitch()
-                && ModConfigManager.get().skyblock.loadout.autoClose) return;
+                && (ModConfigManager.get().skyblock.loadout.autoClose || fastCloseEnabled())) return;
             if (!LOADOUT_TITLE.matcher(ChatUtils.stripColor(cs.getTitle().getString())).matches()) return;
             if (!(cs.getMenu() instanceof ChestMenu)) return;
             if (client.gui.screen() instanceof LoadoutDisplayScreen) return;
@@ -42,6 +43,22 @@ public final class LoadoutModule {
             cachedContainer = cs;
             guiActive = true;
             client.execute(() -> client.gui.setScreen(new LoadoutDisplayScreen(cs)));
+        });
+
+        // 快速切装：切换后新页面在注册（AFTER_INIT）时立即关闭，不等加载完成，
+        // 避免服务器重开的 Loadout 页面在 Kuudra/地牢里闪出来
+        ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            if (closingGuard > 0) return;
+            if (!(screen instanceof AbstractContainerScreen<?> cs)) return;
+            if (!LOADOUT_TITLE.matcher(ChatUtils.stripColor(cs.getTitle().getString())).matches()) return;
+            if (!fastCloseEnabled()) return;
+            var pm = top.babyzombie.addons.util.pet.PetManager.getInstance();
+            if (!pm.isRecentLoadoutSwitch()) return;
+            // 页面内容还没加载完，直接关掉，跳过宠物/装备扫描
+            pm.setLoadoutSwitchPending(false);
+            client.execute(() -> {
+                if (client.player != null) client.player.closeContainer();
+            });
         });
 
         // 非 Loadout 页面打开时重置状态
@@ -57,4 +74,15 @@ public final class LoadoutModule {
     public static AbstractContainerScreen<?> getCachedContainer() { return cachedContainer; }
     public static boolean isGuiActive() { return guiActive; }
     public static void onCustomScreenClosed() { guiActive = false; }
+
+    /**
+     * 快速切装关闭是否启用：在 Kuudra/地牢且对应开关开启时，切换装备后
+     * 不等新页面加载完成，立刻关闭当前页面，新页面也在注册时直接关闭。
+     */
+    public static boolean fastCloseEnabled() {
+        var loadout = ModConfigManager.get().skyblock.loadout;
+        var tracker = HypixelLocationTracker.getInstance();
+        return (loadout.kuudraFastClose && tracker.isInKuudra())
+            || (loadout.dungeonFastClose && tracker.isInDungeon());
+    }
 }
