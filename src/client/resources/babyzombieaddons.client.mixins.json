@@ -95,6 +95,7 @@
     "screen.ScreenMixin",
     "screen.MoulConfigTranslationMixin",
     "screen.GuiOptionEditorDropdownMixin",
+    "screen.GuiOptionEditorDraggableListMixin",
 
 
 
