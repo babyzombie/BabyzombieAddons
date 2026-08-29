@@ -3,55 +3,33 @@ package top.babyzombie.addons.mixin.screen;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorDraggableList;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
- * MoulConfig 的 {@link GuiOptionEditorDraggableList} 用 HashMap 存储候选项文本，
- * 枚举常量以 identity hash 散列，导致下拉候选顺序与枚举声明顺序无关（看似随机乱序）。
+ * GuiOptionEditorDraggableList 的 {@code exampleText} 字段用 HashMap 初始化，
+ * 而 {@code getRemainingDropDownEntries()} 直接遍历 keySet() 决定下拉候选列表的显示顺序，
+ * HashMap 迭代顺序与插入顺序无关（enum 以 identity hash 散列，看似随机乱序）。
  * <p>
- * 在构造完成后按 enumConstants 声明顺序将 exampleText 重建为 LinkedHashMap，
- * 使候选项显示顺序恢复为枚举声明顺序；int 档（String[] exampleText）则按索引升序。
- * 仅影响"候选列表"的显示顺序，用户已保存的 List 顺序不受影响。
+ * 将构造函数字段初始化处内联的 {@code new HashMap<>()} 重定向为 LinkedHashMap，
+ * 迭代顺序 = 插入顺序（enum 按声明顺序、int 档按配置数组顺序），候选列表显示顺序稳定。
+ * 仅影响候选列表显示顺序，用户已保存的 List 顺序不受影响。
  */
 @Mixin(value = GuiOptionEditorDraggableList.class, remap = false)
 public class GuiOptionEditorDraggableListMixin {
 
-    @Shadow(remap = false)
-    private Map<Object, StructuredText> exampleText;
-
-    @Shadow(remap = false)
-    private Enum<?>[] enumConstants;
-
-    /** 3 参构造委托给 4 参构造，字段初始化只发生在 4 参构造中，故只需注入此处 */
-    @Inject(
+    /**
+     * 只重定向 4 参构造函数（字段初始化器所在，3 参构造只是委托调用没有 NEW HashMap），
+     * require = 1：若 moulconfig 升级后字节码变化导致注入点消失，启动即报错而不是静默失效。
+     */
+    @Redirect(
             method = "<init>(Lio/github/notenoughupdates/moulconfig/processor/ProcessedOption;[Ljava/lang/String;ZZ)V",
-            at = @At("TAIL"),
-            // 与 GuiOptionEditorDropdownMixin 保持一致:库升级签名变化时静默跳过,避免启动硬崩溃
-            require = 0
-    )
-    private void bza$reorderExampleText(CallbackInfo ci) {
-        Map<Object, StructuredText> ordered = new LinkedHashMap<>(exampleText.size() * 2);
-        if (enumConstants != null) {
-            // 枚举档:按声明顺序重排
-            for (Enum<?> constant : enumConstants) {
-                StructuredText text = exampleText.get(constant);
-                if (text != null) ordered.put(constant, text);
-            }
-        } else {
-            // int 档:key 为索引,按数值升序即 exampleText 数组顺序
-            List<Object> keys = new ArrayList<>(exampleText.keySet());
-            keys.sort((a, b) -> Integer.compare(((Number) a).intValue(), ((Number) b).intValue()));
-            for (Object key : keys) ordered.put(key, exampleText.get(key));
-        }
-        exampleText.clear();
-        exampleText.putAll(ordered);
+            at = @At(value = "NEW", target = "Ljava/util/HashMap;"),
+            require = 1)
+    private static HashMap<Object, StructuredText> useLinkedHashMapForExampleText() {
+        return new LinkedHashMap<>();
     }
 }
