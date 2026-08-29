@@ -51,6 +51,7 @@ public final class HudEditScreen extends Screen {
     private long chsPressStartMs;
     private int chsDragOffX, chsDragOffY;
     private boolean chsPressed;
+    private boolean chsPressOnDropdown; // 本次按下命中下拉框(纯选择语义,禁止进入拖拽)
     private int chsLastW;
 
     HudEditScreen(Screen parent) {
@@ -659,6 +660,7 @@ public final class HudEditScreen extends Screen {
             boolean hitDD = chsHit(mx, my, x, y + boxH, CHS_DROPDOWN_W, ddH);
             if (hitDD) {
                 chsPressed = true;
+                chsPressOnDropdown = true;
                 chsDragging = false;
                 chsPressStartMs = System.currentTimeMillis();
                 return true;
@@ -672,6 +674,7 @@ public final class HudEditScreen extends Screen {
         boolean hitMain = chsHit(mx, my, x, y, boxW, boxH);
         if (!hitMain) return false;
         chsPressed = true;
+        chsPressOnDropdown = false;
         chsDragging = false;
         chsPressStartMs = System.currentTimeMillis();
         chsDragOffX = mx - x;
@@ -691,6 +694,7 @@ public final class HudEditScreen extends Screen {
         int mx = (int) event.x(), my = (int) event.y();
 
         chsPressed = false;
+        chsPressOnDropdown = false;
         long dur = System.currentTimeMillis() - chsPressStartMs;
 
         if (chsDragging) {
@@ -726,6 +730,7 @@ public final class HudEditScreen extends Screen {
     private boolean categorySwitcherMouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
         if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return false;
         if (!chsPressed) return false;
+        if (chsPressOnDropdown) return true; // 下拉项按下期间消费拖拽事件,绝不移动切换器
         Font font = minecraft.font;
         int boxW = Math.max(chsLastW, 120);
         int s = (int) HudManager.scale(CHS_NAME);
