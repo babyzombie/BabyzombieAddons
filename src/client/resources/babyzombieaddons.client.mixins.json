@@ -79,6 +79,7 @@
     "screen.ScreenInvoker",
     "screen.CommandSuggestionsMixin",
     "screen.ContainerClickMixin",
+    "screen.GuiOptionEditorDraggableListMixin",
     "screen.GuiOptionEditorDropdownMixin",
     "screen.HandleContainerInputMixin",
     "screen.InventoryScreenMixin",

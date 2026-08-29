@@ -64,6 +64,9 @@ public class SkyblockConfig {
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.bazzarTopOrders", desc = "") @Accordion
     public BazzarTopOrders bazzarTopOrders = new BazzarTopOrders();
 
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.auctionQuickSell", desc = "") @Accordion
+    public AuctionQuickSell auctionQuickSell = new AuctionQuickSell();
+
     public static class AutoIS {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.autois", desc = "config.babyzombieaddons.option.autois.desc") @ConfigEditorBoolean @SearchTag("autois") @SearchTag("island")
         public boolean enabled = false;
@@ -361,19 +364,24 @@ public class SkyblockConfig {
         public boolean signPasteAmount = false;
 
         // ── 告示牌快捷数量按钮 ──
-        /** DraggableList 候选:1、16、32、48、1~35 组(每组 64)、整数档(100~10000)、集市购买订单数量上限 71680 */
+        /** DraggableList 候选按声明顺序显示:整组(64 的倍数)在前,其余在后,各组内按数量升序,便于在配置界面中查找。 */
         public enum SignQuickAmount {
-            ONE(1), SIXTEEN(16), THIRTY_TWO(32), FORTY_EIGHT(48),
-            GROUP_1(64), GROUP_2(128), GROUP_3(192), GROUP_4(256), GROUP_5(320),
-            GROUP_6(384), GROUP_7(448), GROUP_8(512), GROUP_9(576), GROUP_10(640),
-            GROUP_11(704), GROUP_12(768), GROUP_13(832), GROUP_14(896), GROUP_15(960),
-            GROUP_16(1024), GROUP_17(1088), GROUP_18(1152), GROUP_19(1216), GROUP_20(1280),
+            // ── 整组(64 的倍数),从小到大 ──
+            GROUP_1(64), GROUP_2(128), GROUP_3(192), GROUP_4(256),
+            GROUP_5(320), GROUP_6(384), GROUP_7(448), GROUP_8(512),
+            GROUP_9(576), GROUP_10(640), GROUP_11(704), GROUP_12(768),
+            GROUP_13(832), GROUP_14(896), GROUP_15(960), GROUP_16(1024),
+            GROUP_17(1088), GROUP_18(1152), GROUP_19(1216), GROUP_20(1280),
             GROUP_21(1344), GROUP_22(1408), GROUP_23(1472), GROUP_24(1536), GROUP_25(1600),
             GROUP_26(1664), GROUP_27(1728), GROUP_28(1792), GROUP_29(1856), GROUP_30(1920),
             GROUP_31(1984), GROUP_32(2048), GROUP_33(2112), GROUP_34(2176), GROUP_35(2240),
-            ROUND_100(100), ROUND_250(250), ROUND_500(500), ROUND_750(750),
-            ROUND_1000(1000), ROUND_1250(1250), ROUND_1500(1500), ROUND_1750(1750),
+
+            // ── 非整组,从小到大 ──
+            ONE(1), EIGHT(8), SIXTEEN(16), THIRTY_TWO(32), FORTY_EIGHT(48), ROUND_80(80),
+            ROUND_100(100), ROUND_160(160), ROUND_240(240), ROUND_250(250), ROUND_500(500),
+            ROUND_750(750), ROUND_1000(1000), ROUND_1250(1250), ROUND_1500(1500), ROUND_1750(1750),
             ROUND_2000(2000), ROUND_5000(5000), ROUND_10000(10000),
+
             MAX_ORDER(71680);
 
             private final int amount;
@@ -382,10 +390,16 @@ public class SkyblockConfig {
 
             public int amount() { return amount; }
 
-            /** 配置列表显示:千分位数字本身,无需翻译 */
+            public String displayText() {
+                String text = String.format(Locale.ROOT, "%,d", amount);
+                if (amount % 64 == 0) text += " (" + (amount / 64) + "组)";
+                return text;
+            }
+
+            /** 配置列表与告示牌按钮统一显示文本，无需翻译。 */
             @Override
             public String toString() {
-                return String.format(Locale.ROOT, "%,d", amount);
+                return displayText();
             }
         }
 
@@ -394,7 +408,16 @@ public class SkyblockConfig {
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarSignQuickAmounts", desc = "config.babyzombieaddons.option.bazzarSignQuickAmounts.desc") @ConfigEditorDraggableList @SearchTag("bazaar") @SearchTag("告示牌") @SearchTag("快捷") @SearchTag("数量")
         public List<SignQuickAmount> signQuickAmounts = new ArrayList<>(List.of(
-                SignQuickAmount.THIRTY_TWO, SignQuickAmount.GROUP_1, SignQuickAmount.GROUP_5, SignQuickAmount.GROUP_10, SignQuickAmount.MAX_ORDER
+                SignQuickAmount.SIXTEEN, SignQuickAmount.THIRTY_TWO, SignQuickAmount.FORTY_EIGHT, SignQuickAmount.ROUND_80, SignQuickAmount.ROUND_160,
+                SignQuickAmount.GROUP_1, SignQuickAmount.GROUP_2, SignQuickAmount.GROUP_5, SignQuickAmount.GROUP_10, SignQuickAmount.MAX_ORDER
         ));
+    }
+
+    public static class AuctionQuickSell {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.auctionQuickSellEnabled", desc = "config.babyzombieaddons.option.auctionQuickSellEnabled.desc") @ConfigEditorBoolean @SearchTag("auction") @SearchTag("ah") @SearchTag("上架") @SearchTag("告示牌")
+        public boolean auctionQuickSellEnabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.auctionQuickSellUndercut", desc = "config.babyzombieaddons.option.auctionQuickSellUndercut.desc") @ConfigEditorSlider(minValue = 1, maxValue = 10000, minStep = 1) @SearchTag("auction") @SearchTag("ah") @SearchTag("压价")
+        public int auctionQuickSellUndercut = 1;
     }
 }

@@ -186,17 +186,13 @@ public final class GlaciteMineshaftWaypoints {
     private static void runPartyAction(GlaciteMineshaftPortalAction action) {
         if (action != GlaciteMineshaftPortalAction.SEND_PTME && action != GlaciteMineshaftPortalAction.PTME_AND_WARP) return;
         enterMineshaftTime = ServerTick.getTime();
-        if (action == GlaciteMineshaftPortalAction.SEND_PTME) {
-            Scheduler.schedule(6, () -> ChatUtils.sendCommand("pc !ptme"));
-            return;
-        }
         PartyTracker.getInstance().runWhenKnown(
                 () -> {
-                    ChatUtils.sendCommand("p warp");
+                    if (action == GlaciteMineshaftPortalAction.PTME_AND_WARP) Scheduler.schedule(10, () -> ChatUtils.sendCommand("p warp"));
                 },
                 () -> {
-                    Scheduler.schedule(6, () -> ChatUtils.sendCommand("pc !ptme"));
-                    waitingPartyTransfer = true;
+                    ChatUtils.sendCommand("pc !ptme");
+                    if (action == GlaciteMineshaftPortalAction.PTME_AND_WARP) waitingPartyTransfer = true;
                 }
         );
     }
@@ -346,7 +342,7 @@ public final class GlaciteMineshaftWaypoints {
                                             x - 0.4, y - 2.0, z - 0.4,
                                             x + 0.4, y + 0.2, z + 0.4,
                                             r, g, b, 0.6f, false, 4.0f);
-                            case GLOW -> GlowController.setGlowSlots(stand, true, color.getRGB(), false, EquipmentSlot.HEAD, EquipmentSlot.BODY, EquipmentSlot.LEGS, EquipmentSlot.BODY);
+                            case GLOW -> GlowController.setGlowSlots(stand, true, color.getRGB(), false, EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
                         }
                         WorldTextRenderer.renderString(ctx, name, x, y, z, 0xFFFFFF55, 0.05f, true);
                     }

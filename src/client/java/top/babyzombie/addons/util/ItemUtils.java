@@ -137,6 +137,8 @@ public final class ItemUtils {
 
     /**
      * 查询物品单价，优先 Bazaar 卖价 → 最低一口价。
+     * <p>SkyBlock 物品只能在 Bazaar 或 AH 中一个渠道交易，AH 上架流程内的物品不会命中
+     * Bazaar 分支，此查询对 AH 物品实际返回的就是最低一口价。
      *
      * @param stack 要查询的物品
      * @return 单价，无 Skyblocker / 无 API ID / 无价格数据时返回 -1

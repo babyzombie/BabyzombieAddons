@@ -68,7 +68,7 @@ public final class KuudraLocationTracker {
                         return name.contains("Kuudra");
                     });
             if (!withers.isEmpty())
-                hp = withers.get(0).getHealth() / 300f * 100000f;
+                hp = withers.getFirst().getHealth() / 300f * 100000f;
             else
                 hp = 0;
         }
