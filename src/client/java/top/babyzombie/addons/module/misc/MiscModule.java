@@ -11,6 +11,7 @@ import top.babyzombie.addons.module.misc.bazaar.BazaarSellFromSacks;
 import top.babyzombie.addons.module.misc.bazaar.BazzarTopOrdersOverlay;
 import top.babyzombie.addons.module.misc.bazaar.BazaarBuyOrderHistory;
 import top.babyzombie.addons.module.misc.bazaar.BazaarSignQuickAmountButtons;
+import top.babyzombie.addons.module.misc.auction.AuctionQuickSellModule;
 import top.babyzombie.addons.module.misc.loadout.LoadoutModule;
 import top.babyzombie.addons.module.misc.pet.PetDisplayHud;
 import top.babyzombie.addons.module.misc.raredrop.RareDropModule;
@@ -28,6 +29,7 @@ public final class MiscModule {
         BazzarTopOrdersOverlay.init();
         BazaarBuyOrderHistory.init();
         BazaarSignQuickAmountButtons.init();
+        AuctionQuickSellModule.init();
         CakeBuffTracker.init();
         MinionCollectAutoClose.init();
         NecronBladeModule.init();
