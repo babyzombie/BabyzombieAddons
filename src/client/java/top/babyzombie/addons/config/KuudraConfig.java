@@ -8,7 +8,6 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import io.github.notenoughupdates.moulconfig.ChromaColour;
@@ -67,6 +66,9 @@ public class KuudraConfig {
     public boolean teamHighlight = false;
     @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.teamHighlightColor", desc = "config.babyzombieaddons.option.teamHighlightColor.desc") @SearchTag("team") @SearchTag("highlight") @SearchTag("color")
     public ChromaColour teamHighlightColor = ChromaColour.fromStaticRGB(0, 255, 0, 255);
+
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.kuudraMinimap", desc = "") @Accordion @SearchTag("minimap") @SearchTag("map")
+    public MinimapCfg minimap = new MinimapCfg();
 
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.perkShop", desc = "") @Accordion
     public PerkShop perkShop = new PerkShop();
@@ -304,5 +306,41 @@ public class KuudraConfig {
         public boolean sound = false;
         @ConfigOption(name = "config.babyzombieaddons.option.chestCounterReset", desc = "config.babyzombieaddons.option.chestCounterReset.desc") @ConfigEditorButton(buttonText = "Reset")
         public transient Runnable reset = ChestCounter::resetCounter;
+    }
+
+    /** Kuudra 小地图:固定全图俯视图 + 各类标记,元素开关独立可配。 */
+    public static class MinimapCfg {
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimap", desc = "config.babyzombieaddons.option.kuudraMinimap.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("map") @SearchTag("kuudra")
+        public boolean enabled = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapSize", desc = "config.babyzombieaddons.option.kuudraMinimapSize.desc") @ConfigEditorSlider(minValue = 96, maxValue = 320, minStep = 16) @SearchTag("minimap") @SearchTag("size")
+        public int size = 160;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapTeammates", desc = "config.babyzombieaddons.option.kuudraMinimapTeammates.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("teammate")
+        public boolean teammates = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.teammateStyle", desc = "config.babyzombieaddons.option.teammateStyle.desc") @ConfigEditorDropdown @SearchTag("minimap") @SearchTag("teammate")
+        public ModConfig.KuudraMinimapTeammateStyle teammateStyle = ModConfig.KuudraMinimapTeammateStyle.DOT_NAME;
+        @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapTeammateColor", desc = "config.babyzombieaddons.option.kuudraMinimapTeammateColor.desc") @SearchTag("minimap") @SearchTag("teammate") @SearchTag("color")
+        public ChromaColour teammateColor = ChromaColour.fromStaticRGB(0, 255, 0, 255);
+        @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapSelfColor", desc = "config.babyzombieaddons.option.kuudraMinimapSelfColor.desc") @SearchTag("minimap") @SearchTag("self") @SearchTag("color")
+        public ChromaColour selfColor = ChromaColour.fromStaticRGB(255, 255, 255, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapKuudra", desc = "config.babyzombieaddons.option.kuudraMinimapKuudra.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("kuudra")
+        public boolean showKuudra = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapTentacles", desc = "config.babyzombieaddons.option.kuudraMinimapTentacles.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("tentacle")
+        public boolean tentacles = false;
+        @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapTentacleColor", desc = "config.babyzombieaddons.option.kuudraMinimapTentacleColor.desc") @SearchTag("minimap") @SearchTag("tentacle") @SearchTag("color")
+        public ChromaColour tentacleColor = ChromaColour.fromStaticRGB(255, 140, 40, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapDropships", desc = "config.babyzombieaddons.option.kuudraMinimapDropships.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("dropship") @SearchTag("ghast")
+        public boolean dropships = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapSupplies", desc = "config.babyzombieaddons.option.kuudraMinimapSupplies.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("supply")
+        public boolean supplies = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapPiles", desc = "config.babyzombieaddons.option.kuudraMinimapPiles.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("pile")
+        public boolean piles = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapFuel", desc = "config.babyzombieaddons.option.kuudraMinimapFuel.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("fuel")
+        public boolean fuel = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapBallista", desc = "config.babyzombieaddons.option.kuudraMinimapBallista.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("ballista")
+        public boolean ballista = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapChucks", desc = "config.babyzombieaddons.option.kuudraMinimapChucks.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("chuck")
+        public boolean chucks = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapCannons", desc = "config.babyzombieaddons.option.kuudraMinimapCannons.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("cannon")
+        public boolean cannons = true;
     }
 }

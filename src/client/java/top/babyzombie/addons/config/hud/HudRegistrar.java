@@ -2,7 +2,6 @@ package top.babyzombie.addons.config.hud;
 
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 public final class HudRegistrar {
     private HudRegistrar() {}
@@ -108,6 +107,11 @@ public final class HudRegistrar {
                 "§aKuudra is stunned, §4§l0:10 §aleft\n§4§lPHASE 4 - TRUE LAIR",
                 "config.babyzombieaddons.option.stunTimer",
                 () -> get().kuudra.phase3.stunTimer,
+                HudTag.KUUDRA);
+        HudManager.register("KuudraMinimap", 150, 150, 1.0f,
+                "§8[§bKuudra Minimap§8]\n§a■ §7you  §a■ teammates  §c■ Kuudra",
+                "config.babyzombieaddons.option.kuudraMinimap",
+                () -> get().kuudra.minimap.enabled,
                 HudTag.KUUDRA);
         // --- Wither Cloak ---
         HudManager.register("WitherCloakTimer", 120, 100, 1.0f,
@@ -245,11 +249,7 @@ public final class HudRegistrar {
         HudManager.register("FishingCamera", 250, 50, 1.0f,
                 "hud.babyzombieaddons.fishingCamera",
                 "config.babyzombieaddons.option.fishingCamera",
-                () -> {
-                    var c = get().fishing.fishingCamera;
-                    var loc = HypixelLocationTracker.getInstance();
-                    return c.enabled;
-                },
+                () -> get().fishing.fishingCamera.enabled,
                 HudTag.FISHING);
 
         // --- Safari Capsule Camera ---

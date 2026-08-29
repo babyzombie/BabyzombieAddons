@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.MagmaCube;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.phys.AABB;
 import top.babyzombie.addons.util.ChatUtils;
@@ -69,7 +68,7 @@ public final class KuudraLocationTracker {
                         return name.contains("Kuudra");
                     });
             if (!withers.isEmpty())
-                hp = withers.get(0).getHealth() / 300f * 100000f;
+                hp = withers.getFirst().getHealth() / 300f * 100000f;
             else
                 hp = 0;
         }

@@ -134,6 +134,10 @@ public class ModConfig extends Config {
         P4_START, P4_SHORTLY_AFTER, P4_TRUE_LAIR;
         @Override public String toString() { return t("config.babyzombieaddons.option.twilightArrowTiming." + name()); }
     }
+    public enum KuudraMinimapTeammateStyle {
+        DOT, DOT_NAME, HEAD;
+        @Override public String toString() { return t("config.babyzombieaddons.option.teammateStyle." + name()); }
+    }
     public enum EntityRenderMode {
         ARMOR_STAND, FAKE_PLAYER, FAKE_PLAYER_EYES;
         @Override public String toString() { return t("config.babyzombieaddons.option.loadoutEntityRenderMode." + name()); }

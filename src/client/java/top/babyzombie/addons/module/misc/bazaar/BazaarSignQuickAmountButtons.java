@@ -58,7 +58,8 @@ public final class BazaarSignQuickAmountButtons {
     /** 布局匹配后在告示牌下方安装一排快捷按钮(最多两行,每行居中);成功返回 true */
     private static boolean installQuickButtons(SignEditScreen screen, List<SignQuickAmount> amounts) {
         String[] messages = ((AbstractSignEditScreenAccessor) screen).messages();
-        if (!isAmountSignLayout(messages)) return false;
+        // 只看告示牌固定内容,第一行空不空无所谓(点了按钮直接覆盖填入)
+        if (!isAmountSignIdentity(messages)) return false;
 
         // 移除上次可能残留的按钮,保证始终只有一排
         for (Button old : new ArrayList<>(quickButtons)) removeButtonFromScreen(screen, old);
@@ -114,10 +115,9 @@ public final class BazaarSignQuickAmountButtons {
         playClickSound();
     }
 
-    /** 匹配 Bazaar 输入数量的告示牌布局:第一行空 / ^^^ 箭头行 / Enter amount / to order 或 to sell(三行全字匹配) */
-    private static boolean isAmountSignLayout(String[] messages) {
+    /** 匹配 Bazaar 输入数量告示牌的固定内容:^^^ 箭头行 / Enter amount / to order 或 to sell(全字匹配),不管第一行 */
+    private static boolean isAmountSignIdentity(String[] messages) {
         if (messages.length < 4) return false;
-        if (!lineOf(messages[0]).isEmpty()) return false;
         if (!SIGN_CARET_LINE.equals(lineOf(messages[1]))) return false;
         if (!"Enter amount".equals(lineOf(messages[2]))) return false;
         String last = lineOf(messages[3]);

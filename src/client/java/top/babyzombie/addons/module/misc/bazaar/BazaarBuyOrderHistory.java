@@ -1,5 +1,6 @@
 package top.babyzombie.addons.module.misc.bazaar;
 
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -79,6 +80,10 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
     public static void init() {
         GuiOverlayManager.register(INSTANCE);
         ContainerClickEvents.BEFORE_MOUSE_CLICK.register(INSTANCE::onSlotClick);
+        // "How many do you want?" 页面:右键 Custom Amount 进入手动模式(自动贴入/自动完成退避)
+        ContainerClickEvents.BEFORE_MOUSE_CLICK.register(INSTANCE::onCustomAmountClick);
+        // 显示层覆盖:该页面的 Custom Amount 物品 lore 直接改显示文本(不改物品数据)
+        ItemTooltipCallback.EVENT.register((stack, _, _, lines) -> patchCustomAmountTooltip(stack, lines));
         // 告示牌数量自动填入:打开 SignEditScreen 时按内容匹配 Bazaar 输入数量布局
         ScreenEvents.AFTER_INIT.register((client, screen, sw, sh) -> {
             tryPasteClipboardAmount(screen);
@@ -377,12 +382,8 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         ChatUtils.copyToClipboard(String.valueOf(amount));
         ChatUtils.showToast("config.babyzombieaddons.overlay.bazzar.toast.copiedTitle",
                 "config.babyzombieaddons.overlay.bazzar.toast.buyHistoryJumpBody", amount);
-        var mc = Minecraft.getInstance();
-        try {
-            if (mc.player != null) mc.player.closeContainer();
-        } catch (Exception ignored) {}
         playClickSound();
-        Scheduler.schedule(2, () -> ChatUtils.sendCommand("bz " + plainItem));
+        ChatUtils.sendCommand("bz " + plainItem);
     }
 
     // ========== 告示牌自动填入剪贴板数量 ==========
@@ -392,15 +393,29 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         var cfg = getCfg();
         if (cfg == null || !cfg.signPasteAmount) return;
         if (!(screen instanceof SignEditScreen signScreen)) return;
+        // 右键 Custom Amount 进入:玩家要手动输入,自动贴入/自动完成都跳过(消费标志)
+        if (suppressAutoFill && System.currentTimeMillis() - suppressAutoFillTs < SUPPRESS_AUTO_FILL_WINDOW_MS) {
+            suppressAutoFill = false;
+            suppressAutoFillTs = 0L;
+            return;
+        }
+        suppressAutoFill = false; // 过期残留也清掉
         String amount = readClipboardAmount();
         if (amount == null) return;
         // 告示牌行内容可能比屏幕打开晚到(服务端先开屏再同步 NBT),延迟重试几次等待数据
         Scheduler.schedule(0, new SignPasteTask(signScreen, amount));
     }
 
+    /** 剪贴板读取缓存(1 秒):容器 hover 时 tooltip 每帧重建,避免每帧读剪贴板 */
+    @Nullable
+    private static String cachedClipboardAmount;
+    private static long cachedClipboardTs = 0L;
+
     /** 读取剪贴板并校验:只含数字、括号、运算符(含 x)、k/m/b、点、逗号等数量相关字符 */
     @Nullable
     private static String readClipboardAmount() {
+        long now = System.currentTimeMillis();
+        if (cachedClipboardAmount != null && now - cachedClipboardTs < 1000L) return cachedClipboardAmount;
         String clip;
         try {
             clip = Minecraft.getInstance().keyboardHandler.getClipboard();
@@ -408,8 +423,10 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
             return null;
         }
         String amount = ChatUtils.stripColor(clip).trim();
-        if (amount.isEmpty() || amount.length() > 32) return null;
-        return AMOUNT_EXPRESSION.matcher(amount).matches() ? amount : null;
+        cachedClipboardAmount = (amount.isEmpty() || amount.length() > 32
+                || !AMOUNT_EXPRESSION.matcher(amount).matches()) ? null : amount;
+        cachedClipboardTs = now;
+        return cachedClipboardAmount;
     }
 
     /** 布局匹配(只看告示牌内容)+ 写入第一行;写入成功返回 true */
@@ -420,14 +437,18 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         return true;
     }
 
-    /** 匹配 Bazaar 输入数量的告示牌布局:第一行空 / ^^^ 箭头行 / Enter amount / to order 或 to sell(三行全字匹配) */
-    private static boolean isAmountSignLayout(String[] messages) {
+    /** 匹配 Bazaar 输入数量告示牌的固定内容:^^^ 箭头行 / Enter amount / to order 或 to sell(全字匹配),不管第一行 */
+    private static boolean isAmountSignIdentity(String[] messages) {
         if (messages.length < 4) return false;
-        if (!lineOf(messages[0]).isEmpty()) return false;
         if (!SIGN_CARET_LINE.equals(lineOf(messages[1]))) return false;
         if (!"Enter amount".equals(lineOf(messages[2]))) return false;
         String last = lineOf(messages[3]);
         return "to order".equals(last) || "to sell".equals(last);
+    }
+
+    /** 完整布局:第一行空 + 固定内容;剪贴板贴入使用(第一行有内容时不覆盖玩家输入) */
+    private static boolean isAmountSignLayout(String[] messages) {
+        return isAmountSignIdentity(messages) && lineOf(messages[0]).isEmpty();
     }
 
     private static String lineOf(String s) {
@@ -449,9 +470,71 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         @Override
         public void run() {
             if (Minecraft.getInstance().screen != screen) return; // 屏幕已关闭/切换,放弃
-            if (pasteAmountIntoSign(screen, amount)) return;      // 已填入,结束
+            if (pasteAmountIntoSign(screen, amount)) {
+                // 自动贴入成功后顺便完成告示牌:onClose → removed() 把第一行发给服务器
+                screen.onClose();
+                return;
+            }
             if (++attempts < MAX_ATTEMPTS) Scheduler.schedule(3, this); // 行内容未到,稍后重试
         }
+    }
+
+    // ========== 数量自定义页(Custom Amount)显示层与右键抑制 ==========
+
+    /** Custom Amount 物品 lore 里的数量行("Buy up to 71,680x."),显示层替换用 */
+    private static final Pattern BUY_UP_TO_LINE = Pattern.compile("Buy up to .+x\\.?", Pattern.CASE_INSENSITIVE);
+
+    /** 右键 Custom Amount 进入告示牌 = 手动模式:自动贴入/自动完成退避 */
+    private static boolean suppressAutoFill;
+    private static long suppressAutoFillTs;
+    /** 右键到告示牌打开之间的有效窗口(毫秒):点完立即进入,2 秒足够,过期自动清避免残留 */
+    private static final long SUPPRESS_AUTO_FILL_WINDOW_MS = 2000L;
+
+    private boolean onCustomAmountClick(AbstractContainerScreen<?> screen, Slot slot, MouseButtonEvent event) {
+        var cfg = getCfg();
+        if (cfg == null || !cfg.signPasteAmount) return false;
+        if (slot == null || !slot.hasItem()) return false;
+        String title = ChatUtils.stripColor(screen.getTitle().getString()).trim();
+        if (!"How many do you want?".equals(title)) return false;
+        String name = ChatUtils.stripColor(slot.getItem().getHoverName().getString()).trim();
+        if (!"Custom Amount".equals(name)) return false;
+        if (event.button() == 1) {
+            suppressAutoFill = true;
+            suppressAutoFillTs = System.currentTimeMillis();
+        } else if (event.button() == 0) {
+            suppressAutoFill = false;
+            suppressAutoFillTs = 0L;
+        }
+        return false;
+    }
+
+    /** ItemTooltipCallback:显示层把 "Buy up to ..." 改成剪贴板数量、末尾加右键提示,不改物品数据 */
+    private static void patchCustomAmountTooltip(ItemStack stack, List<Component> lines) {
+        var cfg = getCfg();
+        if (cfg == null || !cfg.signPasteAmount) return;
+        if (!isCustomAmountPageOpen()) return;
+        String name = ChatUtils.stripColor(stack.getHoverName().getString()).trim();
+        if (!"Custom Amount".equals(name)) return;
+        String amount = readClipboardAmount();
+        if (amount == null) return;
+        boolean found = false;
+        for (int i = 0; i < lines.size(); i++) {
+            String s = ChatUtils.stripColor(ChatUtils.toLegacyString(lines.get(i))).trim();
+            if (BUY_UP_TO_LINE.matcher(s).matches()) {
+                lines.set(i, Component.literal("§7Buy up to §a" + amount + "§7x§7."));
+                found = true;
+            }
+        }
+        if (found) {
+            String hint = ChatUtils.translate("config.babyzombieaddons.overlay.bazzar.text.customAmountRightClickHint");
+            lines.add(Component.literal(hint));
+        }
+    }
+
+    private static boolean isCustomAmountPageOpen() {
+        Screen s = Minecraft.getInstance().screen;
+        if (!(s instanceof AbstractContainerScreen<?> cs)) return false;
+        return "How many do you want?".equals(ChatUtils.stripColor(cs.getTitle().getString()).trim());
     }
 
     // ========== 音效 ==========

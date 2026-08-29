@@ -18,8 +18,6 @@ import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Color;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -44,19 +42,24 @@ public final class KuudraPileWaypoints {
     /** 榜行文本后缀名归一：去 " (...)" 后缀。每 tick 扫描高频调用，静态复用避免内联 replaceAll 重复编译正则 */
     private static final Pattern SUFFIX_PAREN_PATTERN = Pattern.compile(" \\(.+\\)");
 
-    private record Pile(String name, double x, double y, double z) {}
+    record Pile(String name, double x, double y, double z) {}
 
-    private static List<Pile> piles = List.of();
-    private static boolean inSuppliesPhase;
-    /** 已放置补给（出现 "SUPPLIES RECEIVED" 盔甲架）的 pile 索引，不再显示 */
-    private static final Set<Integer> completedPiles = new HashSet<>();
+    /** 包内共享:KuudraMinimap 读取放置点列表与已完成集合(tick 写/渲染读均在主线程)。 */
+    static List<Pile> piles = List.of();
+    static boolean inSuppliesPhase;
+    static final Set<Integer> completedPiles = new HashSet<>();
+
+    static List<Pile> getPiles() { return piles; }
+
+    static Set<Integer> getCompletedPiles() { return completedPiles; }
 
     public static void init() {
         loadConfig();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var cfg = ModConfigManager.get().kuudra.phase1;
-            if (!cfg.supplyPileWaypoints) return;
+            // 小地图的放置点标记也依赖本扫描(已完成集合),二开一即跑
+            if (!cfg.supplyPileWaypoints && !ModConfigManager.get().kuudra.minimap.piles) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (client.player == null || client.player.tickCount % 20 != 0) return;
             inSuppliesPhase = "Rescue supplies".equals(getScoreboardPhase(client));
