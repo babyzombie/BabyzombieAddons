@@ -33,5 +33,6 @@ public final class KuudraModule {
         KuudraP4Features.init();
         ChestCounter.init();
         KuudraEtherwarpLavaPrevent.init();
+        KuudraMinimap.init();
     }
 }

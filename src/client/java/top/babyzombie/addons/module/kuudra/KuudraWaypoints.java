@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.phys.Vec3;
@@ -39,7 +38,9 @@ public final class KuudraWaypoints {
     private static final List<Vec3> supplies = new ArrayList<>();
     private static final List<Vec3> ballistaPiles = new ArrayList<>();
     private static final List<Vec3> fuels = new ArrayList<>();
-    private static final List<Vec3> chucks = new ArrayList<>();
+    /** 三色球:位置 + 头颅类型(小地图按类型显示对应头颅图标)。 */
+    public record Chuck(Vec3 pos, SkullTextures kind) {}
+    private static final List<Chuck> chucks = new ArrayList<>();
     private static final List<Zombie> supplyZombies = new ArrayList<>();
     private static final List<Giant> supplyGiants = new ArrayList<>();
     private static final List<Zombie> fuelZombies = new ArrayList<>();
@@ -56,7 +57,8 @@ public final class KuudraWaypoints {
     private static final Pattern SUFFIX_PAREN_PATTERN = Pattern.compile(" \\(.+\\)");
 
 
-    private enum SkullTextures {
+    /** 头颅纹理枚举:包内共享(KuudraMinimap 读取 base64 构建图标)。 */
+    enum SkullTextures {
         SUPPLIES("ewogICJ0aW1lc3RhbXAiIDogMTU5NDAyOTYxNjQyNCwKICAicHJvZmlsZUlkIiA6ICJkZGVkNTZlMWVmOGI0MGZlOGFkMTYyOTIwZjdhZWNkYSIsCiAgInByb2ZpbGVOYW1lIiA6ICJEaXNjb3JkQXBwIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzI0YmJmZDlkODRmNDI0NTZjZDAyYTRiYWE1Y2QwNTRiY2VkMGRkYjJkMWM4MzIxYzgzZTVkNjY3Y2Q4NTU3NWEiCiAgICB9CiAgfQp9"),
         FUEL("ewogICJ0aW1lc3RhbXAiIDogMTcyMDAyOTIzMDk5OSwKICAicHJvZmlsZUlkIiA6ICJkM2Y5MjEyMjY3YzM0YzEwYWNjOWZkNGI5MDFkYjI0ZiIsCiAgInByb2ZpbGVOYW1lIiA6ICJkYXl3ZSIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9mZDcyZGViMWFiMDAzM2I0MmIwYTEyZWZjZjQ4M2YwZmJhMjZkYzUxZGVkMzkxOWViYWRiNzBmOTY1N2ExZjYxIgogICAgfQogIH0KfQ=="),
         REDCHUCK("ewogICJ0aW1lc3RhbXAiIDogMTYwNzg1MjU5NjMwNCwKICAicHJvZmlsZUlkIiA6ICJlZDUzZGQ4MTRmOWQ0YTNjYjRlYjY1MWRjYmE3N2U2NiIsCiAgInByb2ZpbGVOYW1lIiA6ICI0MTQxNDE0MWgiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmIwNTVjODEwYmRkZmQxNjI2NGVjOGQ0MzljNDMyODNlMzViY2E3MWE1MDk4M2UxNWUzNjRjZDhhYjdjNjY4ZiIKICAgIH0KICB9Cn0="),
@@ -66,6 +68,9 @@ public final class KuudraWaypoints {
         private final String texture;
 
         SkullTextures(String texture) {this.texture = texture;}
+
+        /** 头颅纹理 base64 value(KuudraMinimap 构建图标 ItemStack 用)。 */
+        String texture() { return texture; }
 
         boolean isHoldingThis(LivingEntity entity) {
             var item = entity.getItemBySlot(EquipmentSlot.MAINHAND);
@@ -83,7 +88,7 @@ public final class KuudraWaypoints {
             var supplyCol = cfg.phase1.supplyBeaconColor.getEffectiveColour();
             int supplyColor = supplyCol.getRGB();
             for (var v : supplies)
-                BeamRenderer.drawBeam(ctx, v.x + 0.5, v.y, v.z + 1.5, 20f, 0.15f, supplyColor);
+                BeamRenderer.drawBeam(ctx, v.x + 0.5, v.y, v.z + 1.5, 256f, 0.15f, supplyColor);
 
             // Supply interaction zone (invisible zombies) — 精确碰撞箱，独立颜色，范围内全透明、范围外减半
             if (cfg.phase1.supplyInteractionZone) {
@@ -169,7 +174,7 @@ public final class KuudraWaypoints {
             var fuelCol = cfg.phase3.fuelOrbBeaconColor.getEffectiveColour();
             int fuelColor = fuelCol.getRGB();
             for (var v : fuels)
-                BeamRenderer.drawBeam(ctx, v.x + 0.5, v.y, v.z + 1.5, 20f, 0.15f, fuelColor);
+                BeamRenderer.drawBeam(ctx, v.x + 0.5, v.y, v.z + 1.5, 256f, 0.15f, fuelColor);
 
             // Fuel orb pull circle
             if (cfg.phase3.fuelOrbPullCircle) {
@@ -201,8 +206,9 @@ public final class KuudraWaypoints {
 
             // Chuck beams + ground circles
             int chuckColor = cfg.phase3.chuckBeaconColor.getEffectiveColour().getRGB();
-            for (var v : chucks) {
-                BeamRenderer.drawBeam(ctx, v.x, v.y, v.z, 20f, 0.15f, chuckColor);
+            for (var c : chucks) {
+                var v = c.pos();
+                BeamRenderer.drawBeam(ctx, v.x, v.y, v.z, 256f, 0.15f, chuckColor);
                 WorldRenderUtils.drawCircle(ctx, v.x, v.y + 0.01, v.z, KuudraLocationTracker.p4 || "p4".equals(KuudraLocationTracker.area) ? 10 : 20, 1, 0, 0, 1, true, 3);
             }
 
@@ -232,17 +238,19 @@ public final class KuudraWaypoints {
             return true;
         });
         // 换图/离开副本兜底清理
-        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> p1SupplyPhaseActive = false);
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((_, _) -> p1SupplyPhaseActive = false);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var cfg = ModConfigManager.get().kuudra;
+            var mm = cfg.minimap;
             boolean anyOn = cfg.phase1.supplyBeacons
                     || cfg.phase1.supplyInteractionZone || cfg.phase1.supplyPullCircle
                     || cfg.phase2.ballistaProgressText || cfg.phase2.ballistaBuildBeacons
                     || cfg.phase2.ballistaProximityCircles
                     || cfg.phase3.fuelOrbBeacons || cfg.phase3.fuelOrbPullCircle
                     || cfg.phase3.chuckBeacons || cfg.phase3.fuelInteractionZone
-                    || cfg.phase1.supplyGiantHitbox;
+                    || cfg.phase1.supplyGiantHitbox
+                    || mm.enabled;
             if (!anyOn) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (client.player == null || client.player.tickCount % 2 != 0) return; // 2 tick 扫描，补给一出水就显示
@@ -266,7 +274,8 @@ public final class KuudraWaypoints {
             // 计分板 "Rescue supplies" 作为中途进房/消息漏收的兜底
             if (p1SupplyPhaseActive || "Rescue supplies".equals(newPhase)) {
                 boolean needZombies = cfg.phase1.supplyInteractionZone;
-                if (cfg.phase1.supplyBeacons || needZombies || cfg.phase1.supplyGiantHitbox) {
+                boolean needSupplies = mm.enabled && mm.supplies;
+                if (cfg.phase1.supplyBeacons || needZombies || cfg.phase1.supplyGiantHitbox || needSupplies) {
                     for (var g : client.player.level().getEntitiesOfClass(Giant.class,
                             new AABB(client.player.blockPosition()).inflate(64), SkullTextures.SUPPLIES::isHoldingThis)) {
                         // crate offset 3.7 at angle (yaw + 130°), Y=75
@@ -283,7 +292,8 @@ public final class KuudraWaypoints {
                             z -> supplies.stream().anyMatch(s -> z.distanceToSqr(s) < 9)));
                 }
             } else if ("Protect Elle".equals(newPhase)) {
-                if (cfg.phase2.ballistaBuildBeacons || cfg.phase2.ballistaProgressText || cfg.phase2.ballistaProximityCircles) {
+                boolean needBallista = mm.enabled && mm.ballista;
+                if (cfg.phase2.ballistaBuildBeacons || cfg.phase2.ballistaProgressText || cfg.phase2.ballistaProximityCircles || needBallista) {
                     for (var s : client.player.level().getEntitiesOfClass(
                             net.minecraft.world.entity.decoration.ArmorStand.class,
                             new AABB(client.player.blockPosition()).inflate(64),
@@ -302,10 +312,12 @@ public final class KuudraWaypoints {
                     }
                 }
             } else {
-                boolean wantFuel = cfg.phase3.fuelOrbBeacons;
+                boolean needFuel = mm.enabled && mm.fuel;
+                boolean wantFuel = cfg.phase3.fuelOrbBeacons || needFuel;
                 // P4（Boss）的球单独控制；其他阶段（Eaten/Stun/DPS/Fuel）用 P3 的开关
+                boolean needChuck = mm.enabled && mm.chucks;
                 boolean inP4 = KuudraLocationTracker.p4 || "p4".equals(KuudraLocationTracker.area);
-                boolean wantChuck = inP4 ? cfg.phase4.p4ChuckBeacons : cfg.phase3.chuckBeacons;
+                boolean wantChuck = inP4 ? (cfg.phase4.p4ChuckBeacons || needChuck) : (cfg.phase3.chuckBeacons || needChuck);
                 if (wantFuel || wantChuck) {
                     for (var g : client.player.level().getEntitiesOfClass(Giant.class,
                             new AABB(client.player.blockPosition()).inflate(64))) {
@@ -314,11 +326,17 @@ public final class KuudraWaypoints {
                             fuels.add(new Vec3(g.getX() + (SUPPLY_CRATE_OFFSET * Math.cos(angleRad)),
                                     75.0,
                                     g.getZ() + (SUPPLY_CRATE_OFFSET * Math.sin(angleRad))));
-                        } else if (wantChuck && (SkullTextures.YELLOWCHUCK.isHoldingThis(g) || SkullTextures.REDCHUCK.isHoldingThis(g) || SkullTextures.PURPLECHUCK.isHoldingThis(g))) {
-                            double angleRad = Math.toRadians(g.getYRot() + 130.0f);
-                            chucks.add(new Vec3(g.getX() + (SUPPLY_CRATE_OFFSET * Math.cos(angleRad)),
-                                    inP4 ? 6 : 78.0,
-                                    g.getZ() + (SUPPLY_CRATE_OFFSET * Math.sin(angleRad))));
+                        } else if (wantChuck) {
+                            SkullTextures kind = null;
+                            if (SkullTextures.YELLOWCHUCK.isHoldingThis(g)) kind = SkullTextures.YELLOWCHUCK;
+                            else if (SkullTextures.REDCHUCK.isHoldingThis(g)) kind = SkullTextures.REDCHUCK;
+                            else if (SkullTextures.PURPLECHUCK.isHoldingThis(g)) kind = SkullTextures.PURPLECHUCK;
+                            if (kind != null) {
+                                double angleRad = Math.toRadians(g.getYRot() + 130.0f);
+                                chucks.add(new Chuck(new Vec3(g.getX() + (SUPPLY_CRATE_OFFSET * Math.cos(angleRad)),
+                                        inP4 ? 6 : 78.0,
+                                        g.getZ() + (SUPPLY_CRATE_OFFSET * Math.sin(angleRad))), kind));
+                            }
                         }
                     }
                 }
@@ -332,6 +350,12 @@ public final class KuudraWaypoints {
             textEntries.keySet().removeIf(k -> !seenKeys.contains(k));
         });
     }
+
+    // ── 小地图数据入口(KuudraMinimap 复用,tick 填充/渲染读取均在主线程) ──
+    public static List<Vec3> getSupplies() { return supplies; }
+    public static List<Vec3> getBallistaPiles() { return ballistaPiles; }
+    public static List<Vec3> getFuels() { return fuels; }
+    public static List<Chuck> getChucks() { return chucks; }
 
     /** Check if the player's fishing bobber is within pull range of a position (crate center x+0.5, z+1.5). */
     private static boolean isBobberInsideRange(Vec3 pos) {
