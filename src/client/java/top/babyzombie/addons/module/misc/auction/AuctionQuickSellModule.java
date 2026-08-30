@@ -166,7 +166,7 @@ public final class AuctionQuickSellModule {
     /** 写入第一行(仅当首行为空,不覆盖玩家输入);返回 true 表示本次处理完成(填好或无需填) */
     private static boolean fill(SignEditScreen screen, Pending p) {
         String[] messages = ((AbstractSignEditScreenAccessor) screen).messages();
-        if (messages == null || messages.length == 0) return false; // 行内容未到,等待重试
+        if (messages == null || messages.length == 0 || messages[1].isEmpty()) return false; // 行内容未到,等待重试
         String firstLine = messages[0] == null ? "" : ChatUtils.stripColor(messages[0]).trim();
         if (!firstLine.isEmpty()) return true; // 玩家已输入,不覆盖
         messages[0] = p.text;
@@ -189,7 +189,8 @@ public final class AuctionQuickSellModule {
         public void run() {
             if (Minecraft.getInstance().gui.screen() != screen) return; // 屏幕已关闭/切换,放弃
             if (fill(screen, pending)) {
-                if (pending.type == SignType.DURATION) screen.onClose(); // 时长:填入即完成
+                if (pending.type == SignType.DURATION)
+                    Scheduler.schedule(1, screen::onClose); // 时长:填入即完成
                 return;
             }
             if (++attempts < MAX_ATTEMPTS) Scheduler.schedule(3, this);
