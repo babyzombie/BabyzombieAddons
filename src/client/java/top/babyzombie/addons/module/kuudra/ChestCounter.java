@@ -1,3 +1,7 @@
+/*
+ * 部分内容改编自 IQ Addons (https://github.com/iqaddons/IQ, Apache License 2.0),
+ * 已由 BabyzombieAddons 修改;详见 THIRD_PARTY_NOTICES.txt。
+ */
 package top.babyzombie.addons.module.kuudra;
 
 import com.google.gson.reflect.TypeToken;
@@ -41,7 +45,7 @@ public final class ChestCounter {
 
     private static final int MAX_CHESTS = 60;
     private static final long PENDING_TIMEOUT_MS = 30_000;
-    private static final String PAID_CHEST_TEXTURE_URL = "http://textures.minecraft.net/texture/d90a7dec36b1421c95b699a39fdb500b3e74648fee5821e3fd05668ee01ce10c";
+    private static final String PAID_CHEST_TEXTURE_URL = "https://textures.minecraft.net/texture/d90a7dec36b1421c95b699a39fdb500b3e74648fee5821e3fd05668ee01ce10c";
     private static ItemStack chestIcon;
     private static boolean pendingChestOpen;
     private static long pendingSinceMs;

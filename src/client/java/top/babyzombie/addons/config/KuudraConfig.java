@@ -247,8 +247,10 @@ public class KuudraConfig {
         public boolean throwAlert = false;
         @ConfigOption(name = "config.babyzombieaddons.option.pearlEditConfig", desc = "config.babyzombieaddons.option.pearlEditConfig.desc") @ConfigEditorButton(buttonText = "Edit")
         public transient Runnable editConfig = PearlWaypoints::openConfigFile;
-        @ConfigOption(name = "config.babyzombieaddons.option.pearlOpenIqModrinth", desc = "config.babyzombieaddons.option.pearlOpenIqModrinth.desc") @ConfigEditorButton(buttonText = "IQ Modrinth")
+        @ConfigOption(name = "config.babyzombieaddons.option.pearlOpenIqModrinth", desc = "config.babyzombieaddons.option.pearlOpenIqModrinth.desc") @ConfigEditorButton(buttonText = "IQ Addons")
         public transient Runnable openIqModrinth = PearlWaypoints::openIqModrinth;
+        @ConfigOption(name = "config.babyzombieaddons.option.pearlOpenIqSource", desc = "config.babyzombieaddons.option.pearlOpenIqSource.desc") @ConfigEditorButton(buttonText = "IQ GitHub")
+        public transient Runnable openIqSource = PearlWaypoints::openIqSource;
     }
 
     /** 珍珠轨迹(组中组):手持预测/投出追踪/第二相机。 */

@@ -2,6 +2,8 @@ package top.babyzombie.addons.util.pet;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.babyzombie.addons.util.HttpUtils;
 import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
@@ -33,12 +35,16 @@ import com.google.gson.JsonParser;
  * Used to determine if Diana is mayor and which perks are active.
  */
 public final class MayorFetcher {
+    private static final Logger LOGGER = LoggerFactory.getLogger("BabyzombieAddons/MayorFetcher");
+
     private static final String ELECTION_URL = "https://api.hypixel.net/resources/skyblock/election";
     private static final long MIN_REFRESH_MS = 3600_000; // 1 hour
 
     private static final MayorFetcher INSTANCE = new MayorFetcher();
     private PlayerPetState state;
     private boolean useSkyblocker;
+    /** 启动后是否已记录过拉取失败（只提示一次，成功后重置） */
+    private boolean failureLogged = false;
 
     private MayorFetcher() {}
 
@@ -124,7 +130,7 @@ public final class MayorFetcher {
     }
 
     private void fetch() {
-        // 异步 HTTP：避免阻塞渲染线程（connect+read 最坏各 5s，会整机冻结）
+        // 异步 HTTP:避免阻塞渲染线程(connect+read 最坏各 5s,会整机冻结)
         CompletableFuture.runAsync(() -> {
             boolean dianaMayor = false;
             boolean petXpBuff = false;
@@ -137,7 +143,10 @@ public final class MayorFetcher {
                 conn.setRequestProperty("User-Agent", HttpUtils.USER_AGENT);
                 try {
                     int code = conn.getResponseCode();
-                    if (code != 200) return;
+                    if (code != 200) {
+                        logFirstFailure("HTTP " + code);
+                        return;
+                    }
 
                     JsonObject obj;
                     try (var reader = new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8)) {
@@ -183,7 +192,7 @@ public final class MayorFetcher {
                     conn.disconnect();
                 }
 
-                // 回主线程写状态（PlayerPetState 在 tick 中被读，避免跨线程竞争）
+                // 回主线程写状态(PlayerPetState 在 tick 中被读,避免跨线程竞争)
                 boolean fMayor = dianaMayor, fPet = petXpBuff, fSharing = sharingIsCaring;
                 Minecraft.getInstance().execute(() -> {
                     state.dianaMayor = fMayor;
@@ -192,8 +201,18 @@ public final class MayorFetcher {
                     state.mayorLastCheckTime = System.currentTimeMillis();
                     PetManager.getInstance().saveCurrentProfile();
                 });
-            } catch (IOException e) {
+                failureLogged = false;
+            } catch (Exception e) {
+                logFirstFailure(e.toString());
             }
         });
+    }
+
+    /** 启动后首次失败打一条 warn 日志（成功后重置，避免刷屏）。 */
+    private void logFirstFailure(String reason) {
+        if (!failureLogged) {
+            failureLogged = true;
+            LOGGER.warn("Mayor data fetch failed, will retry automatically: {}", reason);
+        }
     }
 }

@@ -1,3 +1,7 @@
+/*
+ * 自研实现,借用 IQ Addons (https://github.com/iqaddons/IQ, Apache License 2.0)
+ * 的阈值/参数数据改进;详见 THIRD_PARTY_NOTICES.txt。
+ */
 package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;

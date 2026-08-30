@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +35,8 @@ import top.babyzombie.addons.util.HttpUtils;
  * 内部保证最多 60s 发起一次真实请求；之后直接读 {@link #getProduct(String)}。
  */
 final class BazaarApiTracker {
+    private static final Logger LOGGER = LoggerFactory.getLogger("BabyzombieAddons/BazaarApiTracker");
+
     private static final String BAZAAR_URL = "https://api.hypixel.net/v2/skyblock/bazaar";
     /** 官方缓存周期 ~60s，对齐即可，不激进轮询 */
     private static final long REFRESH_INTERVAL_MS = 60_000;
@@ -50,6 +54,8 @@ final class BazaarApiTracker {
     private volatile long lastFetchMs = 0;
     private volatile boolean fetching = false;
     private boolean cacheLoaded = false;
+    /** 启动后是否已记录过拉取失败（只提示一次，拉到成功后重置，避免刷屏） */
+    private boolean failureLogged = false;
 
     private BazaarApiTracker() {}
 
@@ -83,7 +89,10 @@ final class BazaarApiTracker {
             conn.setRequestProperty("User-Agent", HttpUtils.USER_AGENT);
 
             int code = conn.getResponseCode();
-            if (code != 200) return;
+            if (code != 200) {
+                logFirstFailure("HTTP " + code);
+                return;
+            }
 
             InputStream in = conn.getInputStream();
             if ("gzip".equalsIgnoreCase(conn.getContentEncoding())) {
@@ -102,12 +111,22 @@ final class BazaarApiTracker {
 
             products = parseProducts(root.getAsJsonObject("products"));
             snapshotTs = newTs;
+            failureLogged = false;
             saveCache(body);
         } catch (IOException | RuntimeException e) {
-            // 静默失败，下一轮 ensureFresh 自然重试
+            // 静默失败，下一轮 ensureFresh 自然重试；启动后首次失败打一条日志便于诊断
+            logFirstFailure(e.toString());
         } finally {
             fetching = false;
             lastFetchMs = System.currentTimeMillis();
+        }
+    }
+
+    /** 启动后首次失败打一条 warn 日志（成功后重置，避免刷屏） */
+    private void logFirstFailure(String reason) {
+        if (!failureLogged) {
+            failureLogged = true;
+            LOGGER.warn("Bazaar data fetch failed, will retry automatically: {}", reason);
         }
     }
 

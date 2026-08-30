@@ -1,3 +1,7 @@
+/*
+ * 部分内容改编自 IQ Addons (https://github.com/iqaddons/IQ, Apache License 2.0),
+ * 已由 BabyzombieAddons 修改;详见 THIRD_PARTY_NOTICES.txt。
+ */
 package top.babyzombie.addons.module.kuudra;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;

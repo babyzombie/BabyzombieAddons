@@ -49,10 +49,6 @@ public final class SystemNotifier {
         if (!WinToast.isSupported()) {
             return;
         }
-        // 快捷方式注册开关未开时不发送(Win10 未注册 AUMID 的 toast 会被静默丢弃)
-        if (!ModConfigManager.get().general.tray.toastShortcut) {
-            return;
-        }
         boolean notify = switch (when) {
             case OFF -> false;
             case ALWAYS -> true;
