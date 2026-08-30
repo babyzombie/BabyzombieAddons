@@ -472,7 +472,7 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
             if (Minecraft.getInstance().screen != screen) return; // 屏幕已关闭/切换,放弃
             if (pasteAmountIntoSign(screen, amount)) {
                 // 自动贴入成功后顺便完成告示牌:onClose → removed() 把第一行发给服务器
-                screen.onClose();
+                Scheduler.schedule(1, screen::onClose);
                 return;
             }
             if (++attempts < MAX_ATTEMPTS) Scheduler.schedule(3, this); // 行内容未到,稍后重试
