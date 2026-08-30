@@ -140,8 +140,6 @@ public final class MinimizeToTrayModule {
         if (!startupBehaviorApplied) {
             applyStartupBehavior();
         }
-        // 快捷方式注册开关:状态切换时创建/删除开始菜单快捷方式
-        WinToast.syncRegistration(ModConfigManager.get().general.tray.toastShortcut);
         if (restoreRequested && trayActive) {
             restoreRequested = false;
             restoreFromTray();

@@ -2,7 +2,6 @@ package top.babyzombie.addons.util.win32;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
-import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
@@ -67,11 +66,6 @@ public final class Win32Api {
     public static final int WM_QUIT = 0x0012;
     /** 空消息:托盘右键菜单收起后向回调窗口投递,使菜单能被点击别处关闭(托盘菜单模式要求,见 showTrayMenu) */
     public static final int WM_NULL = 0x0000;
-
-    // ── CreateProcessW(静默拉起外部进程,如 PowerShell 弹系统通知) ──
-
-    /** 新进程不创建控制台窗口(从 GUI 进程拉起命令行工具时不闪窗) */
-    public static final int CREATE_NO_WINDOW = 0x08000000;
 
     // ── 结构 ──
 
@@ -147,120 +141,6 @@ public final class Win32Api {
             return List.of("cbSize", "hWnd", "uID", "uFlags", "uCallbackMessage", "hIcon",
                 "szTip", "dwState", "dwStateMask", "szInfo", "uTimeoutOrVersion", "szInfoTitle",
                 "dwInfoFlags", "guidItem", "hBalloonIcon");
-        }
-    }
-
-    /** STARTUPINFOW(CreateProcessW 用;全部字段置零,不重定向句柄) */
-    public static class STARTUPINFOW extends Structure {
-        public int cb;
-        public Pointer lpReserved;
-        public Pointer lpDesktop;
-        public Pointer lpTitle;
-        public int dwX;
-        public int dwY;
-        public int dwXSize;
-        public int dwYSize;
-        public int dwXCountChars;
-        public int dwYCountChars;
-        public int dwFillAttribute;
-        public int dwFlags;
-        public short wShowWindow;
-        public short cbReserved2;
-        public Pointer lpReserved2;
-        public Pointer hStdInput;
-        public Pointer hStdOutput;
-        public Pointer hStdError;
-
-        @Override
-        protected List<String> getFieldOrder() {
-            return List.of("cb", "lpReserved", "lpDesktop", "lpTitle", "dwX", "dwY", "dwXSize", "dwYSize",
-                "dwXCountChars", "dwYCountChars", "dwFillAttribute", "dwFlags", "wShowWindow", "cbReserved2",
-                "lpReserved2", "hStdInput", "hStdOutput", "hStdError");
-        }
-    }
-
-    /** PROCESS_INFORMATION(CreateProcessW 输出) */
-    public static class PROCESS_INFORMATION extends Structure {
-        public Pointer hProcess;
-        public Pointer hThread;
-        public int dwProcessId;
-        public int dwThreadId;
-
-        @Override
-        protected List<String> getFieldOrder() {
-            return List.of("hProcess", "hThread", "dwProcessId", "dwThreadId");
-        }
-    }
-
-    /** TOKEN_ELEVATION(GetTokenInformation TokenElevation 输出) */
-    public static class TOKEN_ELEVATION extends Structure {
-        public int TokenIsElevated;
-
-        @Override
-        protected List<String> getFieldOrder() {
-            return List.of("TokenIsElevated");
-        }
-    }
-
-    // ── GDI(抓取游戏窗口图标 HICON → 像素) ──
-
-    /** ICONINFO(GetIconInfo 输出;hbmMask/hbmColor 由调用方 DeleteObject 释放) */
-    public static class ICONINFO extends Structure {
-        public boolean fIcon;
-        public int xHotspot;
-        public int yHotspot;
-        public Pointer hbmMask;
-        public Pointer hbmColor;
-
-        @Override
-        protected List<String> getFieldOrder() {
-            return List.of("fIcon", "xHotspot", "yHotspot", "hbmMask", "hbmColor");
-        }
-    }
-
-    /** BITMAP(GetObjectW 输出) */
-    public static class BITMAP extends Structure {
-        public int bmType;
-        public int bmWidth;
-        public int bmHeight;
-        public int bmWidthBytes;
-        public short bmPlanes;
-        public short bmBitsPixel;
-        public Pointer bmBits;
-
-        @Override
-        protected List<String> getFieldOrder() {
-            return List.of("bmType", "bmWidth", "bmHeight", "bmWidthBytes", "bmPlanes", "bmBitsPixel", "bmBits");
-        }
-    }
-
-    public static class BITMAPINFOHEADER extends Structure {
-        public int biSize;
-        public int biWidth;
-        public int biHeight;
-        public short biPlanes;
-        public short biBitCount;
-        public int biCompression;
-        public int biSizeImage;
-        public int biXPelsPerMeter;
-        public int biYPelsPerMeter;
-        public int biClrUsed;
-        public int biClrImportant;
-
-        @Override
-        protected List<String> getFieldOrder() {
-            return List.of("biSize", "biWidth", "biHeight", "biPlanes", "biBitCount", "biCompression",
-                "biSizeImage", "biXPelsPerMeter", "biYPelsPerMeter", "biClrUsed", "biClrImportant");
-        }
-    }
-
-    /** BITMAPINFO(GetDIBits 用;仅头部,无调色板) */
-    public static class BITMAPINFO extends Structure {
-        public BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
-
-        @Override
-        protected List<String> getFieldOrder() {
-            return List.of("bmiHeader");
         }
     }
 
@@ -359,24 +239,6 @@ public final class Win32Api {
         int GetMessageW(MSG lpMsg, Pointer hWnd, int wMsgFilterMin, int wMsgFilterMax);
 
         boolean DispatchMessageW(MSG lpMsg);
-
-        boolean GetIconInfo(Pointer hIcon, ICONINFO piconinfo);
-    }
-
-    // ── gdi32.dll(图标像素提取) ──
-
-    public interface Gdi32 extends Library {
-        Gdi32 INSTANCE = Native.load("gdi32", Gdi32.class);
-
-        Pointer CreateCompatibleDC(Pointer hdc);
-
-        boolean DeleteDC(Pointer hdc);
-
-        boolean DeleteObject(Pointer ho);
-
-        int GetObjectW(Pointer h, int c, Pointer pv);
-
-        int GetDIBits(Pointer hdc, Pointer hbm, int uStartScan, int cScanLines, Pointer lpvBits, BITMAPINFO lpbi, int uUsage);
     }
 
     // ── kernel32.dll ──
@@ -387,18 +249,6 @@ public final class Win32Api {
         Pointer GetModuleHandleW(WString lpModuleName);
 
         int GetCurrentThreadId();
-
-        Pointer GetCurrentProcess();
-
-        boolean CreateProcessW(WString lpApplicationName, Pointer lpCommandLine, Pointer lpProcessAttributes,
-            Pointer lpThreadAttributes, boolean bInheritHandles, int dwCreationFlags, Pointer lpEnvironment,
-            WString lpCurrentDirectory, STARTUPINFOW lpStartupInfo, PROCESS_INFORMATION lpProcessInformation);
-
-        boolean CloseHandle(Pointer hObject);
-
-        int WaitForSingleObject(Pointer hObject, int dwMilliseconds);
-
-        int GetLastError();
     }
 
     // ── shell32.dll(托盘图标) ──
@@ -407,17 +257,6 @@ public final class Win32Api {
         Shell32 INSTANCE = Native.load("shell32", Shell32.class);
 
         boolean Shell_NotifyIconW(int dwMessage, NOTIFYICONDATA lpData);
-    }
-
-    // ── advapi32.dll(提权检测) ──
-
-    public interface Advapi32 extends Library {
-        Advapi32 INSTANCE = Native.load("advapi32", Advapi32.class);
-
-        boolean OpenProcessToken(Pointer processHandle, int desiredAccess, IntByReference tokenHandle);
-
-        boolean GetTokenInformation(IntByReference tokenHandle, int tokenInformationClass,
-            TOKEN_ELEVATION tokenInformation, int tokenInformationLength, IntByReference returnLength);
     }
 
     // ── 工具方法 ──
@@ -445,38 +284,5 @@ public final class Win32Api {
         char[] buf = new char[512];
         int len = User32.INSTANCE.GetWindowTextW(hwnd, buf, buf.length);
         return len > 0 ? new String(buf, 0, len) : "";
-    }
-
-    /**
-     * 以 CREATE_NO_WINDOW 静默拉起外部进程(不闪控制台窗口),不等待其退出。
-     * 命令行为可写缓冲区(CreateProcessW 会改写命令行,不能传只读 WString)。
-     * 失败时调用方可用 {@link Kernel32#GetLastError()} 读取错误码(两次 JNA 调用之间线程末次错误值不变)。
-     */
-    public static boolean createProcessHidden(String commandLine) {
-        return createProcessHiddenAndWait(commandLine, 0);
-    }
-
-    /**
-     * 以 CREATE_NO_WINDOW 静默拉起外部进程并等待其退出(最多 timeoutMs 毫秒,超时按成功处理)。
-     * 用于必须先完成才能继续的场景(如发通知前的 AUMID 注册,防止第一次通知抢跑)。
-     */
-    public static boolean createProcessHiddenAndWait(String commandLine, int timeoutMs) {
-        if (commandLine == null || commandLine.isEmpty()) {
-            return false;
-        }
-        Memory cmd = new Memory((commandLine.length() + 1L) * 2L);
-        cmd.setWideString(0, commandLine);
-        STARTUPINFOW startupInfo = new STARTUPINFOW();
-        startupInfo.cb = startupInfo.size();
-        PROCESS_INFORMATION processInfo = new PROCESS_INFORMATION();
-        boolean ok = Kernel32.INSTANCE.CreateProcessW(null, cmd, null, null, false,
-            CREATE_NO_WINDOW, null, null, startupInfo, processInfo);
-        if (!ok) {
-            return false;
-        }
-        Kernel32.INSTANCE.WaitForSingleObject(processInfo.hProcess, timeoutMs);
-        Kernel32.INSTANCE.CloseHandle(processInfo.hProcess);
-        Kernel32.INSTANCE.CloseHandle(processInfo.hThread);
-        return true;
     }
 }

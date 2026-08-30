@@ -43,7 +43,7 @@ public final class SlayerHUD {
 
     private SlayerHUD() {}
 
-    private static final String GUMMY_BEAR_SKIN_URL = "http://textures.minecraft.net/texture/4306587ec38c2446d389a581e0691556fa58fce0a02d0846d23fd68e3656a249";
+    private static final String GUMMY_BEAR_SKIN_URL = "https://textures.minecraft.net/texture/4306587ec38c2446d389a581e0691556fa58fce0a02d0846d23fd68e3656a249";
 
     private static ItemStack createGummyBearIcon() {
         var stack = new ItemStack(Items.PLAYER_HEAD);

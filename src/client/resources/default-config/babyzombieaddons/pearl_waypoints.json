@@ -1,8 +1,9 @@
 {
   "_comment": "Pearl Waypoints config - edit this file to customize your own waypoint setup.",
+  "_attribution": "Waypoint data adapted from IQ Addons (https://github.com/iqaddons/IQ), Apache License 2.0, modified by BabyzombieAddons. See THIRD_PARTY_NOTICES.txt.",
   "_howToUse": [
     "This file is valid JSON. Do not use // or /* */ comments. Use keys like _comment or _guide if you want to leave notes.",
-    "After editing this file, save it and run /iq reload. You do NOT need to restart the game.",
+    "After editing this file, save it. The waypoints take effect after you re-enter SkyBlock or restart the game.",
     "Each object inside 'areas' is one player area. When your player is inside that area, its waypoints are used.",
     "pos1 and pos2 are the 2 corners of the area in [x, z] format.",
     "waypoints is the list of pearls shown for that area. Each waypoint uses [x, y, z] coordinates.",

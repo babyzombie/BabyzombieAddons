@@ -2,11 +2,12 @@ package top.babyzombie.addons.util.pet;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.babyzombie.addons.util.HttpUtils;
 import top.babyzombie.addons.util.pet.state.PlayerPetState;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -31,12 +32,16 @@ import com.google.gson.JsonParser;
  * Used to determine if Diana is mayor and which perks are active.
  */
 public final class MayorFetcher {
+    private static final Logger LOGGER = LoggerFactory.getLogger("BabyzombieAddons/MayorFetcher");
+
     private static final String ELECTION_URL = "https://api.hypixel.net/resources/skyblock/election";
     private static final long MIN_REFRESH_MS = 3600_000; // 1 hour
 
     private static final MayorFetcher INSTANCE = new MayorFetcher();
     private PlayerPetState state;
     private boolean useSkyblocker;
+    /** 启动后是否已记录过拉取失败（只提示一次，成功后重置） */
+    private boolean failureLogged = false;
 
     private MayorFetcher() {}
 
@@ -131,7 +136,10 @@ public final class MayorFetcher {
             conn.setRequestProperty("User-Agent", "BabyzombieAddons");
 
             int code = conn.getResponseCode();
-            if (code != 200) return;
+            if (code != 200) {
+                logFirstFailure("HTTP " + code);
+                return;
+            }
 
             JsonObject obj;
             try (var reader = new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8)) {
@@ -179,8 +187,19 @@ public final class MayorFetcher {
                 }
             }
             state.mayorLastCheckTime = System.currentTimeMillis();
+            failureLogged = false;
             PetManager.getInstance().saveCurrentProfile();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            // 拉取失败不打扰玩家，下一轮 tick 到期自然重试；启动后首次失败打一条日志便于诊断
+            logFirstFailure(e.toString());
+        }
+    }
+
+    /** 启动后首次失败打一条 warn 日志（成功后重置，避免刷屏） */
+    private void logFirstFailure(String reason) {
+        if (!failureLogged) {
+            failureLogged = true;
+            LOGGER.warn("Mayor data fetch failed, will retry automatically: {}", reason);
         }
     }
 }

@@ -1,9 +1,14 @@
+/*
+ * 部分内容改编自 IQ Addons (https://github.com/iqaddons/IQ, Apache License 2.0),
+ * 已由 BabyzombieAddons 修改;详见 THIRD_PARTY_NOTICES.txt。
+ */
 package top.babyzombie.addons.module.kuudra;
 
 import com.google.gson.Gson;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Util;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.phys.Vec3;
 import top.babyzombie.addons.config.ModConfigManager;
@@ -88,20 +93,18 @@ public final class PearlWaypoints {
         try {
             if (java.awt.Desktop.isDesktopSupported() && java.awt.Desktop.getDesktop().isSupported(java.awt.Desktop.Action.EDIT)) {
                 java.awt.Desktop.getDesktop().edit(configFile.toFile());
-            } else {
-                Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start", "", configFile.toString()});
             }
         } catch (IOException ignored) {}
     }
 
     public static void openIqModrinth() {
-        try {
-            if (java.awt.Desktop.isDesktopSupported()) {
-                java.awt.Desktop.getDesktop().browse(java.net.URI.create("https://modrinth.com/mod/iq-addons"));
-            } else {
-                Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start", "", "https://modrinth.com/mod/iq-addons"});
-            }
-        } catch (IOException ignored) {}
+        // 与 ModConfig 社交链接同一通道:MC 官方 Util.openUri
+        Util.getPlatform().openUri(java.net.URI.create("https://modrinth.com/mod/iq-addons"));
+    }
+
+    /** 打开 IQ Addons GitHub 仓库(源码与 Apache-2.0 许可证)。 */
+    public static void openIqSource() {
+        Util.getPlatform().openUri(java.net.URI.create("https://github.com/iqaddons/IQ"));
     }
 
     private record BlockOutline(double x, double y, double z, float r, float g, float b, float a) {}

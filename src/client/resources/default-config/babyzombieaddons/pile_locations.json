@@ -1,5 +1,6 @@
 {
   "_comment": "Pile Waypoints config - edit this file to customize supply pile positions.",
+  "_attribution": "Pile position data adapted from IQ Addons (https://github.com/iqaddons/IQ), Apache License 2.0, modified by BabyzombieAddons. See THIRD_PARTY_NOTICES.txt.",
   "_howToUse": [
     "This file is valid JSON. Do not use // or /* */ comments. Use keys like _comment or _guide if you want to leave notes.",
     "Each object inside 'piles' is one pile waypoint shown during Kuudra supplies.",
