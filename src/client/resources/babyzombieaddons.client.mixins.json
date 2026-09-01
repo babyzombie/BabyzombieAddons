@@ -76,6 +76,7 @@
     "render.ThirdPersonCrosshairMixin",
     "render.ViewAreaInvoker",
     "resource.PackRepositoryMixin",
+    "resource.PackSelectionModelMixin",
     "screen.AbstractSignEditScreenAccessor",
     "screen.ScreenInvoker",
     "screen.CommandSuggestionsMixin",
