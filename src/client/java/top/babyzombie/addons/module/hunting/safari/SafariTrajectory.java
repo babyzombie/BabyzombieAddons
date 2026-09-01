@@ -292,7 +292,7 @@ public final class SafariTrajectory {
             return null;
         }
         HypixelLocationTracker tracker = HypixelLocationTracker.getInstance();
-        if (tracker == null || !tracker.isInSafari()) {
+        if (!tracker.isInSafari()) {
             return null;
         }
         if (!isCapsule(player.getMainHandItem()) && !isCapsule(player.getOffhandItem())) {

@@ -229,7 +229,7 @@ public final class EnderPearlTrajectory {
     /// P2 开始消息——消息检测比区域判断准,P1/P2 共用场地区域分不开)。
     static boolean phaseActive() {
         HypixelLocationTracker tracker = HypixelLocationTracker.getInstance();
-        if (tracker == null || !tracker.isInSkyblock()) {
+        if (!tracker.isInSkyblock()) {
             return false;
         }
         PearlTrajectoryCfg cfg = config();

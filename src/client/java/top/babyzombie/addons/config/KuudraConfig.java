@@ -320,6 +320,8 @@ public class KuudraConfig {
         public boolean teammates = true;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.teammateStyle", desc = "config.babyzombieaddons.option.teammateStyle.desc") @ConfigEditorDropdown @SearchTag("minimap") @SearchTag("teammate")
         public ModConfig.KuudraMinimapTeammateStyle teammateStyle = ModConfig.KuudraMinimapTeammateStyle.DOT_NAME;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapHeadRotate", desc = "config.babyzombieaddons.option.kuudraMinimapHeadRotate.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("head") @SearchTag("rotate")
+        public boolean headRotate = true;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapTeammateColor", desc = "config.babyzombieaddons.option.kuudraMinimapTeammateColor.desc") @SearchTag("minimap") @SearchTag("teammate") @SearchTag("color")
         public ChromaColour teammateColor = ChromaColour.fromStaticRGB(255, 255, 255, 255);
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapSelfColor", desc = "config.babyzombieaddons.option.kuudraMinimapSelfColor.desc") @SearchTag("minimap") @SearchTag("self") @SearchTag("color")
@@ -332,27 +334,25 @@ public class KuudraConfig {
         public ChromaColour tentacleColor = ChromaColour.fromStaticRGB(255, 140, 40, 255);
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapDropships", desc = "config.babyzombieaddons.option.kuudraMinimapDropships.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("dropship") @SearchTag("ghast")
         public boolean dropships = false;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapCannons", desc = "config.babyzombieaddons.option.kuudraMinimapCannons.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("cannon")
+        public boolean cannons = true;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapSupplies", desc = "config.babyzombieaddons.option.kuudraMinimapSupplies.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("supply")
         public boolean supplies = true;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapPiles", desc = "config.babyzombieaddons.option.kuudraMinimapPiles.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("pile")
         public boolean piles = true;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapPileColor", desc = "config.babyzombieaddons.option.kuudraMinimapPileColor.desc") @SearchTag("minimap") @SearchTag("pile") @SearchTag("color")
         public ChromaColour pileColor = ChromaColour.fromStaticRGB(229, 229, 46, 255);
-        @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapPileDoneColor", desc = "config.babyzombieaddons.option.kuudraMinimapPileDoneColor.desc") @SearchTag("minimap") @SearchTag("pile") @SearchTag("color")
-        public ChromaColour pileDoneColor = ChromaColour.fromStaticRGB(85, 85, 85, 255);
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapFuel", desc = "config.babyzombieaddons.option.kuudraMinimapFuel.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("fuel")
-        public boolean fuel = true;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapBallista", desc = "config.babyzombieaddons.option.kuudraMinimapBallista.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("ballista")
         public boolean ballista = true;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapBallistaColor", desc = "config.babyzombieaddons.option.kuudraMinimapBallistaColor.desc") @SearchTag("minimap") @SearchTag("ballista") @SearchTag("color")
         public ChromaColour ballistaColor = ChromaColour.fromStaticRGB(229, 229, 46, 255);
+        @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapPileDoneColor", desc = "config.babyzombieaddons.option.kuudraMinimapPileDoneColor.desc") @SearchTag("minimap") @SearchTag("pile") @SearchTag("color")
+        public ChromaColour pileDoneColor = ChromaColour.fromStaticRGB(85, 85, 85, 255);
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapFuel", desc = "config.babyzombieaddons.option.kuudraMinimapFuel.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("fuel")
+        public boolean fuel = true;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapChucks", desc = "config.babyzombieaddons.option.kuudraMinimapChucks.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("chuck")
         public boolean chucks = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapCannons", desc = "config.babyzombieaddons.option.kuudraMinimapCannons.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("cannon")
-        public boolean cannons = true;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapCannonColor", desc = "config.babyzombieaddons.option.kuudraMinimapCannonColor.desc") @SearchTag("minimap") @SearchTag("cannon") @SearchTag("color")
         public ChromaColour cannonColor = ChromaColour.fromStaticRGB(200, 200, 208, 255);
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapHeadRotate", desc = "config.babyzombieaddons.option.kuudraMinimapHeadRotate.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("head") @SearchTag("rotate")
-        public boolean headRotate = true;
     }
 }
