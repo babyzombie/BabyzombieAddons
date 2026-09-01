@@ -58,7 +58,7 @@ public final class SafariTrajectory {
         }
 
         HypixelLocationTracker tracker = HypixelLocationTracker.getInstance();
-        boolean inSafari = tracker != null && tracker.isInSafari();
+        boolean inSafari = tracker.isInSafari();
         boolean holdingCapsule = isCapsule(player.getMainHandItem()) || isCapsule(player.getOffhandItem());
         if (!inSafari || !holdingCapsule) {
             return;
@@ -289,7 +289,7 @@ public final class SafariTrajectory {
             return null;
         }
         HypixelLocationTracker tracker = HypixelLocationTracker.getInstance();
-        if (tracker == null || !tracker.isInSafari()) {
+        if (!tracker.isInSafari()) {
             return null;
         }
         if (!isCapsule(player.getMainHandItem()) && !isCapsule(player.getOffhandItem())) {
