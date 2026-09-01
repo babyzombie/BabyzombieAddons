@@ -12,6 +12,7 @@
     "chat.ReiScreenChatMixin",
     "chat.SendCommandMixin",
     "chat.StyleMixin",
+    "compat.ModernUITextRenderTypeMixin",
     "entity.DisplayAccessor",
     "entity.FishingHookFixMixin",
     "entity.SwingDurationMixin",
