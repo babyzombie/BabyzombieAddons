@@ -32,7 +32,8 @@ except AttributeError:
     pass
 
 API_URL = "https://api.deepseek.com/chat/completions"
-# deepseek-v4-flash 默认非思考，翻译任务够用且便宜。
+# deepseek-v4-flash 实际默认带思考流(响应里会出现 reasoning_content),翻译任务不需要,
+# 已在 translate_with_deepseek 中用 thinking: {"type": "disabled"} 显式关闭,防思考吃光 max_tokens 预算。
 MODEL = os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash")
 
 GROUP_MAP = {
@@ -45,9 +46,12 @@ GROUP_MAP = {
 SYSTEM_PROMPT = (
     "You are a professional translator for Minecraft mod changelogs. "
     "Translate each line from Simplified Chinese to English. "
-    "Output exactly one translated line per input line, keeping the line count identical. "
+    "Output exactly one translated line per input line, keeping the line count identical "
+    "and separating lines with real line breaks - never return a JSON array, "
+    "never escape newlines as literal backslash-n characters, never wrap output in code fences. "
     "Preserve any leading symbol such as +, - or * on a line. "
-    "Keep mod-specific terms and feature names (e.g. Kuudra, Glacite, Slayer, HUD) as-is. "
+    "Keep mod-specific terms, feature names and proper nouns (e.g. Kuudra, Glacite, Slayer, HUD) as-is. "
+    "If a line is already in English or contains only URLs/code, keep it unchanged. "
     "Do not add numbering, bullets, explanations, or any extra text. "
     "Output only the translated lines."
 )
@@ -76,8 +80,12 @@ def translate_with_deepseek(lines, api_key):
             {"role": "user", "content": "\n".join(lines)},
         ],
         "temperature": 0.2,
-        "max_tokens": 4096,
+        # 思考与输出共用 max_tokens 预算:实测 4 行翻译思考就要烧 ~2800 token,
+        # commit 一多思考吃光预算后输出被截断为空,导致"返回 1 行"。翻译不需要推理,
+        # 显式关闭;预算留足给长 commit 列表(实测约 10 token/行,8192 可覆盖数百行)。
+        "max_tokens": 8192,
         "stream": False,
+        "thinking": {"type": "disabled"},
     }
     req = urllib.request.Request(
         API_URL,
@@ -97,8 +105,13 @@ def translate_lines(lines, api_key, mock=False):
     if not lines:
         return []
     translated = translate_with_deepseek(lines, api_key)
-    # 行数不一致时丢弃多余行 / 用原文补齐缺失行，保证对齐不崩
     if len(translated) != len(lines):
+        # 严重异常(只回一行 / 丢失过半):整体回退,由 main 输出中文版本,不再单行拼凑
+        if len(translated) == 1 or len(translated) < max(2, len(lines) // 2):
+            print(f"::warning::DeepSeek 返回 {len(translated)} 行，期望 {len(lines)} 行，"
+                  "严重异常，整体回退为中文输出", file=sys.stderr)
+            return None
+        # 轻微偏差(±几行):丢弃多余行 / 用原文补齐缺失行，保证对齐不崩
         print(f"::warning::DeepSeek 返回 {len(translated)} 行，期望 {len(lines)} 行，按行数对齐修正",
               file=sys.stderr)
         result = []
@@ -178,6 +191,14 @@ def main():
         translated = translate_lines(commit_lines, api_key, mock=args.mock)
     except (urllib.error.URLError, urllib.error.HTTPError, KeyError, json.JSONDecodeError) as e:
         print(f"::warning::DeepSeek 翻译失败（{e}），回退为中文输出", file=sys.stderr)
+        with open(args.en, "w", encoding="utf-8", newline="\n") as f:
+            f.write(text)
+        with open(args.bilingual, "w", encoding="utf-8", newline="\n") as f:
+            f.write(text)
+        return
+
+    # translate_lines 严重异常时返回 None,同样整体回退为中文输出
+    if translated is None:
         with open(args.en, "w", encoding="utf-8", newline="\n") as f:
             f.write(text)
         with open(args.bilingual, "w", encoding="utf-8", newline="\n") as f:
