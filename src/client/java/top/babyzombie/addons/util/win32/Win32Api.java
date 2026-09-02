@@ -9,6 +9,7 @@ import com.sun.jna.WString;
 import com.sun.jna.ptr.IntByReference;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 仅 Windows 使用的 Win32 API 封装(纯 JNA 核心,不依赖 jna-platform)。
@@ -16,10 +17,19 @@ import java.util.List;
  * MC 26.1.2 运行时自带 jna 5.17.0,此处仅编译期引用、运行时由 MC 提供。
  * 刻意不碰 GLFW:LWJGL 可能在后续 MC 版本被移除,窗口句柄一律通过
  * {@link #findMainWindow()} 按进程 ID 枚举获取。
+ * <p>
+ * 平台安全:嵌套接口的 {@code INSTANCE} 是懒加载的,只有真正调用原生方法时才会
+ * 加载 user32/kernel32/shell32。入口方法({@link #findMainWindow()}
+ * {@link #getWindowTitle(Pointer)})自带 {@link #IS_WINDOWS} 自检,非 Windows 平台
+ * (如手机端 FCL)即使被误调用也只会得到空结果,不会触发 JNA 原生库加载。
  */
 public final class Win32Api {
 
     private Win32Api() {}
+
+    /** 平台判定:非 Windows 时所有入口自检为空操作,不允许触碰任何原生库 */
+    public static final boolean IS_WINDOWS =
+        System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win");
 
     // ── 窗口过程 / 窗口 ──
 
@@ -261,8 +271,11 @@ public final class Win32Api {
 
     // ── 工具方法 ──
 
-    /** 按进程 ID 查找本进程的可见主窗口(不依赖窗口类名,兼容后续无 GLFW 的版本)。 */
+    /** 按进程 ID 查找本进程的可见主窗口(不依赖窗口类名,兼容后续无 GLFW 的版本)。非 Windows 直接返回 null。 */
     public static Pointer findMainWindow() {
+        if (!IS_WINDOWS) {
+            return null;
+        }
         final Pointer[] found = {Pointer.NULL};
         final long pid = ProcessHandle.current().pid();
         User32.INSTANCE.EnumWindows((hwnd, lParam) -> {
@@ -279,8 +292,11 @@ public final class Win32Api {
         return found[0];
     }
 
-    /** 读取窗口当前标题(与任务栏显示一致)。 */
+    /** 读取窗口当前标题(与任务栏显示一致)。非 Windows 或句柄为空返回空串。 */
     public static String getWindowTitle(Pointer hwnd) {
+        if (!IS_WINDOWS || hwnd == null) {
+            return "";
+        }
         char[] buf = new char[512];
         int len = User32.INSTANCE.GetWindowTextW(hwnd, buf, buf.length);
         return len > 0 ? new String(buf, 0, len) : "";

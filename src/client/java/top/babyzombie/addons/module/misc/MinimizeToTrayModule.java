@@ -43,6 +43,8 @@ import java.util.Locale;
  * </ul>
  * 全部走 Win32 API,不调用 GLFW(为后续无 GLFW 的 MC 版本留余地)。
  * 非 Windows 或系统托盘不可用时整体静默禁用。
+ * 平台安全:类初始化阶段零原生库调用(类名指针惰性创建),非 Windows 平台(如手机端 FCL)
+ * 加载本类不会触发 JNA 加载;所有公开入口自带 IS_WINDOWS 守卫,误调用也只是空操作。
  */
 public final class MinimizeToTrayModule {
 
@@ -61,14 +63,25 @@ public final class MinimizeToTrayModule {
     private static final int MENU_RESTORE = 1;
     private static final int MENU_EXIT = 2;
 
-    /** 托盘回调窗口类名(static 持有,类名内存须长期有效;窗口由专用消息循环线程创建) */
-    private static final Pointer TRAY_WND_CLASS_PTR = createTrayWndClassName();
+    /** 托盘回调窗口标题(纯 Java,类初始化安全) */
     private static final WString TRAY_WND_TITLE = new WString("");
 
-    private static Pointer createTrayWndClassName() {
-        Memory mem = new Memory(64);
-        mem.setWideString(0, "BabyzombieAddonsTrayWnd");
-        return mem;
+    /**
+     * 托盘回调窗口类名:首次挂载时惰性创建,static 持有保证内存长期有效。
+     * 注意:绝不能在类初始化阶段创建——{@code Memory} 构造会加载 JNA 的 jnidispatch
+     * 原生库,而非 Windows 平台(如手机端 FCL)没有该库,类加载即抛
+     * {@link UnsatisfiedLinkError} 崩端;只有在 Windows 才会走到这里。
+     */
+    private static volatile Pointer trayWndClassName;
+
+    private static Pointer trayWndClassName() {
+        Pointer name = trayWndClassName;
+        if (name == null) {
+            Memory mem = new Memory(64);
+            mem.setWideString(0, "BabyzombieAddonsTrayWnd");
+            trayWndClassName = name = mem;
+        }
+        return name;
     }
 
     private static int initAttempts;
@@ -298,6 +311,9 @@ public final class MinimizeToTrayModule {
      * (含移除托盘图标、解除静音等);未挂托盘时直接恢复并置前。可跨线程调用。
      */
     public static void requestRestoreFromSystem() {
+        if (!IS_WINDOWS) {
+            return;
+        }
         if (trayActive) {
             restoreRequested = true;
         } else if (hwnd != null && Pointer.nativeValue(hwnd) != 0) {
@@ -308,7 +324,7 @@ public final class MinimizeToTrayModule {
 
     /** 当前是否挂在托盘(供系统通知时机判断)。 */
     public static boolean isTrayActive() {
-        return trayActive;
+        return IS_WINDOWS && trayActive;
     }
 
     /** 启动自动行为是否已执行(每 JVM 会话至多一次)。 */
@@ -336,12 +352,15 @@ public final class MinimizeToTrayModule {
 
     /** 窗口当前是否最小化(含挂托盘时隐藏);供系统通知时机判断。 */
     public static boolean isWindowMinimized() {
+        if (!IS_WINDOWS) {
+            return false;
+        }
         return hwnd != null && Pointer.nativeValue(hwnd) != 0 && User32.INSTANCE.IsIconic(hwnd);
     }
 
     /** 窗口当前是否拥有焦点;供系统通知时机判断。 */
     public static boolean isWindowFocused() {
-        if (hwnd == null || Pointer.nativeValue(hwnd) == 0) {
+        if (!IS_WINDOWS || hwnd == null || Pointer.nativeValue(hwnd) == 0) {
             return false;
         }
         Pointer fg = User32.INSTANCE.GetForegroundWindow();
@@ -372,7 +391,7 @@ public final class MinimizeToTrayModule {
 
     /** 挂托盘限帧:开启时返回帧率上限(1-60),否则返回 -1。FramerateLimitTrackerMixin 每帧调用。 */
     public static int getTrayFramerateLimit() {
-        if (!trayActive) {
+        if (!IS_WINDOWS || !trayActive) {
             return -1;
         }
         Tray cfg = trayConfig();
@@ -475,9 +494,9 @@ public final class MinimizeToTrayModule {
             wc.cbSize = wc.size();
             wc.lpfnWndProc = new Pointer(proc);
             wc.hInstance = hInstance;
-            wc.lpszClassName = TRAY_WND_CLASS_PTR;
+            wc.lpszClassName = trayWndClassName();
             User32.INSTANCE.RegisterClassExW(wc);
-            Pointer wnd = User32.INSTANCE.CreateWindowExW(0, TRAY_WND_CLASS_PTR, TRAY_WND_TITLE, Win32Api.WS_POPUP,
+            Pointer wnd = User32.INSTANCE.CreateWindowExW(0, trayWndClassName(), TRAY_WND_TITLE, Win32Api.WS_POPUP,
                 0, 0, 0, 0, null, null, hInstance, null);
             trayWnd = wnd;
             TRAY_WND_READY.countDown();
