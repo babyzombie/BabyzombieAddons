@@ -338,6 +338,8 @@ public class KuudraConfig {
         public boolean cannons = true;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapSupplies", desc = "config.babyzombieaddons.option.kuudraMinimapSupplies.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("supply")
         public boolean supplies = true;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapSupplyCarriers", desc = "config.babyzombieaddons.option.kuudraMinimapSupplyCarriers.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("supply") @SearchTag("carrier")
+        public boolean supplyCarriers = true;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapPiles", desc = "config.babyzombieaddons.option.kuudraMinimapPiles.desc") @ConfigEditorBoolean @SearchTag("minimap") @SearchTag("pile")
         public boolean piles = true;
         @Expose @ConfigEditorColour @ConfigOption(name = "config.babyzombieaddons.option.kuudraMinimapPileColor", desc = "config.babyzombieaddons.option.kuudraMinimapPileColor.desc") @SearchTag("minimap") @SearchTag("pile") @SearchTag("color")

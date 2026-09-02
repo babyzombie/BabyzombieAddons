@@ -445,6 +445,8 @@
   "config.babyzombieaddons.option.kuudraMinimapDropships.desc": "在小地图上标记 Dropship 位置。",
   "config.babyzombieaddons.option.kuudraMinimapSupplies": "补给箱标记",
   "config.babyzombieaddons.option.kuudraMinimapSupplies.desc": "在小地图上标记补给箱位置（阶段一，头颅图标）。",
+  "config.babyzombieaddons.option.kuudraMinimapSupplyCarriers": "携带补给玩家标记",
+  "config.babyzombieaddons.option.kuudraMinimapSupplyCarriers.desc": "在小地图上标记手持补给箱的玩家（仅阶段一生效），图标每 0.5 秒在箱子与玩家标记间切换。",
   "config.babyzombieaddons.option.kuudraMinimapPiles": "放置点标记",
   "config.babyzombieaddons.option.kuudraMinimapPiles.desc": "在小地图上标记补给放置点，已放置补给的显示为完成色。",
   "config.babyzombieaddons.option.kuudraMinimapPileColor": "放置点颜色",

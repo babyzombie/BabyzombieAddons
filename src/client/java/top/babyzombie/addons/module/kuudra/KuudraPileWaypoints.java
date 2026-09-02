@@ -62,8 +62,9 @@ public final class KuudraPileWaypoints {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var cfg = ModConfigManager.get().kuudra.phase1;
-            // 小地图的放置点标记也依赖本扫描(已完成集合),二开一即跑
-            if (!cfg.supplyPileWaypoints && !ModConfigManager.get().kuudra.minimap.piles) return;
+            // 小地图的放置点/携带者标记也依赖本扫描(inSuppliesPhase),任一开即跑
+            var mm = ModConfigManager.get().kuudra.minimap;
+            if (!cfg.supplyPileWaypoints && !mm.piles && !mm.supplyCarriers) return;
             if (!HypixelLocationTracker.getInstance().isInKuudra()) return;
             if (client.player == null || client.player.tickCount % 20 != 0) return;
             inSuppliesPhase = "Rescue supplies".equals(getScoreboardPhase(client));

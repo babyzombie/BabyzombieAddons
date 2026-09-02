@@ -138,16 +138,23 @@ def render_en(sections):
 
 
 def render_bilingual(sections, originals):
-    """英文在上、中文在下对排。originals 是翻译前的原始中文行（sections 里已被替换成英文）。"""
+    """英文在上、中文在下对排。originals 是翻译前的原始中文行（sections 里已被替换成英文）。
+
+    每行行尾加两个空格（Markdown 硬换行）：EN/CN 若处于同一段落，GitHub/Gitee 会把
+    软换行渲染成空格、Modrinth 会直接粘连，硬换行保证所有平台都逐行显示。
+    已是英文的行（翻译保持原样，如 PR 的 feat(xxx): ... 提交）跳过中文重复行。
+    """
     out = []
     idx = 0
     for title, lines in sections:
         en_title = local_group_title(title)
         out.append(f"{en_title}（{title[4:]}）")
         for line in lines:
-            out.append(line)
-            out.append("  " + originals[idx].strip())
+            original = originals[idx].strip()
             idx += 1
+            out.append(line + "  ")
+            if original != line:
+                out.append("  " + original + "  ")
     return "\n".join(out) + "\n"
 
 
