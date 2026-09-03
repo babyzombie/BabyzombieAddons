@@ -250,6 +250,15 @@ jobs:
           version: ${{ env.version_main }}
           version-type: release
           changelog-file: changelog-bilingual.md
+          # 显式依赖（替换 fabric.mod.json 自动检测，只列需要展示的）：
+          # - skyblocker 自动检测会命中已归档旧项目，别名指向现行 fork skyblocker-liap
+          # - REI/rrv/modmenu 只是功能兼容的可选依赖，页面上只展示 modmenu，
+          #   REI/rrv 不在 Modrinth 页面上展示，故不列出
+          modrinth-dependencies: |
+            fabric-api(required)
+            fabric-language-kotlin(required)
+            modmenu(optional)
+            skyblocker(optional){modrinth:skyblocker-liap}
 
       - name: Publish 26.2 to Modrinth
         if: steps.check-token.outputs.has_token == 'true'
@@ -263,3 +272,9 @@ jobs:
           version: ${{ env.version_sub }}
           version-type: release
           changelog-file: changelog-bilingual.md
+          # 与 main 步骤同款显式依赖（见上方注释；REI/rrv 不展示）
+          modrinth-dependencies: |
+            fabric-api(required)
+            fabric-language-kotlin(required)
+            modmenu(optional)
+            skyblocker(optional){modrinth:skyblocker-liap}

@@ -340,13 +340,13 @@ public class SkyblockConfig {
         public boolean apiEnabled = false;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarShowActionBar", desc = "config.babyzombieaddons.option.bazzarShowActionBar.desc") @ConfigEditorBoolean @SearchTag("bazaar")
-        public boolean showActionBar = true;
+        public boolean showActionBar = false;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarShowBuyOrders", desc = "config.babyzombieaddons.option.bazzarShowBuyOrders.desc") @ConfigEditorBoolean @SearchTag("bazaar")
-        public boolean showBuyOrders = true;
+        public boolean showBuyOrders = false;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarShowSellOffers", desc = "config.babyzombieaddons.option.bazzarShowSellOffers.desc") @ConfigEditorBoolean @SearchTag("bazaar")
-        public boolean showSellOffers = true;
+        public boolean showSellOffers = false;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarOrdersPageEnabled", desc = "config.babyzombieaddons.option.bazzarOrdersPageEnabled.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("bazzar") @SearchTag("orders") @SearchTag("订单页")
         public boolean ordersPageEnabled = false;

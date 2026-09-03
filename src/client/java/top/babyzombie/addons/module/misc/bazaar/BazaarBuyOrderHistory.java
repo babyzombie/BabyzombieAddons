@@ -80,7 +80,8 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
     public static void init() {
         GuiOverlayManager.register(INSTANCE);
         ContainerClickEvents.BEFORE_MOUSE_CLICK.register(INSTANCE::onSlotClick);
-        // "How many do you want?" 页面:右键 Custom Amount 进入手动模式(自动贴入/自动完成退避)
+        // 数量自定义页(Buy Order "How many do you want?" / Instant Buy "<物品名> → Instant"):
+        // 右键 Custom Amount 进入手动模式(自动贴入/自动完成退避)
         ContainerClickEvents.BEFORE_MOUSE_CLICK.register(INSTANCE::onCustomAmountClick);
         // 显示层覆盖:该页面的 Custom Amount 物品 lore 直接改显示文本(不改物品数据)
         ItemTooltipCallback.EVENT.register((stack, _, _, lines) -> patchCustomAmountTooltip(stack, lines));
@@ -481,6 +482,18 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
 
     // ========== 数量自定义页(Custom Amount)显示层与右键抑制 ==========
 
+    /** 数量自定义页标题:Buy Order 是固定 "How many do you want?";
+     *  Instant Buy 页物品名不定(如 "Enchanted Book → Instant"),只能按后缀 "→ Instant" 匹配 */
+    private static boolean isCustomAmountPageTitle(String title) {
+        return "How many do you want?".equals(title) || title.endsWith("➜ Instant");
+    }
+
+    /** Custom Amount 按钮:Instant 页显示名带方括号("§f[§aCustom Amount§f]" → "[Custom Amount]"),
+     *  Buy Order 页无括号,统一按包含匹配 */
+    private static boolean isCustomAmountButton(String name) {
+        return name.contains("Custom Amount");
+    }
+
     /** Custom Amount 物品 lore 里的数量行("Buy up to 71,680x."),显示层替换用 */
     private static final Pattern BUY_UP_TO_LINE = Pattern.compile("Buy up to .+x\\.?", Pattern.CASE_INSENSITIVE);
 
@@ -495,9 +508,9 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         if (cfg == null || !cfg.signPasteAmount) return false;
         if (slot == null || !slot.hasItem()) return false;
         String title = ChatUtils.stripColor(screen.getTitle().getString()).trim();
-        if (!"How many do you want?".equals(title)) return false;
+        if (!isCustomAmountPageTitle(title)) return false;
         String name = ChatUtils.stripColor(slot.getItem().getHoverName().getString()).trim();
-        if (!"Custom Amount".equals(name)) return false;
+        if (!isCustomAmountButton(name)) return false;
         if (event.button() == 1) {
             suppressAutoFill = true;
             suppressAutoFillTs = System.currentTimeMillis();
@@ -514,7 +527,7 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
         if (cfg == null || !cfg.signPasteAmount) return;
         if (!isCustomAmountPageOpen()) return;
         String name = ChatUtils.stripColor(stack.getHoverName().getString()).trim();
-        if (!"Custom Amount".equals(name)) return;
+        if (!isCustomAmountButton(name)) return;
         String amount = readClipboardAmount();
         if (amount == null) return;
         boolean found = false;
@@ -534,7 +547,7 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
     private static boolean isCustomAmountPageOpen() {
         Screen s = Minecraft.getInstance().gui.screen();
         if (!(s instanceof AbstractContainerScreen<?> cs)) return false;
-        return "How many do you want?".equals(ChatUtils.stripColor(cs.getTitle().getString()).trim());
+        return isCustomAmountPageTitle(ChatUtils.stripColor(cs.getTitle().getString()).trim());
     }
 
     // ========== 音效 ==========

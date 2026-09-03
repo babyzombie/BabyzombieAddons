@@ -21,6 +21,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.cubemob.MagmaCube;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -30,6 +31,7 @@ import org.joml.Matrix3x2f;
 import top.babyzombie.addons.config.ModConfig;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 import top.babyzombie.addons.util.tracker.PartyTracker;
 
@@ -82,6 +84,8 @@ public final class KuudraMinimap {
 
     private static final int COLOR_BG = 0xB00A0A0C;
     private static final int COLOR_BORDER = 0xFF555555;
+    /** 补给箱携带者标记专用色(青色,区别于队友/自己)。 */
+    private static final int COLOR_SUPPLY_CARRIER = 0xFF55FFFF;
 
     // ── 字符图标 ──
     private static final String ICON_TENTACLE = "§l৫";  // 触手
@@ -97,6 +101,8 @@ public final class KuudraMinimap {
     private record Teammate(double x, double z, float yaw, String name, Identifier skinTex) {}
     private record KuudraSpot(double x, double z) {}
     private static final List<Teammate> teammates = new ArrayList<>();
+    /** 补给箱携带者快照(P1 手持 ELLE_SUPPLIES 的玩家,不含自己;数据形状同 Teammate)。 */
+    private static final List<Teammate> supplyCarriers = new ArrayList<>();
     private static final List<Vec3> tentacles = new ArrayList<>();
     private static final List<Vec3> dropships = new ArrayList<>();
     /** Kuudra 本体位置快照(全场扫描,不依赖玩家位置)。 */
@@ -119,6 +125,7 @@ public final class KuudraMinimap {
     // ── 头颅图标缓存(懒建) ──
     private static final Map<KuudraWaypoints.SkullTextures, ItemStack> HEAD_ICONS = new HashMap<>();
     private static ItemStack tntIcon;
+    private static ItemStack chestIcon;
 
     public static void init() {
         HudElementRegistry.attachElementAfter(VanillaHudElements.OVERLAY_MESSAGE,
@@ -134,6 +141,7 @@ public final class KuudraMinimap {
         if (!HypixelLocationTracker.getInstance().isInKuudra()) {
             // 离开 Kuudra 清实体快照;底图/图标纹理保留复用
             teammates.clear();
+            supplyCarriers.clear();
             tentacles.clear();
             dropships.clear();
             kuudraSpot = null;
@@ -220,6 +228,12 @@ public final class KuudraMinimap {
         return tntIcon;
     }
 
+    /** 补给箱图标(原版箱子,与 ELLE_SUPPLIES 的 item_model: minecraft:chest 一致,懒建)。 */
+    private static ItemStack chestIcon() {
+        if (chestIcon == null) chestIcon = new ItemStack(Items.CHEST);
+        return chestIcon;
+    }
+
     // ─────────────────────────── 实体快照 ───────────────────────────
 
     private static void snapshotEntities(Minecraft client) {
@@ -242,6 +256,20 @@ public final class KuudraMinimap {
                     skin = p.getSkin().body().texturePath();
                 } catch (Exception ignored) {}
                 teammates.add(new Teammate(p.getX(), p.getZ(), p.getYRot(),
+                        p.getGameProfile().name(), skin));
+            }
+        }
+
+        // 补给箱携带者(仅 P1 阶段):手持 ELLE_SUPPLIES 的玩家,不含自己(自己单独渲染)
+        supplyCarriers.clear();
+        if (cfg.supplyCarriers && KuudraPileWaypoints.inSuppliesPhase) {
+            for (var p : level.players()) {
+                if (p == self || !isHoldingSupplyCrate(p)) continue;
+                Identifier skin = null;
+                try {
+                    skin = p.getSkin().body().texturePath();
+                } catch (Exception ignored) {}
+                supplyCarriers.add(new Teammate(p.getX(), p.getZ(), p.getYRot(),
                         p.getGameProfile().name(), skin));
             }
         }
@@ -269,6 +297,16 @@ public final class KuudraMinimap {
             for (var g : level.getEntitiesOfClass(Ghast.class, ARENA_AABB)) {
                 dropships.add(g.position());
             }
+        }
+    }
+
+    /** 玩家是否手持补给箱(ELLE_SUPPLIES,主手/副手任一)。 */
+    private static boolean isHoldingSupplyCrate(Player p) {
+        try {
+            return "ELLE_SUPPLIES".equals(ItemUtils.getSkyblockId(p.getMainHandItem()))
+                    || "ELLE_SUPPLIES".equals(ItemUtils.getSkyblockId(p.getOffhandItem()));
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -316,8 +354,9 @@ public final class KuudraMinimap {
             for (var c : CANNONS) drawCannon(g, c.x(), c.z(), size, cannonColor);
         }
 
-        // 放置点(piles):未放/已放颜色都可配
-        if (cfg.piles) {
+        // 放置点(piles):未放/已放颜色都可配;仅在 P1 补给阶段(计分板 Rescue supplies)显示,
+        // 阶段一过后 scoreboard 切走,inSuppliesPhase 变 false,放置点自动隐藏(与世界渲染同信号)
+        if (cfg.piles && KuudraPileWaypoints.inSuppliesPhase) {
             var completed = KuudraPileWaypoints.getCompletedPiles();
             var piles = KuudraPileWaypoints.getPiles();
             int pileColor = cfg.pileColor.getEffectiveColourRGB();
@@ -345,6 +384,16 @@ public final class KuudraMinimap {
         if (cfg.chucks) {
             for (var c : KuudraWaypoints.getChucks()) {
                 drawItem(g, headIcon(c.kind()), c.pos().x, c.pos().z, size, ICON_PX_HEAD);
+            }
+        }
+
+        // 补给箱携带者(仅 P1):每 0.5 秒在箱子图标与玩家箭头/头像之间切换
+        if (cfg.supplyCarriers && KuudraPileWaypoints.inSuppliesPhase) {
+            if (client.level.getGameTime() / 10 % 2 == 0) {
+                var icon = chestIcon();
+                for (var c : supplyCarriers) drawItem(g, icon, c.x(), c.z(), size, ICON_PX_HEAD);
+            } else {
+                for (var c : supplyCarriers) drawCarrierMarker(g, client, cfg, size, c);
             }
         }
 
@@ -480,6 +529,26 @@ public final class KuudraMinimap {
                     if (!drawSkinHead(g, client, t.skinTex(), fx, fy, t.yaw(), cfg.headRotate)) {
                         g.fill(x0, y0, x0 + 3, y0 + 3, color);
                     }
+                }
+            }
+        }
+    }
+
+    /** 携带者非箱子相位:按队友样式画玩家标记(箭头/箭头+名字/头像),携带者专用色。 */
+    private static void drawCarrierMarker(GuiGraphicsExtractor g, Minecraft client,
+                                          top.babyzombie.addons.config.KuudraConfig.MinimapCfg cfg, int size,
+                                          Teammate t) {
+        float fx = mapX(t.x(), size), fy = mapY(t.z(), size);
+        switch (cfg.teammateStyle) {
+            case DOT -> drawPlayerArrow(g, fx, fy, t.yaw(), COLOR_SUPPLY_CARRIER);
+            case DOT_NAME -> {
+                drawPlayerArrow(g, fx, fy, t.yaw(), COLOR_SUPPLY_CARRIER);
+                g.text(client.font, t.name(), Math.round(fx) + 5, Math.round(fy) - 4, COLOR_SUPPLY_CARRIER, true);
+            }
+            case HEAD -> {
+                if (!drawSkinHead(g, client, t.skinTex(), fx, fy, t.yaw(), cfg.headRotate)) {
+                    int x0 = Math.round(fx) - 1, y0 = Math.round(fy) - 1;
+                    g.fill(x0, y0, x0 + 3, y0 + 3, COLOR_SUPPLY_CARRIER);
                 }
             }
         }
