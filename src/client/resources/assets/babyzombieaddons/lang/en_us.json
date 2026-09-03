@@ -6,7 +6,7 @@
   "resourcepack.babyzombieaddons.chroma_modernui.description": "Makes Aaron Mod's animated chroma fonts work under Modern UI's text engine",
   "resourcepack.babyzombieaddons.custom_discs.name": "§bBabyZombieAddons §r- Custom Music Discs",
   "resourcepack.babyzombieaddons.custom_discs.description": "Enables custom .ogg music discs.\nPlace .ogg files named like 1_Name.ogg ~ 9_Name.ogg into config/babyzombieaddons/custom_discs/, restart the game, then select them in the disc list.",
-  "config.babyzombieaddons.title": "BabyzombieAddons Settings",
+  "config.babyzombieaddons.title": "BabyzombieAddons %s Settings",
   "config.babyzombieaddons.social.modrinth": "Modrinth Page",
   "config.babyzombieaddons.social.github": "GitHub Repository",
   "config.babyzombieaddons.social.gitee": "Gitee Repository",

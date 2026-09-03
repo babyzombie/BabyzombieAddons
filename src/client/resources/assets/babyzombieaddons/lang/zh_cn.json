@@ -6,7 +6,7 @@
   "resourcepack.babyzombieaddons.chroma_modernui.description": "让 Aaron Mod 的动态彩色字体在 Modern UI 文字引擎下生效",
   "resourcepack.babyzombieaddons.custom_discs.name": "§bBabyZombieAddons §r- 自定义唱片",
   "resourcepack.babyzombieaddons.custom_discs.description": "允许使用自定义 .ogg 唱片。\n将音频文件命名为 1_歌名.ogg ~ 9_歌名.ogg 放入 config/babyzombieaddons/custom_discs/ 目录，重启游戏后即可在唱片列表中选取。",
-  "config.babyzombieaddons.title": "BabyzombieAddons 设置",
+  "config.babyzombieaddons.title": "BabyzombieAddons %s 设置",
   "config.babyzombieaddons.social.modrinth": "Modrinth 页面",
   "config.babyzombieaddons.social.github": "GitHub 仓库",
   "config.babyzombieaddons.social.gitee": "Gitee 仓库",

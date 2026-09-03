@@ -6,6 +6,7 @@ import io.github.notenoughupdates.moulconfig.annotations.Category;
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import com.google.gson.annotations.Expose;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
@@ -253,7 +254,10 @@ public class ModConfig extends Config {
 
     @Override
     public StructuredText getTitle() {
-        return StructuredText.translatable("config.babyzombieaddons.title");
+        return StructuredText.translatable("config.babyzombieaddons.title", StructuredText.of(FabricLoader.getInstance()
+                .getModContainer("babyzombieaddons")
+                .map(c -> c.getMetadata().getVersion().getFriendlyString())
+                .orElse("0.0.0")));
     }
 
     @Override
