@@ -19,7 +19,11 @@ import java.util.Map;
  * 不传物品参数 → 只做 API 数据更新检测。
  *
  * <p>可靠路径是 ItemStack：NBT 物品 id 为完整形式（附魔书如 {@code ULTIMATE_CROP_FEVER;5}），
- * 经 {@link BazaarStockMapper} 精确映射。显示名路径仅尽力而为——ultimate/turbo/twilight 等
+ * 经 {@link BazaarStockMapper} 精确映射；阵营兔子（0.27.1）NBT id 为通用
+ * {@code FACTION_RABBIT}，具体名读 {@code faction_rabbit_id} 标签拼成产品 id
+ * {@code FACTION_RABBIT_TAN}（手持物品与 bazaar 详情页中心槽都是这种完整物品）。
+ * bazaar 订单页的物品没有 NBT，阵营兔子只能靠显示名（如 "Mocktail"）经名字规则识别。
+ * 显示名路径仅尽力而为——ultimate/turbo/twilight 等
  * 前缀附魔的游戏内显示名（如 {@code [Crop Fever V]}）不带前缀，规则转换会失败，返回 null。
  */
 public final class BazaarItemInfo {
@@ -45,6 +49,13 @@ public final class BazaarItemInfo {
             String ench = extractEnchantmentId(stack);
             if (ench != null) skyblockId = ench;
         }
+        // 阵营兔子（0.27.1）：NBT id 为通用 FACTION_RABBIT，具体名在 faction_rabbit_id 标签
+        // （小写如 "tan"）；bazaar 产品 id 是完整形式 FACTION_RABBIT_TAN。
+        // 若 id 已是 FACTION_RABBIT_XXX 完整形式（NEU items json 内部名）则原样直查。
+        if ("FACTION_RABBIT".equals(skyblockId)) {
+            String rabbit = extractFactionRabbitId(stack);
+            if (rabbit != null) skyblockId = "FACTION_RABBIT_" + rabbit;
+        }
         return get(skyblockId);
     }
 
@@ -65,6 +76,23 @@ public final class BazaarItemInfo {
                     return e.getKey().toUpperCase(Locale.ROOT) + ";" + num.intValue();
                 }
             }
+        } catch (RuntimeException ignored) {}
+        return null;
+    }
+
+    /**
+     * 阵营兔子 NBT 适配：faction_rabbit_id 标签（如 "tan"）→ "TAN"，
+     * 由调用方拼成 bazaar 产品 id FACTION_RABBIT_TAN。读不到返回 null。
+     */
+    @Nullable
+    private static String extractFactionRabbitId(ItemStack stack) {
+        try {
+            var customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (customData == null) return null;
+            var tag = customData.copyTag();
+            String id = tag.getString("faction_rabbit_id").orElse(null);
+            if (id == null || id.isBlank()) return null;
+            return id.toUpperCase(Locale.ROOT);
         } catch (RuntimeException ignored) {}
         return null;
     }
@@ -111,6 +139,8 @@ public final class BazaarItemInfo {
     // "[Crop Fever V]"（加粗）→ "ULTIMATE_CROP_FEVER;5"；"Scavenger IV" → "SCAVENGER;4"
     // "Stock of Stonks" → "STOCK_OF_STONKS"
     // "Vampiric Vitality V"（游戏名 ≠ 内部名 MANA_VAMPIRE;5）→ 书页 lore 反查表兜底
+    // "Tan"/"Mocktail"（阵营兔子，显示名即兔子名；订单页物品无 NBT，仅此路径可用）
+    // → "FACTION_RABBIT_TAN"（API 产品集验证：普通名不是产品才转换）
     @Nullable
     private static String tryNameToId(String raw) {
         boolean bold = raw.contains("§l");
@@ -166,7 +196,16 @@ public final class BazaarItemInfo {
             }
         }
         // 4) 普通物品：大写 + 空格/连字符 → 下划线
-        return s.toUpperCase(Locale.ROOT).replace(' ', '_').replace('-', '_');
+        String plain = s.toUpperCase(Locale.ROOT).replace(' ', '_').replace('-', '_');
+        // 5) 阵营兔子（0.27.1）：显示名就是兔子名（如 "Tan"），产品 id 为 FACTION_RABBIT_<名>。
+        //    无后缀标记，仅当普通名不是真实产品、且 API 存在对应兔子产品时才替换，防误伤普通物品名；
+        //    API 数据未就绪时两查皆空，自然退回 plain（走 build 失败路径，与其它物品一致）
+        String rabbit = "FACTION_RABBIT_" + plain;
+        if (BazaarApiTracker.getInstance().getProduct(plain) == null
+                && BazaarApiTracker.getInstance().getProduct(rabbit) != null) {
+            return rabbit;
+        }
+        return plain;
     }
 
     /** 单档订单：同一价位的聚合（数量、单价、订单数） */
