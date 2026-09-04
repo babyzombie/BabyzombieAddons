@@ -35,9 +35,9 @@ public final class GlaciteMineshaftWaypoints {
             "[-]+\\n(.+) entered Glacite Mineshafts!\\n[-]+");
 
     private static long portalTimer;
-    private static boolean inMineshaft;
     private static boolean mineshaftOwner;
     private static long enterMineshaftTime;
+    private static boolean waitingPartyWarp;
     private static boolean waitingPartyTransfer;
     private static String ownServerName;
     private static final Set<BlockPos> visitedCorpses = new HashSet<>();
@@ -131,7 +131,7 @@ public final class GlaciteMineshaftWaypoints {
         return inFrozenCorpses ? lapis : -1;
     }
 
-    private static void tryRunEnterActions(String source) {
+    private static void tryRunEnterActions() {
         if (!isInMineshaft()) return;
         var cfg = ModConfigManager.get().mining.glaciteTunnels.glaciteMineshaft;
         var action = cfg.portalAction;
@@ -177,7 +177,7 @@ public final class GlaciteMineshaftWaypoints {
                     lapisGateTask = null;
                 }
             };
-            Scheduler.scheduleRepeating(10, lapisGateTask);
+            Scheduler.scheduleRepeating(5, lapisGateTask);
             return;
         }
         runPartyAction(action);
@@ -188,7 +188,7 @@ public final class GlaciteMineshaftWaypoints {
         enterMineshaftTime = ServerTick.getTime();
         PartyTracker.getInstance().runWhenKnown(
                 () -> {
-                    if (action == GlaciteMineshaftPortalAction.PTME_AND_WARP) Scheduler.schedule(10, () -> ChatUtils.sendCommand("p warp"));
+                    if (action == GlaciteMineshaftPortalAction.PTME_AND_WARP) waitingPartyWarp = true;
                 },
                 () -> {
                     ChatUtils.sendCommand("pc !ptme");
@@ -199,12 +199,8 @@ public final class GlaciteMineshaftWaypoints {
 
     public static void init() {
         HypixelLocationEvents.LOCATION_UPDATE.register(data -> {
-            if (!data.isInSkyblock()) { inMineshaft = false; return; }
-            boolean nowIn = data.isIn("Mineshaft");
-            if (nowIn && !inMineshaft) {
-                tryRunEnterActions("location-update");
-            }
-            inMineshaft = nowIn;
+            if (!data.isIn("Mineshaft")) return;
+            tryRunEnterActions();
         });
 
         // Portal detection
@@ -262,7 +258,6 @@ public final class GlaciteMineshaftWaypoints {
                     mineshaftOwner = true;
                     ownServerName = HypixelLocationTracker.getInstance().getServerName();
                     lastOwnerDetectTime = ServerTick.getTime();
-                    tryRunEnterActions("owner-detect");
                 }
             }
             return true;
@@ -280,10 +275,20 @@ public final class GlaciteMineshaftWaypoints {
                     || text.matches(".+已将组队移交给了.+")) {
                 var self = Minecraft.getInstance().player;
                 if (self != null && text.contains(self.getName().getString())) {
-                    ChatUtils.sendCommand("p warp");
+                    waitingPartyWarp = true;
                     waitingPartyTransfer = false;
                 }
             }
+        });
+
+        // Party Warp
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!isInMineshaft() || !waitingPartyWarp) return;
+            if (client.level == null) return;
+            if (client.level.getScoreboard().getTrackedPlayers().isEmpty()
+                || ((PlayerTabOverlayAccessor) client.gui.getTabList()).invokeGetPlayerInfos().isEmpty()) return;
+            waitingPartyWarp = false;
+            ChatUtils.sendCommand("p warp");
         });
 
         // Reset mineshaftOwner after timeout
@@ -369,7 +374,8 @@ public final class GlaciteMineshaftWaypoints {
         });
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
-            portalTimer = 0; inMineshaft = false;
+            portalTimer = 0;
+            waitingPartyWarp = false;
             waitingPartyTransfer = false;
             if (ServerTick.getTime() - lastOwnerDetectTime > 10_000) {
                 mineshaftOwner = false;
