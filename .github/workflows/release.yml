@@ -131,7 +131,9 @@ jobs:
           path: changelog-bilingual.md
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        # 用 v3（v2 已 EOL）：tag 已存在 release 时自动走更新而不是失败。
+        # name/body 显式传入会被覆盖为最新值，同名资源按 overwrite_files 默认覆盖，重跑安全。
+        uses: softprops/action-gh-release@v3
         with:
           name: Release ${{ github.ref_name }}
           body_path: changelog-bilingual.md
@@ -169,11 +171,23 @@ jobs:
           else
             echo "Gitee 上已存在 release，更新描述"
             PAYLOAD=$(jq -n --arg body "$BODY" '{body: $body}')
-            curl -sS -X PATCH "$API/releases/$RELEASE_ID?$TOKEN" \
-              -H "Content-Type: application/json" -d "$PAYLOAD" > /dev/null
+            HTTP=$(curl -sS -o /dev/null -w "%{http_code}" -X PATCH "$API/releases/$RELEASE_ID?$TOKEN" \
+              -H "Content-Type: application/json" -d "$PAYLOAD")
+            echo "Gitee 描述更新 HTTP $HTTP"
           fi
           if [ -n "$RELEASE_ID" ] && [ "$RELEASE_ID" != "null" ]; then
             for f in artifacts/**/*.jar; do
+              NAME=$(basename "$f")
+              # 重跑时 Gitee 不会因同名附件拒绝上传，而是直接再传一份。
+              # 先删掉同名旧附件再传，保证 release 里只有一份（Gitee 支持
+              # GET 列附件 + DELETE 单附件）。
+              echo "清理同名旧附件: $NAME"
+              for FILE_ID in $(curl -sS "$API/releases/$RELEASE_ID/attach_files?$TOKEN" \
+                | jq -r --arg n "$NAME" '.[] | select(.name == $n) | .id' 2>/dev/null || true); do
+                HTTP_DEL=$(curl -sS -o /dev/null -w "%{http_code}" -X DELETE \
+                  "$API/releases/$RELEASE_ID/attach_files/$FILE_ID?$TOKEN")
+                echo "  删除旧附件 $FILE_ID: HTTP $HTTP_DEL"
+              done
               echo "上传: $f"
               # 海外 runner 访问 Gitee 很慢：120s 超时经常误杀慢速上传导致反复重试
               # （3.4.1 那次跑了 28 分钟）。放宽到 300s，让慢速成功不被判超时。
@@ -238,8 +252,51 @@ jobs:
           echo "version_main=${VERSION}-mc${MC_MAIN}" >> "$GITHUB_ENV"
           echo "version_sub=${VERSION}-mc${MC_SUB}" >> "$GITHUB_ENV"
 
-      - name: Publish main to Modrinth
+      # 重跑时版本号已存在：Modrinth 不支持替换已发布版本的文件，
+      # 这里仅用 PATCH 更新 changelog（描述），并让后面的 mc-publish 跳过，避免 409 失败。
+      # 注：项目未过审（非 listed）时匿名请求会 404，本步骤走 token 鉴权不受影响。
+      - name: Update existing Modrinth versions (changelog only)
         if: steps.check-token.outputs.has_token == 'true'
+        id: modrinth-check
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          MAIN_VERSION: ${{ env.version_main }}
+          SUB_VERSION: ${{ env.version_sub }}
+        run: |
+          echo "main_exists=false" >> "$GITHUB_OUTPUT"
+          echo "sub_exists=false" >> "$GITHUB_OUTPUT"
+          jq -n --arg changelog "$(cat changelog-bilingual.md)" '{changelog: $changelog}' > /tmp/modrinth-changelog.json
+          for entry in "main:$MAIN_VERSION" "sub:$SUB_VERSION"; do
+            KEY="${entry%%:*}"
+            VERSION_NUMBER="${entry#*:}"
+            RESP=$(curl -sS -H "User-Agent: Bluesky-kk/BabyzombieAddons-release" \
+              -H "Authorization: Bearer $MODRINTH_TOKEN" \
+              "https://api.modrinth.com/v2/project/babyzombieaddons/version" || echo "[]")
+            EXISTS=false
+            for VERSION_ID in $(echo "$RESP" | jq -r --arg v "$VERSION_NUMBER" \
+              '.[] | select(.version_number == $v) | .id' 2>/dev/null); do
+              EXISTS=true
+              echo "Modrinth 已存在版本 $VERSION_NUMBER (id=$VERSION_ID)，仅更新 changelog"
+              HTTP=$(curl -sS -o /dev/null -w "%{http_code}" -X PATCH \
+                -H "User-Agent: Bluesky-kk/BabyzombieAddons-release" \
+                -H "Authorization: Bearer $MODRINTH_TOKEN" \
+                -H "Content-Type: application/json" \
+                --data @/tmp/modrinth-changelog.json \
+                "https://api.modrinth.com/v2/version/$VERSION_ID")
+              if [ "$HTTP" -ge 200 ] && [ "$HTTP" -lt 300 ]; then
+                echo "changelog 更新成功 (HTTP $HTTP)"
+              else
+                echo "::warning ::Modrinth $VERSION_NUMBER changelog 更新失败 (HTTP $HTTP)，请确认 token 有 version_write 权限"
+              fi
+            done
+            if [ "$EXISTS" = "true" ]; then
+              echo "${KEY}_exists=true" >> "$GITHUB_OUTPUT"
+            fi
+          done
+
+      - name: Publish main to Modrinth
+        # exists==true 时已在上一步更新 changelog，跳过发布避免 409
+        if: steps.check-token.outputs.has_token == 'true' && steps.modrinth-check.outputs.main_exists != 'true'
         uses: Kir-Antipov/mc-publish@v3.3.1
         with:
           modrinth-id: babyzombieaddons
@@ -261,7 +318,8 @@ jobs:
             skyblocker(optional){modrinth:skyblocker-liap}
 
       - name: Publish 26.2 to Modrinth
-        if: steps.check-token.outputs.has_token == 'true'
+        # exists==true 时已在上一步更新 changelog，跳过发布避免 409
+        if: steps.check-token.outputs.has_token == 'true' && steps.modrinth-check.outputs.sub_exists != 'true'
         uses: Kir-Antipov/mc-publish@v3.3.1
         with:
           modrinth-id: babyzombieaddons

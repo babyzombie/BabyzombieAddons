@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.ClientBossbarManager;
+import top.babyzombie.addons.util.ItemUtils;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -58,6 +59,9 @@ public final class MithrilGourmandModule {
             lastTriggeredBossbarId = null;
             return;
         }
+
+        var inventory = client.player.getInventory();
+        if (!inventory.hasAnyMatching(itemStack -> "MITHRIL_GOURMAND".equals(ItemUtils.getSkyblockId(itemStack)))) return;
 
         if (smallestRemaining <= config.mithrilGourmand.triggerSeconds
                 && !candidateId.equals(lastTriggeredBossbarId)) {

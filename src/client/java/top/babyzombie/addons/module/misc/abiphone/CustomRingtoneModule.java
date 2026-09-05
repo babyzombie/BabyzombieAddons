@@ -42,7 +42,9 @@ public final class CustomRingtoneModule {
             if (!cfg.enabled) return;
 
             String text = message.getString();
-            if (text.startsWith("✆") && !text.endsWith(" has been added to your Abiphone's contacts!")) {
+            if (text.startsWith("✆")
+                    && !text.endsWith(" has been added to your Abiphone's contacts!")
+                    && !text.endsWith(" There's no reception in here!")) {
                 onCallDetected();
             }
         });

@@ -13,7 +13,7 @@ public final class DebugInfoCommand {
     public static void register(
             com.mojang.brigadier.builder.ArgumentBuilder<FabricClientCommandSource, ?> parent) {
         parent.then(literal("location").executes(ctx -> location(ctx.getSource())));
-        parent.then(literal("scoreboard").executes(ctx -> scoreboard(ctx.getSource())));
+        parent.then(literal("getscoreboard").executes(ctx -> scoreboard(ctx.getSource())));
     }
 
     private static int location(FabricClientCommandSource src) {
@@ -26,7 +26,6 @@ public final class DebugInfoCommand {
         var player = Minecraft.getInstance().player;
         if (player == null) return 1;
         var level = player.level();
-        if (level == null) return 1;
         var sb = level.getScoreboard();
         var obj = sb.getDisplayObjective(net.minecraft.world.scores.DisplaySlot.BY_ID.apply(1));
         if (obj == null) {

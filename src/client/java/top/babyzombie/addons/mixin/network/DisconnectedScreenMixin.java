@@ -2,6 +2,7 @@ package top.babyzombie.addons.mixin.network;
 
 import net.minecraft.client.gui.screens.DisconnectedScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,6 +19,10 @@ public abstract class DisconnectedScreenMixin extends Screen {
     @Shadow
     private Screen parent;
 
+    @Final
+    @Shadow
+    private DisconnectionDetails details;
+
     protected DisconnectedScreenMixin(Component title) {
         super(title);
     }
@@ -25,7 +30,7 @@ public abstract class DisconnectedScreenMixin extends Screen {
     @Inject(method = "init", at = @At("RETURN"))
     private void onInit(CallbackInfo ci) {
         AutoReconnectHelper.setFirstDisconnectParent(this.parent);
-        if (AutoReconnectHelper.shouldStartCountdown()) {
+        if (AutoReconnectHelper.shouldStartCountdown(this.details)) {
             AutoReconnectHelper.startCountdown(AutoReconnectHelper.getDelay());
         }
     }

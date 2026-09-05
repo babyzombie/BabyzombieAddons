@@ -15,6 +15,7 @@ import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.InputConstants;
 import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.module.misc.DisconnectReason;
 import top.babyzombie.addons.util.ChatUtils;
 
 import java.util.ArrayList;
@@ -111,6 +112,15 @@ public class GeneralConfig {
         public int delay = 5;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.autoReconnectMaxRetries", desc = "config.babyzombieaddons.option.autoReconnectMaxRetries.desc") @ConfigEditorSlider(minValue = 0, maxValue = 10, minStep = 1) @SearchTag("reconnect") @SearchTag("retry")
         public int maxRetries = 0;
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.autoReconnectBlacklist", desc = "config.babyzombieaddons.option.autoReconnectBlacklist.desc") @ConfigEditorDraggableList @SearchTag("reconnect") @SearchTag("blacklist") @SearchTag("reason")
+        public List<DisconnectReason> blacklist = new ArrayList<>(List.of(
+                DisconnectReason.INVALID_SESSION,
+                DisconnectReason.ACCOUNT_BANNED,
+                DisconnectReason.SERVER_BANNED,
+                DisconnectReason.SERVER_CLOSED
+        ));
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.autoReconnectBlacklistMaxRetries", desc = "config.babyzombieaddons.option.autoReconnectBlacklistMaxRetries.desc") @ConfigEditorSlider(minValue = 0, maxValue = 10, minStep = 1) @SearchTag("reconnect") @SearchTag("blacklist") @SearchTag("retry")
+        public int blacklistMaxRetries = 0;
     }
 
     public static class AutoJoinServer {
