@@ -52,8 +52,8 @@ public final class GreatGlaciteWaypoints {
                 int argb = argbFromRgb(w.rgb);
                 double x = w.pos[0], y = w.pos[1], z = w.pos[2];
                 WorldRenderUtils.drawFilledBox(ctx,
-                    x, y, z,
-                    x + w.size, y + w.size, z + w.size,
+                    x - 0.001, y - 0.001, z - 0.001,
+                    x + w.size + 0.001, y + w.size + 0.001, z + w.size + 0.001,
                     c[0], c[1], c[2], 0.3f, true);
 
                 // 远大近小：与 Waypoints 相同的动态文字缩放

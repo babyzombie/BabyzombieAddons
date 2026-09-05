@@ -10,11 +10,11 @@
     "rgb is the color in [red, green, blue]. Example: [0, 255, 255]."
   ],
   "waypoints": [
-    {"_comment":"Old_1","name":"Great Glacite","pos":[52,154,274],"secondary":[57.25,154.8,274.25],"rgb":[0,255,255]},
-    {"_comment":"Old_2","name":"Great Glacite","pos":[18,164,303],"secondary":[22.5,164.6,302.5],"rgb":[0,255,255]},
-    {"_comment":"Old_3","name":"Great Glacite","pos":[99,135,318],"secondary":[103.25,135.6,318.25],"rgb":[0,255,255]},
-    {"_comment":"Old_4","name":"Great Glacite","pos":[110,139,337],"secondary":[110.25,140.25,332.6],"rgb":[0,255,255]},
-    {"_comment":"Old_5","name":"Great Glacite","pos":[-32,130,332],"secondary":[-31.75,128.6,332.25],"rgb":[0,255,255]},
+    {"_comment":"Old_1","name":"Great Glacite","pos":[52,153,274],"secondary":[57.25,154.8,274.25],"rgb":[0,255,255]},
+    {"_comment":"Old_2","name":"Great Glacite","pos":[18,163,303],"secondary":[22.5,164.6,302.5],"rgb":[0,255,255]},
+    {"_comment":"Old_3","name":"Great Glacite","pos":[99,134,318],"secondary":[103.25,135.6,318.25],"rgb":[0,255,255]},
+    {"_comment":"Old_4","name":"Great Glacite","pos":[110,138,337],"secondary":[110.25,140.25,332.6],"rgb":[0,255,255]},
+    {"_comment":"Old_5","name":"Great Glacite","pos":[-32,129,332],"secondary":[-31.75,128.6,332.25],"rgb":[0,255,255]},
     {"_comment":"Old_6","name":"Great Glacite","pos":[-84,128,324],"secondary":[-85.75,142,327.15],"rgb":[0,255,255]},
     {"_comment":"Better1","name":"[B]Great Glacite","pos":[59,151,277],"secondary":[58.53,153.97,275.55],"rgb":[0,255,255]},
     {"_comment":"Better2","name":"[B]Great Glacite","pos":[22,152,308],"secondary":[22.25,162.25,304.55],"rgb":[0,255,255]},
