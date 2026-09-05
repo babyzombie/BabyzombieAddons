@@ -57,6 +57,12 @@ public final class KuudraPileWaypoints {
 
     static Set<Integer> getCompletedPiles() { return completedPiles; }
 
+    /** /bza reload 用：重新从磁盘加载 JSON，返回加载放置点数。 */
+    public static int reload() {
+        loadConfig();
+        return piles.size();
+    }
+
     public static void init() {
         loadConfig();
 

@@ -1,0 +1,26 @@
+{
+  "_comment": "Great Glacite waypoints config - edit this file to customize Great Glacite waypoints.",
+  "_howToUse": [
+    "This file is valid JSON. Do not use // or /* */ comments. Use keys like _comment or _guide if you want to leave notes.",
+    "After editing this file, run /bza reload (or re-enter the area / restart the game) to apply changes.",
+    "Each object inside 'waypoints' is one Great Glacite waypoint.",
+    "name is the label shown above the waypoint (default: Great Glacite).",
+    "pos is the main waypoint box in [x, y, z]. size is the box edge length (default 1.0).",
+    "secondary is an optional second box in [x, y, z], shown when you are within 5 blocks of pos. secondarySize is its box edge length (default 0.5).",
+    "rgb is the color in [red, green, blue]. Example: [0, 255, 255]."
+  ],
+  "waypoints": [
+    {"_comment":"Old_1","name":"Great Glacite","pos":[52,154,274],"secondary":[57.25,154.8,274.25],"rgb":[0,255,255]},
+    {"_comment":"Old_2","name":"Great Glacite","pos":[18,164,303],"secondary":[22.5,164.6,302.5],"rgb":[0,255,255]},
+    {"_comment":"Old_3","name":"Great Glacite","pos":[99,135,318],"secondary":[103.25,135.6,318.25],"rgb":[0,255,255]},
+    {"_comment":"Old_4","name":"Great Glacite","pos":[110,139,337],"secondary":[110.25,140.25,332.6],"rgb":[0,255,255]},
+    {"_comment":"Old_5","name":"Great Glacite","pos":[-32,130,332],"secondary":[-31.75,128.6,332.25],"rgb":[0,255,255]},
+    {"_comment":"Old_6","name":"Great Glacite","pos":[-84,128,324],"secondary":[-85.75,142,327.15],"rgb":[0,255,255]},
+    {"_comment":"Better1","name":"[B]Great Glacite","pos":[59,151,277],"secondary":[58.53,153.97,275.55],"rgb":[0,255,255]},
+    {"_comment":"Better2","name":"[B]Great Glacite","pos":[22,152,308],"secondary":[22.25,162.25,304.55],"rgb":[0,255,255]},
+    {"_comment":"Better3","name":"[B]Great Glacite","pos":[-30,127,334],"secondary":[-30.3,128.5,333.7],"rgb":[0,255,255]},
+    {"_comment":"Better4","name":"[B]Great Glacite","pos":[-87,141,327],"secondary":[-86.6,143.9,327.9],"rgb":[0,255,255]},
+    {"_comment":"Better5","name":"[B]Great Glacite","pos":[-118,152,357],"secondary":[-117.8,154.97,357.97],"rgb":[0,255,255]},
+    {"_comment":"Better6","name":"[B]Great Glacite","pos":[-61,154,365],"secondary":[-60.7,161.2,364.3],"rgb":[0,255,255]}
+  ]
+}

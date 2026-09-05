@@ -87,6 +87,12 @@ public final class PearlWaypoints {
 
     private record PearlBox(double x, double y, double z, double half) {}
 
+    /** /bza reload 用：重新从磁盘加载 JSON，返回加载区域数。 */
+    public static int reload() {
+        loadConfig();
+        return areas.size();
+    }
+
     public static void openConfigFile() {
         Path configDir = FabricLoader.getInstance().getConfigDir().resolve("babyzombieaddons");
         Path configFile = configDir.resolve("pearl_waypoints.json");

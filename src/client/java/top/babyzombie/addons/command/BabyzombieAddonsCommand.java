@@ -14,6 +14,9 @@ import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.config.hud.HudTag;
 import top.babyzombie.addons.module.chat.PartyModule;
 import top.babyzombie.addons.module.chat.playcmd.PlayCmdModule;
+import top.babyzombie.addons.module.kuudra.KuudraPileWaypoints;
+import top.babyzombie.addons.module.kuudra.PearlWaypoints;
+import top.babyzombie.addons.module.mining.glacitetunnels.GreatGlaciteWaypoints;
 import top.babyzombie.addons.util.ChatUtils;
 
 import java.util.Arrays;
@@ -59,6 +62,7 @@ public final class BabyzombieAddonsCommand {
                                     .executes(BabyzombieAddonsCommand::hudWithTag)))
                     .then(literal("play").executes(BabyzombieAddonsCommand::play))
                     .then(literal("help").executes(BabyzombieAddonsCommand::help))
+                    .then(literal("reload").executes(BabyzombieAddonsCommand::reload))
                     .then(literal("autois").executes(BabyzombieAddonsCommand::toggleAutois))
                     .then(literal("l").executes(ctx -> { ChatUtils.sendCommand("limbo"); return 1; }))
                     .then(literal("trevorautocall").executes(ctx -> {
@@ -151,6 +155,15 @@ public final class BabyzombieAddonsCommand {
 
     private static int help(CommandContext<FabricClientCommandSource> ctx) {
         ctx.getSource().sendFeedback(Component.translatable("babyzombieaddons.help"));
+        return 1;
+    }
+
+    private static int reload(CommandContext<FabricClientCommandSource> ctx) {
+        int pearls = PearlWaypoints.reload();
+        int piles = KuudraPileWaypoints.reload();
+        int glacite = GreatGlaciteWaypoints.reload();
+        ctx.getSource().sendFeedback(Component.translatable(
+                "babyzombieaddons.command.reload.success", pearls, piles, glacite));
         return 1;
     }
 
