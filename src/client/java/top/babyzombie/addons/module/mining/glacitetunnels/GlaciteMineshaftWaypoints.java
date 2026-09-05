@@ -286,9 +286,9 @@ public final class GlaciteMineshaftWaypoints {
             if (!isInMineshaft() || !waitingPartyWarp) return;
             if (client.level == null) return;
             if (client.level.getScoreboard().getTrackedPlayers().isEmpty()
-                    || ((PlayerTabOverlayAccessor) client.gui.getTabList()).getHeader().getString().isEmpty()
-                    || ((PlayerTabOverlayAccessor) client.gui.getTabList()).invokeGetPlayerInfos().size() < 40
-                    || ((PlayerTabOverlayAccessor) client.gui.getTabList()).getFooter().getString().isEmpty()) return;
+                    || ((PlayerTabOverlayAccessor) client.gui.hud.getTabList()).getHeader().getString().isEmpty()
+                    || ((PlayerTabOverlayAccessor) client.gui.hud.getTabList()).invokeGetPlayerInfos().size() < 40
+                    || ((PlayerTabOverlayAccessor) client.gui.hud.getTabList()).getFooter().getString().isEmpty()) return;
             waitingPartyWarp = false;
             Scheduler.schedule(5, () -> ChatUtils.sendCommand("p warp"));
         });
