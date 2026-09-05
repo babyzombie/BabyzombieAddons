@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import net.minecraft.network.DisconnectionDetails;
 import top.babyzombie.addons.config.ModConfigManager;
 
 public final class AutoReconnectHelper {
@@ -72,11 +73,16 @@ public final class AutoReconnectHelper {
         lastServerName = name != null ? name : ip;
     }
 
-    public static boolean shouldStartCountdown() {
+    public static boolean shouldStartCountdown(DisconnectionDetails details) {
         var config = ModConfigManager.get();
         if (!config.general.autoReconnect.enabled) return false;
         if (lastServerIp == null) return false;
-        return retryCount < config.general.autoReconnect.maxRetries || config.general.autoReconnect.maxRetries == 0;
+        var autoReconnect = config.general.autoReconnect;
+        if (DisconnectReason.matchesAny(autoReconnect.blacklist, details != null ? details.reason() : null)) {
+            // 黑名单原因：0 表示完全不重连，否则最多尝试 blacklistMaxRetries 次
+            return retryCount < autoReconnect.blacklistMaxRetries;
+        }
+        return retryCount < autoReconnect.maxRetries || autoReconnect.maxRetries == 0;
     }
 
     public static int getDelay() {
