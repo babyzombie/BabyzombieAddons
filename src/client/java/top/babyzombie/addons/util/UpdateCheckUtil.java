@@ -31,8 +31,13 @@ public final class UpdateCheckUtil {
     public record ReleaseInfo(String versionNumber, String downloadUrl, String body) {
         /** "3.4.1-mc26.1.2" -> "3.4.1"；没有 mc 后缀时原样返回。 */
         public String baseVersion() {
-            return versionNumber.replaceFirst("-mc\\d[\\d.]*(-rc\\.\\d+)?$", "");
+            return UpdateCheckUtil.baseVersion(versionNumber);
         }
+    }
+
+    /** "3.4.1-mc26.1.2" -> "3.4.1"；没有 mc 后缀时原样返回。 */
+    public static String baseVersion(String versionNumber) {
+        return versionNumber.replaceFirst("-mc\\d[\\d.]*(-rc\\.\\d+)?$", "");
     }
 
     /**

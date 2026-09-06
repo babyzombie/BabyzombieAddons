@@ -107,7 +107,7 @@ tasks.withType(ProcessResources).configureEach {
     filteringCharset "UTF-8"
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.mod_version,
+        expand "version": project.version,
                 "minecraft_version": project.minecraft_version.replace("-rc-", "-rc."),
                 "loader_version": project.loader_version,
                 "fabric_version": project.fabric_api_version,

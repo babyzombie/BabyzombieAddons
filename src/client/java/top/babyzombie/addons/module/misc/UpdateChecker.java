@@ -40,7 +40,7 @@ public final class UpdateChecker {
         var thread = new Thread(() -> {
             var release = UpdateCheckUtil.fetchLatest(mcVersion);
             if (release == null) return;
-            if (!UpdateCheckUtil.isNewer(release.baseVersion(), currentVersion)) return;
+            if (!UpdateCheckUtil.isNewer(release.baseVersion(), UpdateCheckUtil.baseVersion(currentVersion))) return;
 
             var msg = Component.translatable(
                             "babyzombieaddons.update.new_version",
