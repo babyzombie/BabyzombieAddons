@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.hypixel.modapi.HypixelModAPI;
 import net.hypixel.modapi.packet.impl.clientbound.event.ClientboundLocationPacket;
+import net.hypixel.data.type.ServerType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -82,7 +83,7 @@ public class HypixelLocationTracker {
 
     private void onLocationUpdate(ClientboundLocationPacket packet) {
         var uuid = Minecraft.getInstance().getUser().getProfileId().toString();
-        String serverType = Objects.requireNonNull(packet.getServerType().orElse(null)).getName();
+        String serverType = packet.getServerType().map(ServerType::getName).orElse(null);
         var prev = currentLocation;
         currentLocation = new HypixelLocationData(
             packet.getServerName(), serverType,
@@ -201,7 +202,6 @@ public class HypixelLocationTracker {
         var client = Minecraft.getInstance();
         if (client.player == null || client.level == null) return false;
         var conn = client.player.connection;
-        if (conn == null) return false;
 
         // Limbo feature 1: tablist contains only the player themselves
         if (conn.getOnlinePlayers().size() > 1) return false;

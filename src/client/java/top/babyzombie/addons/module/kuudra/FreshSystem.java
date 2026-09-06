@@ -351,7 +351,8 @@ public final class FreshSystem {
 
     private static void clearAll() {
         for (int id : freshPlayers.keySet()) {
-            GlowController.setGlow(Objects.requireNonNull(findPlayerById(id)), false);
+            var player = findPlayerById(id);
+            if (player != null) GlowController.setGlow(player, false);
         }
         freshPlayers.clear();
     }

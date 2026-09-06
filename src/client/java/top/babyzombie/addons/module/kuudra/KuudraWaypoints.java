@@ -338,7 +338,7 @@ public final class KuudraWaypoints {
                             if (kind != null) {
                                 double angleRad = Math.toRadians(g.getYRot() + 130.0f);
                                 chucks.add(new Chuck(new Vec3(g.getX() + (SUPPLY_CRATE_OFFSET * Math.cos(angleRad)),
-                                        inP4 ? 6 : 78.0,
+                                        inP4 ? 6 : 79.0,
                                         g.getZ() + (SUPPLY_CRATE_OFFSET * Math.sin(angleRad))), kind));
                             }
                         }

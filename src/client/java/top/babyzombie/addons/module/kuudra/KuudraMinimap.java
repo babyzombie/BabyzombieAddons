@@ -246,23 +246,12 @@ public final class KuudraMinimap {
         dropships.clear();
         kuudraSpot = null;
 
-        // 队友:PartyTracker(ModAPI)UUID 匹配,同 TeamHighlight 判定
-        var info = PartyTracker.getInstance().getLastInfo();
-        if (info != null) {
-            for (var p : level.players()) {
-                if (p == self || !info.members().contains(p.getUUID())) continue;
-                Identifier skin = null;
-                try {
-                    skin = p.getSkin().body().texturePath();
-                } catch (Exception ignored) {}
-                teammates.add(new Teammate(p.getX(), p.getZ(), p.getYRot(),
-                        p.getGameProfile().name(), skin));
-            }
-        }
-
-        // 补给箱携带者(仅 P1 阶段):手持 ELLE_SUPPLIES 的玩家,不含自己(自己单独渲染)
+        // 补给箱携带者(仅 P1 阶段):手持 ELLE_SUPPLIES 的玩家,不含自己(自己单独渲染)。
+        // 携带者标记 = 队友图标的替身(箱子/专用色标记交替显示),开启时该玩家不进 teammates 列表,
+        // 避免重绘一次后被普通队友图标盖住
+        boolean carrierMode = cfg.supplyCarriers && KuudraPileWaypoints.inSuppliesPhase;
         supplyCarriers.clear();
-        if (cfg.supplyCarriers && KuudraPileWaypoints.inSuppliesPhase) {
+        if (carrierMode) {
             for (var p : level.players()) {
                 if (p == self || !isHoldingSupplyCrate(p)) continue;
                 Identifier skin = null;
@@ -270,6 +259,21 @@ public final class KuudraMinimap {
                     skin = p.getSkin().body().texturePath();
                 } catch (Exception ignored) {}
                 supplyCarriers.add(new Teammate(p.getX(), p.getZ(), p.getYRot(),
+                        p.getGameProfile().name(), skin));
+            }
+        }
+
+        // 队友:PartyTracker(ModAPI)UUID 匹配,同 TeamHighlight 判定;携带者已由上方专用通道渲染,跳过
+        var info = PartyTracker.getInstance().getLastInfo();
+        if (info != null) {
+            for (var p : level.players()) {
+                if (p == self || !info.members().contains(p.getUUID())) continue;
+                if (carrierMode && isHoldingSupplyCrate(p)) continue;
+                Identifier skin = null;
+                try {
+                    skin = p.getSkin().body().texturePath();
+                } catch (Exception ignored) {}
+                teammates.add(new Teammate(p.getX(), p.getZ(), p.getYRot(),
                         p.getGameProfile().name(), skin));
             }
         }
@@ -354,6 +358,21 @@ public final class KuudraMinimap {
             for (var c : CANNONS) drawCannon(g, c.x(), c.z(), size, cannonColor);
         }
 
+        // Kuudra 本体:自绘岩浆怪图标,固定尺寸(写死)
+        if (cfg.showKuudra && kuudraSpot != null) {
+            drawMagmacube(g, kuudraSpot.x(), kuudraSpot.z(), size);
+        }
+
+        // 触手(字符)/ Dropship(原版 TNT 物品)
+        if (cfg.tentacles) {
+            int c = cfg.tentacleColor.getEffectiveColourRGB();
+            for (var v : tentacles) drawGlyph(g, font, ICON_TENTACLE, v.x, v.z, size, c);
+        }
+        if (cfg.dropships) {
+            var icon = tntIcon();
+            for (var v : dropships) drawItem(g, icon, v.x, v.z, size, ICON_PX_TNT);
+        }
+
         // 放置点(piles):未放/已放颜色都可配;仅在 P1 补给阶段(计分板 Rescue supplies)显示,
         // 阶段一过后 scoreboard 切走,inSuppliesPhase 变 false,放置点自动隐藏(与世界渲染同信号)
         if (cfg.piles && KuudraPileWaypoints.inSuppliesPhase) {
@@ -387,29 +406,17 @@ public final class KuudraMinimap {
             }
         }
 
-        // 补给箱携带者(仅 P1):每 0.5 秒在箱子图标与玩家箭头/头像之间切换
+        // 补给箱携带者(仅 P1,替代其普通队友图标):标记队友开启时每 0.5 秒在箱子与玩家标记间切换;
+        // 队友标记关闭时玩家标记无意义,恒定显示箱子
         if (cfg.supplyCarriers && KuudraPileWaypoints.inSuppliesPhase) {
-            if (client.level.getGameTime() / 10 % 2 == 0) {
+            boolean showChest = !cfg.teammates
+                    || (client.level != null && client.level.getGameTime() / 10 % 2 == 0);
+            if (showChest) {
                 var icon = chestIcon();
                 for (var c : supplyCarriers) drawItem(g, icon, c.x(), c.z(), size, ICON_PX_HEAD);
             } else {
                 for (var c : supplyCarriers) drawCarrierMarker(g, client, cfg, size, c);
             }
-        }
-
-        // Kuudra 本体:自绘岩浆怪图标,固定尺寸(写死)
-        if (cfg.showKuudra && kuudraSpot != null) {
-            drawMagmacube(g, kuudraSpot.x(), kuudraSpot.z(), size);
-        }
-
-        // 触手(字符)/ Dropship(原版 TNT 物品)
-        if (cfg.tentacles) {
-            int c = cfg.tentacleColor.getEffectiveColourRGB();
-            for (var v : tentacles) drawGlyph(g, font, ICON_TENTACLE, v.x, v.z, size, c);
-        }
-        if (cfg.dropships) {
-            var icon = tntIcon();
-            for (var v : dropships) drawItem(g, icon, v.x, v.z, size, ICON_PX_TNT);
         }
 
         // 队友(点 / 点+名字 / 头像)
