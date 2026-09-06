@@ -2,8 +2,6 @@ package top.babyzombie.addons.util.render;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -24,7 +22,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 
-import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
@@ -60,8 +57,10 @@ public final class BeamRenderer {
         }
 
         // Animation: scroll UV based on game time
+        // client.level 在切换子服/回大厅期间会短暂为 null,此时跳过本帧绘制
         var client = Minecraft.getInstance();
-        long gameTime = Objects.requireNonNull(client.level).getGameTime();
+        if (client.level == null) return;
+        long gameTime = client.level.getGameTime();
         float partialTick = client.getDeltaTracker().getGameTimeDeltaPartialTick(true);
         float animTime = Math.floorMod(gameTime, 40) + partialTick;
 
