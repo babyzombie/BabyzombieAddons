@@ -13,6 +13,7 @@ import net.minecraft.resources.Identifier;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.regex.Matcher;
@@ -30,6 +31,9 @@ public final class KuudraSupplyProgressHUD {
     private static final Pattern SUPPLY_PLACE_PATTERN = Pattern.compile(".+? recovered.*?\\((\\d)/6\\)");
     private static final Pattern FUEL_CELL_PATTERN = Pattern.compile("recovered a Fuel Cell and charged the Ballista \\((\\d+)%\\)");
 
+    private static final long SUPPLY_SPAWN_COUNTDOWN_MS = 8800;
+
+    private static long p1start;
     private static int supplyCount;     // 0-6
     private static int fuelCount;       // 0-4
     private static int currentProgress; // 0-100 from title
@@ -71,6 +75,7 @@ public final class KuudraSupplyProgressHUD {
     }
 
     public static void reset() {
+        p1start = 0;
         supplyCount = 0;
         fuelCount = 0;
         currentProgress = 0;
@@ -88,6 +93,7 @@ public final class KuudraSupplyProgressHUD {
 
             if (KuudraChatLines.isFishUpKuudra(text)) {
                 reset();
+                p1start = ServerTick.getTime();
                 return true;
             }
             if (KuudraChatLines.isSuppliesCollected(text)) {
@@ -123,15 +129,22 @@ public final class KuudraSupplyProgressHUD {
                     boolean showSupply = cfg.phase1.supplyProgressHud && inSuppliesPhase;
                     boolean showFuel = cfg.phase3.fuelProgressHud && !inSuppliesPhase && fuelCount > 0;
                     if (!showSupply && !showFuel) return;
-                    if (currentProgress <= 0) return;
-                    // title 消失（补给/燃料拿完）后 900ms 内隐藏 HUD
-                    if (System.currentTimeMillis() - lastTitleMs > 900) return;
+                    long supplySpawnRemaining = Math.max(0, SUPPLY_SPAWN_COUNTDOWN_MS - (ServerTick.getTime() - p1start));
+                    if (supplySpawnRemaining <= 0
+                            && (currentProgress <= 0
+                            // title 消失（补给/燃料拿完）后 900ms 内隐藏 HUD
+                            || System.currentTimeMillis() - lastTitleMs > 900)) return;
 
                     var font = Minecraft.getInstance().font;
                     int x = HudManager.x("SupplyProgress"), y = HudManager.y("SupplyProgress");
                     float s = HudManager.scale("SupplyProgress");
 
-                    String text = progressBar(currentProgress, showSupply ? supplyCount : fuelCount, showSupply ? 6 : 4);
+                    double ratio = Math.clamp((double) supplySpawnRemaining / SUPPLY_SPAWN_COUNTDOWN_MS, 0.0, 1.0);
+
+                    String text = supplySpawnRemaining <= 0
+                            ? progressBar(currentProgress, showSupply ? supplyCount : fuelCount, showSupply ? 6 : 4)
+                            : ChatUtils.translate("kuudra.supply.spawnIn",
+                                    KuudraModule.coloredTime(ratio, supplySpawnRemaining / 1000.0));
 
                     HudManager.drawScaled(context, font, text, x, y, s);
                 });
