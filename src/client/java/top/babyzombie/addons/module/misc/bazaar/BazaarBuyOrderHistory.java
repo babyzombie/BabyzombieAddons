@@ -485,7 +485,7 @@ public final class BazaarBuyOrderHistory implements IGuiOverlay {
     /** 数量自定义页标题:Buy Order 是固定 "How many do you want?";
      *  Instant Buy 页物品名不定(如 "Enchanted Book → Instant"),只能按后缀 "→ Instant" 匹配 */
     private static boolean isCustomAmountPageTitle(String title) {
-        return "How many do you want?".equals(title) || title.endsWith("➜ Instant");
+        return "How many do you want?".equals(title) || title.contains("➜ I");
     }
 
     /** Custom Amount 按钮:Instant 页显示名带方括号("§f[§aCustom Amount§f]" → "[Custom Amount]"),
