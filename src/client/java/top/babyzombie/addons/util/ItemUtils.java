@@ -19,6 +19,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -134,7 +135,8 @@ public final class ItemUtils {
     /**
      * 按 NEU 物品库名字取展示用 ItemStack。
      * <p>优先 Skyblocker 启动时加载的内存物品库(零 IO);未安装/未就绪时回退本地
-     * item-repo 文件(config/skyblocker/item-repo/items),首次命中会有短暂卡顿,之后走缓存。
+     * item-repo 文件(config/skyblocker/item-repo/items 或 firmament/NEU,三路回退),
+     * 首次命中会有短暂卡顿,之后走缓存。
      *
      * @return 展示用 ItemStack;两种来源都拿不到时返回 null
      */
@@ -153,16 +155,118 @@ public final class ItemUtils {
             return stack == null ? null : stack.getStack();
         } catch (NoClassDefFoundError e) {
             return null; // Skyblocker 未安装
+        } catch (Throwable t) {
+            return null;
         }
     }
 
-    /** 本地 item-repo 文件兜底:itemid + displayname + lore 组成基础展示栈 */
+    /**
+     * 本地 item-repo 文件兜底:优先 itemsOverlay 的现代组件 SNBT
+     * (profile/头颅/模型/稀有度由 skyblocker 同源数据直接解析);
+     * overlay 缺失时退回 basics 拼装。
+     */
     @Nullable
     private static ItemStack fallbackRepoItemStack(String neuName) {
         JsonObject item = repoItemJson(neuName);
         if (item == null) return null;
         String itemId = item.has("itemid") ? item.get("itemid").getAsString() : null;
         if (itemId == null || itemId.isEmpty()) return null;
+
+        // 优先 itemsOverlay 的现代组件 SNBT(与 skyblocker 内存库同源,含 profile/模型/tooltip_style):
+        // {"components":{...}, "id":"minecraft:player_head", ...} 直接走 ItemStack.CODEC,无需 legacy 转换
+        ItemStack fromOverlay = stackFromOverlay(neuName);
+        if (fromOverlay != null) {
+            // overlay 无 CUSTOM_NAME(名字来自 items 的 displayname),覆盖补上
+            if (item.has("displayname")) {
+                fromOverlay.set(DataComponents.CUSTOM_NAME,
+                        Component.literal(item.get("displayname").getAsString()));
+            }
+            List<Component> loreLines = legacyLoreLines(item);
+            // overlay 组件里默认就带空 LORE(get() 非 null),只要物品库有真实 lore 就覆盖
+            if (!loreLines.isEmpty()) {
+                fromOverlay.set(DataComponents.LORE, new ItemLore(loreLines));
+            }
+            return fromOverlay;
+        }
+
+        return fallbackBasicStack(item, itemId);
+    }
+
+    /**
+     * 从 itemsOverlay 的现代组件 SNBT 解析 ItemStack。
+     * <p>overlay 是按 datafix 版本号分层的目录(itemsOverlay/{dataVersion}/{name}.snbt),
+     * 内容是纯组件格式 {@code {components:{...}, id:"...", count:1}}——skyblocker 内存库同源,
+     * 直接 {@link ItemStack#CODEC} 解析,零 legacy 转换。
+     */
+    @Nullable
+    private static ItemStack stackFromOverlay(String neuName) {
+        Path snbt = repoOverlaySnbt(neuName);
+        if (snbt == null) return null;
+        var level = net.minecraft.client.Minecraft.getInstance().level;
+        if (level == null) return null;
+        try {
+            String text = Files.readString(snbt);
+            if (text.isBlank()) return null;
+            var ops = level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+            return ItemStack.CODEC.parse(ops, TagParser.parseCompoundFully(text))
+                    .result()
+                    .orElse(null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** 在 itemsOverlay 各版本目录里找 {name}.snbt,存在返回最新版本的文件路径(三路回退根目录) */
+    @Nullable
+    private static Path repoOverlaySnbt(String neuName) {
+        Path root = resolveItemRepoRoot();
+        if (!Files.isDirectory(root)) return null;
+        // overlay 目录存在性因数据源而异:skyblocker 的 item-repo 下是 itemsOverlay,
+        // firmament/NEU 的 repo 根下可能是 items_overlay;都试
+        for (String name : new String[]{"itemsOverlay", "items_overlay"}) {
+            Path base = root.resolve(name);
+            if (!Files.isDirectory(base)) continue;
+            Path best = null;
+            long bestVersion = -1;
+            try (var dirs = Files.list(base)) {
+                for (Path dir : dirs.toList()) {
+                    if (!Files.isDirectory(dir)) continue;
+                    String version = dir.getFileName().toString();
+                    long v;
+                    try {
+                        v = Long.parseLong(version);
+                    } catch (NumberFormatException e) {
+                        continue;
+                    }
+                    Path file = dir.resolve(neuName + ".snbt");
+                    if (Files.isRegularFile(file) && v > bestVersion) {
+                        best = file;
+                        bestVersion = v;
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+            if (best != null) return best;
+        }
+        return null;
+    }
+
+    /**
+     * 取物品库的 lore 行列表(legacy § 文本行,渲染时 MC 自动解析颜色):
+     * 来自 {@code items/{name}.json} 顶层的 {@code lore} 数组。overlay 不含 lore,必须由这里补。
+     */
+    private static List<Component> legacyLoreLines(JsonObject item) {
+        List<Component> lines = new ArrayList<>();
+        if (item.has("lore") && item.get("lore").isJsonArray()) {
+            for (JsonElement line : item.getAsJsonArray("lore")) {
+                if (line.isJsonPrimitive()) lines.add(Component.literal(line.getAsString()));
+            }
+        }
+        return lines;
+    }
+
+    /** 无 nbttag 时的基础拼装:itemid + displayname + lore + ItemModel */
+    private static ItemStack fallbackBasicStack(JsonObject item, String itemId) {
         // 26.x 命名兼容:旧物品库数据里的 minecraft:skull → minecraft:player_head
         if (itemId.equals("minecraft:skull")) itemId = "minecraft:player_head";
         Identifier mcId = Identifier.tryParse(itemId);
@@ -174,13 +278,8 @@ public final class ItemUtils {
         if (item.has("displayname")) {
             stack.set(DataComponents.CUSTOM_NAME, Component.literal(item.get("displayname").getAsString()));
         }
-        if (item.has("lore") && item.get("lore").isJsonArray()) {
-            List<Component> lore = new ArrayList<>();
-            for (JsonElement line : item.getAsJsonArray("lore")) {
-                if (line.isJsonPrimitive()) lore.add(Component.literal(line.getAsString()));
-            }
-            if (!lore.isEmpty()) stack.set(DataComponents.LORE, new ItemLore(lore));
-        }
+        List<Component> loreLines = legacyLoreLines(item);
+        if (!loreLines.isEmpty()) stack.set(DataComponents.LORE, new ItemLore(loreLines));
         // nbttag 里的 ItemModel:让 Hypixel 资源包的自定义模型在图标/悬停渲染时生效
         if (item.has("nbttag")) {
             try {
@@ -244,7 +343,7 @@ public final class ItemUtils {
         var customName = stack.get(DataComponents.CUSTOM_NAME);
         if (customName != null) {
             String legacy = ChatUtils.toLegacyString(customName);
-            if (legacy != null && !legacy.isEmpty()) return legacy;
+            if (!legacy.isEmpty()) return legacy;
         }
         var customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData != null) {
@@ -268,8 +367,24 @@ public final class ItemUtils {
         return ChatUtils.toLegacyString(stack.getDisplayName());
     }
 
+    /** 三路回退定位 item-repo 根目录:skyblocker → firmament → NEU mod(与 PlotUtils 同模式) */
+    private static Path resolveItemRepoRoot() {
+        Path gameDir = FabricLoader.getInstance().getGameDir();
+
+        Path p = gameDir.resolve("config").resolve("skyblocker").resolve("item-repo");
+        if (Files.isDirectory(p.resolve("items"))) return p;
+
+        p = gameDir.resolve(".firmament").resolve("repo-extracted");
+        if (Files.isDirectory(p.resolve("items"))) return p;
+
+        p = gameDir.resolve("config").resolve("notenoughupdates").resolve("repo");
+        if (Files.isDirectory(p.resolve("items"))) return p;
+
+        return gameDir.resolve("config").resolve("skyblocker").resolve("item-repo");
+    }
+
     private static Path repoItemsDir() {
-        return FabricLoader.getInstance().getConfigDir().resolve("skyblocker").resolve("item-repo").resolve("items");
+        return resolveItemRepoRoot().resolve("items");
     }
 
     /** 药水: potion 字段 + potion_level → POTION_药水;等级 */
