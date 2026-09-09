@@ -104,11 +104,11 @@ public class GeneralConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.chatInContainer", desc = "config.babyzombieaddons.option.chatInContainer.desc") @ConfigEditorBoolean @SearchTag("chat")
         public boolean chatInContainer = false;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.chatSendItemMode", desc = "config.babyzombieaddons.option.chatSendItemMode.desc") @ConfigEditorDropdown @SearchTag("chat") @SearchTag("item") @SearchTag("send")
-        public ChatSendItemMode chatSendItemMode = ChatSendItemMode.ID_NAME;
+        public ModConfig.ChatSendItemMode chatSendItemMode = ModConfig.ChatSendItemMode.ID_NAME;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.chatItemDisplay", desc = "config.babyzombieaddons.option.chatItemDisplay.desc") @ConfigEditorBoolean @SearchTag("chat") @SearchTag("item")
         public boolean chatItemDisplay = true;
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.chatItemDisplayMode", desc = "config.babyzombieaddons.option.chatItemDisplayMode.desc") @ConfigEditorDropdown @SearchTag("chat") @SearchTag("item")
-        public ChatItemDisplayMode chatItemDisplayMode = ChatItemDisplayMode.ICON_NAME;
+        public ModConfig.ChatItemDisplayMode chatItemDisplayMode = ModConfig.ChatItemDisplayMode.ICON_NAME;
     }
 
     public static class AutoReconnect {
