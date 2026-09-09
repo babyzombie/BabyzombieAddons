@@ -185,8 +185,8 @@ public final class FreshSystem {
                         long remainingMs = Math.max(0, buildCountdownEndMs - ServerTick.getTime());
                         if (remainingMs > 0 || !inBuildPhase) {
                             double ratio = Math.clamp((double) remainingMs / BUILD_START_COUNTDOWN_MS, 0.0, 1.0);
-                            String color = ratio > 0.75 ? "§a" : ratio > 0.50 ? "§e" : ratio > 0.25 ? "§6" : "§c";
-                            String text = String.format("%s%.2fs", color, remainingMs / 1000.0);
+                            String text = ChatUtils.translate("kuudra.fresh.buildIn",
+                                    KuudraModule.coloredTime(ratio, remainingMs / 1000.0));
                             HudManager.drawScaled(context, font, text, x, y, s);
                             return;
                         }
@@ -209,7 +209,7 @@ public final class FreshSystem {
                     int x = HudManager.x("FreshHistory"), y = HudManager.y("FreshHistory");
                     float s = HudManager.scale("FreshHistory");
 
-                    StringBuilder sb = new StringBuilder("§b§lFresh Records");
+                    StringBuilder sb = new StringBuilder(ChatUtils.translate("kuudra.fresh.title"));
                     for (FreshEntry e : freshHistory) {
                         double sec = (e.startMs - buildStartMs) / 1000.0;
                         sb.append('\n').append(String.format("%s §8@ §e%.1fs", e.playerName, sec));

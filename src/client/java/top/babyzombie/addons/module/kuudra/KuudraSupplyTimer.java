@@ -103,7 +103,7 @@ public final class KuudraSupplyTimer {
                     float s = HudManager.scale("SupplyTimes");
 
                     StringBuilder sb = new StringBuilder();
-                    sb.append("§b§lSupply Times §8[§a").append(entries.size()).append("§8/§a6§8]");
+                    sb.append(ChatUtils.translate("kuudra.supply.title", entries.size()));
 
                     for (Entry e : entries) {
                         double sec = (e.placedAtMs - suppliesStartMs) / 1000.0;

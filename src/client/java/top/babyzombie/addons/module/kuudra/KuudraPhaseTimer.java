@@ -154,7 +154,7 @@ public final class KuudraPhaseTimer {
                     float s = HudManager.scale("KuudraSplits");
 
                     StringBuilder sb = new StringBuilder();
-                    sb.append("§b§lKuudra Splits");
+                    sb.append(ChatUtils.translate("kuudra.splits.title"));
                     double overall = 0;
 
                     for (Phase p : activePhases()) {
@@ -166,7 +166,7 @@ public final class KuudraPhaseTimer {
                         sb.append('\n').append(formatLine(p.label, time, p.thresholds));
                     }
 
-                    sb.append('\n').append(formatOverall("Overall", overall));
+                    sb.append('\n').append(formatOverall(ChatUtils.translate("kuudra.splits.overall"), overall));
                     HudManager.drawScaled(context, font, sb.toString(), x, y, s);
                 });
     }

@@ -69,12 +69,12 @@ public final class HudRegistrar {
                 () -> get().kuudra.phase1.supplyProgressHud || get().kuudra.phase3.fuelProgressHud,
                 HudTag.KUUDRA);
         HudManager.register("SupplyTimes", 10, 140, 1.0f,
-                "§b§lSupply Times §8[§a4§8/§a6§8]\n§bPlayer1 §8(1/6) §f§l14.85s\n§aPlayer2 §8(2/6) §f§l15.23s\n§aPlayer3 §8(3/6) §f§l22.10s\n§aPlayer4 §8(4/6) §f§l24.50s",
+                "hud.babyzombieaddons.kuudraSupplyTimes.demo",
                 "config.babyzombieaddons.option.supplyPlaceTimerHud",
                 () -> get().kuudra.phase1.supplyPlaceTimerHud,
                 HudTag.KUUDRA);
         HudManager.register("FreshHistory", 10, 250, 1.0f,
-                "§b§lFresh Records\nPlayer1 §8@ §e14.5s\nPlayer2 §8@ §e18.2s",
+                "hud.babyzombieaddons.freshHistory.demo",
                 "config.babyzombieaddons.option.freshHistory",
                 () -> get().kuudra.phase2.freshHistory,
                 HudTag.KUUDRA);
@@ -99,12 +99,12 @@ public final class HudRegistrar {
                 () -> get().kuudra.phase4.directionHud,
                 HudTag.KUUDRA);
         HudManager.register("KuudraSplits", 10, 20, 1.0f,
-                "§b§lKuudra Splits\n§3Supplies §f22.45s\n§3Build §914.32s\n§3Eaten §a5.21s\n§3Stun §f0.53s\n§3DPS §63.89s\n§3Skip §f0.00s\n§3Boss §c5.12s\n§3Overall §a51.00s",
+                "hud.babyzombieaddons.kuudraSplits.demo",
                 "config.babyzombieaddons.option.phaseTimer",
                 () -> get().kuudra.phaseTimer,
                 HudTag.KUUDRA);
         HudManager.register("KuudraStun", 400, 130, 1.0f,
-                "§aKuudra is stunned, §4§l0:10 §aleft\n§4§lPHASE 4 - TRUE LAIR",
+                "hud.babyzombieaddons.kuudraStun.demo",
                 "config.babyzombieaddons.option.stunTimer",
                 () -> get().kuudra.phase3.stunTimer,
                 HudTag.KUUDRA);
