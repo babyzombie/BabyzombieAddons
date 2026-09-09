@@ -2,6 +2,7 @@ package top.babyzombie.addons.module.chat;
 
 import top.babyzombie.addons.module.chat.containerchat.ContainerChatModule;
 import top.babyzombie.addons.module.chat.playcmd.PlayCmdModule;
+import top.babyzombie.addons.module.chat.containerchat.ChatItemDisplayModule;
 
 public class ChatModule {
     private ChatModule() {}
@@ -14,5 +15,6 @@ public class ChatModule {
         WaypointMarkerModule.init();
         ContainerChatModule.init();
         PopupEventsModule.init();
+        ChatItemDisplayModule.init();
     }
 }

@@ -7,26 +7,25 @@ import org.joml.Matrix3x2fc;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * 聊天物品图标 C2 渲染桥：
+ * 聊天物品图标渲染桥（C2 版，节点级提交）。
  *
- * <p>把"字体渲染阶段"（字形里有坐标、无 GuiRenderer）与"GUI 物品渲染管线"
- * （GuiRenderer 每帧的 prepare 阶段有 item-atlas 烘焙能力）连接起来。
- *
- * <p>数据流：
+ * <p>连接"字体渲染阶段"（字形里有坐标、无 GuiRenderer）与"GUI 物品渲染管线"：
  * <ol>
- *   <li>字形存活期间，{@link ChatItemIconRenderable#render} 每帧把
- *       (ItemStack, pose, scissor, x, y) 压进 {@link #PENDING}；</li>
- *   <li>{@code GuiRenderer.prepare()} 在 prepareText 之后排空 {@link #PENDING}，
- *       用 ItemModelResolver + GuiItemAtlas 烘出官方物品图标并以 blit 提交到聊天图层
- *       （隔一帧生效，肉眼不可见）；</li>
- *   <li>文本被移除后字形不再渲染 → 不再产生请求 → 图标自然消失。</li>
+ *   <li>{@code GuiTextRenderState.ensurePrepared} 捕获文本 pose/scissor，字形构造时读取；</li>
+ *   <li>{@code GuiRenderer#prepare} HEAD/RETURN 设置/清除当前 GuiRenderer（{@link #currentRenderer}）；</li>
+ *   <li>聊天文本打包字形进 {@code GuiRenderState.addGlyphToCurrentLayer} 时，若字形是
+ *       我们的物品图标字形，就把 blit 提交到<b>同一节点</b>——与聊天文字同层，
+ *       不会被抬到暂停页模糊/其他覆盖层之上。</li>
  * </ol>
  *
- * <p>文本 pose/scissor 由 {@code GuiTextRenderState.ensurePrepared} 的 mixin 捕获，
- * 供字形构造时读取。
+ * <p>ModernUI 兼容：ModernUI 用自研排版引擎（TextLayoutProcessor/ModernPreparedText）替换了
+ * vanilla 字形管线。{@link #CURRENT_MODERN_MARKERS} 在布局阶段收集"标记字符 → ItemStack"
+ * （见 ModernUITextProcessorMixin），ModernPreparedText 构造时读取并生成图标 renderable。
  */
 public final class ChatItemIconBridge {
 
@@ -34,16 +33,21 @@ public final class ChatItemIconBridge {
     private static final ThreadLocal<Matrix3x2f> CURRENT_POSE = new ThreadLocal<>();
     private static final ThreadLocal<ScreenRectangle> CURRENT_SCISSOR = new ThreadLocal<>();
 
-    // ── 每帧待烘请求 ──
-    private static final List<ChatIconRequest> PENDING = new ArrayList<>();
-    private static final int MAX_PENDING = 256;
+    // ── 渲染阶段持有当前 GuiRenderer（GuiRendererMixin 在 prepare 时设置）──
+    private static final ThreadLocal<Object> CURRENT_RENDERER = new ThreadLocal<>();
 
-    /**
-     * 一次聊天图标渲染请求：完整 ItemStack + 字形处的局部坐标 + 文本 pose/scissor。
-     */
-    public record ChatIconRequest(ItemStack stack, Matrix3x2f pose,
-                                  @Nullable ScreenRectangle scissor, float x, float y) {
-    }
+    // ── ModernUI：布局阶段收集的待渲染图标 ──
+    // key = 剥离文本（TextLayout.getTextBuf() 转 String），TextLayout 缓存命中时也能取到。
+    // 用「当前布局线程的收集缓冲」配合全局 map：create* 布局完成后写 map，ModernPreparedText
+    // 构造时按文本查 map。map 设容量上限防止无界增长。
+    private static final ThreadLocal<List<ModernMarker>> CURRENT_MODERN_MARKERS = new ThreadLocal<>();
+    private static final ThreadLocal<Integer> MODERN_POS = new ThreadLocal<>();
+    private static final Object MODERN_MARK_LOCK = new Object();
+    private static final Map<String, List<ModernMarker>> MODERN_MARKERS_BY_TEXT =
+            new LinkedHashMap<>(16, 0.75f, true);
+
+    /** ModernUI 布局中收集到的单个图标标记：字符在剥离文本中的下标 + 物品。 */
+    public record ModernMarker(int index, ItemStack stack) {}
 
     private ChatItemIconBridge() {
     }
@@ -65,26 +69,75 @@ public final class ChatItemIconBridge {
         return CURRENT_SCISSOR.get();
     }
 
-    // ================================================================
-    // 字形每帧请求 + GuiRenderer 排空
-    // ================================================================
-
-    /** 字形 render() 每帧调用：登记一个待烘请求。 */
-    public static void request(ItemStack stack, Matrix3x2f pose,
-                               @Nullable ScreenRectangle scissor, float x, float y) {
-        if (stack == null || stack.isEmpty() || pose == null) return;
-        // 兜底：防止桥未排空（异常路径）时无限积累
-        if (PENDING.size() >= MAX_PENDING) {
-            PENDING.clear();
-        }
-        PENDING.add(new ChatIconRequest(stack, pose, scissor, x, y));
+    /**
+     * GuiRendererMixin 在 {@code prepare()} HEAD/RETURN 时设置/清除。
+     * 值为 GuiRenderer 实例（以 Object 持有，避免依赖关系），
+     * 提交逻辑通过 {@code (GuiRendererMixin)(Object)…} 调用其 @Unique 方法。
+     */
+    public static void setCurrentRenderer(@Nullable Object renderer) {
+        CURRENT_RENDERER.set(renderer);
     }
 
-    /** GuiRenderer.prepare() 每帧排空；返回本次待烘请求列表（copy，随后清空）。 */
-    public static List<ChatIconRequest> drain() {
-        if (PENDING.isEmpty()) return List.of();
-        List<ChatIconRequest> out = new ArrayList<>(PENDING);
-        PENDING.clear();
-        return out;
+    public static @Nullable Object currentRenderer() {
+        return CURRENT_RENDERER.get();
+    }
+
+    // ================================================================
+    // ModernUI 布局 → 渲染 传递
+    // ================================================================
+
+    /** 最大缓存的「文本 → 图标标记」条目数。 */
+    private static final int MODERN_MARKERS_CAP = 256;
+
+    /** 开始收集一次 ModernUI 布局的图标标记（布局入口调用，先清空并重置计数器）。 */
+    public static void startModernMarkers() {
+        CURRENT_MODERN_MARKERS.remove();
+        MODERN_POS.set(0);
+    }
+
+    /** 记录一个已透传字符（计数器 +1；剥离文本每个字符一个）。 */
+    public static void bumpModernPos() {
+        MODERN_POS.set(MODERN_POS.get() + 1);
+    }
+
+    /** 收集一个图标标记（位置 = 当前计数器）。 */
+    public static void addModernMarker(ItemStack stack) {
+        List<ModernMarker> list = CURRENT_MODERN_MARKERS.get();
+        if (list == null) {
+            list = new ArrayList<>(1);
+            CURRENT_MODERN_MARKERS.set(list);
+        }
+        list.add(new ModernMarker(MODERN_POS.get(), stack));
+    }
+
+    /**
+     * 布局完成后：把本次收集的标记按「剥离文本」写入全局 map（覆盖旧值）。
+     * 由 ModernUITextProcessorMixin 在 create*Layout 返回前调用。
+     */
+    public static void storeModernMarkersByText(String strippedText) {
+        List<ModernMarker> list = CURRENT_MODERN_MARKERS.get();
+        CURRENT_MODERN_MARKERS.remove();
+        if (strippedText == null || list == null || list.isEmpty()) return;
+        synchronized (MODERN_MARK_LOCK) {
+            MODERN_MARKERS_BY_TEXT.put(strippedText, list);
+            // 淘汰最旧条目
+            while (MODERN_MARKERS_BY_TEXT.size() > MODERN_MARKERS_CAP) {
+                var it = MODERN_MARKERS_BY_TEXT.entrySet().iterator();
+                it.next();
+                it.remove();
+            }
+        }
+    }
+
+    /**
+     * ModernPreparedText 构造时按剥离文本查图标标记。
+     *
+     * @return 该文本对应的标记列表；无则 null
+     */
+    public static @Nullable List<ModernMarker> modernMarkersByText(String strippedText) {
+        if (strippedText == null) return null;
+        synchronized (MODERN_MARK_LOCK) {
+            return MODERN_MARKERS_BY_TEXT.get(strippedText);
+        }
     }
 }

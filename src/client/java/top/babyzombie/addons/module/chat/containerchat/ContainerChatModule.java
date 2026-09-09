@@ -25,12 +25,9 @@ public final class ContainerChatModule {
             }
 
             // 聊天已打开 → 分享物品名
-            String itemName = stack.getHoverName().getString();
-            if (stack.getCount() > 1) itemName += " x" + stack.getCount();
-
             var chatScreen = ContainerChatHelper.getOverlay();
             if (chatScreen != null) {
-                ((ChatScreenAccessor) chatScreen).getInput().insertText(itemName + " ");
+                ((ChatScreenAccessor) chatScreen).getInput().insertText(ContainerChatHelper.buildSendText(stack) + " ");
                 return true;
             }
             return false;

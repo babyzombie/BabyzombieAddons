@@ -20,9 +20,9 @@ import org.jspecify.annotations.Nullable;
  * 聊天物品图标字形（C2 版）。
  *
  * <p>它占用聊天文本里一个字形槽位（保证布局、悬停、生命周期都正确），但自身不画任何东西：
- * 每帧 {@link #render} 只把 (ItemStack + 坐标 + pose) 登记进 {@link ChatItemIconBridge}，
- * 由 {@code GuiRenderer} 的 mixin 用官方物品渲染管线（ItemModelResolver + GuiItemAtlas）
- * 烘出完整物品图标（支持头颅、自定义模型、染色、附魔光泽）后以 blit 形式画在同一位置。
+ * 打包字形进 {@code GuiRenderState.addGlyphToCurrentLayer} 时，由 GuiRenderStateMixin
+ * 用官方物品渲染管线（ItemModelResolver + GuiItemAtlas）烘出完整物品图标
+ * （支持头颅、自定义模型、染色、附魔光泽）并以 blit 形式提交到<b>聊天同一节点</b>。
  *
  * <p>{@link #guiPipeline()}/{@link #textureView()} 始终返回非空值，因为字形会被
  * {@code GuiRenderer.prepareText} 包成 GlyphRenderState 并调用这两者；绘制本身无操作。
@@ -54,11 +54,20 @@ public final class ChatItemIconRenderable implements TextRenderable.Styled {
         this.atlasTextureView = resolveAtlasTextureView();
     }
 
-    /** 每帧调用（文本存活期间）：登记渲染请求；自身不产生顶点。 */
+    /** 每帧调用（文本存活期间）。图标 blit 在打包字形进节点时提交（见 GuiRenderStateMixin），此处无操作。 */
     @Override
     public void render(Matrix4fc poseMatrix, VertexConsumer buffer, int packedLightCoords, boolean flat) {
-        ChatItemIconBridge.request(stack, pose, scissor, x, y);
     }
+
+    public ItemStack stack() { return stack; }
+
+    public Matrix3x2f pose() { return pose; }
+
+    public @Nullable ScreenRectangle scissor() { return scissor; }
+
+    public float x() { return x; }
+
+    public float y() { return y; }
 
     @Override
     public RenderType renderType(Font.DisplayMode displayMode) {
