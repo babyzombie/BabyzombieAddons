@@ -56,6 +56,14 @@ public class ModConfig extends Config {
         OFF, MINIMIZE, TRAY;
         @Override public String toString() { return t("config.babyzombieaddons.option.startupMinimizeMode." + name()); }
     }
+    public enum ChatSendItemMode {
+        NAME, ID, ID_NAME;
+        @Override public String toString() { return t("config.babyzombieaddons.option.chatSendItemMode." + name()); }
+    }
+    public enum ChatItemDisplayMode {
+        ICON, NAME, ICON_NAME;
+        @Override public String toString() { return t("config.babyzombieaddons.option.chatItemDisplayMode." + name()); }
+    }
     public enum ChestCounterMode {
         KUUDRA_ONLY, INCLUDE_CRIMSON_DUNGEON, EVERYWHERE;
         @Override public String toString() { return t("config.babyzombieaddons.option.chestCounterMode." + name()); }

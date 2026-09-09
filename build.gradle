@@ -84,6 +84,9 @@ dependencies {
     // Fabric Language Kotlin (required by MoulConfig)
     clientImplementation "net.fabricmc:fabric-language-kotlin:${project.flk_version}"
 
+    // ModernUI — 仅编译期（Pseudo mixin 目标类签名校验；运行时由用户自行安装）
+    compileOnly "maven.modrinth:modern-ui:uf6cAgLr"
+
     // Gson (config persistence)
     clientImplementation 'com.google.code.gson:gson:2.10.1'
 

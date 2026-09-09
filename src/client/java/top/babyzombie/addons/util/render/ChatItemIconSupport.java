@@ -17,8 +17,15 @@ import net.minecraft.world.item.ItemStackTemplate;
  */
 public final class ChatItemIconSupport {
 
-    /** 通用标记码点：所有物品共用，区分靠 style 里的 ItemStack。 */
-    public static final char MARKER = '\uE000';
+    /**
+     * 通用标记码点：所有物品共用，区分靠 style 里的 ItemStack。
+     *
+     * <p>选号说明：早期用 \uE000 被运行时字体（SkyHanni/Skyblocker 状态条一类）占用，
+     * 导致裸标记字符显示成对方字形。\uF200 处于私用区 E000–F8FF，经查证
+     * vanilla 默认字体、Hypixel 服务器资源包、本机用户资源包、48 个 mod 内置字体
+     * 均不覆盖该段；若未来仍与其他运行时字体冲突，改这一个常量即可。
+     */
+    public static final char MARKER = '\uF200';
 
     /** item atlas 的纹理 id（缓存，避免使用已弃用的 TextureAtlas.LOCATION_ITEMS）。 */
     private static Identifier itemAtlasLocation;

@@ -5,12 +5,16 @@ import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.world.item.ItemStack;
 import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
 import org.lwjgl.glfw.GLFWScrollCallbackI;
 import top.babyzombie.addons.mixin.chat.ChatScreenAccessor;
+import top.babyzombie.addons.config.ModConfigManager;
+import top.babyzombie.addons.util.ItemUtils;
+import org.jetbrains.annotations.Nullable;
 
 public final class ContainerChatHelper {
 
@@ -26,6 +30,33 @@ public final class ContainerChatHelper {
     public static boolean isActive() { return overlay != null; }
     public static boolean isInputFocused() { return inputFocused; }
     public static ChatScreen getOverlay() { return overlay; }
+
+    /**
+     * 按「发送物品格式」配置生成分享文本（容器物品：neuName 可从 Skyblocker / custom_data 解析）。
+     * 结果以 [物品] 方括号包裹，方便接收端识别边界。
+     */
+    public static String buildSendText(ItemStack stack) {
+        String name = stack.getHoverName().getString();
+        if (stack.getCount() > 1) name += " x" + stack.getCount();
+        return "[" + applySendMode(ItemUtils.getNeuName(stack), name) + "]";
+    }
+
+    /**
+     * 按「发送物品格式」配置生成分享文本（REI/RRV 悬停项：拿不到物品栈，仅名字可用）。
+     * 结果以 [物品] 方括号包裹。
+     */
+    public static String buildSendText(String name) {
+        return "[" + applySendMode(null, name) + "]";
+    }
+
+    private static String applySendMode(@Nullable String skyblockId, String name) {
+        var mode = ModConfigManager.get().general.chat.chatSendItemMode;
+        return switch (mode) {
+            case ID -> skyblockId != null ? skyblockId : name;
+            case ID_NAME -> skyblockId != null ? skyblockId + " " + name : name;
+            default -> name;
+        };
+    }
 
     public static boolean isBlocklistedContainer(AbstractContainerScreen<?> screen) {
         String name = screen.getClass().getName();
@@ -82,7 +113,7 @@ public final class ContainerChatHelper {
                 String itemName = ReiHelper.getHoveredEntryName();
                 if (itemName == null) itemName = RrvHelper.getHoveredEntryName();
                 if (itemName != null) {
-                    ((ChatScreenAccessor) overlay).getInput().insertText(itemName + " ");
+                    ((ChatScreenAccessor) overlay).getInput().insertText(buildSendText(itemName) + " ");
                     return;
                 }
             }
