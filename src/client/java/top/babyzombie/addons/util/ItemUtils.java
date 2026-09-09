@@ -172,12 +172,13 @@ public final class ItemUtils {
 
         ItemStack stack = new ItemStack(vanillaItem, 1, DataComponentPatch.EMPTY);
         if (item.has("displayname")) {
-            stack.set(DataComponents.CUSTOM_NAME, ChatUtils.toComponent(item.get("displayname").getAsString()));
+            // 直接塞 § 文本:MC 渲染时自动解析颜色码,无需手工转样式
+            stack.set(DataComponents.CUSTOM_NAME, Component.literal(item.get("displayname").getAsString()));
         }
         if (item.has("lore") && item.get("lore").isJsonArray()) {
             List<Component> lore = new ArrayList<>();
             for (JsonElement line : item.getAsJsonArray("lore")) {
-                if (line.isJsonPrimitive()) lore.add(ChatUtils.toComponent(line.getAsString()));
+                if (line.isJsonPrimitive()) lore.add(Component.literal(line.getAsString()));
             }
             if (!lore.isEmpty()) stack.set(DataComponents.LORE, new ItemLore(lore));
         }

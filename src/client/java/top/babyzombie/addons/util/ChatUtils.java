@@ -3,9 +3,7 @@ package top.babyzombie.addons.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.ItemStack;
 
@@ -281,73 +279,6 @@ public final class ChatUtils {
             return Optional.empty();
         }, Style.EMPTY);
         return sb.toString();
-    }
-
-    /**
-     * 把 § 颜色码文本解析为组件（支持单个颜色/格式码与 §x 六位 hex）。
-     * 用于把物品库 JSON 里的 displayname / lore 拼成可显示组件。
-     */
-    public static MutableComponent toComponent(String text) {
-        MutableComponent root = Component.empty();
-        Style style = Style.EMPTY;
-        StringBuilder run = new StringBuilder();
-        for (int i = 0; i < text.length(); i++) {
-            char c = text.charAt(i);
-            if (c != '§') {
-                run.append(c);
-                continue;
-            }
-            if (i + 1 >= text.length()) break;
-            char code = text.charAt(++i);
-            if (code == 'x' || code == 'X') {
-                // §x 后 12 字符:6 组 §h;越界则丢弃剩余
-                if (i + 12 >= text.length()) break;
-                int rgb = 0;
-                boolean ok = true;
-                for (int k = 0; k < 6; k++) {
-                    if (text.charAt(i + 1 + k * 2) != '§') {
-                        ok = false;
-                        break;
-                    }
-                    int digit = Character.digit(text.charAt(i + 2 + k * 2), 16);
-                    if (digit < 0) {
-                        ok = false;
-                        break;
-                    }
-                    rgb = (rgb << 4) | digit;
-                }
-                if (!ok) break;
-                flushRun(root, run, style);
-                style = style.withColor(TextColor.fromRgb(rgb));
-                i += 12;
-                continue;
-            }
-            ChatFormatting fmt = ChatFormatting.getByCode(code);
-            if (fmt == null) continue;
-            flushRun(root, run, style);
-            if (fmt == ChatFormatting.RESET) {
-                style = Style.EMPTY;
-            } else if (fmt.isColor()) {
-                style = style.withColor(TextColor.fromLegacyFormat(fmt));
-            } else {
-                style = switch (fmt) {
-                    case BOLD -> style.withBold(true);
-                    case ITALIC -> style.withItalic(true);
-                    case UNDERLINE -> style.withUnderlined(true);
-                    case STRIKETHROUGH -> style.withStrikethrough(true);
-                    case OBFUSCATED -> style.withObfuscated(true);
-                    default -> style;
-                };
-            }
-        }
-        flushRun(root, run, style);
-        return root;
-    }
-
-    private static void flushRun(MutableComponent root, StringBuilder run, Style style) {
-        if (run.isEmpty()) return;
-        root.append(Component.literal(run.toString()).withStyle(style));
-        run.setLength(0);
     }
 
     public static String formatTime(long ms) {

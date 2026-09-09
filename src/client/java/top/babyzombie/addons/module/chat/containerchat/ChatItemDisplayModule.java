@@ -122,19 +122,24 @@ public final class ChatItemDisplayModule {
         ItemStack stack = match.stack();
 
         // 名字:消息带名字用消息的;否则用物品库的名字
+        // 颜色直接用 § 文本交给 MC 渲染解析,不做手工 §→TextColor 转换
         String shownName = match.name();
         // tooltip 第一行就是物品显示名组件(所见即所得,含 CUSTOM_NAME / display.Name 颜色)
         Component hoverName = firstTooltipLine(stack);
         String legacyName = hoverName != null
                 ? ChatUtils.toLegacyString(hoverName)
                 : ItemUtils.displayNameLegacy(stack);
-        if (shownName == null) shownName = ChatUtils.stripColor(legacyName);
-        // 颜色优先 tooltip 名组件的 style 颜色;再 item-repo 文件 displayname 兜底
-        TextColor nameColor = hoverName != null ? hoverName.getStyle().getColor() : null;
-        if (nameColor == null) nameColor = firstColor(legacyName);
-        if (nameColor == null) {
-            String repoName = ItemUtils.repoDisplayName(match.id());
-            if (repoName != null) nameColor = firstColor(repoName);
+        if (shownName == null) {
+            // 消息没带名字:直接整段 legacy § 文本,渲染自动解析颜色
+            shownName = legacyName;
+        } else {
+            // 消息名字是纯文本:补上物品颜色的 § 前缀,保持名字颜色跟随物品
+            String prefix = leadingColorCode(legacyName);
+            if (prefix.isEmpty()) {
+                String repoName = ItemUtils.repoDisplayName(match.id());
+                if (repoName != null) prefix = leadingColorCode(repoName);
+            }
+            if (!prefix.isEmpty()) shownName = prefix + shownName;
         }
 
         MutableComponent result = Component.empty();
@@ -145,10 +150,8 @@ public final class ChatItemDisplayModule {
             result.append(Component.literal(" ").withStyle(ChatFormatting.GRAY));
         }
         if (showName) {
-            Style nameStyle = Style.EMPTY;
-            if (nameColor != null) nameStyle = nameStyle.withColor(nameColor);
-            nameStyle = nameStyle.withHoverEvent(itemHover(stack));
-            result.append(Component.literal(shownName).withStyle(nameStyle));
+            result.append(Component.literal(shownName)
+                    .withStyle(s -> s.withHoverEvent(itemHover(stack))));
         }
         result.append(Component.literal(" ]").withStyle(ChatFormatting.GRAY));
         return result;
@@ -177,30 +180,34 @@ public final class ChatItemDisplayModule {
         return new HoverEvent.ShowItem(new ItemStackTemplate(stack.typeHolder(), stack.getCount(), stack.getComponentsPatch()));
     }
 
-    /** 取 legacy 文本里第一个颜色码(§c 或 §x 六位 hex),无则 null */
-    @Nullable
-    private static TextColor firstColor(String legacy) {
+    /** 取 legacy 文本里第一个颜色码原串(§c 或 §x§1..§6),无则空串;直接输出 § 文本交给 MC 渲染解析 */
+    private static String leadingColorCode(String legacy) {
         for (int i = 0; i + 1 < legacy.length(); i++) {
             if (legacy.charAt(i) != '§') continue;
             char code = legacy.charAt(i + 1);
             if ((code >= '0' && code <= '9') || (code >= 'a' && code <= 'f')) {
-                ChatFormatting fmt = ChatFormatting.getByCode(code);
-                if (fmt != null) return TextColor.fromLegacyFormat(fmt);
-                i++;
+                return legacy.substring(i, i + 2);
             } else if (code == 'x' || code == 'X') {
-                if (i + 13 >= legacy.length()) return null;
-                int rgb = 0;
+                // §x 后 12 字符:6 组 §h
+                if (i + 13 >= legacy.length()) return "";
+                StringBuilder sb = new StringBuilder("§x");
+                int j = i + 2;
+                boolean ok = true;
                 for (int k = 0; k < 6; k++) {
-                    int digit = Character.digit(legacy.charAt(i + 3 + k * 2), 16);
-                    if (digit < 0) return null;
-                    rgb = (rgb << 4) | digit;
+                    if (legacy.charAt(j) != '§' || Character.digit(legacy.charAt(j + 1), 16) < 0) {
+                        ok = false;
+                        break;
+                    }
+                    sb.append('§').append(legacy.charAt(j + 1));
+                    j += 2;
                 }
-                return TextColor.fromRgb(rgb);
+                if (ok) return sb.toString();
+                return "";
             } else {
                 i++;
             }
         }
-        return null;
+        return "";
     }
 
     private record Match(int start, int end, String id, String name, ItemStack stack) {}
