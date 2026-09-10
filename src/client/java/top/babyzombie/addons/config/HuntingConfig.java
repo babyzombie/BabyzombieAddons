@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorColour;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
@@ -12,6 +13,10 @@ import io.github.notenoughupdates.moulconfig.ChromaColour;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.FishingConfig.CameraAspectRatio;
 import top.babyzombie.addons.config.FishingConfig.CameraYawMode;
+import top.babyzombie.addons.module.hunting.safari.SafariZoneUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HuntingConfig {
 
@@ -50,8 +55,13 @@ public class HuntingConfig {
     public static class Safari {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariBellDisplay", desc = "config.babyzombieaddons.option.safariBellDisplay.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("rainbowbug")
         public boolean bellDisplay = false;
-        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariWumpaRecord", desc = "config.babyzombieaddons.option.safariWumpaRecord.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("wumpa")
-        public boolean wumpaRecord = false;
+
+        @Expose
+        @ConfigOption(name = "config.babyzombieaddons.group.safariCritterRecord", desc = "config.babyzombieaddons.group.safariCritterRecord.desc")
+        @Accordion
+        @SearchTag("safari")
+        @SearchTag("critter")
+        public SafariCritterRecord critterRecord = new SafariCritterRecord();
 
         @Expose
         @ConfigOption(name = "config.babyzombieaddons.group.safariTrajectory", desc = "config.babyzombieaddons.group.safariTrajectory.desc")
@@ -73,6 +83,127 @@ public class HuntingConfig {
         @ConfigOption(name = "config.babyzombieaddons.group.safariHunterTrade", desc = "")
         @Accordion
         public HunterTrade hunterTrade = new HunterTrade();
+    }
+
+    /**
+     * Safari 生物捕获记录（组中组）：追踪本轮每种生物是否已捕获。
+     * 机制：每种生物本轮第一次捕获才给经验，之后不再给；
+     * HUD 按分区（区域名 + 生物）列出所选生物，已捕获按所选方式标注；
+     * 所选生物全部捕获后可弹 Title / 播放声音（本轮只提示一次）。
+     */
+    public static class SafariCritterRecord {
+
+        /** 已捕获生物的显示方式 */
+        public enum CaughtDisplayMode {
+            COLOR, CHECK, STRIKE, HIDE;
+
+            @Override
+            public String toString() {
+                return Component.translatable(
+                        "config.babyzombieaddons.option.safariCritterRecordCaughtMode." + name()
+                ).getString();
+            }
+        }
+
+        /** 可拖动列表候选：Safari 全部 36 种可捕获生物，按分区声明（候选列表即按分区归组） */
+        public enum SafariCritter {
+            // ── Icy（雪地）──
+            ICY_STRONGARM(SafariZoneUtil.SafariZone.ICY, "Strongarm"),
+            ICY_TEPID(SafariZoneUtil.SafariZone.ICY, "Tepid"),
+            ICY_POLARIS(SafariZoneUtil.SafariZone.ICY, "Polaris"),
+            ICY_SHUDDERSQUID(SafariZoneUtil.SafariZone.ICY, "Shuddersquid"),
+            ICY_BILLYGOAT(SafariZoneUtil.SafariZone.ICY, "Billygoat"),
+            ICY_MANTIS_SHRIMP(SafariZoneUtil.SafariZone.ICY, "Mantis Shrimp"),
+            ICY_NOZZLENOSE(SafariZoneUtil.SafariZone.ICY, "Nozzlenose"),
+            ICY_TROODON(SafariZoneUtil.SafariZone.ICY, "Troodon"),
+            // ── Forest（森林）──
+            FOREST_FOXTROT(SafariZoneUtil.SafariZone.FOREST, "Foxtrot"),
+            FOREST_BLUEBIRD(SafariZoneUtil.SafariZone.FOREST, "Bluebird"),
+            FOREST_HONEYBUG(SafariZoneUtil.SafariZone.FOREST, "Honeybug"),
+            FOREST_TREEFROG(SafariZoneUtil.SafariZone.FOREST, "Treefrog"),
+            FOREST_WOODCHUCKER(SafariZoneUtil.SafariZone.FOREST, "Woodchucker"),
+            FOREST_FLUFFLING(SafariZoneUtil.SafariZone.FOREST, "Fluffling"),
+            FOREST_HIDEONFLOOR(SafariZoneUtil.SafariZone.FOREST, "Hideonfloor"),
+            FOREST_PARAKEET(SafariZoneUtil.SafariZone.FOREST, "Parakeet"),
+            FOREST_MACAW(SafariZoneUtil.SafariZone.FOREST, "Macaw"),
+            // ── Haunted ──
+            HAUNTED_AREITA(SafariZoneUtil.SafariZone.HAUNTED, "Areita"),
+            HAUNTED_BLOODBAT(SafariZoneUtil.SafariZone.HAUNTED, "Bloodbat"),
+            HAUNTED_DUPLICO(SafariZoneUtil.SafariZone.HAUNTED, "Duplico"),
+            HAUNTED_GAZER(SafariZoneUtil.SafariZone.HAUNTED, "Gazer"),
+            HAUNTED_LITTERBUG(SafariZoneUtil.SafariZone.HAUNTED, "Litterbug"),
+            HAUNTED_SOLSNATCHER(SafariZoneUtil.SafariZone.HAUNTED, "Solsnatcher"),
+            HAUNTED_GIMMIEGOLD(SafariZoneUtil.SafariZone.HAUNTED, "Gimmiegold"),
+            HAUNTED_HIDEONWALL(SafariZoneUtil.SafariZone.HAUNTED, "Hideonwall"),
+            HAUNTED_HIDEYHO(SafariZoneUtil.SafariZone.HAUNTED, "Hideyho"),
+            HAUNTED_DOOMSPIRAL(SafariZoneUtil.SafariZone.HAUNTED, "Doomspiral"),
+            // ── Cavern（洞穴）──
+            CAVERN_CAVERNFISH(SafariZoneUtil.SafariZone.CAVERN, "Cavernfish"),
+            CAVERN_FLITTER(SafariZoneUtil.SafariZone.CAVERN, "Flitter"),
+            CAVERN_SHYWORM(SafariZoneUtil.SafariZone.CAVERN, "Shyworm"),
+            CAVERN_DRIFTLING(SafariZoneUtil.SafariZone.CAVERN, "Driftling"),
+            CAVERN_CHUCKWALLA(SafariZoneUtil.SafariZone.CAVERN, "Chuckwalla"),
+            CAVERN_ROCKMITE(SafariZoneUtil.SafariZone.CAVERN, "Rockmite"),
+            CAVERN_SCRAPPY(SafariZoneUtil.SafariZone.CAVERN, "Scrappy"),
+            CAVERN_SNOOZLE(SafariZoneUtil.SafariZone.CAVERN, "Snoozle"),
+            CAVERN_GEMZIE(SafariZoneUtil.SafariZone.CAVERN, "Gemzie");
+
+            private final SafariZoneUtil.SafariZone zone;
+            private final String chatName;
+
+            SafariCritter(SafariZoneUtil.SafariZone zone, String chatName) {
+                this.zone = zone;
+                this.chatName = chatName;
+            }
+
+            public SafariZoneUtil.SafariZone zone() {
+                return zone;
+            }
+
+            /** 聊天捕获消息中的生物英文名 */
+            public String chatName() {
+                return chatName;
+            }
+
+            /** 配置界面候选显示：分区 - 生物名 */
+            @Override
+            public String toString() {
+                return SafariZoneUtil.colorCode(zone)
+                        + Component.translatable(
+                                "hud.babyzombieaddons.safariCritterRecord.zone." + zone.name()).getString()
+                        + " - " + Component.translatable(
+                                "config.babyzombieaddons.option.safariCritterList." + name()).getString();
+            }
+        }
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterRecord", desc = "config.babyzombieaddons.option.safariCritterRecord.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("critter")
+        public boolean enabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterRecordCaughtMode", desc = "config.babyzombieaddons.option.safariCritterRecordCaughtMode.desc") @ConfigEditorDropdown @SearchTag("safari") @SearchTag("critter")
+        public CaughtDisplayMode caughtMode = CaughtDisplayMode.COLOR;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterList", desc = "config.babyzombieaddons.option.safariCritterList.desc") @ConfigEditorDraggableList @SearchTag("safari") @SearchTag("critter")
+        public List<SafariCritter> displayedCritters = new ArrayList<>(List.of(
+                SafariCritter.ICY_STRONGARM, SafariCritter.ICY_TEPID, SafariCritter.ICY_POLARIS,
+                SafariCritter.ICY_SHUDDERSQUID, SafariCritter.ICY_BILLYGOAT, SafariCritter.ICY_MANTIS_SHRIMP,
+                SafariCritter.ICY_NOZZLENOSE, SafariCritter.ICY_TROODON,
+                SafariCritter.FOREST_FOXTROT, SafariCritter.FOREST_BLUEBIRD, SafariCritter.FOREST_HONEYBUG,
+                SafariCritter.FOREST_TREEFROG, SafariCritter.FOREST_WOODCHUCKER, SafariCritter.FOREST_FLUFFLING,
+                SafariCritter.FOREST_HIDEONFLOOR, SafariCritter.FOREST_PARAKEET, SafariCritter.FOREST_MACAW,
+                SafariCritter.HAUNTED_AREITA, SafariCritter.HAUNTED_BLOODBAT, SafariCritter.HAUNTED_DUPLICO,
+                SafariCritter.HAUNTED_GAZER, SafariCritter.HAUNTED_LITTERBUG, SafariCritter.HAUNTED_SOLSNATCHER,
+                SafariCritter.HAUNTED_GIMMIEGOLD, SafariCritter.HAUNTED_HIDEONWALL, SafariCritter.HAUNTED_HIDEYHO,
+                SafariCritter.HAUNTED_DOOMSPIRAL,
+                SafariCritter.CAVERN_CAVERNFISH, SafariCritter.CAVERN_FLITTER, SafariCritter.CAVERN_SHYWORM,
+                SafariCritter.CAVERN_DRIFTLING, SafariCritter.CAVERN_CHUCKWALLA, SafariCritter.CAVERN_ROCKMITE,
+                SafariCritter.CAVERN_SCRAPPY, SafariCritter.CAVERN_SNOOZLE, SafariCritter.CAVERN_GEMZIE
+        ));
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterRecordCompleteTitle", desc = "config.babyzombieaddons.option.safariCritterRecordCompleteTitle.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("critter") @SearchTag("title")
+        public boolean completeTitle = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterRecordCompleteSound", desc = "config.babyzombieaddons.option.safariCritterRecordCompleteSound.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("critter") @SearchTag("sound")
+        public boolean completeSound = false;
     }
 
     public static class SafariTrajectory {

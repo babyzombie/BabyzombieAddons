@@ -180,11 +180,11 @@ public final class HudRegistrar {
                 () -> get().skyblock.autois.enabled,
                 HudTag.MISC);
 
-        // --- Wumpa Record ---
-        HudManager.register("WumpaRecord", 10, 300, 1.0f,
-                "hud.babyzombieaddons.wumpaRecord.demo",
-                "config.babyzombieaddons.option.safariWumpaRecord",
-                () -> get().hunting.safari.wumpaRecord,
+        // --- Safari Critter Record ---
+        HudManager.register("SafariCritterRecord", 10, 300, 1.0f,
+                "hud.babyzombieaddons.safariCritterRecord.demo",
+                "config.babyzombieaddons.option.safariCritterRecord",
+                () -> get().hunting.safari.critterRecord.enabled,
                 HudTag.HUNTING);
 
         // --- Safari Hunter Trade ---
