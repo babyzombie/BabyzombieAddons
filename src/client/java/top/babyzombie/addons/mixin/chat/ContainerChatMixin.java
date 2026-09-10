@@ -54,7 +54,7 @@ public abstract class ContainerChatMixin extends Screen {
         if (ContainerChatHelper.isBlocklistedContainer((AbstractContainerScreen<?>) (Object) this)) return;
 
         if (opts.keyChat.matches(event) || opts.keyCommand.matches(event)) {
-            var cs = new ChatScreen("", false);
+            var cs = new ChatScreen(opts.keyCommand.matches(event) ? "/" : "", false);
             ContainerChatHelper.activate((AbstractContainerScreen<?>) (Object) this, cs);
             cir.setReturnValue(true);
         }
