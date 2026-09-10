@@ -4,14 +4,25 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import top.babyzombie.addons.util.ChatUtils;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * 断线原因黑名单枚举。
  * <p>
- * 匹配依据：组件翻译 key（服务端发来的可翻译原因）+ 解析后的明文（小写包含匹配，
- * 覆盖服务端自定义文字原因，如 Hypixel 的原始踢出消息）。
+ * 匹配依据（两者命中其一即可）：
+ * <ol>
+ *   <li>翻译 key —— 递归收集整棵原因组件树的 key，不只看顶层：原版会把真实原因塞进 translatable
+ *       参数里，例如登录失败是
+ *       {@code translatable("disconnect.loginFailedInfo", translatable("disconnect.loginFailedInfo.invalidSession"))}，
+ *       只读顶层 key（disconnect.loginFailedInfo）永远匹配不到 INVALID_SESSION。</li>
+ *   <li>明文包含匹配 —— 覆盖服务端自定义文字原因（如 Hypixel 的原始踢出消息）。因为客户端渲染出的是
+ *       <b>本地化</b>文案（中文环境下 invalidSession 渲染为"登录失败：无效会话…"，不含英文 pattern），
+ *       所以额外把每一层 key 规范化（点/下划线/驼峰→空格）后一起参与匹配，
+ *       例如 disconnect.loginFailedInfo.invalidSession → "disconnect login failed info invalid session"。</li>
+ * </ol>
  * 命中黑名单的原因将跳过自动重连，或按 autoReconnect.blacklistMaxRetries 限制尝试次数。
  * 展示名称走 draggable list 语言 key：config.babyzombieaddons.option.autoReconnectBlacklist.<NAME>
  */
@@ -142,22 +153,25 @@ public enum DisconnectReason {
         this.patterns = patterns;
     }
 
+    /** 组件树递归深度上限：正常断线原因只有 1~2 层，仅防御服务端发来的畸形深层嵌套。 */
+    private static final int MAX_COMPONENT_DEPTH = 32;
+
     /**
      * 判断断线原因是否命中该黑名单项。
      *
-     * @param key        原因组件的翻译 key，非可翻译组件时为 null
-     * @param plainLower 原因组件的解析明文（已小写）
+     * @param keys        原因组件树里收集到的全部翻译 key（含 translatable 参数里的嵌套 key）
+     * @param searchLower 可搜索文本（已小写）：渲染明文 + 各层 key 的规范化形式
      */
-    public boolean matches(String key, String plainLower) {
-        if (key != null) {
-            for (String k : keys) {
-                if (k.equals(key)) {
+    public boolean matches(Set<String> keys, String searchLower) {
+        if (keys != null) {
+            for (String k : this.keys) {
+                if (keys.contains(k)) {
                     return true;
                 }
             }
         }
-        for (String p : patterns) {
-            if (plainLower.contains(p)) {
+        for (String p : this.patterns) {
+            if (searchLower.contains(p)) {
                 return true;
             }
         }
@@ -171,14 +185,67 @@ public enum DisconnectReason {
         if (blacklist == null || blacklist.isEmpty() || reason == null) {
             return false;
         }
-        String key = reason.getContents() instanceof TranslatableContents contents ? contents.getKey() : null;
-        String plain = reason.getString().toLowerCase(Locale.ROOT);
+        Set<String> keys = new HashSet<>();
+        StringBuilder search = new StringBuilder();
+        collect(reason, keys, search, 0);
+        String searchLower = search.toString().toLowerCase(Locale.ROOT);
         for (DisconnectReason blacklisted : blacklist) {
-            if (blacklisted.matches(key, plain)) {
+            if (blacklisted.matches(keys, searchLower)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * 递归收集组件树里的翻译 key 与可搜索文本（translatable 参数 + sibling 全都要走）。
+     * <p>
+     * 参数既可能是 Component（原版 loginFailedInfo 这种嵌套原因），也可能是 String/Number
+     * （如 disconnect.genericReason 直接塞异常文本），两类都收集，否则网络层异常会被漏掉。
+     */
+    private static void collect(Component component, Set<String> keys, StringBuilder search, int depth) {
+        if (component == null || depth > MAX_COMPONENT_DEPTH) {
+            return;
+        }
+        // 本节点自身的渲染明文；翻译缺失时 getString() 返回 key 原文，也一并可搜
+        search.append(component.getString()).append('\n');
+        if (component.getContents() instanceof TranslatableContents contents) {
+            keys.add(contents.getKey());
+            search.append(normalizeKey(contents.getKey())).append('\n');
+            if (contents.getFallback() != null) {
+                search.append(contents.getFallback()).append('\n');
+            }
+            for (Object arg : contents.getArgs()) {
+                if (arg instanceof Component argComponent) {
+                    collect(argComponent, keys, search, depth + 1);
+                } else {
+                    // 纯文本参数（如 disconnect.genericReason 直接塞的异常信息）
+                    search.append(arg).append('\n');
+                }
+            }
+        }
+        for (Component sibling : component.getSiblings()) {
+            collect(sibling, keys, search, depth + 1);
+        }
+    }
+
+    /**
+     * 把翻译 key 拆成可读单词："disconnect.loginFailedInfo.invalidSession"
+     * → "disconnect login failed info invalid session"，让英文 pattern 在任意客户端语言下也能命中 key 语义。
+     */
+    private static String normalizeKey(String key) {
+        StringBuilder sb = new StringBuilder(key.length() + 16);
+        for (int i = 0; i < key.length(); i++) {
+            char c = key.charAt(i);
+            if (c == '.' || c == '_' || c == '-' || c == '/') {
+                sb.append(' ');
+            } else if (Character.isUpperCase(c) && i > 0) {
+                sb.append(' ').append(c);
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     @Override

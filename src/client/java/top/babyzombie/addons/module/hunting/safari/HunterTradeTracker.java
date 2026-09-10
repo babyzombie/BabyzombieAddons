@@ -453,12 +453,7 @@ public final class HunterTradeTracker {
 
     /** 分区主题色（HUD 色码）：Cavern 金 / Forest 绿 / Haunted 紫 / Icy 青 */
     private static String zoneColorCode(SafariZoneUtil.SafariZone zone) {
-        return switch (zone) {
-            case CAVERN -> "§6";
-            case FOREST -> "§a";
-            case HAUNTED -> "§5";
-            case ICY -> "§b";
-        };
+        return SafariZoneUtil.colorCode(zone);
     }
 
     private static double distSq(BlockPos a, BlockPos b) {

@@ -19,9 +19,19 @@ public final class SafariZoneUtil {
     /** 按坐标判定实体/玩家所在分区 */
     public static SafariZone zoneOf(BlockPos pos) {
         int x = pos.getX(), z = pos.getZ();
-        // Icy（雪地）：与 WumpaRecord.isInSnowArea 的边界一致
+        // Icy（雪地）：与 Safari 生物记录/旧雪地边界一致
         if (x <= -52 && z <= -2) return SafariZone.ICY;
         if (z > 10) return x < -50 ? SafariZone.CAVERN : SafariZone.FOREST;
         return x < -50 ? SafariZone.CAVERN : SafariZone.HAUNTED;
+    }
+
+    /** 分区主题色（HUD 色码）：Cavern 金 / Forest 绿 / Haunted 紫 / Icy 青 */
+    public static String colorCode(SafariZone zone) {
+        return switch (zone) {
+            case CAVERN -> "§6";
+            case FOREST -> "§a";
+            case HAUNTED -> "§5";
+            case ICY -> "§b";
+        };
     }
 }
