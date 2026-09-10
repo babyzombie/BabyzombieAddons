@@ -32,9 +32,9 @@ except AttributeError:
     pass
 
 API_URL = "https://api.deepseek.com/chat/completions"
-# deepseek-v4-flash 实际默认带思考流(响应里会出现 reasoning_content),翻译任务不需要,
+# deepseek-flash 实际默认带思考流(响应里会出现 reasoning_content),翻译任务不需要,
 # 已在 translate_with_deepseek 中用 thinking: {"type": "disabled"} 显式关闭,防思考吃光 max_tokens 预算。
-MODEL = os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash")
+MODEL = os.environ.get("DEEPSEEK_MODEL", "deepseek-flash")
 
 GROUP_MAP = {
     "新增": "Added",

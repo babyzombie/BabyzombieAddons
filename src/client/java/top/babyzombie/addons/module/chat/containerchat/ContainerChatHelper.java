@@ -32,7 +32,8 @@ public final class ContainerChatHelper {
     public static ChatScreen getOverlay() { return overlay; }
 
     /**
-     * 按「发送物品格式」配置生成分享文本（容器物品：neuName 可从 Skyblocker / custom_data 解析）。
+     * 按「发送物品格式」配置生成分享文本。容器物品、REI/RRV 悬停物品都走这里：
+     * neuName 从 Skyblocker / custom_data 解析，拿不到（非 SkyBlock 物品）时回退为物品名。
      * 结果以 [物品] 方括号包裹，方便接收端识别边界。
      */
     public static String buildSendText(ItemStack stack) {
@@ -42,11 +43,17 @@ public final class ContainerChatHelper {
     }
 
     /**
-     * 按「发送物品格式」配置生成分享文本（REI/RRV 悬停项：拿不到物品栈，仅名字可用）。
-     * 结果以 [物品] 方括号包裹。
+     * 把物品分享文本插进聊天栏，并把焦点交回聊天输入框（分享完的下一步是继续编辑 / 发送）。
+     * <p>两条分享路径的这次点击都被上层抢先消费掉，谁都不会替我们聚焦：
+     * 容器物品走 {@code AbstractContainerScreen.mouseClicked}，其 HEAD 注入按「点没点聊天框」
+     * 把焦点设成了 false；REI/RRV 物品在 GLFW 回调就被拦下，根本不进 mouseClicked /
+     * afterMouseAction。所以插入文本后必须在这里补一次聚焦，
+     * 否则焦点留在背包 / REI 页面上，接着打字没反应。
      */
-    public static String buildSendText(String name) {
-        return "[" + applySendMode(null, name) + "]";
+    public static void insertShareText(ItemStack stack) {
+        if (overlay == null) return;
+        ((ChatScreenAccessor) overlay).getInput().insertText(buildSendText(stack) + " ");
+        setInputFocused(true);
     }
 
     private static String applySendMode(@Nullable String skyblockId, String name) {
@@ -110,10 +117,10 @@ public final class ContainerChatHelper {
         previousMouseButtonCallback = GLFW.glfwSetMouseButtonCallback(window, (w, button, action, mods) -> {
             if (action == InputConstants.PRESS && button == InputConstants.MOUSE_BUTTON_LEFT
                     && (mods & InputConstants.MOD_ALT) != 0) {
-                String itemName = ReiHelper.getHoveredEntryName();
-                if (itemName == null) itemName = RrvHelper.getHoveredEntryName();
-                if (itemName != null) {
-                    ((ChatScreenAccessor) overlay).getInput().insertText(buildSendText(itemName) + " ");
+                ItemStack hovered = ReiHelper.getHoveredEntryStack();
+                if (hovered == null) hovered = RrvHelper.getHoveredEntryStack();
+                if (hovered != null) {
+                    insertShareText(hovered);
                     return;
                 }
             }

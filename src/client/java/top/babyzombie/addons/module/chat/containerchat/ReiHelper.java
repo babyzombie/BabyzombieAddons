@@ -29,18 +29,20 @@ public final class ReiHelper {
     }
 
     /**
-     * 获取 REI 中当前鼠标悬停的物品的显示名称，优先级：
+     * 获取 REI 中当前鼠标悬停的物品栈，优先级：
      * <ol>
      *   <li>DisplayScreen 配方详情页内部槽位（impl EntryWidget 反射调用）</li>
      *   <li>overlay 物品列表的 focused stack</li>
      * </ol>
+     * 返回的是 REI 内部持有的物品栈实例，调用方只读（名字 / NEU id / tooltip），
+     * 需要改动请自行 {@link ItemStack#copy()}。
      *
-     * @return 物品名称，如果没有悬停物品则返回 null
+     * @return 悬停的物品栈；没有悬停物品、或悬停条目不是物品（流体等）时返回 null
      */
     @Nullable
-    public static String getHoveredEntryName() {
+    public static ItemStack getHoveredEntryStack() {
         if (!REI_LOADED) return null;
-        return ReiBridge.getHoveredEntryName();
+        return ReiBridge.getHoveredEntryStack();
     }
 
     /**
@@ -65,14 +67,14 @@ public final class ReiHelper {
             return name.contains("roughlyenoughitems") || (name.contains(".rei.") && name.contains("screen"));
         }
 
-        static String getHoveredEntryName() {
+        static ItemStack getHoveredEntryStack() {
             try {
                 // 1) 配方详情页内部槽位（EntryWidget 是 impl 包类，不编译期引用，
                 //    反射调 getCurrentEntry；方法/类变化时抛普通异常被兜住，静默降级）
                 var screen = Minecraft.getInstance().gui.screen();
                 if (screen instanceof DisplayScreen) {
-                    String name = displayScreenHoveredName(screen);
-                    if (name != null) return name;
+                    ItemStack stack = displayScreenHoveredStack(screen);
+                    if (stack != null) return stack;
                 }
 
                 // 2) overlay 物品列表
@@ -80,7 +82,7 @@ public final class ReiHelper {
                 if (overlay.isEmpty()) return null;
                 var stack = overlay.get().getEntryList().getFocusedStack();
                 if (stack.isEmpty()) return null;
-                return entryName(stack);
+                return entryStack(stack);
             } catch (Exception | LinkageError e) {
                 // Exception: 反射缺失/不可访问等，REI 内部结构变化时静默降级
                 // LinkageError: 类结构整体跳变（NoClassDefFoundError 等是 Error 不是 Exception）
@@ -88,7 +90,8 @@ public final class ReiHelper {
             }
         }
 
-        private static String displayScreenHoveredName(Screen screen) {
+        @Nullable
+        private static ItemStack displayScreenHoveredStack(Screen screen) {
             // 26.1 的 MouseHandler.xpos/ypos 返回物理像素坐标，REI widget bounds 是 GUI 缩放坐标，
             // 必须除以 guiScale 才能命中 containsMouse
             double scale = Minecraft.getInstance().getWindow().getGuiScale();
@@ -97,8 +100,8 @@ public final class ReiHelper {
             java.util.IdentityHashMap<Widget, Boolean> visited = new java.util.IdentityHashMap<>();
             for (GuiEventListener child : screen.children()) {
                 if (child instanceof Widget w) {
-                    String name = findHovered(w, mx, my, visited);
-                    if (name != null) return name;
+                    ItemStack stack = findHovered(w, mx, my, visited);
+                    if (stack != null) return stack;
                 }
             }
             return null;
@@ -110,8 +113,9 @@ public final class ReiHelper {
          * 但 children() 返回空，真正的子级（setupDisplay 槽位列表）藏在复合 widget 的
          * widgets 字段里，walk 的 else-if 分支永远到不了。
          */
-        private static String findHovered(Widget widget, double mx, double my,
-                                          java.util.IdentityHashMap<Widget, Boolean> visited) {
+        @Nullable
+        private static ItemStack findHovered(Widget widget, double mx, double my,
+                                             java.util.IdentityHashMap<Widget, Boolean> visited) {
             if (visited.put(widget, Boolean.TRUE) != null) return null;
 
             // 1) 复合 widget 的内部列表（DisplayCompositeWidget.widgets = setupDisplay 槽位列表）
@@ -122,8 +126,8 @@ public final class ReiHelper {
                 if (value instanceof List<?> list) {
                     for (Object o : list) {
                         if (o instanceof Widget w) {
-                            String name = findHovered(w, mx, my, visited);
-                            if (name != null) return name;
+                            ItemStack stack = findHovered(w, mx, my, visited);
+                            if (stack != null) return stack;
                         }
                     }
                 }
@@ -134,8 +138,8 @@ public final class ReiHelper {
             // 2) 容器 children 递归（PaddedWidget 等包装结构）
             for (GuiEventListener child : widget.children()) {
                 if (child instanceof Widget w) {
-                    String name = findHovered(w, mx, my, visited);
-                    if (name != null) return name;
+                    ItemStack stack = findHovered(w, mx, my, visited);
+                    if (stack != null) return stack;
                 }
             }
 
@@ -145,7 +149,7 @@ public final class ReiHelper {
                     var method = widget.getClass().getMethod("getCurrentEntry");
                     Object entry = method.invoke(widget);
                     if (entry instanceof EntryStack<?> es && !es.isEmpty()) {
-                        return entryName(es);
+                        return entryStack(es);
                     }
                 } catch (ReflectiveOperationException ignored) {
                     // 非槽位 widget（面板/按钮/装饰）
@@ -154,16 +158,17 @@ public final class ReiHelper {
             return null;
         }
 
-        private static String entryName(EntryStack<?> stack) {
+        /**
+         * EntryStack → ItemStack。非物品条目（流体等）拿不到物品栈，返回 null：
+         * 这类条目没有 NEU id，分享出去接收端也解析不成物品，直接跳过。
+         */
+        @Nullable
+        private static ItemStack entryStack(EntryStack<?> stack) {
             Object value = stack.getValue();
-            if (value instanceof ItemStack itemStack) {
-                String name = itemStack.getHoverName().getString();
-                if (itemStack.getCount() > 1) {
-                    name += " x" + itemStack.getCount();
-                }
-                return name;
+            if (value instanceof ItemStack itemStack && !itemStack.isEmpty()) {
+                return itemStack;
             }
-            return stack.asFormattedText().getString();
+            return null;
         }
     }
 }
