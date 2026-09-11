@@ -86,8 +86,8 @@ public final class SafariEntitiesGlow {
             if (anyEnabled(safari.icy) || anyEnabled(safari.haunted)
                     || anyEnabled(safari.cavern) || anyEnabled(safari.forest)) {
                 for (var entity : client.level.entitiesForRendering()) {
-                    // 隐身的实体不发光（Display 例外：隐身时仍渲染展示内容）
-                    if (entity.isInvisible() && !(entity instanceof Display)) continue;
+                    // 隐身的实体不发光（展示实体 和 盔甲架 例外：隐身时仍渲染展示内容）
+                    if (entity.isInvisible() && !(entity instanceof Display || entity instanceof ArmorStand)) continue;
 
                     switch (SafariZoneUtil.zoneOf(entity.blockPosition())) {
                         case ICY -> {

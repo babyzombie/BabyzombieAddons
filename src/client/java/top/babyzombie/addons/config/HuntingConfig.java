@@ -105,55 +105,58 @@ public class HuntingConfig {
             }
         }
 
-        /** 可拖动列表候选：Safari 全部 36 种可捕获生物，按分区声明（候选列表即按分区归组） */
+        /** 可拖动列表候选：Safari 全部 37 种可捕获生物（含 Wumpa），按分区声明（候选列表即按分区归组） */
         public enum SafariCritter {
             // ── Icy（雪地）──
-            ICY_STRONGARM(SafariZoneUtil.SafariZone.ICY, "Strongarm"),
-            ICY_TEPID(SafariZoneUtil.SafariZone.ICY, "Tepid"),
-            ICY_POLARIS(SafariZoneUtil.SafariZone.ICY, "Polaris"),
-            ICY_SHUDDERSQUID(SafariZoneUtil.SafariZone.ICY, "Shuddersquid"),
-            ICY_BILLYGOAT(SafariZoneUtil.SafariZone.ICY, "Billygoat"),
-            ICY_MANTIS_SHRIMP(SafariZoneUtil.SafariZone.ICY, "Mantis Shrimp"),
-            ICY_NOZZLENOSE(SafariZoneUtil.SafariZone.ICY, "Nozzlenose"),
-            ICY_TROODON(SafariZoneUtil.SafariZone.ICY, "Troodon"),
+            ICY_STRONGARM(SafariZoneUtil.SafariZone.ICY, "Strongarm", "§f"),
+            ICY_TEPID(SafariZoneUtil.SafariZone.ICY, "Tepid", "§f"),
+            ICY_POLARIS(SafariZoneUtil.SafariZone.ICY, "Polaris", "§a"),
+            ICY_SHUDDERSQUID(SafariZoneUtil.SafariZone.ICY, "Shuddersquid", "§a"),
+            ICY_BILLYGOAT(SafariZoneUtil.SafariZone.ICY, "Billygoat", "§9"),
+            ICY_MANTIS_SHRIMP(SafariZoneUtil.SafariZone.ICY, "Mantis Shrimp", "§9"),
+            ICY_NOZZLENOSE(SafariZoneUtil.SafariZone.ICY, "Nozzlenose", "§9"),
+            ICY_TROODON(SafariZoneUtil.SafariZone.ICY, "Troodon", "§9"),
+            ICY_WUMPA(SafariZoneUtil.SafariZone.ICY, "Wumpa", "§6"),
             // ── Forest（森林）──
-            FOREST_FOXTROT(SafariZoneUtil.SafariZone.FOREST, "Foxtrot"),
-            FOREST_BLUEBIRD(SafariZoneUtil.SafariZone.FOREST, "Bluebird"),
-            FOREST_HONEYBUG(SafariZoneUtil.SafariZone.FOREST, "Honeybug"),
-            FOREST_TREEFROG(SafariZoneUtil.SafariZone.FOREST, "Treefrog"),
-            FOREST_WOODCHUCKER(SafariZoneUtil.SafariZone.FOREST, "Woodchucker"),
-            FOREST_FLUFFLING(SafariZoneUtil.SafariZone.FOREST, "Fluffling"),
-            FOREST_HIDEONFLOOR(SafariZoneUtil.SafariZone.FOREST, "Hideonfloor"),
-            FOREST_PARAKEET(SafariZoneUtil.SafariZone.FOREST, "Parakeet"),
-            FOREST_MACAW(SafariZoneUtil.SafariZone.FOREST, "Macaw"),
+            FOREST_FOXTROT(SafariZoneUtil.SafariZone.FOREST, "Foxtrot", "§f"),
+            FOREST_BLUEBIRD(SafariZoneUtil.SafariZone.FOREST, "Bluebird", "§a"),
+            FOREST_HONEYBUG(SafariZoneUtil.SafariZone.FOREST, "Honeybug", "§a"),
+            FOREST_TREEFROG(SafariZoneUtil.SafariZone.FOREST, "Treefrog", "§a"),
+            FOREST_WOODCHUCKER(SafariZoneUtil.SafariZone.FOREST, "Woodchucker", "§a"),
+            FOREST_FLUFFLING(SafariZoneUtil.SafariZone.FOREST, "Fluffling", "§9"),
+            FOREST_HIDEONFLOOR(SafariZoneUtil.SafariZone.FOREST, "Hideonfloor", "§9"),
+            FOREST_PARAKEET(SafariZoneUtil.SafariZone.FOREST, "Parakeet", "§9"),
+            FOREST_MACAW(SafariZoneUtil.SafariZone.FOREST, "Macaw", "§6"),
             // ── Haunted ──
-            HAUNTED_AREITA(SafariZoneUtil.SafariZone.HAUNTED, "Areita"),
-            HAUNTED_BLOODBAT(SafariZoneUtil.SafariZone.HAUNTED, "Bloodbat"),
-            HAUNTED_DUPLICO(SafariZoneUtil.SafariZone.HAUNTED, "Duplico"),
-            HAUNTED_GAZER(SafariZoneUtil.SafariZone.HAUNTED, "Gazer"),
-            HAUNTED_LITTERBUG(SafariZoneUtil.SafariZone.HAUNTED, "Litterbug"),
-            HAUNTED_SOLSNATCHER(SafariZoneUtil.SafariZone.HAUNTED, "Solsnatcher"),
-            HAUNTED_GIMMIEGOLD(SafariZoneUtil.SafariZone.HAUNTED, "Gimmiegold"),
-            HAUNTED_HIDEONWALL(SafariZoneUtil.SafariZone.HAUNTED, "Hideonwall"),
-            HAUNTED_HIDEYHO(SafariZoneUtil.SafariZone.HAUNTED, "Hideyho"),
-            HAUNTED_DOOMSPIRAL(SafariZoneUtil.SafariZone.HAUNTED, "Doomspiral"),
+            HAUNTED_AREITA(SafariZoneUtil.SafariZone.HAUNTED, "Areita", "§a"),
+            HAUNTED_BLOODBAT(SafariZoneUtil.SafariZone.HAUNTED, "Bloodbat", "§a"),
+            HAUNTED_DUPLICO(SafariZoneUtil.SafariZone.HAUNTED, "Duplico", "§a"),
+            HAUNTED_GAZER(SafariZoneUtil.SafariZone.HAUNTED, "Gazer", "§a"),
+            HAUNTED_LITTERBUG(SafariZoneUtil.SafariZone.HAUNTED, "Litterbug", "§a"),
+            HAUNTED_SOLSNATCHER(SafariZoneUtil.SafariZone.HAUNTED, "Solsnatcher", "§a"),
+            HAUNTED_GIMMIEGOLD(SafariZoneUtil.SafariZone.HAUNTED, "Gimmiegold", "§9"),
+            HAUNTED_HIDEONWALL(SafariZoneUtil.SafariZone.HAUNTED, "Hideonwall", "§9"),
+            HAUNTED_HIDEYHO(SafariZoneUtil.SafariZone.HAUNTED, "Hideyho", "§9"),
+            HAUNTED_DOOMSPIRAL(SafariZoneUtil.SafariZone.HAUNTED, "Doomspiral", "§6"),
             // ── Cavern（洞穴）──
-            CAVERN_CAVERNFISH(SafariZoneUtil.SafariZone.CAVERN, "Cavernfish"),
-            CAVERN_FLITTER(SafariZoneUtil.SafariZone.CAVERN, "Flitter"),
-            CAVERN_SHYWORM(SafariZoneUtil.SafariZone.CAVERN, "Shyworm"),
-            CAVERN_DRIFTLING(SafariZoneUtil.SafariZone.CAVERN, "Driftling"),
-            CAVERN_CHUCKWALLA(SafariZoneUtil.SafariZone.CAVERN, "Chuckwalla"),
-            CAVERN_ROCKMITE(SafariZoneUtil.SafariZone.CAVERN, "Rockmite"),
-            CAVERN_SCRAPPY(SafariZoneUtil.SafariZone.CAVERN, "Scrappy"),
-            CAVERN_SNOOZLE(SafariZoneUtil.SafariZone.CAVERN, "Snoozle"),
-            CAVERN_GEMZIE(SafariZoneUtil.SafariZone.CAVERN, "Gemzie");
+            CAVERN_CAVERNFISH(SafariZoneUtil.SafariZone.CAVERN, "Cavernfish", "§f"),
+            CAVERN_FLITTER(SafariZoneUtil.SafariZone.CAVERN, "Flitter", "§f"),
+            CAVERN_SHYWORM(SafariZoneUtil.SafariZone.CAVERN, "Shyworm", "§f"),
+            CAVERN_DRIFTLING(SafariZoneUtil.SafariZone.CAVERN, "Driftling", "§a"),
+            CAVERN_CHUCKWALLA(SafariZoneUtil.SafariZone.CAVERN, "Chuckwalla", "§9"),
+            CAVERN_ROCKMITE(SafariZoneUtil.SafariZone.CAVERN, "Rockmite", "§9"),
+            CAVERN_SCRAPPY(SafariZoneUtil.SafariZone.CAVERN, "Scrappy", "§9"),
+            CAVERN_SNOOZLE(SafariZoneUtil.SafariZone.CAVERN, "Snoozle", "§9"),
+            CAVERN_GEMZIE(SafariZoneUtil.SafariZone.CAVERN, "Gemzie", "§5");
 
             private final SafariZoneUtil.SafariZone zone;
             private final String chatName;
+            private final String rarityColor;
 
-            SafariCritter(SafariZoneUtil.SafariZone zone, String chatName) {
+            SafariCritter(SafariZoneUtil.SafariZone zone, String chatName, String rarityColor) {
                 this.zone = zone;
                 this.chatName = chatName;
+                this.rarityColor = rarityColor;
             }
 
             public SafariZoneUtil.SafariZone zone() {
@@ -163,6 +166,11 @@ public class HuntingConfig {
             /** 聊天捕获消息中的生物英文名 */
             public String chatName() {
                 return chatName;
+            }
+
+            /** 品质色（wiki 稀有度色码）：Common §f / Uncommon §a / Rare §9 / Epic §5 / Legendary §6 */
+            public String rarityColor() {
+                return rarityColor;
             }
 
             /** 配置界面候选显示：分区 - 生物名 */
@@ -180,13 +188,13 @@ public class HuntingConfig {
         public boolean enabled = false;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterRecordCaughtMode", desc = "config.babyzombieaddons.option.safariCritterRecordCaughtMode.desc") @ConfigEditorDropdown @SearchTag("safari") @SearchTag("critter")
-        public CaughtDisplayMode caughtMode = CaughtDisplayMode.COLOR;
+        public CaughtDisplayMode caughtMode = CaughtDisplayMode.STRIKE;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterList", desc = "config.babyzombieaddons.option.safariCritterList.desc") @ConfigEditorDraggableList @SearchTag("safari") @SearchTag("critter")
         public List<SafariCritter> displayedCritters = new ArrayList<>(List.of(
                 SafariCritter.ICY_STRONGARM, SafariCritter.ICY_TEPID, SafariCritter.ICY_POLARIS,
                 SafariCritter.ICY_SHUDDERSQUID, SafariCritter.ICY_BILLYGOAT, SafariCritter.ICY_MANTIS_SHRIMP,
-                SafariCritter.ICY_NOZZLENOSE, SafariCritter.ICY_TROODON,
+                SafariCritter.ICY_NOZZLENOSE, SafariCritter.ICY_TROODON, SafariCritter.ICY_WUMPA,
                 SafariCritter.FOREST_FOXTROT, SafariCritter.FOREST_BLUEBIRD, SafariCritter.FOREST_HONEYBUG,
                 SafariCritter.FOREST_TREEFROG, SafariCritter.FOREST_WOODCHUCKER, SafariCritter.FOREST_FLUFFLING,
                 SafariCritter.FOREST_HIDEONFLOOR, SafariCritter.FOREST_PARAKEET, SafariCritter.FOREST_MACAW,
