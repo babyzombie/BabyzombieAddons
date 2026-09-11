@@ -30,7 +30,9 @@ import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.module.misc.SystemNotifier;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public final class PopupEventsModule {
@@ -86,6 +88,9 @@ public final class PopupEventsModule {
     private static EventType eventType;
     public static KeyMapping keyYes;
     public static KeyMapping keyNo;
+
+    /** 最近 1 秒内发出过的指令(归一化后为 key):新弹窗的指令与之一致时说明事件已被处理(如其他模块自动接受),抑制弹窗;命中即删 */
+    private static final Map<String, Long> recentlySentCommands = new HashMap<>();
 
     private PopupEventsModule() {}
 
@@ -157,17 +162,22 @@ public final class PopupEventsModule {
             renderHUD(context);
         });
 
-        SendCommandEvents.BEFORE_SEND.register(command -> {
-            if (expireTime == 0 || expireTime <= ServerTick.getTime()) return false;
-            if (PopupEventsModule.command.isEmpty()) return false;
-            if (command.replace("/","").equals(PopupEventsModule.command)) {
+        // 监听真正发出的指令:与弹出中或即将创建的弹窗指令一致时,说明该事件已被处理(如其他模块自动接受):
+        // 弹出中的弹窗 → 关闭(即用即删);尚未创建的弹窗 → 由 notify() 抑制(1 秒窗口,消费即删,与监听器注册顺序无关)
+        SendCommandEvents.AFTER_SEND.register(command -> {
+            String key = normalizeCommand(command);
+            if (key.isEmpty()) return;
+            long now = ServerTick.getTime();
+            if (expireTime > now && !PopupEventsModule.command.isEmpty()
+                    && normalizeCommand(PopupEventsModule.command).equals(key)) {
                 close();
+            } else {
+                recentlySentCommands.values().removeIf(t -> t < now);
+                recentlySentCommands.put(key, now + 1000);
             }
-            return false;
         });
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
-            var cfg = ModConfigManager.get().popup;
             if (ModConfigManager.get().fishing.popupBaitLow <= 0) return InteractionResult.PASS;
             if (!HypixelLocationTracker.getInstance().isInSkyblock()) return InteractionResult.PASS;
             var held = player.getItemInHand(hand);
@@ -185,6 +195,9 @@ public final class PopupEventsModule {
     }
 
     private static void notify(EventType type, String player, String extra) {
+        String cmd = buildCommand(type, player);
+        // 该指令刚发出过:事件已被处理(如 PartyModule 自动接受邀请),不再弹窗
+        if (consumeSentCommand(cmd)) return;
         eventType = type;
         String pre = "babyzombieaddons.popup.";
         title = Component.translatable(pre + "title." + type.key);
@@ -195,12 +208,7 @@ public final class PopupEventsModule {
                 body = Component.translatable(pre + "body." + type.key, "§6" + player + "§f", "§6" + extra + "§f");
         } else
             body = Component.translatable(pre + "body." + type.key, "§6" + player + "§f");
-        command = type == EventType.PARTY || type == EventType.GUILD_PARTY ? "party accept " + player
-                : type == EventType.FRIEND ? "friend accept " + player
-                : type == EventType.TRADE || type == EventType.POSITION_SWAP ? "trade " + player
-                : type == EventType.DUEL ? "duel accept " + player
-                : type == EventType.BAIT ? "bz " + player
-                : "";
+        command = cmd;
         totalTime = 10000;
         expireTime = ServerTick.getTime() + totalTime;
         playSound();
@@ -217,6 +225,32 @@ public final class PopupEventsModule {
         totalTime = 10000;
         expireTime = ServerTick.getTime() + totalTime;
         playSound();
+    }
+
+    /** 事件对应的指令:与 accept() 实际发送的指令保持一致 */
+    private static String buildCommand(EventType type, String player) {
+        return type == EventType.PARTY || type == EventType.GUILD_PARTY ? "party accept " + player
+                : type == EventType.FRIEND ? "friend accept " + player
+                : type == EventType.TRADE || type == EventType.POSITION_SWAP ? "trade " + player
+                : type == EventType.DUEL ? "duel accept " + player
+                : type == EventType.BAIT ? "bz " + player
+                : "";
+    }
+
+    /** 指令刚发出过则消费记录并返回 true,用于抑制同指令事件的弹窗 */
+    private static boolean consumeSentCommand(String cmd) {
+        String key = normalizeCommand(cmd);
+        if (key.isEmpty()) return false;
+        recentlySentCommands.values().removeIf(t -> t < ServerTick.getTime());
+        return recentlySentCommands.remove(key) != null;
+    }
+
+    /** 归一化指令:去首斜杠与首尾空白、转小写,便于与发送记录比对 */
+    private static String normalizeCommand(String cmd) {
+        if (cmd == null) return "";
+        cmd = cmd.trim();
+        if (cmd.startsWith("/")) cmd = cmd.substring(1);
+        return cmd.toLowerCase();
     }
 
     /** 弹出事件同时转发系统通知(Windows Toast;时机由 SystemNotifier 按 toastNotifyWhen 配置判断)。 */
