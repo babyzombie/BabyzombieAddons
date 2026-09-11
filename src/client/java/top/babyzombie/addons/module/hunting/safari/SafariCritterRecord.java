@@ -131,16 +131,17 @@ public final class SafariCritterRecord {
                 HudManager.x(HUD_NAME), HudManager.y(HUD_NAME), HudManager.scale(HUD_NAME));
     }
 
-    /** 已捕获标注：颜色区分 / 打钩 / 划掉（不显示已在归组前过滤） */
+    /** 已捕获标注：颜色区分 / 打钩 / 划掉（不显示已在归组前过滤）。生物名按品质着色 */
     private static String formatCritter(SafariCritter critter, CaughtDisplayMode mode) {
         String name = Component.translatable(
                 "config.babyzombieaddons.option.safariCritterList." + critter.name()).getString();
         boolean caught = captured.contains(critter);
+        String rarity = critter.rarityColor();
         return switch (mode) {
-            case COLOR -> " " + (caught ? "§a" : "§7") + name;
-            case CHECK -> caught ? " §a✔ §f" + name : " §7✘ §f" + name;
-            case STRIKE -> caught ? " §7§m" + name : " §f" + name;
-            case HIDE -> " §f" + name;
+            case COLOR -> " " + (caught ? "§7" : rarity) + name;
+            case CHECK -> caught ? " §a✔ " + rarity + name : " §7✘ " + rarity + name;
+            case STRIKE -> caught ? " " + rarity + "§m" + name : " " + rarity + name;
+            case HIDE -> " " + rarity + name;
         };
     }
 
