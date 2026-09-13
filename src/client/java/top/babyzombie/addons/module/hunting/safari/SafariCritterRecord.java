@@ -54,8 +54,9 @@ public final class SafariCritterRecord {
             Pattern.compile("CAPTURE! You found (.+?)(?:,|,? and |!|$)");
 
     // ── 正则：队友捕获 LOOT SHARE! You received a {shard} from {player} catching a {name}! ──
+    // 捕获式用 "catching a {name}"，找到式（Hideyho 等）用 "finding the {name}"
     private static final Pattern LOOT_SHARE_PATTERN =
-            Pattern.compile("LOOT SHARE! You received .+? from .+? catching (?:a |an |\\d+x )?(.+?)(?:,? and |!|$)");
+            Pattern.compile("LOOT SHARE! You received .+? from .+? (?:catching|finding) (?:a |an |the |\\d+x )?(.+?)(?:,? and |!|$)");
 
     /** 本轮已捕获（首次捕获）的生物 */
     private static final Set<SafariCritter> captured = EnumSet.noneOf(SafariCritter.class);
