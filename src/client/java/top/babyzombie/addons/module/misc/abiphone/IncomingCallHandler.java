@@ -23,7 +23,7 @@ public class IncomingCallHandler {
     public static void init() {
         ClientReceiveMessageEvents.GAME.register(IncomingCallHandler::onGameMessage);
         ClientSendMessageEvents.ALLOW_COMMAND.register(command -> {
-            if (!HypixelLocationTracker.getInstance().isOnHypixel()) return false;
+            if (!HypixelLocationTracker.getInstance().isOnHypixel()) return true;
             if (command.equals("call")
                     && HypixelLocationTracker.getInstance().isInSkyblock()
                     && ModConfigManager.get().skyblock.abiphoneGui) {
@@ -32,9 +32,9 @@ public class IncomingCallHandler {
                 var contacts = AbiphoneTracker.getInstance()
                         .loadItems(tracker.getUuid(), tracker.getProfileId());
                 client.execute(() -> client.setScreen(new AbiphoneContactScreen(contacts)));
-                return true;
+                return false;
             }
-            return false;
+            return true;
         });
     }
 
@@ -61,9 +61,8 @@ public class IncomingCallHandler {
             if (!autoAnswerNames.contains(caller)) return;
 
             ClickEvent clickEvent = findClickEvent(message);
-            if (!(clickEvent instanceof ClickEvent.RunCommand runCommand)) return;
+            if (!(clickEvent instanceof ClickEvent.RunCommand(String command))) return;
 
-            String command = runCommand.command();
             if (command.startsWith("/")) command = command.substring(1);
 
             ChatUtils.sendCommand(command);
