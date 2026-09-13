@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.babyzombie.addons.util.pet.PetConstants;
+import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -62,6 +63,10 @@ public final class PetSkinTexture {
     private final Map<String, String> skinNbtNames = new LinkedHashMap<>();
     /** Texture URL → fully-qualified variant name (for URL-based matching fallback). */
     private final Map<String, String> urlToVariant = new LinkedHashMap<>();
+    /** Day/night dual-form skins: _DAY variant → its _NIGHT counter-form. */
+    private final Map<String, String> dayNightSibling = new HashMap<>();
+    /** Day/night dual-form skin families: base family key (e.g. PET_SKIN_SKELETON_PEARL) → its _DAY variant. */
+    private final Map<String, String> dayNightFamilies = new HashMap<>();
 
     private boolean loaded;
 
@@ -106,12 +111,13 @@ public final class PetSkinTexture {
             String raw = Files.readString(file);
             JsonObject obj = JsonParser.parseString(raw).getAsJsonObject();
             parseSkins(obj);
+            parseDayNightPairs();
             parseVariants(obj);
             parseNbtNames(obj);
             buildUrlIndex();
             loaded = true;
-            LOGGER.debug("[PetSkinTexture] Loaded {} skins, {} variant families",
-                skins.size(), skinVariants.size());
+            LOGGER.debug("[PetSkinTexture] Loaded {} skins, {} variant families, {} day/night pairs",
+                skins.size(), skinVariants.size(), dayNightSibling.size() / 2);
         } catch (IOException e) {
             LOGGER.error("[PetSkinTexture] Failed to load animatedskulls.json", e);
         }
@@ -165,7 +171,16 @@ public final class PetSkinTexture {
         }
         if (!matching.isEmpty()) {
             Collections.sort(matching);
-            return matchByUrl(matching, skullTexture);
+            String matched = matchByUrl(matching, skullTexture);
+            if (matched != null) {
+                // Day/night dual-form families normalize to the bare family name —
+                // the actual form is picked at render time by the in-game clock.
+                String family = dayNightFamilyOf(matched);
+                return family != null ? family : matched;
+            }
+            // URL match failed — day/night dual-form families still resolve to the
+            // family name; render time decides the form.
+            if (dayNightFamilies.containsKey(skinKey)) return skinKey;
         }
 
         // --- Step ③: check items/ folder for static skin ---
@@ -184,6 +199,10 @@ public final class PetSkinTexture {
      * Get an ItemStack for the given skin variant, selecting the appropriate
      * animation frame based on game time.
      *
+     * <p>Day/night dual-form skins (e.g. {@code PET_SKIN_SKELETON_PEARL}) are
+     * switched automatically to match the in-game time of day: the world clock
+     * maps to a 0–24h day, with 6:00–18:00 being day and the rest night.</p>
+     *
      * @param resolvedSkin the full variant name from {@link #resolveSkinVariant}
      * @param gameTime     current client world tick (for animation frame selection)
      * @return the textured ItemStack, or null if the variant is not found
@@ -192,15 +211,24 @@ public final class PetSkinTexture {
     public ItemStack getSkinHead(String resolvedSkin, long gameTime) {
         if (resolvedSkin == null || !ensureLoaded()) return null;
 
+        String variant = resolvedSkin;
+        // Day/night dual-form skins resolve to the bare family name (the petInfo
+        // skin field never carries the repo-only _DAY/_NIGHT suffix); the actual
+        // form is picked here to match the in-game time of day.
+        String dayVariant = dayNightFamilies.get(variant);
+        if (dayVariant != null) {
+            variant = pickDayNightVariant(dayVariant);
+        }
+
         // Try animated skins first
-        SkinEntry entry = skins.get(resolvedSkin);
+        SkinEntry entry = skins.get(variant);
         if (entry != null) {
             String base64 = entry.frame(gameTime);
             return createSkullStack(base64);
         }
 
         // Fall back to items/ folder
-        return loadFromItemsFile(resolvedSkin);
+        return loadFromItemsFile(variant);
     }
 
     // ==================================================================
@@ -218,6 +246,24 @@ public final class PetSkinTexture {
                 textures.add(tex.getAsString());
             }
             skins.put(e.getKey(), new SkinEntry(ticks, textures));
+        }
+    }
+
+    /**
+     * Register day/night pairs: any skin family that has BOTH a {@code _DAY} and
+     * a {@code _NIGHT} entry (e.g. {@code PET_SKIN_SKELETON_PEARL_DAY/_NIGHT}) is
+     * treated as a dual-form skin that follows the in-game time of day.
+     */
+    private void parseDayNightPairs() {
+        for (String key : skins.keySet()) {
+            if (key.endsWith("_DAY")) {
+                String night = key.substring(0, key.length() - "_DAY".length()) + "_NIGHT";
+                if (skins.containsKey(night)) {
+                    // _DAY → _NIGHT only; pickDayNightVariant always queries from the day form
+                    dayNightSibling.put(key, night);
+                    dayNightFamilies.put(key.substring(0, key.length() - "_DAY".length()), key);
+                }
+            }
         }
     }
 
@@ -297,7 +343,7 @@ public final class PetSkinTexture {
     private String matchByUrl(List<String> variantNames, @Nullable String skullTexture) {
         if (skullTexture == null || skullTexture.isEmpty()) {
             // If there's only one variant, assume it's that one
-            return variantNames.size() == 1 ? variantNames.get(0) : null;
+            return variantNames.size() == 1 ? variantNames.getFirst() : null;
         }
         String currentUrl = extractUrl(skullTexture);
         if (currentUrl == null) return null;
@@ -354,6 +400,34 @@ public final class PetSkinTexture {
         } catch (Exception e) {
             return -1;
         }
+    }
+
+    /**
+     * Pick the day or night variant of a dual-form skin for the current in-game
+     * time of day. The world clock maps to a 0–24h day: the first half
+     * (0–12000 ticks, ≈ 6:00–18:00) is day, the second half is night.
+     * Falls back to the day variant when no level is loaded.
+     */
+    private String pickDayNightVariant(String dayVariant) {
+        double days = HypixelLocationTracker.getInstance().getDays();
+        if (days < 0 || days % 1.0 < 0.5) return dayVariant;
+        String night = dayNightSibling.get(dayVariant);
+        return night != null ? night : dayVariant;
+    }
+
+    /**
+     * Return the bare family name when the given repo entry belongs to a
+     * day/night dual-form family (i.e. it carries a repo-only _DAY/_NIGHT
+     * suffix), otherwise null. The petInfo {@code skin} field never contains
+     * that suffix, so resolved names are normalized back to the family name.
+     */
+    @Nullable
+    private String dayNightFamilyOf(String variantName) {
+        if (variantName.endsWith("_DAY") || variantName.endsWith("_NIGHT")) {
+            String family = variantName.substring(0, variantName.length() - "_DAY".length());
+            if (dayNightFamilies.containsKey(family)) return family;
+        }
+        return null;
     }
 
     /** Check whether a pet skin item file exists in the items/ folder. */
@@ -427,7 +501,6 @@ public final class PetSkinTexture {
     }
 
     /** Map legacy minecraft:skull + damage to modern item types. */
-    @Nullable
     private static Item resolveSkullItem(String itemId, int damage) {
         if ("minecraft:skull".equals(itemId)) {
             return switch (damage) {
