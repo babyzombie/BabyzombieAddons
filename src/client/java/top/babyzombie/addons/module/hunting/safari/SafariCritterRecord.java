@@ -15,7 +15,9 @@ import top.babyzombie.addons.config.HuntingConfig.SafariCritterRecord.CaughtDisp
 import top.babyzombie.addons.config.HuntingConfig.SafariCritterRecord.SafariCritter;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
+import top.babyzombie.addons.event.HypixelLocationEvents;
 import top.babyzombie.addons.util.ChatUtils;
+import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.ArrayList;
@@ -64,11 +66,22 @@ public final class SafariCritterRecord {
     /** 已完成提示对应的列表签名（列表变化后再次全抓会重新提示） */
     private static String notifiedSignature = "";
 
+    /** 进入/开启当前 Safari 局的时刻（ServerTick ms），-1 = 尚未开始计时 */
+    private static long safariEnterMs = -1;
+
     private SafariCritterRecord() {}
 
     public static void init() {
         // ── 切换世界时重置（每轮 Safari 重新统计）──
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((_, _) -> reset());
+
+        // ── 计时：收到 location 更新时若在 Safari 即重新起表 ──
+        // Safari 每局都会推送一次 location 包（进出 Safari 与 safari → safari 开新局都算新一轮）
+        HypixelLocationEvents.LOCATION_UPDATE.register(data -> {
+            if (data.isInSafari()) {
+                safariEnterMs = ServerTick.getTime();
+            }
+        });
 
         // ── 消息监听：ALLOW_GAME 确保不被取消的消息也能检测 ──
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
@@ -118,6 +131,11 @@ public final class SafariCritterRecord {
 
         StringBuilder sb = new StringBuilder(Component.translatable(
                 "hud.babyzombieaddons.safariCritterRecord.title").getString());
+        // 计时：HUD 标题后跟本轮用时（进入 Safari 起算）
+        if (cfg.timer && safariEnterMs >= 0) {
+            sb.append(ChatUtils.translate("hud.babyzombieaddons.safariCritterRecord.timer",
+                    formatTime(Math.max(0, ServerTick.getTime() - safariEnterMs))));
+        }
         for (Map.Entry<SafariZoneUtil.SafariZone, List<SafariCritter>> entry : byZone.entrySet()) {
             sb.append('\n').append(SafariZoneUtil.colorCode(entry.getKey())).append("§l")
                     .append(Component.translatable(
@@ -159,10 +177,19 @@ public final class SafariCritterRecord {
         notifiedSignature = signature;
 
         if (cfg.completeTitle) {
-            ChatUtils.showTranslatableTitle(
-                    "hud.babyzombieaddons.safariCritterRecord.complete.title",
-                    "hud.babyzombieaddons.safariCritterRecord.complete.subtitle",
-                    0, 50, 10);
+            // 计时开启且本轮有起表时，副标题附上完成用时
+            if (cfg.timer && safariEnterMs >= 0) {
+                ChatUtils.showTranslatableTitle(
+                        "hud.babyzombieaddons.safariCritterRecord.complete.title",
+                        "hud.babyzombieaddons.safariCritterRecord.complete.subtitleTime",
+                        0, 50, 10,
+                        formatTime(Math.max(0, ServerTick.getTime() - safariEnterMs)));
+            } else {
+                ChatUtils.showTranslatableTitle(
+                        "hud.babyzombieaddons.safariCritterRecord.complete.title",
+                        "hud.babyzombieaddons.safariCritterRecord.complete.subtitle",
+                        0, 50, 10);
+            }
         }
         if (cfg.completeSound) {
             var player = Minecraft.getInstance().player;
@@ -191,8 +218,15 @@ public final class SafariCritterRecord {
         return null;
     }
 
+    /** 计时显示：mm:ss（不足 1 秒显示 0:00；与 GlaciteMineshaftWaypoints 同款格式） */
+    private static String formatTime(long ms) {
+        long total = ms / 1000;
+        return String.format("%d:%02d", total / 60, total % 60);
+    }
+
     private static void reset() {
         captured.clear();
         notifiedSignature = "";
+        safariEnterMs = -1;
     }
 }
