@@ -167,11 +167,16 @@ public final class ChatUtils {
     }
 
     public static void showTranslatableTitle(String titleKey, String subtitleKey, int fadeIn, int stay, int fadeOut) {
+        showTranslatableTitle(titleKey, subtitleKey, fadeIn, stay, fadeOut, new Object[0]);
+    }
+
+    /** 副标题可带翻译参数（如完成用时 %s）的版本 */
+    public static void showTranslatableTitle(String titleKey, String subtitleKey, int fadeIn, int stay, int fadeOut, Object... subtitleArgs) {
         var client = Minecraft.getInstance();
         client.gui.hud.setTimes(fadeIn, stay, fadeOut);
         client.gui.hud.setTitle(Component.translatable(titleKey));
         if (subtitleKey != null) {
-            client.gui.hud.setSubtitle(Component.translatable(subtitleKey));
+            client.gui.hud.setSubtitle(Component.translatable(subtitleKey, subtitleArgs));
         }
     }
 

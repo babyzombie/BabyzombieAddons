@@ -212,6 +212,9 @@ public class HuntingConfig {
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterRecordCompleteSound", desc = "config.babyzombieaddons.option.safariCritterRecordCompleteSound.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("critter") @SearchTag("sound")
         public boolean completeSound = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterRecordTimer", desc = "config.babyzombieaddons.option.safariCritterRecordTimer.desc") @ConfigEditorBoolean @SearchTag("safari") @SearchTag("critter") @SearchTag("timer")
+        public boolean timer = true;
     }
 
     public static class SafariTrajectory {
