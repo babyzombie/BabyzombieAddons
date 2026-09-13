@@ -459,7 +459,7 @@ public final class PetManager {
                 return false;
             }
             var slot = player.containerMenu.getSlot(slotId);
-            if (slot == null || !slot.hasItem()) return false;
+            if (!slot.hasItem()) return false;
             ItemStack stack = slot.getItem();
             if (getPetInfoFromStack(stack) == null) return false;
 
@@ -526,9 +526,7 @@ public final class PetManager {
     /** Save on disconnect or world unload. */
     private void registerDisconnectSave() {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> saveAll());
-        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> {
-            if (world == null) saveAll();
-        });
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, world) -> saveAll());
     }
 
     /**
@@ -692,9 +690,8 @@ public final class PetManager {
 
     @Nullable
     private static String getShowText(HoverEvent hover) {
-        if (hover instanceof HoverEvent.ShowText showText) {
-            Component text = showText.value();
-            return text != null ? text.getString() : null;
+        if (hover instanceof HoverEvent.ShowText(Component text)) {
+            return text.getString();
         }
         return null;
     }

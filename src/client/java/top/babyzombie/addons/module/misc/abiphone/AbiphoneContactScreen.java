@@ -303,7 +303,7 @@ public class AbiphoneContactScreen extends Screen {
         int totalRows = (visibleIndices.size() + actualCols - 1) / actualCols;
         int totalHeight = totalRows * rowHeight;
         int maxScroll = Math.max(0, totalHeight - visibleHeight);
-        scrollOffset = Math.max(0, Math.min(scrollOffset, maxScroll));
+        scrollOffset = Math.clamp(scrollOffset, 0, maxScroll);
         int scroll = (int) scrollOffset;
 
         for (int vi = 0; vi < visibleIndices.size(); vi++) {

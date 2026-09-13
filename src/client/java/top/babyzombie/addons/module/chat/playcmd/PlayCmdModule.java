@@ -20,9 +20,9 @@ public final class PlayCmdModule {
             if (command.trim().equals("play") && ModConfigManager.get().general.playCmd
                     && HypixelLocationTracker.getInstance().isOnHypixel()) {
                 openGUI();
-                return true;
+                return false;
             }
-            return false;
+            return true;
         });
     }
 
@@ -96,7 +96,7 @@ public final class PlayCmdModule {
 
         protected PlayScreen() { super(Component.translatable("playcmd.title")); }
 
-        private int cols() { return Math.max(3, Math.min(6, (width - PAD*2 - 8) / (BTN_W + GAP))); }
+        private int cols() { return Math.clamp((width - PAD * 2 - 8) / (BTN_W + GAP), 3, 6); }
         private int btnW() { return Math.min(BTN_W, (width - PAD*2 - 8 - GAP * (cols() - 1)) / cols()); }
 
         private boolean isChinese() {
@@ -182,7 +182,7 @@ public final class PlayCmdModule {
         }
 
         @Override public boolean mouseScrolled(double mx, double my, double sx, double sy) {
-            scroll = Math.max(0, Math.min(scroll - sy * 20, maxScroll));
+            scroll = Math.clamp(scroll - sy * 20, 0, maxScroll);
             return true;
         }
     }
