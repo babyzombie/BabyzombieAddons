@@ -64,6 +64,9 @@ public class SkyblockConfig {
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.bazzarTopOrders", desc = "") @Accordion
     public BazzarTopOrders bazzarTopOrders = new BazzarTopOrders();
 
+    @Expose @ConfigOption(name = "config.babyzombieaddons.group.bank", desc = "") @Accordion
+    public Bank bank = new Bank();
+
     @Expose @ConfigOption(name = "config.babyzombieaddons.group.auctionQuickSell", desc = "") @Accordion
     public AuctionQuickSell auctionQuickSell = new AuctionQuickSell();
 
@@ -406,11 +409,51 @@ public class SkyblockConfig {
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarSignQuickAmountsEnabled", desc = "config.babyzombieaddons.option.bazzarSignQuickAmountsEnabled.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("告示牌") @SearchTag("快捷") @SearchTag("数量")
         public boolean signQuickAmountsEnabled = false;
 
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarSignQuickAmountsAutoClose", desc = "config.babyzombieaddons.option.bazzarSignQuickAmountsAutoClose.desc") @ConfigEditorBoolean @SearchTag("bazaar") @SearchTag("告示牌") @SearchTag("快捷") @SearchTag("数量")
+        public boolean signQuickAmountsAutoClose = false;
+
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.bazzarSignQuickAmounts", desc = "config.babyzombieaddons.option.bazzarSignQuickAmounts.desc") @ConfigEditorDraggableList @SearchTag("bazaar") @SearchTag("告示牌") @SearchTag("快捷") @SearchTag("数量")
         public List<SignQuickAmount> signQuickAmounts = new ArrayList<>(List.of(
                 SignQuickAmount.SIXTEEN, SignQuickAmount.THIRTY_TWO, SignQuickAmount.FORTY_EIGHT, SignQuickAmount.ROUND_80, SignQuickAmount.ROUND_160,
                 SignQuickAmount.GROUP_1, SignQuickAmount.GROUP_2, SignQuickAmount.GROUP_5, SignQuickAmount.GROUP_10, SignQuickAmount.MAX_ORDER
         ));
+    }
+
+    public static class Bank {
+        /** 银行快捷金额按钮候选:1M~900M 与 1B */
+        public enum BankSignQuickAmount {
+            ONE_M(1_000_000), THREE_M(3_000_000), FIVE_M(5_000_000), SEVEN_M(7_000_000),
+            TEN_M(10_000_000), THIRTY_M(30_000_000), FIFTY_M(50_000_000),
+            ONE_HUNDRED_M(100_000_000), TWO_HUNDRED_M(200_000_000), THREE_HUNDRED_M(300_000_000),
+            FOUR_HUNDRED_M(400_000_000), FIVE_HUNDRED_M(500_000_000), SIX_HUNDRED_M(600_000_000),
+            SEVEN_HUNDRED_M(700_000_000), EIGHT_HUNDRED_M(800_000_000), NINE_HUNDRED_M(900_000_000),
+            ONE_B(1_000_000_000);
+
+            private final int amount;
+
+            BankSignQuickAmount(int amount) { this.amount = amount; }
+
+            public int amount() { return amount; }
+
+            public String displayText() {
+                return amount >= 1_000_000_000 ? (amount / 1_000_000_000) + "B" : (amount / 1_000_000) + "M";
+            }
+
+            /** 配置列表与告示牌按钮统一显示文本，无需翻译。 */
+            @Override
+            public String toString() {
+                return displayText();
+            }
+        }
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bankSignQuickAmountsEnabled", desc = "config.babyzombieaddons.option.bankSignQuickAmountsEnabled.desc") @ConfigEditorBoolean @SearchTag("bank") @SearchTag("银行") @SearchTag("告示牌") @SearchTag("快捷") @SearchTag("金额")
+        public boolean signQuickAmountsEnabled = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bankSignQuickAmountsAutoClose", desc = "config.babyzombieaddons.option.bankSignQuickAmountsAutoClose.desc") @ConfigEditorBoolean @SearchTag("bank") @SearchTag("银行") @SearchTag("告示牌") @SearchTag("快捷") @SearchTag("金额")
+        public boolean signQuickAmountsAutoClose = false;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.bankSignQuickAmounts", desc = "config.babyzombieaddons.option.bankSignQuickAmounts.desc") @ConfigEditorDraggableList @SearchTag("bank") @SearchTag("银行") @SearchTag("告示牌") @SearchTag("快捷") @SearchTag("金额")
+        public List<BankSignQuickAmount> signQuickAmounts = new ArrayList<>(List.of(BankSignQuickAmount.values()));
     }
 
     public static class AuctionQuickSell {
