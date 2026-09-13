@@ -625,9 +625,8 @@ public class AbiphoneContactScreen extends Screen {
             } else {
                 AbiphoneTracker.ItemEntry entry = contacts.get(dragIndex);
                 String rawName = stripColor(entry.name());
-                var conn = Minecraft.getInstance().getConnection();
                 if(contactsHasDiffNameInCMD.containsKey(rawName)) rawName = contactsHasDiffNameInCMD.get(rawName);
-                if (conn != null) conn.sendCommand("call " + rawName);
+                ChatUtils.sendCommand("call " + rawName);
                 onClose();
             }
             dragIndex = -1;

@@ -1,12 +1,12 @@
 package top.babyzombie.addons.module.chat.playcmd;
 
+import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.event.SendCommandEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
@@ -16,7 +16,7 @@ public final class PlayCmdModule {
     public static void init() {
         PlayAutocomplete.init();
 
-        SendCommandEvents.BEFORE_SEND.register(command -> {
+        ClientSendMessageEvents.ALLOW_COMMAND.register(command -> {
             if (command.trim().equals("play") && ModConfigManager.get().general.playCmd
                     && HypixelLocationTracker.getInstance().isOnHypixel()) {
                 openGUI();

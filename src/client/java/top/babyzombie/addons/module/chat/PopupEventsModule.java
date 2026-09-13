@@ -1,5 +1,6 @@
 package top.babyzombie.addons.module.chat;
 
+import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -20,7 +21,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.FishingRodItem;
 import top.babyzombie.addons.config.ModConfigManager;
 import top.babyzombie.addons.config.hud.HudManager;
-import top.babyzombie.addons.event.SendCommandEvents;
 import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.ItemUtils;
 import top.babyzombie.addons.util.PlaySoundHelper;
@@ -164,18 +164,8 @@ public final class PopupEventsModule {
 
         // 监听真正发出的指令:与弹出中或即将创建的弹窗指令一致时,说明该事件已被处理(如其他模块自动接受):
         // 弹出中的弹窗 → 关闭(即用即删);尚未创建的弹窗 → 由 notify() 抑制(1 秒窗口,消费即删,与监听器注册顺序无关)
-        SendCommandEvents.AFTER_SEND.register(command -> {
-            String key = normalizeCommand(command);
-            if (key.isEmpty()) return;
-            long now = ServerTick.getTime();
-            if (expireTime > now && !PopupEventsModule.command.isEmpty()
-                    && normalizeCommand(PopupEventsModule.command).equals(key)) {
-                close();
-            } else {
-                recentlySentCommands.values().removeIf(t -> t < now);
-                recentlySentCommands.put(key, now + 1000);
-            }
-        });
+        ClientSendMessageEvents.CHAT.register(chat -> { if (chat.startsWith("/")) sendCommand(chat.substring(1)); });
+        ClientSendMessageEvents.COMMAND.register(PopupEventsModule::sendCommand);
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
             if (ModConfigManager.get().fishing.popupBaitLow <= 0) return InteractionResult.PASS;
@@ -192,6 +182,19 @@ public final class PopupEventsModule {
             notify(EventType.BAIT, baitName, String.valueOf(ModConfigManager.get().fishing.popupBaitLow));
             return InteractionResult.PASS;
         });
+    }
+
+    private static void sendCommand(String command) {
+        String key = normalizeCommand(command);
+        if (key.isEmpty()) return;
+        long now = ServerTick.getTime();
+        if (expireTime > now && !PopupEventsModule.command.isEmpty()
+                && normalizeCommand(PopupEventsModule.command).equals(key)) {
+            close();
+        } else {
+            recentlySentCommands.values().removeIf(t -> t < now);
+            recentlySentCommands.put(key, now + 1000);
+        }
     }
 
     private static void notify(EventType type, String player, String extra) {

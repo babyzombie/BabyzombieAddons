@@ -1,12 +1,13 @@
 package top.babyzombie.addons.module.misc.abiphone;
 
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import top.babyzombie.addons.config.ModConfigManager;
-import top.babyzombie.addons.event.SendCommandEvents;
+import top.babyzombie.addons.util.ChatUtils;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class IncomingCallHandler {
 
     public static void init() {
         ClientReceiveMessageEvents.GAME.register(IncomingCallHandler::onGameMessage);
-        SendCommandEvents.BEFORE_SEND.register(command -> {
+        ClientSendMessageEvents.ALLOW_COMMAND.register(command -> {
             if (!HypixelLocationTracker.getInstance().isOnHypixel()) return false;
             if (command.equals("call")
                     && HypixelLocationTracker.getInstance().isInSkyblock()
@@ -65,10 +66,7 @@ public class IncomingCallHandler {
             String command = runCommand.command();
             if (command.startsWith("/")) command = command.substring(1);
 
-            var conn = Minecraft.getInstance().getConnection();
-            if (conn != null) {
-                conn.sendCommand(command);
-            }
+            ChatUtils.sendCommand(command);
         }
     }
 

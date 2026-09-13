@@ -10,7 +10,6 @@
     "chat.ChatScreenMixin",
     "chat.ContainerChatMixin",
     "chat.ReiScreenChatMixin",
-    "chat.SendCommandMixin",
     "chat.StyleMixin",
     "compat.ModernUITextRenderTypeMixin",
     "compat.ModernUITextProcessorMixin",
