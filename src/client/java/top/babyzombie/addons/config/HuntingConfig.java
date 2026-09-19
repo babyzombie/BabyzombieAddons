@@ -105,6 +105,18 @@ public class HuntingConfig {
             }
         }
 
+        /** 自己在分区时，列表对所在区域生物的处理方式 */
+        public enum CurrentZoneMode {
+            OFF, PIN_TOP, HIDE_OTHERS;
+
+            @Override
+            public String toString() {
+                return Component.translatable(
+                        "config.babyzombieaddons.option.safariCritterRecordZoneMode." + name()
+                ).getString();
+            }
+        }
+
         /** 可拖动列表候选：Safari 全部 37 种可捕获生物（含 Wumpa），按分区声明（候选列表即按分区归组） */
         public enum SafariCritter {
             // ── Icy（雪地）──
@@ -188,7 +200,10 @@ public class HuntingConfig {
         public boolean enabled = false;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterRecordCaughtMode", desc = "config.babyzombieaddons.option.safariCritterRecordCaughtMode.desc") @ConfigEditorDropdown @SearchTag("safari") @SearchTag("critter")
-        public CaughtDisplayMode caughtMode = CaughtDisplayMode.STRIKE;
+        public CaughtDisplayMode caughtMode = CaughtDisplayMode.HIDE;
+
+        @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterRecordZoneMode", desc = "config.babyzombieaddons.option.safariCritterRecordZoneMode.desc") @ConfigEditorDropdown @SearchTag("safari") @SearchTag("critter") @SearchTag("zone")
+        public CurrentZoneMode zoneMode = CurrentZoneMode.PIN_TOP;
 
         @Expose @ConfigOption(name = "config.babyzombieaddons.option.safariCritterList", desc = "config.babyzombieaddons.option.safariCritterList.desc") @ConfigEditorDraggableList @SearchTag("safari") @SearchTag("critter")
         public List<SafariCritter> displayedCritters = new ArrayList<>(List.of(
