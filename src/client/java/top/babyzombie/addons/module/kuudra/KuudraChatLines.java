@@ -111,7 +111,7 @@ public final class KuudraChatLines {
             "([0-9a-zA-Z_]{2,24}) destroyed one of Kuudra's pods");
 
     public static boolean isEatenByKuudra(String text) {
-        return EATEN_BY_KUUDRA.matcher(text).find();
+        return EATEN_BY_KUUDRA.matcher(text).find() && !text.startsWith("Elle ");
     }
 
     public static boolean isDestroyedPod(String text) {
