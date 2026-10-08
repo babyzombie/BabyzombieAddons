@@ -34,12 +34,12 @@ public final class SlayerBossBox {
 
             double effectiveH = SlayerBossDetector.getEffectiveH(def);
 
-            double x1 = boss.getX() - def.wX / 2;
+            double x1 = boss.getX() - def.wX() / 2;
             double y1 = boss.getY();
-            double z1 = boss.getZ() - def.wZ / 2;
-            double x2 = boss.getX() + def.wX / 2;
+            double z1 = boss.getZ() - def.wZ() / 2;
+            double x2 = boss.getX() + def.wX() / 2;
             double y2 = boss.getY() + effectiveH;
-            double z2 = boss.getZ() + def.wZ / 2;
+            double z2 = boss.getZ() + def.wZ() / 2;
 
             // Wireframe box
             WorldRenderUtils.drawWireframeBox(ctx, x1, y1, z1, x2, y2, z2, r, g, b, a, depthTest, cfg.slayerBossBox.boxBossLineWidth);
@@ -58,12 +58,12 @@ public final class SlayerBossBox {
             if (!SlayerBossDetector.infernoMinions.isEmpty()) {
                 for (Entity minion : SlayerBossDetector.infernoMinions) {
                     if (minion == null || !minion.isAlive()) continue;
-                    double mx1 = minion.getX() - def.wX / 2;
+                    double mx1 = minion.getX() - def.wX() / 2;
                     double my1 = minion.getY();
-                    double mz1 = minion.getZ() - def.wZ / 2;
-                    double mx2 = minion.getX() + def.wX / 2;
-                    double my2 = minion.getY() + def.h;
-                    double mz2 = minion.getZ() + def.wZ / 2;
+                    double mz1 = minion.getZ() - def.wZ() / 2;
+                    double mx2 = minion.getX() + def.wX() / 2;
+                    double my2 = minion.getY() + def.h();
+                    double mz2 = minion.getZ() + def.wZ() / 2;
 
                     WorldRenderUtils.drawWireframeBox(ctx, mx1, my1, mz1, mx2, my2, mz2, r, g, b, a, depthTest, cfg.slayerBossBox.boxBossLineWidth);
                     if (filled) {
