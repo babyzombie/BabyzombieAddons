@@ -112,7 +112,7 @@ public final class KuudraPhaseTimer {
                     // T3+: BUILD → EATEN
                     endPhase(Phase.BUILD);
                 }
-            } else if (KuudraChatLines.isEatenByKuudra(text) && !text.contains("Elle")) {
+            } else if (KuudraChatLines.isEatenByKuudra(text)) {
                 if (currentPhase == Phase.EATEN && isT3Plus()) endPhase(Phase.EATEN);
             } else if (KuudraChatLines.isDestroyedPod(text)) {
                 if (currentPhase == Phase.STUN && isT3Plus()) endPhase(Phase.STUN);

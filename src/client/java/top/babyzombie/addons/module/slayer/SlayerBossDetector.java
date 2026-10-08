@@ -1,10 +1,13 @@
 package top.babyzombie.addons.module.slayer;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.EnderMan;
@@ -26,15 +29,10 @@ import top.babyzombie.addons.util.ServerTick;
 import top.babyzombie.addons.util.tracker.HypixelLocationTracker;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class SlayerBossDetector {
 
-    private static final Pattern HEALTH_PATTERN =
-            Pattern.compile("((§[ae]\\d+[a-zA-Z])§f/§a\\d+[a-zA-Z]§c❤)");
-
-    // Blaze attunement
+    // 火焰猎手元素附着循环顺序
     static final Map<String, String> NEXT_BLAZE_ATTUNED = Map.of(
             "ASHEN", "§f§lSPIRIT",
             "SPIRIT", "§e§lAURIC",
@@ -42,15 +40,8 @@ public final class SlayerBossDetector {
             "CRYSTAL", "§8§lASHEN"
     );
 
-    // Boss definitions
-    static class BossDef {
-        final EntityType<?> type;
-        final double range, wX, wZ, h;
-        final String name;
-        BossDef(EntityType<?> type, double range, double wX, double wZ, double h, String name) {
-            this.type = type; this.range = range; this.wX = wX; this.wZ = wZ; this.h = h; this.name = name;
-        }
-    }
+    // boss 定义
+    record BossDef(EntityType<?> type, double range, double wX, double wZ, double h, String name) {}
     static final Map<String, BossDef> BOSS_DEFS = new LinkedHashMap<>();
     static {
         BOSS_DEFS.put("Revenant Horror",         new BossDef(EntityTypes.ZOMBIE,  0.7, 1.0, 1.0, 2.0, "Revenant Horror"));
@@ -61,7 +52,7 @@ public final class SlayerBossDetector {
         BOSS_DEFS.put("Riftstalker Bloodfiend",  new BossDef(EntityTypes.PLAYER,  0.5, 1.0, 1.0, 2.0, "Bloodfiend"));
     }
 
-    // State
+    // 运行状态
     static String slayerType = "";
     static String bossTier = "";
     static Entity bossEntity;
@@ -71,7 +62,24 @@ public final class SlayerBossDetector {
     static String renderStr = "";
     static boolean spiderPhase2 = false;
 
-    // Voidgloom
+    // ---- boss 归属判定 ----
+    // 0.27.2 把 "Spawned by: <玩家>" 那行铭牌换成了通用的 "SLAYER BOSS",boss 头顶
+    // 再也读不到召唤者,所以改用召唤时序判定:侧边栏切成 "Slay the boss!" 时服务端
+    // 已经生成 boss,而实体本身要再过几秒才到客户端 —— 这个窗口里第一个出现、且带
+    // 对应 boss 名字铭牌的实体就是我们的。
+    private static final Map<Integer, Long> bossSpawns = new LinkedHashMap<>();
+    /** 侧边栏翻转后多久内新生成的 boss 算我们的 */
+    private static final long CLAIM_WINDOW_MS = 6000;
+    /** 容忍实体包比侧边栏更新包先到 */
+    private static final long CLAIM_LOOKBACK_MS = 500;
+    /** 超过这个时间只认唯一候选或玩家主动命中 */
+    private static final long CLAIM_FALLBACK_MS = 36000;
+    /** 生成候选缓冲的保留时长 */
+    private static final long SPAWN_BUFFER_MS = 15000;
+    private static boolean bossPhase = false;
+    private static long bossPhaseSince = 0;
+
+    // 末影人猎手
     static final VoidgloomState voidgloom = new VoidgloomState();
     static class VoidgloomState {
         long lazer;
@@ -82,7 +90,7 @@ public final class SlayerBossDetector {
         void reset() { lazer = 0; beaconStatus = ""; beaconEntity = null; beaconLoc = null; beaconTime = 0; }
     }
 
-    // Inferno
+    // 火焰猎手分身
     static final List<Entity> infernoMinions = new ArrayList<>();
     static final InfernoStatus infernoStatus = new InfernoStatus();
     static class InfernoStatus {
@@ -97,9 +105,14 @@ public final class SlayerBossDetector {
 
     public static void init() {
         ClientTickEvents.END_CLIENT_TICK.register(SlayerBossDetector::tick);
+        ClientEntityEvents.ENTITY_LOAD.register((entity, level) -> onEntityLoad(entity));
+        AttackEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
+            onAttackEntity(entity);
+            return InteractionResult.PASS;
+        });
     }
 
-    // ---- Main tick ----
+    // ---- 主 tick ----
 
     private static void tick(Minecraft client) {
         var tracker = HypixelLocationTracker.getInstance();
@@ -111,10 +124,10 @@ public final class SlayerBossDetector {
         ClientLevel level = client.level;
         if (level == null || client.player == null) { reset(); return; }
 
-        // Clean up dead boss
+        // 清掉已经死掉的 boss
         if (bossEntity != null && !bossEntity.isAlive()) reset();
 
-        // Read scoreboard
+        // 读计分板
         Scoreboard sb = level.getScoreboard();
         Objective obj = sb.getDisplayObjective(DisplaySlot.BY_ID.apply(1));
         if (obj == null) { reset(); return; }
@@ -137,7 +150,7 @@ public final class SlayerBossDetector {
 
         if (slayerQuestScore == null) { reset(); return; }
 
-        // Boss name: next line below "Slayer Quest" (lower score)
+        // boss 名:"Slayer Quest" 下面一行(分数更低)
         String bossLine = scoreLines.get(slayerQuestScore - 1);
         if (bossLine == null) { reset(); return; }
 
@@ -151,7 +164,7 @@ public final class SlayerBossDetector {
         slayerType = bossName;
         var def = BOSS_DEFS.get(bossName);
 
-        // "Slay the boss" / combat XP line: two lines below "Slayer Quest"
+        // "Slay the boss" / 刷怪进度行:"Slayer Quest" 往下两行
         String slayLine = scoreLines.get(slayerQuestScore - 2);
         if (slayLine == null || !ChatUtils.stripColor(slayLine).contains("Slay the boss")) {
             if (!"Inferno Demonlord".equals(bossName) || bossEntity == null) { reset(); return; }
@@ -159,119 +172,203 @@ public final class SlayerBossDetector {
             return;
         }
 
-        // Find armor stand with player name + "Spawned"
-        ArmorStand spawnArmorStand = null;
-        String playerName = client.player.getName().getString();
+        // boss 战阶段。侧边栏切成 "Slay the boss!" 时服务端已经生成 boss,实体要过几秒
+        // 才到 —— 在认领到候选之前一直停在这个状态,不要 reset。
+        if (!bossPhase) {
+            bossPhase = true;
+            bossPhaseSince = ServerTick.getTime();
+        }
+        if (bossEntity != null && !isTrackedBossValid(bossEntity, def, bossName)) bossEntity = null;
+        if (bossEntity == null) claimBoss(level, def, bossName);
+        if (bossEntity == null) { renderStr = ""; return; }
+
+        // 铭牌堆(名字 + 血量 + 状态)就叠在 boss 身上,作为后续搜索的锚点。
+        ArmorStand bossStand = findBossStand(level, bossEntity, def, bossName);
+        if (bossStand == null) return;
+
+        // 找锚点附近的铭牌,用来取血量和计时
+        List<ArmorStand> nearbyStands = new ArrayList<>();
         for (Entity e : level.entitiesForRendering()) {
-            if (e instanceof ArmorStand as) {
-                String name = as.getName().getString();
-                if (name.contains("Spawned") && name.contains(playerName)) {
-                    spawnArmorStand = as;
-                    break;
-                }
-            }
-        }
-        if (spawnArmorStand == null) { reset(); return; }
-
-        // Find boss entity near the armor stand.
-        // Keep the existing boss as a fallback so the box doesn't flicker
-        // when the boss briefly leaves the detection window during jumps/knockbacks.
-        Entity best = bossEntity;
-        double bestDist = Double.MAX_VALUE;
-
-        // Score current boss
-        if (best != null) {
-            if (!best.isAlive() || best.getType() != def.type
-                    || ("Riftstalker Bloodfiend".equals(bossName)
-                        && !"Bloodfiend ".equals(best.getName().getString()))
-                    || (spiderPhase2
-                        && !ChatUtils.stripColor(best.getName().getString()).contains("Dinnerbone"))) {
-                best = null;
-            } else {
-                double dx = best.getX() - spawnArmorStand.getX();
-                double dy = (best.getY() + getEffectiveH(def)) - spawnArmorStand.getY();
-                double dz = best.getZ() - spawnArmorStand.getZ();
-                bestDist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            if (e instanceof ArmorStand as && as != bossStand
+                    && as.distanceTo(bossStand) < 1
+                    && Math.abs(as.getX() - bossStand.getX()) < 0.5
+                    && Math.abs(as.getZ() - bossStand.getZ()) < 0.5) {
+                nearbyStands.add(as);
             }
         }
 
-        // Search for a closer entity
-        for (Entity e : level.entitiesForRendering()) {
-            if (e == best) continue;
-            if (e.getType() != def.type) continue;
-            if (!e.isAlive()) continue;
-            if ("Riftstalker Bloodfiend".equals(bossName) && !"Bloodfiend ".equals(e.getName().getString())) continue;
-            if (spiderPhase2 && !ChatUtils.stripColor(e.getName().getString()).contains("Dinnerbone")) continue;
-
-            double dx = e.getX() - spawnArmorStand.getX();
-            double dy = (e.getY() + getEffectiveH(def)) - spawnArmorStand.getY();
-            double dz = e.getZ() - spawnArmorStand.getZ();
-            double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-            if (dist < def.range && e.getY() < spawnArmorStand.getY() && dist < bestDist) {
-                best = e;
-                bestDist = dist;
-            }
-        }
-
-        bossEntity = best;
-
-        // Find nearby armor stands for HP and time info
-        if (bossEntity != null) {
-            List<ArmorStand> nearbyStands = new ArrayList<>();
-            for (Entity e : level.entitiesForRendering()) {
-                if (e instanceof ArmorStand as && as != spawnArmorStand
-                        && as.distanceTo(spawnArmorStand) < 1
-                        && Math.abs(as.getX() - spawnArmorStand.getX()) < 0.5
-                        && Math.abs(as.getZ() - spawnArmorStand.getZ()) < 0.5) {
-                    nearbyStands.add(as);
-                }
-            }
-
-            // HP tag (T5 uses different name, e.g. Atoned Horror / Conjoined Brood)
-            String searchName = def.name;
-            if ("Revenant Horror".equals(bossName) && "V".equals(bossTier)) {
-                searchName = "Atoned Horror";
-            }
-            if ("Tarantula Broodfather".equals(bossName) && "V".equals(bossTier)) {
-                searchName = "Conjoined Brood";
-            }
-            hpTag = null;
+        // 血量铭牌。T5 可能换名:Rev T5 是 Atoned Horror;蜘蛛 T5 一阶段仍叫
+        // Tarantula Broodfather(和 T1-T4 同名),二阶段才变 Conjoined Brood,
+        // 所以两个名字都收,二阶段继续靠铭牌里有没有 Conjoined Brood 来判。
+        String bossStandTag = ChatUtils.toLegacyString(bossStand.getName());
+        hpTag = null;
+        if (hasBossName(bossStandTag, bossName)) {
+            hpTag = bossStandTag;
+        } else {
             for (ArmorStand as : nearbyStands) {
                 String nm = ChatUtils.toLegacyString(as.getName());
-                if (ChatUtils.stripColor(nm).contains(searchName)) {
+                if (hasBossName(nm, bossName)) {
                     hpTag = nm;
                     break;
                 }
             }
+        }
 
-            // Detect Tarantula T5 phase 2 (Conjoined Brood → stacked spiders)
-            spiderPhase2 = "Tarantula Broodfather".equals(bossName) && "V".equals(bossTier)
-                    && hpTag != null && ChatUtils.stripColor(hpTag).contains("Conjoined Brood");
+        // 识别蜘蛛 T5 第二阶段(Conjoined Brood → 三只叠在一起的蜘蛛)
+        spiderPhase2 = "Tarantula Broodfather".equals(bossName) && "V".equals(bossTier)
+                && hpTag != null && ChatUtils.stripColor(hpTag).contains("Conjoined Brood");
 
-            hp = (hpTag != null && hpTag.contains("ᛤ") ? "§5ᛤ§r " : "")
-                    + (bossEntity != null ? healthToString((LivingEntity) bossEntity) : extractHpFromTag(hpTag));
+        hp = (hpTag != null && hpTag.contains("ᛤ") ? "§5ᛤ§r " : "")
+                + healthToString((LivingEntity) bossEntity);
 
-            // Time left
-            timeLeft = "";
-            for (ArmorStand as : nearbyStands) {
-                String nm = ChatUtils.toLegacyString(as.getName());
-                if (nm.contains(":")) {
-                    timeLeft = nm;
-                    break;
-                }
-            }
-
-            // Voidgloom special handling
-            if ("Voidgloom Seraph".equals(bossName)) {
-                trackVoidgloom(level);
+        // 剩余时间
+        timeLeft = "";
+        for (ArmorStand as : nearbyStands) {
+            String nm = ChatUtils.toLegacyString(as.getName());
+            if (nm.contains(":")) {
+                timeLeft = nm;
+                break;
             }
         }
 
-        // Build render string
+        // 末影人猎手专用逻辑
+        if ("Voidgloom Seraph".equals(bossName)) {
+            trackVoidgloom(level);
+        }
+
+        // 拼 HUD 文本
         buildRenderStr();
     }
 
-    // ---- Inferno split tracking ----
+    // ---- boss 归属判定 ----
+
+    private static void onEntityLoad(Entity entity) {
+        long now = ServerTick.getTime();
+        bossSpawns.entrySet().removeIf(e -> now - e.getValue() > SPAWN_BUFFER_MS);
+        if (isBossType(entity.getType())) bossSpawns.put(entity.getId(), now);
+    }
+
+    private static boolean isBossType(EntityType<?> type) {
+        for (BossDef def : BOSS_DEFS.values()) {
+            if (def.type == type) return true;
+        }
+        return false;
+    }
+
+    /**
+     * 认领属于我们这次任务的 boss。
+     * <p>1) 侧边栏切成 "Slay the boss!" 之后窗口内第一个生成的带名字猎手 boss —— boss
+     * 一定刷在我们补刀的位置,也就是贴着我们加载,而别人的 boss 早就加载完了。
+     * <p>2) 窗口过期后(中途开模块、实体离开视野距离后重新加载):只认全场唯一的那只,
+     * 有多只候选时宁可不显示,也不显示别人的 boss。
+     * <p>3) 期间玩家主动命中的那只,见 {@link #onAttackEntity}。
+     */
+    private static void claimBoss(ClientLevel level, BossDef def, String bossName) {
+        long now = ServerTick.getTime();
+        bossSpawns.entrySet().removeIf(e -> now - e.getValue() > SPAWN_BUFFER_MS);
+        long sinceFlip = now - bossPhaseSince;
+
+        if (sinceFlip <= CLAIM_WINDOW_MS) {
+            Entity best = null;
+            long bestSpawn = Long.MAX_VALUE;
+            for (Map.Entry<Integer, Long> entry : bossSpawns.entrySet()) {
+                if (entry.getValue() < bossPhaseSince - CLAIM_LOOKBACK_MS) continue;
+                Entity e = level.getEntity(entry.getKey());
+                if (!isOwnBoss(level, e, def, bossName)) continue;
+                if (entry.getValue() < bestSpawn) {
+                    bestSpawn = entry.getValue();
+                    best = e;
+                }
+            }
+            if (best != null) bossEntity = best;
+            return;
+        }
+
+        if (sinceFlip > CLAIM_FALLBACK_MS) return;
+
+        Entity only = null;
+        for (Entity e : level.entitiesForRendering()) {
+            if (!isOwnBoss(level, e, def, bossName)) continue;
+            if (only != null) return;
+            only = e;
+        }
+        bossEntity = only;
+    }
+
+    /**
+     * 命中兜底:还没认领到 boss 时,玩家打中的那只带名字猎手 boss 直接绑定。
+     * 这里的铭牌判定就是防止"打普通小怪(同实体类型、没有 boss 铭牌)被误绑过去"。
+     */
+    private static void onAttackEntity(Entity entity) {
+        if (entity == null || bossEntity != null || !bossPhase) return;
+        BossDef def = BOSS_DEFS.get(slayerType);
+        ClientLevel level = Minecraft.getInstance().level;
+        if (def == null || level == null) return;
+        if (isOwnBoss(level, entity, def, slayerType)) bossEntity = entity;
+    }
+
+    /** 当前跟踪的 boss 还符合正在进行的任务吗 */
+    private static boolean isTrackedBossValid(Entity e, BossDef def, String bossName) {
+        if (!e.isAlive() || e.getType() != def.type) return false;
+        if ("Riftstalker Bloodfiend".equals(bossName) && !"Bloodfiend ".equals(e.getName().getString())) {
+            return false;
+        }
+        return !spiderPhase2 || ChatUtils.stripColor(e.getName().getString()).contains("Dinnerbone");
+    }
+
+    /** 候选判定:实体类型对得上,且身上挂着带 boss 名字的铭牌 */
+    private static boolean isOwnBoss(ClientLevel level, Entity e, BossDef def, String bossName) {
+        return e != null
+                && isTrackedBossValid(e, def, bossName)
+                && findBossStand(level, e, def, bossName) != null;
+    }
+
+    /** 实体正上方那块带 boss 名字和血量的铭牌 */
+    private static ArmorStand findBossStand(ClientLevel level, Entity boss, BossDef def, String bossName) {
+        ArmorStand best = null;
+        double bestDist = Double.MAX_VALUE;
+        for (Entity e : level.entitiesForRendering()) {
+            if (!(e instanceof ArmorStand as)) continue;
+            if (!hasBossName(ChatUtils.toLegacyString(as.getName()), bossName)) continue;
+
+            double dx = as.getX() - boss.getX();
+            double dz = as.getZ() - boss.getZ();
+            if (Math.abs(dx) > 2 || Math.abs(dz) > 2) continue;
+            if (as.getY() < boss.getY() - 1 || as.getY() > boss.getY() + getEffectiveH(def) + 3) continue;
+
+            double dist = dx * dx + dz * dz;
+            if (dist < bestDist) {
+                bestDist = dist;
+                best = as;
+            }
+        }
+        return best;
+    }
+
+    /** 这块铭牌写的是当前任务的 boss 名吗(含 T5 的备选名) */
+    private static boolean hasBossName(String nametag, String bossName) {
+        String plain = ChatUtils.stripColor(nametag);
+        BossDef def = BOSS_DEFS.get(bossName);
+        if (def != null && plain.contains(def.name)) return true;
+        String t5 = t5AltName(bossName, bossTier);
+        return t5 != null && plain.contains(t5);
+    }
+
+    /**
+     * T5 的备选显示名。
+     * <p>Rev T5 一阶段起就叫 Atoned Horror;蜘蛛 T5 一阶段还是 Tarantula Broodfather
+     * (与 T1-T4 同名),只有二阶段换成 Conjoined Brood。
+     */
+    private static String t5AltName(String bossName, String tier) {
+        if (!"V".equals(tier)) return null;
+        return switch (bossName) {
+            case "Revenant Horror" -> "Atoned Horror";
+            case "Tarantula Broodfather" -> "Conjoined Brood";
+            default -> null;
+        };
+    }
+
+    // ---- 火焰猎手分身追踪 ----
 
     private static void trackInfernoSplit(ClientLevel level, BossDef def) {
         if (bossEntity == null) return;
@@ -327,7 +424,7 @@ public final class SlayerBossDetector {
                 if (nm.matches(".*[0-9]{1,2}:[0-9]{1,2}.*")) {
                     String[] tParts = nm.split(" ");
                     List<String> timeList = new ArrayList<>(java.util.Arrays.asList(tParts));
-                    if (!timeList.isEmpty()) timeList.remove(timeList.size() - 1);
+                    if (!timeList.isEmpty()) timeList.removeLast();
                     infernoMobsStr.add(String.join(" ", timeList));
                     if (tParts.length > 0 && !"IMMUNE".equals(ChatUtils.stripColor(tParts[0]))) {
                         currentlyShield = ChatUtils.stripColor(tParts[0]);
@@ -354,11 +451,11 @@ public final class SlayerBossDetector {
                 + '\n' + String.join(" ", bossStatus) + String.join(" ", infernoMobsStr);
     }
 
-    // ---- Voidgloom special handling ----
+    // ---- 末影人猎手专用逻辑 ----
 
     private static void trackVoidgloom(ClientLevel level) {
         if (bossEntity instanceof EnderMan enderman) {
-            // Lazer detection
+            // 激光(骑乘守卫者)检测
             if (enderman.getVehicle() != null) {
                 boolean hasGuardian = false;
                 for (Entity e : level.entitiesForRendering()) {
@@ -376,7 +473,7 @@ public final class SlayerBossDetector {
                 voidgloom.lazer = 0;
             }
 
-            // Beacon tracking
+            // 信标追踪
             BlockState carriedBlock = enderman.getCarriedBlock();
             if (carriedBlock != null && carriedBlock.is(Blocks.BEACON)) {
                 voidgloom.beaconStatus = "holding";
@@ -426,7 +523,7 @@ public final class SlayerBossDetector {
         }
     }
 
-    // ---- Build render string per boss ----
+    // ---- 按 boss 类型拼 HUD 文本 ----
 
     private static void buildRenderStr() {
         var cfg = ModConfigManager.get().slayer;
@@ -520,13 +617,13 @@ public final class SlayerBossDetector {
         }
     }
 
-    // ---- Helpers ----
+    // ---- 工具方法 ----
 
     /**
-     * Get effective boss height, accounting for T5 phase 2 stacked spiders.
-     * Tarantula T5 phase 2 has 3 stacked spiders (Dinnerbone + cave spider + normal spider).
+     * 取 boss 的有效高度,蜘蛛 T5 第二阶段要按叠起来的三只蜘蛛算。
+     * 蜘蛛 T5 第二阶段是 3 只叠在一起的蜘蛛(Dinnerbone + 洞穴蜘蛛 + 普通蜘蛛)。
      */
-    public static double getEffectiveH(BossDef def) {
+    static double getEffectiveH(BossDef def) {
         if (spiderPhase2) return 1.7;
         return def.h;
     }
@@ -540,6 +637,8 @@ public final class SlayerBossDetector {
         timeLeft = "";
         renderStr = "";
         spiderPhase2 = false;
+        bossPhase = false;
+        bossPhaseSince = 0;
         voidgloom.reset();
         infernoMinions.clear();
         infernoStatus.reset();
@@ -550,17 +649,8 @@ public final class SlayerBossDetector {
         String[] parts = timeLeft.split(" ");
         if (parts.length <= 1) return "";
         List<String> statusParts = new ArrayList<>(java.util.Arrays.asList(parts));
-        statusParts.remove(statusParts.size() - 1);
+        statusParts.removeLast();
         return String.join(" ", statusParts);
-    }
-
-    static String extractHpFromTag(String tag) {
-        if (tag == null) return "§c❤";
-        Matcher m = HEALTH_PATTERN.matcher(tag);
-        if (m.find() && m.group(2) != null) {
-            return m.group(2) + "§c❤";
-        }
-        return "§c❤";
     }
 
     static String healthToString(LivingEntity entity) {

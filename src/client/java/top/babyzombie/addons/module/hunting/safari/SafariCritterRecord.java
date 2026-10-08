@@ -129,6 +129,27 @@ public final class SafariCritterRecord {
         }
         if (byZone.isEmpty()) return;
 
+        // 所在区域处理：置顶当前分区 / 只显示当前分区（玩家不可用时退回普通显示）
+        var player = Minecraft.getInstance().player;
+        List<SafariZoneUtil.SafariZone> orderedZones = new ArrayList<>(byZone.keySet());
+        if (player != null) {
+            SafariZoneUtil.SafariZone currentZone = SafariZoneUtil.zoneOf(player.blockPosition());
+            if (orderedZones.contains(currentZone)) {
+                switch (cfg.zoneMode) {
+                    case PIN_TOP -> {
+                        orderedZones.remove(currentZone);
+                        orderedZones.addFirst(currentZone);
+                    }
+                    case HIDE_OTHERS -> {
+                        orderedZones.clear();
+                        orderedZones.add(currentZone);
+                    }
+                    case OFF -> { }
+                }
+            }
+        }
+        if (orderedZones.isEmpty()) return;
+
         StringBuilder sb = new StringBuilder(Component.translatable(
                 "hud.babyzombieaddons.safariCritterRecord.title").getString());
         // 计时：HUD 标题后跟本轮用时（进入 Safari 起算）
@@ -136,11 +157,11 @@ public final class SafariCritterRecord {
             sb.append(ChatUtils.translate("hud.babyzombieaddons.safariCritterRecord.timer",
                     formatTime(Math.max(0, ServerTick.getTime() - safariEnterMs))));
         }
-        for (Map.Entry<SafariZoneUtil.SafariZone, List<SafariCritter>> entry : byZone.entrySet()) {
-            sb.append('\n').append(SafariZoneUtil.colorCode(entry.getKey())).append("§l")
+        for (SafariZoneUtil.SafariZone zone : orderedZones) {
+            sb.append('\n').append(SafariZoneUtil.colorCode(zone)).append("§l")
                     .append(Component.translatable(
-                            "hud.babyzombieaddons.safariCritterRecord.zone." + entry.getKey().name()).getString());
-            for (SafariCritter critter : entry.getValue()) {
+                            "hud.babyzombieaddons.safariCritterRecord.zone." + zone.name()).getString());
+            for (SafariCritter critter : byZone.get(zone)) {
                 sb.append('\n').append(formatCritter(critter, cfg.caughtMode));
             }
         }
