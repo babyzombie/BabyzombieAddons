@@ -30,7 +30,7 @@ public class EntityRenderDispatcherScaleMixin {
                                    double x, double y, double z,
                                    PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
                                    CallbackInfo ci) {
-        renderingLocalPlayer = PlayerScaleState.LOCAL_PLAYER_STATES.remove(renderState);
+        renderingLocalPlayer = renderState.getDataOrDefault(PlayerScaleState.IS_LOCAL_PLAYER_STATE, false);
         if (renderingLocalPlayer) {
             var cfg = ModConfigManager.get().general.selfPlayerRender;
             if (cfg.x != 1.0f || cfg.y != 1.0f || cfg.z != 1.0f) {

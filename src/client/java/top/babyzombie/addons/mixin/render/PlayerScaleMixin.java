@@ -16,7 +16,7 @@ public abstract class PlayerScaleMixin {
     @Inject(method = "extractRenderState*", at = @At("HEAD"))
     private void onExtractState(LivingEntity entity, LivingEntityRenderState state, float partialTicks, CallbackInfo ci) {
         if (entity == Minecraft.getInstance().player) {
-            PlayerScaleState.LOCAL_PLAYER_STATES.add(state);
+            state.setData(PlayerScaleState.IS_LOCAL_PLAYER_STATE, true);
         }
     }
 }
