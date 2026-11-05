@@ -273,11 +273,6 @@ public class ModConfig extends Config {
     public List<Social> getSocials() {
         return List.of(
                 linkSocial(
-                        StructuredText.translatable("config.babyzombieaddons.social.modrinth"),
-                        new MyResourceLocation("babyzombieaddons", "textures/modrinth.png"),
-                        "https://modrinth.com/mod/babyzombieaddons"
-                ),
-                linkSocial(
                         StructuredText.translatable("config.babyzombieaddons.social.github"),
                         new MyResourceLocation("babyzombieaddons", "textures/github.png"),
                         "https://github.com/babyzombie/BabyzombieAddons"
